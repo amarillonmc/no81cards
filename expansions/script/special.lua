@@ -21,6 +21,8 @@ function Auxiliary.PreloadUds()
 	EFFECT_FLAG_CAN_FORBIDDEN=EFFECT_FLAG_CAN_FORBIDDEN or 0x200
 	EFFECT_FLAG_COPY_INHERIT=EFFECT_FLAG_COPY_INHERIT or 0x2000
 	EFFECT_FLAG_COPY=EFFECT_FLAG_COPY or 0x2000
+	CATEGORY_MSET=CATEGORY_MSET or 0x100000000
+	CATEGORY_SSET=CATEGORY_SSET or 0x200000000
 
 	table_range=table_range or {}
 	effect_handler=effect_handler or {}
@@ -392,45 +394,75 @@ function Auxiliary.PreloadUds()
 		end
 	end
 	
-	--piece of shit
+	-- ==========================================================
+	-- 核心包装与修复域：AddFusionProcMixRep
+	-- ==========================================================
 	function Auxiliary.AddFusionProcMixRep(fcard,sub,insf,fun1,minc,maxc,...)
 		if fcard:IsStatus(STATUS_COPYING_EFFECT) then return end
 		local val={fun1,...}
 		local fun={}
 		local mat={}
 		for i=1,#val do
-			if type(val[i])=='function' then
-				fun[i]=function(c,fc,subm,mg,sg) return val[i](c,fc,subm,mg,sg) and not c:IsHasEffect(6205579) end
-			elseif type(val[i])=='table' then
+			if i==1 and type(val[i])=='function' then
 				fun[i]=function(c,fc,subm,mg,sg)
-						for _,fcode in ipairs(val[i]) do
-							if type(fcode)=='function' then
-								if fcode(c,fc,subm,mg,sg) and not c:IsHasEffect(6205579) then return true end
-							elseif type(fcode)=='number' then
-								if c:IsFusionCode(fcode) or (subm and c:CheckFusionSubstitute(fc)) then return true end
+					-- 【安全兜底】应对 mg 或 sg 为空的预检阶段
+					local safe_mg = mg or Group.CreateGroup()
+					if not sg then return val[i](c,fc,subm,safe_mg,nil) and not c:IsHasEffect(6205579) end
+					
+					-- 【艾莉尔 Bug 修复】剥离专属记述卡
+					local sg_generic = sg:Clone()
+					local used = Group.CreateGroup()
+					for j=2,#val do
+						for tc in aux.Next(sg_generic) do
+							if not used:IsContains(tc) then
+								local match = false
+								if type(val[j])=='function' then
+									match = val[j](tc,fc,subm,safe_mg,sg)
+								elseif type(val[j])=='table' then
+									for _,fcode in ipairs(val[j]) do
+										if type(fcode)=='function' then match = fcode(tc,fc,subm,safe_mg,sg)
+										elseif type(fcode)=='number' then match = tc:IsFusionCode(fcode) or (subm and tc:CheckFusionSubstitute(fc)) end
+										if match then break end
+									end
+								elseif type(val[j])=='number' then
+									match = tc:IsFusionCode(val[j]) or (subm and tc:CheckFusionSubstitute(fc))
+								end
+								if match then used:AddCard(tc) break end
 							end
 						end
-						return false
+					end
+					sg_generic:Sub(used)
+					used:DeleteGroup()
+					
+					-- 拿着纯净的泛用池去查重
+					local res = val[i](c,fc,subm,safe_mg,sg_generic) and not c:IsHasEffect(6205579)
+					sg_generic:DeleteGroup()
+					return res
 				end
-				for _,fcode in ipairs(val[i]) do
-					if type(fcode)=='number' then mat[fcode]=true end
+			else
+				-- 专属素材直接绑定上下文
+				if type(val[i])=='function' then
+					fun[i]=function(c,fc,subm,mg,sg) return val[i](c,fc,subm,mg,sg) and not c:IsHasEffect(6205579) end
+				elseif type(val[i])=='table' then
+					fun[i]=function(c,fc,subm,mg,sg)
+							for _,fcode in ipairs(val[i]) do
+								if type(fcode)=='function' then if fcode(c,fc,subm,mg,sg) and not c:IsHasEffect(6205579) then return true end
+								elseif type(fcode)=='number' then if c:IsFusionCode(fcode) or (subm and c:CheckFusionSubstitute(fc)) then return true end end
+							end
+							return false
+					end
+					for _,fcode in ipairs(val[i]) do if type(fcode)=='number' then mat[fcode]=true end end
+				elseif type(val[i])=='number' then
+					fun[i]=function(c,fc,subm) return c:IsFusionCode(val[i]) or (subm and c:CheckFusionSubstitute(fc)) end
+					local tmp=val[i]
+					mat[tmp]=true
 				end
-			elseif type(val[i])=='number' then
-				fun[i]=function(c,fc,subm) return c:IsFusionCode(val[i]) or (subm and c:CheckFusionSubstitute(fc)) end
-				local tmp=val[i]
-				mat[tmp]=true
 			end
 		end
 		local mt=getmetatable(fcard)
-		if mt.material==nil then
-			mt.material=mat
-		end
-		if mt.material_count==nil then
-			mt.material_count={#fun+minc-1,#fun+maxc-1}
-		end
-		for index,_ in pairs(mat) do
-			Auxiliary.AddCodeList(fcard,index)
-		end
+		if mt.material==nil then mt.material=mat end
+		if mt.material_count==nil then mt.material_count={#fun+minc-1,#fun+maxc-1} end
+		for index,_ in pairs(mat) do Auxiliary.AddCodeList(fcard,index) end
 		local e1=Effect.CreateEffect(fcard)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
@@ -439,6 +471,10 @@ function Auxiliary.PreloadUds()
 		e1:SetOperation(Auxiliary.FOperationMixRep(insf,sub,fun[1],minc,maxc,table.unpack(fun,2)))
 		fcard:RegisterEffect(e1)
 	end
+
+	-- ==========================================================
+	-- 魔法注入域：隐藏 mg 和 sg 的参数签名，通过上下文偷渡
+	-- ==========================================================
 	function Auxiliary.FConditionMixRep(insf,sub,fun1,minc,maxc,...)
 		local funs={...}
 		return  function(e,g,gc,chkfnf)
@@ -448,16 +484,26 @@ function Auxiliary.PreloadUds()
 					local hexsealed=chkfnf&0x100>0
 					local notfusion=chkfnf&0x200>0
 					local sub2=(sub or hexsealed) and not notfusion
-					local mg=g:Filter(Auxiliary.FConditionFilterMix,c,c,sub2,notfusion,fun1,table.unpack(funs))
+
+					-- 【核心魔法】创建上下文
+					local ctx = { mg = g, sg = Group.CreateGroup() }
+					-- 将 5 参数的新函数伪装成 3 参数的旧函数！
+					local w_fun1 = function(tc, fc, subm) return fun1(tc, fc, subm, ctx.mg, ctx.sg) end
+					local w_funs = {}
+					for i, f in ipairs(funs) do w_funs[i] = function(tc, fc, subm) return f(tc, fc, subm, ctx.mg, ctx.sg) end end
+
+					local mg=g:Filter(Auxiliary.FConditionFilterMix,c,c,sub2,notfusion,w_fun1,table.unpack(w_funs))
+					ctx.mg = mg -- mg 赋值完毕，此后的判定都能读到了！
+
 					if gc then
 						if not mg:IsContains(gc) then return false end
-						local sg=Group.CreateGroup()
-						return Auxiliary.FSelectMixRep(gc,tp,mg,sg,c,sub2,chkfnf,fun1,minc,maxc,table.unpack(funs))
+						-- 所有后续的深度调用全部传递伪装函数 w_fun1，不污染旧版签名！
+						return Auxiliary.FSelectMixRep(gc,tp,mg,ctx.sg,c,sub2,chkfnf,w_fun1,minc,maxc,table.unpack(w_funs))
 					end
-					local sg=Group.CreateGroup()
-					return mg:IsExists(Auxiliary.FSelectMixRep,1,nil,tp,mg,sg,c,sub2,chkfnf,fun1,minc,maxc,table.unpack(funs))
+					return mg:IsExists(Auxiliary.FSelectMixRep,1,nil,tp,mg,ctx.sg,c,sub2,chkfnf,w_fun1,minc,maxc,table.unpack(w_funs))
 				end
 	end
+
 	function Auxiliary.FOperationMixRep(insf,sub,fun1,minc,maxc,...)
 		local funs={...}
 		return  function(e,tp,eg,ep,ev,re,r,rp,gc,chkfnf)
@@ -467,13 +513,22 @@ function Auxiliary.PreloadUds()
 					local notfusion=chkfnf&0x200>0
 					local sub2=(sub or hexsealed) and not notfusion
 					local cancel=notfusion and Duel.GetCurrentChain()==0
-					local mg=eg:Filter(Auxiliary.FConditionFilterMix,c,c,sub2,notfusion,fun1,table.unpack(funs))
-					local sg=Group.CreateGroup()
+
+					-- 【核心魔法】创建上下文
+					local ctx = { mg = eg, sg = Group.CreateGroup() }
+					local w_fun1 = function(tc, fc, subm) return fun1(tc, fc, subm, ctx.mg, ctx.sg) end
+					local w_funs = {}
+					for i, f in ipairs(funs) do w_funs[i] = function(tc, fc, subm) return f(tc, fc, subm, ctx.mg, ctx.sg) end end
+
+					local mg=eg:Filter(Auxiliary.FConditionFilterMix,c,c,sub2,notfusion,w_fun1,table.unpack(w_funs))
+					ctx.mg = mg
+					local sg = ctx.sg
+
 					if gc then sg:AddCard(gc) end
 					while sg:GetCount()<maxc+#funs do
-						local cg=mg:Filter(Auxiliary.FSelectMixRep,sg,tp,mg,sg,c,sub2,chkfnf,fun1,minc,maxc,table.unpack(funs))
+						local cg=mg:Filter(Auxiliary.FSelectMixRep,sg,tp,mg,sg,c,sub2,chkfnf,w_fun1,minc,maxc,table.unpack(w_funs))
 						if cg:GetCount()==0 then break end
-						local finish=Auxiliary.FCheckMixRepGoal(tp,mg,sg,c,sub2,chkfnf,fun1,minc,maxc,table.unpack(funs))
+						local finish=Auxiliary.FCheckMixRepGoal(tp,sg,c,sub2,chkfnf,w_fun1,minc,maxc,table.unpack(w_funs))
 						local cancel_group=sg:Clone()
 						if gc then cancel_group:RemoveCard(gc) end
 						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FMATERIAL)
@@ -482,34 +537,36 @@ function Auxiliary.PreloadUds()
 							if not finish then sg:Clear() end
 							break
 						end
-						if sg:IsContains(tc) then
-							sg:RemoveCard(tc)
-						else
-							sg:AddCard(tc)
-						end
+						if sg:IsContains(tc) then sg:RemoveCard(tc) else sg:AddCard(tc) end
 					end
 					Duel.SetFusionMaterial(sg)
 				end
 	end
-	function Auxiliary.FCheckMixRep(sg,mg,g,fc,sub,chkf,fun1,minc,maxc,fun2,...)
-		if fun2 then
-			return sg:IsExists(Auxiliary.FCheckMixRepFilter,1,g,mg,sg,g,fc,sub,chkf,fun1,minc,maxc,fun2,...)
+
+	-- ==========================================================
+	-- 纯净 V1 签名域：完美兼容旧卡的所有递归检测
+	-- (除了特别标注的地方，参数列表全部退回原汁原味的 V1)
+	-- ==========================================================
+	function Auxiliary.FCheckMixRep(sg,g,fc,sub,chkf,fun1,minc,maxc,fun2,...)
+		if fun2 then return sg:IsExists(Auxiliary.FCheckMixRepFilter,1,g,sg,g,fc,sub,chkf,fun1,minc,maxc,fun2,...)
 		else
-			local ct1=sg:FilterCount(fun1,g,fc,sub,mg,sg)
-			local ct2=sg:FilterCount(fun1,g,fc,false,mg,sg)
+			local ct1=sg:FilterCount(fun1,g,fc,sub)
+			local ct2=sg:FilterCount(fun1,g,fc,false)
 			return ct1==sg:GetCount()-g:GetCount() and ct1-ct2<=1
 		end
 	end
-	function Auxiliary.FCheckMixRepFilter(c,mg,sg,g,fc,sub,chkf,fun1,minc,maxc,fun2,...)
-		if fun2(c,fc,sub,mg,sg) then
+
+	function Auxiliary.FCheckMixRepFilter(c,sg,g,fc,sub,chkf,fun1,minc,maxc,fun2,...)
+		if fun2(c,fc,sub) then
 			g:AddCard(c)
-			local sub=sub and fun2(c,fc,false,mg,sg)
-			local res=Auxiliary.FCheckMixRep(sg,mg,g,fc,sub,chkf,fun1,minc,maxc,...)
+			local subf=sub and fun2(c,fc,false)
+			local res=Auxiliary.FCheckMixRep(sg,g,fc,subf,chkf,fun1,minc,maxc,...)
 			g:RemoveCard(c)
 			return res
 		end
 		return false
 	end
+
 	function Auxiliary.FCheckMixRepGoalCheck(tp,sg,fc,chkfnf)
 		local not_fusion=chkfnf&(0x100|0x200)>0
 		if not not_fusion and sg:IsExists(Auxiliary.TuneMagicianCheckX,1,nil,sg,EFFECT_TUNE_MAGICIAN_F) then return false end
@@ -517,20 +574,22 @@ function Auxiliary.PreloadUds()
 		if Auxiliary.FGoalCheckAdditional and not Auxiliary.FGoalCheckAdditional(tp,sg,fc) then return false end
 		return true
 	end
-	function Auxiliary.FCheckMixRepGoal(tp,mg,sg,fc,sub,chkfnf,fun1,minc,maxc,...)
+
+	function Auxiliary.FCheckMixRepGoal(tp,sg,fc,sub,chkfnf,fun1,minc,maxc,...)
 		local chkf=chkfnf&0xff
 		if sg:GetCount()<minc+#{...} or sg:GetCount()>maxc+#{...} then return false end
 		if not (chkf==PLAYER_NONE or Duel.GetLocationCountFromEx(tp,tp,sg,fc)>0) then return false end
 		if Auxiliary.FCheckAdditional and not Auxiliary.FCheckAdditional(tp,sg,fc) then return false end
 		if not Auxiliary.FCheckMixRepGoalCheck(tp,sg,fc,chkfnf) then return false end
 		local g=Group.CreateGroup()
-		return Auxiliary.FCheckMixRep(sg,mg,g,fc,sub,chkf,fun1,minc,maxc,...)
+		return Auxiliary.FCheckMixRep(sg,g,fc,sub,chkf,fun1,minc,maxc,...)
 	end
+
 	function Auxiliary.FCheckMixRepTemplate(c,cond,tp,mg,sg,g,fc,sub,chkfnf,fun1,minc,maxc,...)
 		for i,f in ipairs({...}) do
-			if f(c,fc,sub,mg,sg) then
+			if f(c,fc,sub) then
 				g:AddCard(c)
-				local subf=sub and f(c,fc,false,mg,sg)
+				local subf=sub and f(c,fc,false)
 				local t={...}
 				table.remove(t,i)
 				local res=cond(tp,mg,sg,g,fc,subf,chkfnf,fun1,minc,maxc,table.unpack(t))
@@ -539,9 +598,9 @@ function Auxiliary.PreloadUds()
 			end
 		end
 		if maxc>0 then
-			if fun1(c,fc,sub,mg,sg) then
+			if fun1(c,fc,sub) then
 				g:AddCard(c)
-				local subf1=sub and fun1(c,fc,false,mg,sg)
+				local subf1=sub and fun1(c,fc,false)
 				local res=cond(tp,mg,sg,g,fc,subf1,chkfnf,fun1,minc-1,maxc-1,...)
 				g:RemoveCard(c)
 				if res then return true end
@@ -549,59 +608,60 @@ function Auxiliary.PreloadUds()
 		end
 		return false
 	end
+
 	function Auxiliary.FCheckMixRepSelectedCond(tp,mg,sg,g,...)
-		if g:GetCount()<sg:GetCount() then
-			return sg:IsExists(Auxiliary.FCheckMixRepSelected,1,g,tp,mg,sg,g,...)
-		else
-			return Auxiliary.FCheckSelectMixRep(tp,mg,sg,g,...)
-		end
+		if g:GetCount()<sg:GetCount() then return sg:IsExists(Auxiliary.FCheckMixRepSelected,1,g,tp,mg,sg,g,...)
+		else return Auxiliary.FCheckSelectMixRep(tp,mg,sg,g,...) end
 	end
+
 	function Auxiliary.FCheckMixRepSelected(c,...)
 		return Auxiliary.FCheckMixRepTemplate(c,Auxiliary.FCheckMixRepSelectedCond,...)
 	end
+
 	function Auxiliary.FCheckSelectMixRep(tp,mg,sg,g,fc,sub,chkfnf,fun1,minc,maxc,...)
 		local chkf=chkfnf&0xff
 		if Auxiliary.FCheckAdditional and not Auxiliary.FCheckAdditional(tp,g,fc) then return false end
 		if chkf==PLAYER_NONE or Duel.GetLocationCountFromEx(tp,tp,g,fc)>0 then
 			if minc<=0 and #{...}==0 and Auxiliary.FCheckMixRepGoalCheck(tp,g,fc,chkfnf) then return true end
 			return mg:IsExists(Auxiliary.FCheckSelectMixRepAll,1,g,tp,mg,sg,g,fc,sub,chkfnf,fun1,minc,maxc,...)
-		else
-			return mg:IsExists(Auxiliary.FCheckSelectMixRepM,1,g,tp,mg,sg,g,fc,sub,chkfnf,fun1,minc,maxc,...)
-		end
+		else return mg:IsExists(Auxiliary.FCheckSelectMixRepM,1,g,tp,mg,sg,g,fc,sub,chkfnf,fun1,minc,maxc,...) end
 	end
+
 	function Auxiliary.FCheckSelectMixRepAll(c,tp,mg,sg,g,fc,sub,chkf,fun1,minc,maxc,fun2,...)
+		-- 注意！这里我们保留了 V1 的干净签名，但添加了你 V2 中非常关键的 sg 状态同步！
+		-- 这是 V2 “跨卡动态查重”能成立的核心基石。
 		if fun2 then
-			if fun2(c,fc,sub,mg,sg) then
-				sg:AddCard(c)
+			if fun2(c,fc,sub) then
+				sg:AddCard(c) -- 【状态同步入场】
 				g:AddCard(c)
-				local subf2=sub and fun2(c,fc,false,mg,sg)
+				local subf2=sub and fun2(c,fc,false)
 				local res=Auxiliary.FCheckSelectMixRep(tp,mg,sg,g,fc,subf2,chkf,fun1,minc,maxc,...)
-				sg:RemoveCard(c)
 				g:RemoveCard(c)
+				sg:RemoveCard(c) -- 【状态同步退场】
 				return res
 			end
-		elseif maxc>0 and fun1(c,fc,sub,mg,sg) then
-			sg:AddCard(c)
+		elseif maxc>0 and fun1(c,fc,sub) then
+			sg:AddCard(c) -- 【状态同步入场】
 			g:AddCard(c)
-			local subf1=sub and fun1(c,fc,false,mg,sg)
+			local subf1=sub and fun1(c,fc,false)
 			local res=Auxiliary.FCheckSelectMixRep(tp,mg,sg,g,fc,subf1,chkf,fun1,minc-1,maxc-1)
-			sg:RemoveCard(c)
 			g:RemoveCard(c)
+			sg:RemoveCard(c) -- 【状态同步退场】
 			return res
 		end
 		return false
 	end
+
 	function Auxiliary.FCheckSelectMixRepM(c,tp,...)
 		return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE)
 			and Auxiliary.FCheckMixRepTemplate(c,Auxiliary.FCheckSelectMixRep,tp,...)
 	end
+
 	function Auxiliary.FSelectMixRep(c,tp,mg,sg,fc,sub,chkfnf,...)
 		sg:AddCard(c)
 		local res=false
-		if Auxiliary.FCheckAdditional and not Auxiliary.FCheckAdditional(tp,sg,fc) then
-			res=false
-		elseif Auxiliary.FCheckMixRepGoal(tp,mg,sg,fc,sub,chkfnf,...) then
-			res=true
+		if Auxiliary.FCheckAdditional and not Auxiliary.FCheckAdditional(tp,sg,fc) then res=false
+		elseif Auxiliary.FCheckMixRepGoal(tp,sg,fc,sub,chkfnf,...) then res=true
 		else
 			local g=Group.CreateGroup()
 			res=sg:IsExists(Auxiliary.FCheckMixRepSelected,1,nil,tp,mg,sg,g,fc,sub,chkfnf,...)
