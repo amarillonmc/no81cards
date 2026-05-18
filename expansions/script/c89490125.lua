@@ -49,6 +49,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Draw(tp,1,REASON_EFFECT)<1 then return end
 	local g=Duel.GetMatchingGroup(s.imfilter,tp,LOCATION_EXTRA,0,nil)
 	if g:GetClassCount(Card.GetCode)>=3 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		Duel.BreakEffect()
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
