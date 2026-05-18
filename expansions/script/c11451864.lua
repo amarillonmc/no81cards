@@ -494,6 +494,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		local rg=Group.FromCards(tc)
 		if tc:IsOnField() then rg:Merge(tc:GetColumnGroup()) end
 		for tc in aux.Next(rg) do
+			local eid=nil
 			if not tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) then
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
@@ -501,7 +502,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
 				e1:SetValue(LOCATION_DECKSHF)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				tc:RegisterEffect(e1)
+				eid=tc:RegisterEffect(e1)
 			end
 			local e2=Effect.CreateEffect(c)
 			e2:SetDescription(aux.Stringid(m,5))
@@ -510,7 +511,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetCode(EFFECT_TO_HAND_REDIRECT)
 			e2:SetValue(LOCATION_DECKSHF)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
+			if eid then tc:RegisterEffect(e2) end
 			local e10=Effect.CreateEffect(c)
 			e10:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 			e10:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -518,7 +519,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			--e10:SetRange(LOCATION_DECK)
 			e10:SetOperation(cm.sortop)
 			e10:SetReset(RESET_EVENT+RESETS_REDIRECT-RESET_TODECK)
-			tc:RegisterEffect(e10)
+			if eid then tc:RegisterEffect(e10) end
 		end
 	end
 end

@@ -457,21 +457,21 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_DISABLE)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
+			local eid=tc:RegisterEffect(e1)
 			local e2=e1:Clone()
 			e2:SetCode(EFFECT_DISABLE_EFFECT)
 			e2:SetValue(RESET_TURN_SET)
-			tc:RegisterEffect(e2)
+			if eid then tc:RegisterEffect(e2) end
 			if tc:IsType(TYPE_TRAPMONSTER) then
 				local e3=e1:Clone()
 				e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
-				tc:RegisterEffect(e3)
+				if eid then tc:RegisterEffect(e3) end
 			end
 			if tc:IsType(TYPE_MONSTER) then
 				local e4=e1:Clone()
 				e4:SetCode(EFFECT_SET_ATTACK_FINAL)
 				e4:SetValue(math.ceil(tc:GetAttack()/2))
-				tc:RegisterEffect(e4)
+				if eid then tc:RegisterEffect(e4) end
 			end
 		end
 	end
