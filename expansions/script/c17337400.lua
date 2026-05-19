@@ -4,7 +4,7 @@ function s.initial_effect(c)
 	aux.AddCodeList(c,17337400,17337399)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_SPSUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
@@ -40,31 +40,26 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
-function s.tgfilter(c,e,tp)
+function s.tgfilter(c,e,tp,ft)
 	if not (c:IsControler(tp) and c:IsType(TYPE_MONSTER) 
-		and (c:IsSetCard(0x3f50) or aux.IsCodeListed(c,17337400))) then return false end
-	local loc_check = false
-	if c:IsLocation(LOCATION_ONFIELD) then
-		loc_check = c:IsFaceup()
-	else
-		loc_check = c:IsLocation(LOCATION_GRAVE)
+		and (c:IsSetCard(0x3f50) or aux.IsCodeListed(c,17337400))) then return false end   
+	if c:IsLocation(LOCATION_MZONE) then
+		return c:IsFaceup() and c:IsAbleToHand()
+	elseif c:IsLocation(LOCATION_GRAVE) then
+		local can_to_hand = c:IsAbleToHand()
+		local can_sp_summon = ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)   
+		return can_to_hand or can_sp_summon
 	end
-	if not loc_check then return false end
-	local can_to_hand = c:IsAbleToHand() or c:IsAbleToExtra()
-	local can_sp_summon = Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)   
-	return can_to_hand or can_sp_summon
+	return false
 end
-
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and s.tgfilter(chkc,e,tp) end
+	local ft=Duel.GetMZoneCount(tp,e:GetHandler())
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and s.tgfilter(chkc,e,tp,ft) end
 	if chk==0 then 
-		return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,e:GetHandler(),e,tp) 
+		return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,e:GetHandler(),e,tp,ft) 
 	end	   
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil,e,tp)	
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,LOCATION_GRAVE)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,LOCATION_GRAVE)
+	Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil,e,tp,ft)	
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -91,6 +86,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,id+1)~=0 then return end
+	Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)  
 	local c=e:GetHandler()	
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -107,22 +103,21 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.setfilter(c)
 	return c:IsCode(17337399) and not c:IsForbidden()
+		and (not c:IsLocation(LOCATION_REMOVED) or c:IsFaceupEx())
 end
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,id+1)~=0 then 
-		e:Reset()
-		return 
-	end
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.setfilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	if #g>0 then
-		Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
 		Duel.Hint(HINT_CARD,0,id)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		local sg=g:Select(tp,1,1,nil)
 		local tc=sg:GetFirst()
 		if tc then
 			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
-			if fc then Duel.SendtoGrave(fc,REASON_RULE) end
+			if fc then 
+				Duel.SendtoGrave(fc,REASON_RULE) 
+				Duel.BreakEffect() 
+			end
 			Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 		end
 	end
