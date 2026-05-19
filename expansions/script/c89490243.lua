@@ -62,7 +62,7 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabelObject(c)
 		e1:SetValue(s.eqlimit2)
 		tc:RegisterEffect(e1)
-		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
+		tc:RegisterFlagEffect(89490234,RESET_EVENT+RESETS_STANDARD,0,1)
 	end
 end
 function s.eqlimit2(e,c)

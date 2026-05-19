@@ -59,8 +59,7 @@ function s.eqlimit(e,c)
 	return c==e:GetLabelObject()
 end
 function s.damcon(e)
-	local ec=e:GetHandler():GetEquipTarget()
-	return e:GetHandler():GetFlagEffect(89490234)>0 and ec and ec:GetBattleTarget()
+	return e:GetHandler():GetFlagEffect(89490234)>0
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

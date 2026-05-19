@@ -13,6 +13,7 @@ function s.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_EQUIP)
 	e3:SetCode(EFFECT_PIERCE)
+	e3:SetCondition(s.damcon)
 	c:RegisterEffect(e3)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SSET)
@@ -55,6 +56,9 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.eqlimit(e,c)
 	return c==e:GetLabelObject()
+end
+function s.damcon(e)
+	return e:GetHandler():GetFlagEffect(89490234)>0
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
