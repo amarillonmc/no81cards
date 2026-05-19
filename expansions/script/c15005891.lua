@@ -3,7 +3,7 @@ local cm=_G["c"..m]
 cm.name="狂音主的通晓·圣言弗劳伦斯"
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,nil,2,4,cm.lcheck)
+	aux.AddLinkProcedure(c,nil,2,3,cm.lcheck)
 	--to hand (on field eff)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_TOGRAVE+CATEGORY_DISABLE)

@@ -70,7 +70,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetTargetsRelateToChain()
 	if #g~=2 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local dc=g:FilterSelect(tp,Card.IsAbleToGrave,1,1,nil):GetFirst()
+	local dc=g:FilterSelect(tp,cm.tgfilter1,1,1,nil,g):GetFirst()
 	if not dc then return end
 	g:RemoveCard(dc)
 	local tc=g:GetFirst()

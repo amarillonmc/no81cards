@@ -52,7 +52,7 @@ function cm.xyzcon(e,tp,eg,ep,ev,re,r,rp)
 	return (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) and p==1-tp
 end
 function cm.xyzfilter(c)
-	return c:IsXyzSummonable(nil)
+	return c:IsXyzSummonable(nil) and c:IsSetCard(0x6f43)
 end
 function cm.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_EXTRA,0,1,nil) and e:GetHandler():IsAbleToHand() end

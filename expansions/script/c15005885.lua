@@ -59,7 +59,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	if not (e:GetHandler():IsRelateToEffect(e) and Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)>0) then return end
 	local g=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_DECK,0,nil)
 	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
 		if tc then
 			Duel.SendtoGrave(tc,REASON_EFFECT)
