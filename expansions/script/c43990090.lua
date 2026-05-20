@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep2(c,43990090.ffilter,5,127,false)
+	aux.AddFusionProcFunRep2(c,c43990090.ffilter,5,127,false)
 	--e1
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(43990090,0))

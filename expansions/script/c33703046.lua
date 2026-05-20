@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e3=e1:Clone()
 	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetCondition(cm.eqc)
+	--e3:SetCondition(cm.eqc)
 	
 	--remove and eq ag
 	local e2=Effect.CreateEffect(c)
@@ -30,12 +30,12 @@ function cm.initial_effect(c)
 	--
 		if not cm.global_check then
 		cm.global_check=true
- 	   local e0=Effect.CreateEffect(c)
-  	 	 e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-  	 	 e0:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	   local e0=Effect.CreateEffect(c)
+		 e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		 e0:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 		e0:SetCode(EVENT_ADJUST)
 		e0:SetRange(LOCATION_HAND)
- 	  	 e0:SetOperation(cm.adjustop)
+		 e0:SetOperation(cm.adjustop)
 		c:RegisterEffect(e0)
 	end
 end
@@ -152,5 +152,5 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.eqlimit(e,c,tp)
-	return 	c:IsControler(tp) and (not c:IsCode(m))
+	return  c:IsControler(tp) and (not c:IsCode(m))
 end

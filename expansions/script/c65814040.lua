@@ -56,18 +56,24 @@ end
 
 
 function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffectLabel(id)~=Duel.GetTurnCount()-1
+	local flag=e:GetHandler():GetFlagEffectLabel(id)
+	if not flag then return true end
+	return flag~=Duel.GetTurnCount()
 end
 function s.cfilter(c)
 	return c:IsFaceup()
+end
+function s.filter(c)
+	return c:IsFaceup() and aux.NegateMonsterFilter(c)
 end
 function s.filter1(c)
 	return c:IsFaceup() and (c:IsDefenseAbove(0) or c:IsAttackAbove(0))
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
+	local b1=Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
 	local b2=Duel.IsExistingTarget(s.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
-	local b3=Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
+	local b3=Duel.IsExistingTarget(s.filter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc~=c end
 	if chk==0 then return b1 or b2 or b3 end
 	local op=aux.SelectFromOptions(tp,
@@ -86,7 +92,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	elseif op==3 then
 		e:SetCategory(CATEGORY_DEFCHANGE+CATEGORY_ATKCHANGE)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-		Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,c)
+		Duel.SelectTarget(tp,s.filter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,c)
 		e:SetLabel(3)
 	end	
 end

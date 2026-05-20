@@ -80,7 +80,7 @@ function c33700170.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetPlayer(tp)
 end
 function c33700170.filter(c)
-	return c:IsSetCard(0x3440) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()IsAbleToHand()
+	return c:IsSetCard(0x3440) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c33700170.damfilter(c)
 	return not c:IsSetCard(0x3440) 

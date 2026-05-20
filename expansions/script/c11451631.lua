@@ -119,6 +119,15 @@ function cm.initial_effect(c)
 			return res
 		end
 	end
+	if not DECK_MOVESEQ_CHECK then
+		DECK_MOVESEQ_CHECK=true
+		local _MoveSequence=Duel.MoveSequence
+		Duel.MoveSequence=function(c,...)
+							if not c:IsOnField() then c:RegisterFlagEffect(11451633,RESET_EVENT+RESETS_STANDARD,0,1) end
+							if c:IsOnField() then Debug.Message(c:IsPreviousLocation(LOCATION_ONFIELD)) end
+							return _MoveSequence(c,...)
+						end
+	end 
 end
 function cm.condition0(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)==0
@@ -178,7 +187,7 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())
 end
 function cm.cfilter2(c,tp)
-	return c:IsPreviousLocation(LOCATION_HAND) and c:IsPreviousControler(tp) and not (c:IsLocation(LOCATION_HAND) and c:IsControler(tp))
+	return c:IsPreviousLocation(LOCATION_HAND) and c:IsPreviousControler(tp) and not (c:IsLocation(LOCATION_HAND) and c:IsControler(tp)) and c:GetFlagEffect(11451633)==0
 end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return cm.flag(e,tp,m+2) and eg:IsExists(cm.cfilter2,1,nil,1-tp)

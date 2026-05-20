@@ -61,7 +61,7 @@ end
 function c33701346.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local a1=e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsFaceup()
 	local a2=Duel.IsExistingMatchingCard(c33701346.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e:GetHandler():GetAttack())
-	local op==2
+	local op=2
 	if a1 and a2 then
 		op=Duel.SelectOption(tp,aux.Stringid(33701346,1),aux.Stringid(33701346,2))
 	elseif a1 then
