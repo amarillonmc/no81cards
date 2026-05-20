@@ -31,7 +31,7 @@ function s.initial_effect(c)
 
 	-- 强制触发：对方进行选择和执行
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e4:SetCode(EVENT_CUSTOM+id)
 	e4:SetProperty(EFFECT_FLAG_EVENT_PLAYER+EFFECT_FLAG_DELAY)
 	e4:SetRange(LOCATION_MZONE)
@@ -583,8 +583,10 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 		-- ●双方各自宣言1个卡名。
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 		local code1=Duel.AnnounceCard(tp)
+		Duel.Hint(HINT_CODE,1-tp,code1)
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CODE)
 		local code2=Duel.AnnounceCard(1-tp)
+		Duel.Hint(HINT_CODE,tp,code2)
 		
 		-- 记录限制回合数 (当回合结束时，值过期，限制自动解除)
 		s.restricted_codes[code1] = Duel.GetTurnCount()

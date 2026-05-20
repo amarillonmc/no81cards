@@ -29,6 +29,8 @@ function c33700402.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if ecount >= 13 then
+		Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(18326736,1))
+		Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(18326736,1))
 		local t = (Duel.GetTurnPlayer() == 1 - tp) and 2 or 1
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)

@@ -159,7 +159,7 @@ function cm.chkop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterFlagEffect(m+rp,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
 			cm[rp][tc:GetCode()]=true
 			--Debug.Message(rp)
-			--Debug.Message(tc:GetCode())
+			--Debug.Message("a"..tc:GetCode())
 		end
 		tc=eg:GetNext()
 	end
@@ -171,7 +171,7 @@ function cm.chkop2(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterFlagEffect(m+1000+rp,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
 		cm[rp+1000][tc:GetCode()]=true
 		--Debug.Message(rp)
-		--Debug.Message(tc:GetCode())
+		--Debug.Message("b"..tc:GetCode())
 		tc=eg:GetNext()
 	end
 end
@@ -203,8 +203,15 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
 	local tc=Duel.SelectMatchingCard(tp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,0x1973,1):GetFirst()
 	if tc then
-		tc:AddCounter(0x1973,1)
-		tc:SetCounterLimit(0x1973,1)
+		if tc:AddCounter(0x1973,1) then
+			--tc:SetCounterLimit(0x1973,1)
+			local e1=Effect.CreateEffect(tc)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_COUNTER_LIMIT+0x1973)
+			e1:SetValue(1)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+			tc:RegisterEffect(e1)
+		end
 		if not cm[2] then
 			cm[2]=true
 			local e1=Effect.CreateEffect(e:GetHandler())

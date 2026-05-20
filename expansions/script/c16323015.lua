@@ -1,6 +1,6 @@
 --机械源流 毁灭马尔修斯
 function c16323015.initial_effect(c)
-	--spsummon
+	--①效果：手卡特殊召唤
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(16323015,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -11,7 +11,7 @@ function c16323015.initial_effect(c)
 	e1:SetTarget(c16323015.sptg)
 	e1:SetOperation(c16323015.spop)
 	c:RegisterEffect(e1)
-	--destroy
+	--②效果：破坏
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
@@ -24,69 +24,22 @@ function c16323015.initial_effect(c)
 	e2:SetTarget(c16323015.target)
 	e2:SetOperation(c16323015.operation)
 	c:RegisterEffect(e2)
-	--special summon itself
+	--③效果：融合素材时抽卡
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_DRAW)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_PLAYER_TARGET)
 	e3:SetCode(EVENT_BE_MATERIAL)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,16323015+2)
 	e3:SetCondition(c16323015.drcon)
 	e3:SetTarget(c16323015.drtg)
 	e3:SetOperation(c16323015.drop)
 	c:RegisterEffect(e3)
 end
-function c16323015.drcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and r==REASON_FUSION
-end
-function c16323015.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-end
-function c16323015.drop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
-end
-function c16323015.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetAttackAnnouncedCount()==0 and Duel.CheckReleaseGroup(tp,nil,1,nil) end
-	local sg=Duel.SelectReleaseGroup(tp,nil,1,1,nil)
-	Duel.Release(sg,REASON_COST)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	e:GetHandler():RegisterEffect(e1)
-end
-function c16323015.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() end
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAttackAbove(800)
-		and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-end
-function c16323015.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsFacedown() or not c:IsRelateToEffect(e) or c:GetAttack()<800 then return end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-	e1:SetValue(-800)
-	c:RegisterEffect(e1)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.Destroy(tc,REASON_EFFECT)
-	end
-end
+
+--①的cost：从卡组送墓1张「源流」魔法·陷阱卡
 function c16323015.costfilter(c)
-	return c:IsSetCard(0x3dcf) and c:IsType(0x6) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x3dcf) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
 end
 function c16323015.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c16323015.costfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -115,4 +68,59 @@ function c16323015.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c16323015.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not (c:IsSetCard(0x8) or c:IsRace(RACE_MACHINE)) and c:IsLocation(LOCATION_EXTRA)
+end
+
+--②效果的cost（无实际cost）
+function c16323015.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+end
+--②效果的target
+function c16323015.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
+	if chkc then return chkc:IsOnField() end
+	if chk==0 then return c:IsAttackAbove(800)
+		and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+end
+--②效果的operation
+function c16323015.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) or c:IsFacedown() or c:GetAttack()<800 then return end
+	--攻击力下降800
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetValue(-800)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+	c:RegisterEffect(e1)
+	--破坏对象
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.Destroy(tc,REASON_EFFECT)
+	end
+	--这个回合这张卡不能攻击宣言
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	c:RegisterEffect(e2)
+end
+
+--③效果：成为融合素材送去墓地或除外时抽1
+function c16323015.drcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and r==REASON_FUSION
+end
+function c16323015.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c16323015.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
 end
