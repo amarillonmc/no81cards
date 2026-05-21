@@ -31,7 +31,7 @@ function s.initial_effect(c)
 	e3:SetOperation(s.thop)
 	c:RegisterEffect(e3)
 end
-function s.costfilter(c)
+function s.costfilter(c,tp)
 	return c:IsCode(25000028) and c:IsFaceup() and c:IsAbleToHandAsCost() and Duel.GetMZoneCount(tp,c)>0
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)

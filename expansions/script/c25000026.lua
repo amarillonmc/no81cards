@@ -90,7 +90,7 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Draw(1-tp,1,REASON_EFFECT)
 	end
 end
-function s.costfilter(c)
+function s.costfilter(c,tp)
 	return c:IsCode(25000028) and c:IsFaceup() and c:IsAbleToGraveAsCost() and Duel.GetMZoneCount(tp,c)>0
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
