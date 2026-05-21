@@ -37,6 +37,8 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	-- ==========================================================
 	local ct = Duel.GetFieldGroupCount(tp, 0, LOCATION_MZONE)
 	if ct > 0 then
+		local res=EFFECT_CHANGE_LINK_MARKER_KOISHI
+		if not res then EFFECT_CHANGE_LINK_MARKER_KOISHI=id+1000 end
 		local _GetLink=Card.GetLink
 		local _GetLinkCount=aux.GetLinkCount
 		Card.GetLink=function(c)
@@ -59,23 +61,14 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 								else return 1 end
 							else return _GetLinkCount(c) end
 						end
-		if not EFFECT_CHANGE_LINK_MARKER_KOISHI and not Duel.Exile then
-			EFFECT_CHANGE_LINK_MARKER_KOISHI=id+1000
-			local _GetLink=Card.GetLink
-			local _GetLinkCount=aux.GetLinkCount
-			Card.GetLink=function(c) if c:IsHasEffect(id+1000) then return math.max(0,_GetLink(c)) else return _GetLink(c) end end
-			aux.GetLinkCount=function(c) if c:IsHasEffect(id+1000) then if c:IsLinkType(TYPE_LINK) and _GetLink(c)>1 then return 1+0x10000*math.max(0,_GetLink(c)) else return 1 end else return _GetLinkCount(c) end end
-			---#{c:IsHasEffect(id+1000)}
+		if not res then
 			Card.GetLinkMarker=function(c)
 									local res=0
 									for i=0,8 do
-										if i~=4 and c:IsLinkMarker(1<<i) then
-											local add=true
-											for _,te in pairs({c:IsHasEffect(id+1000)}) do
-												if 1<<i==te:GetValue() then add=false end
-											end
-											if add then res=res|(1<<i) end
-										end
+										if i~=4 and c:IsLinkMarker(1<<i) then res=res|(1<<i) end
+									end
+									for _,te in pairs({c:IsHasEffect(id+1000)}) do
+										res=te:GetValue()
 									end
 									return res
 								end
@@ -86,11 +79,11 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 		-- 映射所有的连接标记位与其对应的提示字符串
 		-- 提示词需在 strings.conf 中注册，对应 id, 2~9
 		local marker_list = {
-			{LINK_MARKER_TOP_LEFT,	 aux.Stringid(id, 2)},  -- 左上
-			{LINK_MARKER_TOP,		  aux.Stringid(id, 3)},  -- 正上
-			{LINK_MARKER_TOP_RIGHT,	aux.Stringid(id, 4)},  -- 右上
-			{LINK_MARKER_LEFT,		 aux.Stringid(id, 5)},  -- 正左
-			{LINK_MARKER_RIGHT,		aux.Stringid(id, 6)},  -- 正右
+			{LINK_MARKER_TOP_LEFT,   aux.Stringid(id, 2)},  -- 左上
+			{LINK_MARKER_TOP,		 aux.Stringid(id, 3)},  -- 正上
+			{LINK_MARKER_TOP_RIGHT, aux.Stringid(id, 4)},  -- 右上
+			{LINK_MARKER_LEFT,	   aux.Stringid(id, 5)},  -- 正左
+			{LINK_MARKER_RIGHT,	 aux.Stringid(id, 6)},  -- 正右
 			{LINK_MARKER_BOTTOM_LEFT,  aux.Stringid(id, 7)},  -- 左下
 			{LINK_MARKER_BOTTOM,	   aux.Stringid(id, 8)},  -- 正下
 			{LINK_MARKER_BOTTOM_RIGHT, aux.Stringid(id, 9)}   -- 右下
@@ -142,7 +135,7 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 			e_marker:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e_marker:SetValue(added_markers | c:GetLinkMarker())
 			e_marker:SetReset(RESET_EVENT+RESETS_STANDARD)
-			c:RegisterEffect(e_marker)
+			c:RegisterEffect(e_marker,true)
 		end
 	end
 

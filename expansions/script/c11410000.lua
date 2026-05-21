@@ -20,7 +20,7 @@ end
 	return g
 end--]]
 local KOISHI_CHECK=false
-if Duel.Exile then KOISHI_CHECK=true end
+if Duel.DisableActionCheck then KOISHI_CHECK=true end
 local A=1103515245
 local B=12345
 local M=32767
@@ -272,6 +272,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		else
 			if not _G["c"..int] then
 				_G["c"..int]={}
+				--setmetatable(c,_G["c"..int])
 				_G["c"..int].__index=_G["c"..int]
 			end
 			GetID=function()
