@@ -87,15 +87,35 @@ function s.setop(e, tp, eg, ep, ev, re, r, rp)
 	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOFIELD)
 	local g = Duel.SelectMatchingCard(tp, s.setfilter, tp, LOCATION_DECK, 0, 1, 1, nil)
 	local tc = g:GetFirst()
+	if not tc then return end
 	
-	if tc then
-		Duel.MoveToField(tc, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
-		
+	Duel.MoveToField(tc, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
+	
+	local ot = tc:GetOriginalType()
+	if (ot & TYPE_MONSTER) ~= 0 then
+
 		local e1 = Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+		e1:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
 		tc:RegisterEffect(e1)
+	else
+
+		local e2 = Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_ADD_TYPE)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
+		e2:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+		tc:RegisterEffect(e2, true)
+		
+		local e3 = Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_REMOVE_TYPE)
+		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e3:SetValue(ot)
+		e3:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+		tc:RegisterEffect(e3, true)
 	end
 end

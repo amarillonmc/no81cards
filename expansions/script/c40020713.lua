@@ -59,25 +59,20 @@ function s.settg(e, tp, eg, ep, ev, re, r, rp, chk)
 end
 
 function s.setop(e, tp, eg, ep, ev, re, r, rp)
-
 	local hasEmpty = Duel.GetLocationCount(tp, LOCATION_SZONE) > 0
 	
-
 	if not hasEmpty then
-
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TARGET)
 		local sg = Duel.SelectMatchingCard(tp, s.szfilter, tp, LOCATION_SZONE, 0, 1, 1, nil, e, tp)
 		if #sg == 0 then return end
 		local sc = sg:GetFirst()
 		
-
 		local canth = sc:IsAbleToHand()
-		local cansp = sc:IsType(TYPE_MONSTER) 
+		local cansp = (sc:GetOriginalType() & TYPE_MONSTER) ~= 0
 			and sc:IsCanBeSpecialSummoned(e, 0, tp, false, false) 
 			and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0
 		
 		if canth and cansp then
-
 			if Duel.SelectYesNo(tp, aux.Stringid(id, 1)) then
 				Duel.SendtoHand(sc, nil, REASON_EFFECT)
 				Duel.ConfirmCards(1 - tp, sc)
@@ -85,11 +80,9 @@ function s.setop(e, tp, eg, ep, ev, re, r, rp)
 				Duel.SpecialSummon(sc, 0, tp, tp, false, false, POS_FACEUP)
 			end
 		elseif canth then
-
 			Duel.SendtoHand(sc, nil, REASON_EFFECT)
 			Duel.ConfirmCards(1 - tp, sc)
 		elseif cansp then
-
 			Duel.SpecialSummon(sc, 0, tp, tp, false, false, POS_FACEUP)
 		else
 			return
@@ -103,14 +96,38 @@ function s.setop(e, tp, eg, ep, ev, re, r, rp)
 	if #g == 0 then return end
 	local tc = g:GetFirst()
 	
+
 	Duel.MoveToField(tc, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
 	
-	local e1 = Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CHANGE_TYPE)
-	e1:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-	tc:RegisterEffect(e1)
+
+	local ot = tc:GetOriginalType()
+	
+	if (ot & TYPE_MONSTER) ~= 0 then
+
+		local e1 = Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CHANGE_TYPE)
+		e1:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
+		e1:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+		tc:RegisterEffect(e1)
+	else
+
+		local e1a = Effect.CreateEffect(e:GetHandler())
+		e1a:SetType(EFFECT_TYPE_SINGLE)
+		e1a:SetCode(EFFECT_ADD_TYPE)
+		e1a:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1a:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
+		e1a:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+		tc:RegisterEffect(e1a, true)
+		
+		local e1b = Effect.CreateEffect(e:GetHandler())
+		e1b:SetType(EFFECT_TYPE_SINGLE)
+		e1b:SetCode(EFFECT_REMOVE_TYPE)
+		e1b:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1b:SetValue(ot)
+		e1b:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+		tc:RegisterEffect(e1b, true)
+	end
 end
 
 function s.pzcon(e,tp,eg,ep,ev,re,r,rp)

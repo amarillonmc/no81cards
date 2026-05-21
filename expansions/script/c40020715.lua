@@ -143,17 +143,14 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 	if #g == 0 then return end
 	
 	local count = 0
-
 	local tc = g:GetFirst()
 	while tc do
 		local canth = tc:IsAbleToHand()
-
 		local cansp = (tc:GetOriginalType() & TYPE_MONSTER) ~= 0 
 			and tc:IsCanBeSpecialSummoned(e, 0, tp, false, false)
 			and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0
 		
 		if canth and cansp then
-
 			if Duel.SelectYesNo(tp, aux.Stringid(id, 2)) then
 				if Duel.SendtoHand(tc, nil, REASON_EFFECT) > 0 then
 					Duel.ConfirmCards(1 - tp, tc)
@@ -177,14 +174,13 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 		tc = g:GetNext()
 	end
 	
-
 	if count == 0 then return end
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	
-	if Duel.IsExistingMatchingCard(s.rafilter, tp, LOCATION_PZONE, 0, 1, nil)
+	if Duel.IsExistingMatchingCard(s.rafilter, tp, LOCATION_SZONE, 0, 1, nil)
 	   and Duel.SelectYesNo(tp, aux.Stringid(id, 3)) then
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_XMATERIAL)
-		local rg = Duel.SelectMatchingCard(tp, s.rafilter, tp, LOCATION_PZONE, 0, 1, 1, nil)
+		local rg = Duel.SelectMatchingCard(tp, s.rafilter, tp, LOCATION_SZONE, 0, 1, 1, nil)
 		if #rg > 0 then
 			Duel.Overlay(c, rg)
 			
@@ -196,12 +192,37 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 					local stc = sg:GetFirst()
 					while stc do
 						Duel.MoveToField(stc, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
-						local e1 = Effect.CreateEffect(c)
-						e1:SetType(EFFECT_TYPE_SINGLE)
-						e1:SetCode(EFFECT_CHANGE_TYPE)
-						e1:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
-						e1:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
-						stc:RegisterEffect(e1)
+						
+
+						local ot = stc:GetOriginalType()
+						
+						if (ot & TYPE_MONSTER) ~= 0 then
+
+							local e1 = Effect.CreateEffect(c)
+							e1:SetType(EFFECT_TYPE_SINGLE)
+							e1:SetCode(EFFECT_CHANGE_TYPE)
+							e1:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
+							e1:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+							stc:RegisterEffect(e1)
+						else
+
+							local e1a = Effect.CreateEffect(c)
+							e1a:SetType(EFFECT_TYPE_SINGLE)
+							e1a:SetCode(EFFECT_ADD_TYPE)
+							e1a:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+							e1a:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
+							e1a:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+							stc:RegisterEffect(e1a, true)
+							
+							local e1b = Effect.CreateEffect(c)
+							e1b:SetType(EFFECT_TYPE_SINGLE)
+							e1b:SetCode(EFFECT_REMOVE_TYPE)
+							e1b:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+							e1b:SetValue(ot)
+							e1b:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+							stc:RegisterEffect(e1b, true)
+						end
+						
 						stc = sg:GetNext()
 					end
 				end

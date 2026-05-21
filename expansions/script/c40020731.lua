@@ -77,20 +77,43 @@ function s.target(e, tp, eg, ep, ev, re, r, rp, chk)
 end
 
 function s.activate(e, tp, eg, ep, ev, re, r, rp)
-
 	if Duel.GetLocationCount(tp, LOCATION_SZONE) <= 0 then return end
 	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOFIELD)
 	local g = Duel.SelectMatchingCard(tp, s.setfilter, tp, LOCATION_HAND, 0, 1, 1, nil)
 	local tc = g:GetFirst()
 	if tc then
 		Duel.MoveToField(tc, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
-		local e1 = Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		tc:RegisterEffect(e1)
 		
+		local ot = tc:GetOriginalType()
+		
+		if (ot & TYPE_MONSTER) ~= 0 then
+
+			local e1 = Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CHANGE_TYPE)
+			e1:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
+			e1:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+			tc:RegisterEffect(e1)
+		else
+
+			local e1a = Effect.CreateEffect(e:GetHandler())
+			e1a:SetType(EFFECT_TYPE_SINGLE)
+			e1a:SetCode(EFFECT_ADD_TYPE)
+			e1a:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1a:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
+			e1a:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+			tc:RegisterEffect(e1a, true)
+			
+			local e1b = Effect.CreateEffect(e:GetHandler())
+			e1b:SetType(EFFECT_TYPE_SINGLE)
+			e1b:SetCode(EFFECT_REMOVE_TYPE)
+			e1b:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1b:SetValue(ot)
+			e1b:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+			tc:RegisterEffect(e1b, true)
+		end
+		
+
 		if Duel.GetLocationCount(tp, LOCATION_MZONE) <= 0 then return end
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
@@ -112,13 +135,25 @@ function s.setop(e, tp, eg, ep, ev, re, r, rp)
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.GetLocationCount(tp, LOCATION_SZONE) <= 0 then return end
 	
+
 	Duel.MoveToField(c, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
-	local e1 = Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CHANGE_TYPE)
-	e1:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-	c:RegisterEffect(e1)
+	
+
+	local e2 = Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_ADD_TYPE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
+	e2:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+	c:RegisterEffect(e2, true)
+	
+	local e3 = Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_REMOVE_TYPE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetValue(TYPE_SPELL + TYPE_QUICKPLAY)
+	e3:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+	c:RegisterEffect(e3, true)
 end
 
 function s.drcon(e, tp, eg, ep, ev, re, r, rp)

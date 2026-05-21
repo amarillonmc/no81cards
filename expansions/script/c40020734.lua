@@ -55,17 +55,17 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
-
 function s.racheck(c)
 	if not c:IsCode(s.RAHERAKHTY_CODE) then return false end
-	local loc = c:GetLocation()
-	if loc == LOCATION_PZONE then return true end
-	if loc == LOCATION_EXTRA then return c:IsFaceup() end
+
+	if c:IsLocation(LOCATION_PZONE) then return true end
+	if c:IsLocation(LOCATION_EXTRA) and c:IsFaceup() then return true end
 	return false
 end
 
 function s.discon(e, tp, eg, ep, ev, re, r, rp)
-	return Duel.IsExistingMatchingCard(s.racheck, tp, LOCATION_PZONE + LOCATION_EXTRA, 0, 1, nil)
+
+	return Duel.IsExistingMatchingCard(s.racheck, tp, LOCATION_SZONE + LOCATION_EXTRA, 0, 1, nil)
 end
 
 
@@ -115,14 +115,25 @@ function s.setop(e, tp, eg, ep, ev, re, r, rp)
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.GetLocationCount(tp, LOCATION_SZONE) <= 0 then return end
 	
-	Duel.MoveToField(c, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
 
-	local e1 = Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CHANGE_TYPE)
-	e1:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-	c:RegisterEffect(e1)
+	Duel.MoveToField(c, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
+	
+
+	local e2 = Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_ADD_TYPE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
+	e2:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+	c:RegisterEffect(e2, true)
+	
+	local e3 = Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_REMOVE_TYPE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetValue(TYPE_SPELL + TYPE_QUICKPLAY)
+	e3:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+	c:RegisterEffect(e3, true)
 end
 
 

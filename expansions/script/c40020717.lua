@@ -75,12 +75,21 @@ function s.setop(e, tp, eg, ep, ev, re, r, rp)
 	Duel.MoveToField(c, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
 	
 
-	local e1 = Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CHANGE_TYPE)
-	e1:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-	c:RegisterEffect(e1)
+	local e2 = Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_ADD_TYPE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
+	e2:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+	c:RegisterEffect(e2, true)
+	
+	local e3 = Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_REMOVE_TYPE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetValue(TYPE_SPELL + TYPE_QUICKPLAY)
+	e3:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+	c:RegisterEffect(e3, true)
 end
 
 

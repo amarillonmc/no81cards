@@ -50,7 +50,7 @@ function c22348423.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348423.stfilter,tp,LOCATION_DECK,0,1,nil,tp) and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_ONFIELD,0,1,nil,90173539) end
 end
 function c22348423.sttg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c22348423.stfilter,tp,LOCATION_DECK,0,1,nil,tp) and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_ONFIELD,0,1,nil,90173539) and Duel.IsExistingMatchingCard(c22348423.stfilter1,tp,0,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348423.stfilter,tp,LOCATION_DECK,0,1,nil,tp) and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_ONFIELD,0,1,nil,90173539) end
 end
 function c22348423.stfilter(c,tp)
 	return c:IsCode(90173539) and not c:IsForbidden() and c:CheckUniqueOnField(tp)

@@ -1,5 +1,5 @@
 --暴君恐兽
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+Duel.LoadScript("script/c10199990.lua")
 local m,cm=rscf.DefineCard(10174059)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
