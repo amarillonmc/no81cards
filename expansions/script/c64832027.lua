@@ -12,10 +12,10 @@ function c64832027.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c64832027.cfilter(c)
-	return c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_ADVANCE)
+	return not c:IsSummonType(SUMMON_TYPE_ADVANCE)-- or c:IsFacedown()
 end
 function c64832027.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c64832027.cfilter,tp,LOCATION_MZONE,0,1,nil) or Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 
+	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 or not Duel.IsExistingMatchingCard(c64832027.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c64832027.filter(c)
 	return c:IsSetCard(0x6410) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)

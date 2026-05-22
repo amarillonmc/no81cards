@@ -12,7 +12,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	--e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.target)
@@ -30,48 +30,58 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x6410) and (((c:IsType(TYPE_FIELD) or c:IsType(TYPE_CONTINUOUS)) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or ((c:IsType(TYPE_QUICKPLAY) or c:GetType()==TYPE_SPELL or c:GetType()==TYPE_TRAP) and c:CheckActivateEffect(false,true,false)~=nil ))
+	local tp=c:GetOwner()
+	return c:IsSetCard(0x6410) and ((c:IsType(TYPE_CONTINUOUS) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) 
+	or ((c:IsType(TYPE_QUICKPLAY) or c:GetType()==TYPE_SPELL or c:GetType()==TYPE_TRAP) and c:CheckActivateEffect(false,false,false)~=nil ) 
+	or (c:IsType(TYPE_FIELD) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_FZONE)>0))
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
    if chkc then
-		local te=e:GetLabelObject()
-		local tg=te:GetTarget()
-		return (chkc:GetControler()==tp and chkc:GetLocation()==LOCATION_GRAVE and cm.filter(chkc)) or (tg and tg(e,tp,eg,ep,ev,re,r,rp,0,chkc))
+		--local te=e:GetLabelObject()
+		--local tg=te:GetTarget()
+		return chkc:GetControler()==tp and chkc:GetLocation()==LOCATION_GRAVE and cm.filter(chkc)
 	end
 	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,nil)
-	local tc=g:GetFirst()
-	if not tc:IsType(TYPE_CONTINUOUS) and not tc:IsType(TYPE_FIELD) and tc:IsType(TYPE_QUICKPLAY) or tc:GetType()==TYPE_SPELL or tc:GetType()==TYPE_TRAP  then 
-	 local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true)
-	Duel.ClearTargetCard()
-	g:GetFirst():CreateEffectRelation(e)
-	local tg=te:GetTarget()
-	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
-	te:SetLabelObject(e:GetLabelObject())
-	e:SetLabelObject(te)
-	end
+	local tc=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,nil):GetFirst()
+	--local tc=g:GetFirst()
+	--if not tc:IsType(TYPE_CONTINUOUS) and not tc:IsType(TYPE_FIELD) and tc:IsType(TYPE_QUICKPLAY) or tc:GetType()==TYPE_SPELL or tc:GetType()==TYPE_TRAP  then 
+		--local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,false,false)
+		--Duel.ClearTargetCard()
+		--g:GetFirst():CreateEffectRelation(e)
+		--local tg=te:GetTarget()
+		--if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
+		--te:SetLabelObject(e:GetLabelObject())
+		--e:SetLabelObject(te)
+	--end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
- local k=0
-  local tc
- if  Duel.GetFirstTarget() then tc=Duel.GetFirstTarget() 
-  k=1
- end 
-if k==1 and (tc:IsType(TYPE_FIELD) or tc:IsType(TYPE_CONTINUOUS)) and not tc:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then 
- if tc:IsType(TYPE_FIELD) then 
-Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
- else
-   Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
- end
-end 
-  if k==0 then
-   local te=e:GetLabelObject()
-	if not te then return end
-	if not te:GetHandler():IsRelateToEffect(e) then return end
-	e:SetLabelObject(te:GetLabelObject())
-	local op=te:GetOperation()
-	if op then op(e,tp,eg,ep,ev,re,r,rp) end
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	--local k=0
+  --local tc
+ 	--if Duel.GetFirstTarget() then tc=Duel.GetFirstTarget() 
+  	--k=1
+ 	--end 
+	Duel.ConfirmCards(tp,tc)
+	if ((tc:IsType(TYPE_CONTINUOUS) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (tc:IsType(TYPE_FIELD) and Duel.GetLocationCount(tp,LOCATION_FZONE)>0)) 
+		and not tc:IsForbidden() then 
+
+ 		if tc:IsType(TYPE_FIELD) then 
+			Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+ 		else
+  	 	Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+ 		end
+	--end 
+	elseif (tc:IsType(TYPE_QUICKPLAY) or tc:GetType()==TYPE_SPELL or c:GetType()==TYPE_TRAP) and tc:CheckActivateEffect(false,false,false)~=nil then
+  --if k==0 then
+   	--local te=e:GetLabelObject()
+		--if not te then return end
+		--if not te:GetHandler():IsRelateToEffect(e) then return end
+		--e:SetLabelObject(te:GetLabelObject())
+		--local op=te:GetOperation()
+		--if op then op(e,tp,eg,ep,ev,re,r,rp) end
+		cm.ActivateCard(tc,tp,e,eg,ep,ev,re,r,rp)
   end
 end
 
@@ -93,5 +103,37 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
 		tc=g:GetNext()
+	end
+end
+
+function cm.ActivateCard(c,tp,oe,eg,ep,ev,re,r,rp)
+	local e=c:GetActivateEffect()
+	local cos,tg,op=e:GetCost(),e:GetTarget(),e:GetOperation()
+	if e and (not cos or cos(e,tp,eg,ep,ev,re,r,rp,0)) and (not tg or tg(e,tp,eg,ep,ev,re,r,rp,0)) then
+		oe:SetProperty(e:GetProperty())
+		local code=c:GetOriginalCode()
+		Duel.Hint(HINT_CARD,tp,code)
+		Duel.Hint(HINT_CARD,1-tp,code)
+		e:UseCountLimit(tp,1,true)
+		c:CreateEffectRelation(e)
+		if cos then cos(e,p,eg,ep,ev,re,r,rp,1) end
+		if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
+		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+		if g and #g~=0 then
+			local tg=g:GetFirst()
+			while tg do
+				tg:CreateEffectRelation(e)
+				tg=g:GetNext()
+			end
+		end
+		if op then op(e,tp,eg,ep,ev,re,r,rp) end
+		c:ReleaseEffectRelation(e)
+		if g then
+			tg=g:GetFirst()
+			while tg do
+				tg:ReleaseEffectRelation(e)
+				tg=g:GetNext()
+			end
+		end
 	end
 end
