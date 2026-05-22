@@ -89,6 +89,9 @@ function c16323035.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.RegisterEffect(e1,tp)
 	end
 end
+function c16323035.retop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ReturnToField(e:GetLabelObject())
+end
 function c16323035.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
@@ -117,6 +120,7 @@ function c16323035.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
 end
 function c16323035.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local ct=0
 	local ng=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
 	for nc in aux.Next(ng) do

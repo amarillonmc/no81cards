@@ -37,7 +37,7 @@ function c16323070.initial_effect(c)
 end
 function c16323070.rmfilter(c,e,tp)
 	return c:IsFaceup() and (c:IsSetCard(0x3dcf) or c:IsRace(0x20)) and c:IsAbleToRemove()
-		and Duel.IsExistingMatchingCard(c16323070.spfilter,tp,0x12,0,1,nil,e,tp,c)
+		and Duel.IsExistingMatchingCard(c16323070.spfilter,tp,0x12,0,1,nil,e,tp,c) and c:IsLevelAbove(1)
 end
 function c16323070.spfilter(c,e,tp,tc)
 	return (c:IsSetCard(0x3dcf) or c:IsRace(0x20)) and c:IsLevel(tc:GetLevel())
