@@ -83,7 +83,7 @@ function c16323045.activate2(e,tp,eg,ep,ev,re,r,rp)
 			local mat2=mat1:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
 			mat1:Sub(mat2)
 			Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
-			Duel.Remove(mat1,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
+			Duel.Remove(mat2,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			Duel.BreakEffect()
 			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
 		else
