@@ -87,14 +87,25 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.dsfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,1,0,0)
 end
+function cm.tfilter(c)
+	return c:IsFacedown() and c:IsOnField()
+end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=c:GetOverlayCount()
 	if c:IsRelateToEffect(e) and ct>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,cm.dsfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil)
+		local g=Duel.SelectMatchingCard(tp,cm.dsfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil):Filter(function(c,e) return not c:IsImmuneToEffect(e) end,nil,e)
 		for tc in aux.Next(g) do tc:CancelToGrave() end
-		if Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)>0 then c:RemoveOverlayCard(tp,1,1,REASON_EFFECT) end
+		if Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)>0 then
+			g=Duel.GetOperatedGroup():Filter(cm.tfilter,nil)
+			local setg=g:Filter(Card.IsLocation,nil,LOCATION_SZONE)
+			if #setg>0 then
+				setg:KeepAlive()
+				Duel.RaiseEvent(setg,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+			end
+			c:RemoveOverlayCard(tp,1,1,REASON_EFFECT)
+		end
 	end
 end
 function cm.spfilter(c,se)

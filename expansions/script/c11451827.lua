@@ -235,7 +235,7 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sg=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,#sg,c)
+	local g=sg:Select(tp,1,#sg,nil):Filter(function(c,e) return not c:IsImmuneToEffect(e) end,nil,e)
 	local flag=0
 	local setg=Group.CreateGroup()
 	for tc in aux.Next(g) do

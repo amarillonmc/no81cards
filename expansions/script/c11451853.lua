@@ -429,12 +429,12 @@ end
 function cm.nfilter(c,g)
 	return g:IsExists(cm.nnfilter,1,nil,c)
 end
-function cm.nnfilter(c,tc)
+function cm.nnfilter(c,tc,e)
 	local seq=c:GetSequence()
 	local s=tc:GetSequence()
 	local tp=tc:GetControler()
 	local loc=tc:GetLocation()
-	return c==tc or (s<5 and seq<5 and math.abs(seq-s)<=1 and c:IsControler(tp) and c:IsLocation(loc))
+	return (c==tc or (s<5 and seq<5 and math.abs(seq-s)<=1 and c:IsControler(tp) and c:IsLocation(loc))) and not c:IsImmuneToEffect(e)
 end
 local _IsCanTurnSet=Card.IsCanTurnSet
 function Card.IsCanTurnSet(c)
@@ -459,11 +459,16 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			tc=g:Select(tp,1,1,nil):GetFirst()
 		end
 		Duel.Hint(HINT_CARD,0,m)
-		local rg=ng:Filter(cm.nnfilter,nil,tc)
+		local rg=ng:Filter(cm.nnfilter,nil,tc,e)
 		Duel.HintSelection(rg)
 		for tc in aux.Next(rg) do tc:CancelToGrave() end
 		if Duel.ChangePosition(rg,POS_FACEDOWN_DEFENSE)>0 then
-			rg=rg:Filter(cm.tfilter,nil)
+			rg=Duel.GetOperatedGroup():Filter(cm.tfilter,nil)
+			local setg=rg:Filter(Card.IsLocation,nil,LOCATION_SZONE)
+			if #setg>0 then
+				setg:KeepAlive()
+				Duel.RaiseEvent(setg,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+			end
 			for tc in aux.Next(rg) do
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)

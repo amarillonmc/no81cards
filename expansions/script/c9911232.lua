@@ -102,6 +102,7 @@ function c9911232.setop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		if Duel.SSet(tp,tc)==0 then return end
 	else
+		if tc:IsImmuneToEffect(e) then return end
 		tc:CancelToGrave()
 		if Duel.ChangePosition(tc,POS_FACEDOWN)==0 then return end
 		Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)

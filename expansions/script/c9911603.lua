@@ -83,6 +83,7 @@ function c9911603.setop(e,tp,eg,ep,ev,re,r,rp)
 	elseif tc:IsLocation(LOCATION_MZONE) then
 		if Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)==0 then return end
 	else
+		if tc:IsImmuneToEffect(e) then return end
 		tc:CancelToGrave()
 		if Duel.ChangePosition(tc,POS_FACEDOWN)==0 then return end
 		Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
