@@ -33,7 +33,7 @@ end
 function s.tgtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	 if chkc then return chkc:IsOnField() and s.tgfilter1(chkc,c,tp) end
 	if chk==0 then return Duel.IsExistingTarget(s.tgfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp)
-	and Duel.IsPlayerCanSpecialSummonMonster(tp,11200080,0x3b70,TYPES_TOKEN_MONSTER,0,0,3,RACE_SPELLCASTER,ATTRIBUTE_WATER)end
+	and Duel.IsPlayerCanSpecialSummonMonster(tp,37200080,0x3b70,TYPES_TOKEN_MONSTER,0,0,3,RACE_SPELLCASTER,ATTRIBUTE_WATER)end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectTarget(tp,s.tgfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,1,0,0)
@@ -43,7 +43,7 @@ end
 function s.tgop1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc and Duel.Release(tc,REASON_EFFECT)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		local token=Duel.CreateToken(tp,11200080)
+		local token=Duel.CreateToken(tp,37200080)
 		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
