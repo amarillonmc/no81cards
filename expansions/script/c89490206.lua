@@ -16,7 +16,7 @@ function s.lcheck(g)
 	return g:GetClassCount(Card.GetCode)==g:GetCount()
 end
 function s.spfilter(c,e,tp,zone)
-	return (c:IsSetCard(0x17a) or c:IsCode(56099748)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE,tp,zone)
+	return (c:IsSetCard(0x17a) or c:IsCode(56099748)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE,tp,zone) and c:IsCanBeEffectTarget(e)
 end
 function s.clfilter(c)
 	return c:GetSequence()>4 and c:IsType(TYPE_LINK)

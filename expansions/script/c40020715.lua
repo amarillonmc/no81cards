@@ -1,13 +1,11 @@
 --兵虫阳神 圣甲神隼
 local s, id = GetID()
-
 s.named_with_WeaponInsect = 1
 function s.WeaponInsect(c)
 	local m = _G["c"..c:GetCode()]
 	return m and m.named_with_WeaponInsect
 end
 s.RAHERAKHTY_CODE = 40020713
-
 function s.initial_effect(c)
 	
 	c:EnableReviveLimit()
@@ -20,7 +18,6 @@ function s.initial_effect(c)
 	e0:SetCondition(function(e, c, og, min, max)
 	if c == nil then return true end
 	local tp = c:GetControler()
-
 	local mg = Duel.GetFieldGroup(tp, LOCATION_MZONE + LOCATION_SZONE, 0)
 	return Duel.CheckXyzMaterial(c, s.xyzfilter, 3, 3, 3, mg)
 end)
@@ -61,7 +58,6 @@ end)
 	e0:SetValue(SUMMON_TYPE_XYZ)
 	c:RegisterEffect(e0)
 
-
 	local e0b = Effect.CreateEffect(c)
 	e0b:SetType(EFFECT_TYPE_FIELD)
 	e0b:SetCode(EFFECT_XYZ_LEVEL)
@@ -100,17 +96,14 @@ end)
 	e2:SetOperation(s.buffop)
 	c:RegisterEffect(e2)
 end
-
 function s.xyzfilter(c)
 	return c:IsFaceup() 
 		and s.WeaponInsect(c) 
 		and (c:GetOriginalType() & TYPE_MONSTER) ~= 0
 end
-
 function s.thcon(e, tp, eg, ep, ev, re, r, rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
-
 function s.szfilter(c, e, tp)
 	if not c:IsFaceup() or not s.WeaponInsect(c) then return false end
 	if c:IsAbleToHand() then return true end
@@ -120,36 +113,30 @@ function s.szfilter(c, e, tp)
 	end
 	return false
 end
-
 function s.thtg(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then
 		return Duel.IsExistingMatchingCard(s.szfilter, tp, LOCATION_SZONE, 0, 1, nil, e, tp)
 	end
 	Duel.SetOperationInfo(0, CATEGORY_TOHAND, nil, 1, tp, LOCATION_SZONE)
 end
-
 function s.setfilter(c)
 	return s.WeaponInsect(c) and not (c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS))
 end
-
 function s.rafilter(c)
 	return c:IsCode(s.RAHERAKHTY_CODE)
 end
-
 function s.thop(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
-	
 	local g = Duel.GetMatchingGroup(s.szfilter, tp, LOCATION_SZONE, 0, nil, e, tp)
 	if #g == 0 then return end
-	
 	local count = 0
 	local tc = g:GetFirst()
 	while tc do
+		Duel.HintSelection(Group.FromCards(tc))
 		local canth = tc:IsAbleToHand()
 		local cansp = (tc:GetOriginalType() & TYPE_MONSTER) ~= 0 
 			and tc:IsCanBeSpecialSummoned(e, 0, tp, false, false)
 			and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0
-		
 		if canth and cansp then
 			if Duel.SelectYesNo(tp, aux.Stringid(id, 2)) then
 				if Duel.SendtoHand(tc, nil, REASON_EFFECT) > 0 then
@@ -173,17 +160,14 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 		end
 		tc = g:GetNext()
 	end
-	
 	if count == 0 then return end
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
-	
 	if Duel.IsExistingMatchingCard(s.rafilter, tp, LOCATION_SZONE, 0, 1, nil)
 	   and Duel.SelectYesNo(tp, aux.Stringid(id, 3)) then
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_XMATERIAL)
 		local rg = Duel.SelectMatchingCard(tp, s.rafilter, tp, LOCATION_SZONE, 0, 1, 1, nil)
 		if #rg > 0 then
 			Duel.Overlay(c, rg)
-			
 			local maxset = math.min(Duel.GetLocationCount(tp, LOCATION_SZONE), 2)
 			if maxset > 0 and Duel.IsExistingMatchingCard(s.setfilter, tp, LOCATION_DECK, 0, 1, nil) then
 				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOFIELD)
@@ -192,12 +176,8 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 					local stc = sg:GetFirst()
 					while stc do
 						Duel.MoveToField(stc, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
-						
-
 						local ot = stc:GetOriginalType()
-						
 						if (ot & TYPE_MONSTER) ~= 0 then
-
 							local e1 = Effect.CreateEffect(c)
 							e1:SetType(EFFECT_TYPE_SINGLE)
 							e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -205,7 +185,6 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 							e1:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
 							stc:RegisterEffect(e1)
 						else
-
 							local e1a = Effect.CreateEffect(c)
 							e1a:SetType(EFFECT_TYPE_SINGLE)
 							e1a:SetCode(EFFECT_ADD_TYPE)
@@ -222,7 +201,6 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 							e1b:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
 							stc:RegisterEffect(e1b, true)
 						end
-						
 						stc = sg:GetNext()
 					end
 				end
@@ -230,23 +208,18 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 		end
 	end
 end
-
 function s.buffcon(e, tp, eg, ep, ev, re, r, rp)
 	local ph = Duel.GetCurrentPhase()
 	return Duel.GetTurnPlayer() == tp and ph >= PHASE_BATTLE_START and ph <= PHASE_BATTLE
 end
-
 function s.buffcost(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then return e:GetHandler():CheckRemoveOverlayCard(tp, 2, REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp, 2, 2, REASON_COST)
 end
-
 function s.buffop(e, tp, eg, ep, ev, re, r, rp)
-
 	local g = Duel.GetMatchingGroup(Card.IsRace, tp, LOCATION_MZONE, 0, nil, RACE_INSECT)
 	local tc = g:GetFirst()
 	while tc do
-
 		local batk = tc:GetBaseAttack()
 		if batk >= 1 then
 			local e1 = Effect.CreateEffect(e:GetHandler())
@@ -256,14 +229,12 @@ function s.buffop(e, tp, eg, ep, ev, re, r, rp)
 			e1:SetReset(RESET_EVENT + RESETS_STANDARD + RESET_PHASE + PHASE_END)
 			tc:RegisterEffect(e1)
 		end
-		
 		local e2 = Effect.CreateEffect(e:GetHandler())
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_EXTRA_ATTACK)
 		e2:SetValue(1)
 		e2:SetReset(RESET_EVENT + RESETS_STANDARD + RESET_PHASE + PHASE_END)
 		tc:RegisterEffect(e2)
-		
 		tc = g:GetNext()
 	end
 end
