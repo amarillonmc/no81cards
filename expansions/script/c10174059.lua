@@ -1,5 +1,5 @@
 --暴君恐兽
-Duel.LoadScript("script/c10199990.lua")
+Duel.LoadScript("c10199990.lua")
 local m,cm=rscf.DefineCard(10174059)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()

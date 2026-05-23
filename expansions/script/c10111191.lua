@@ -26,23 +26,23 @@ function c10111191.initial_effect(c)
 	e3:SetOperation(c10111191.sumop)
 	c:RegisterEffect(e3)
    -- 召唤成功时效果
-    local e4=Effect.CreateEffect(c)
-    e4:SetDescription(aux.Stringid(10111191,0))
-    e4:SetCategory(CATEGORY_REMOVE+CATEGORY_TOHAND)
-    e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-    e4:SetCode(EVENT_SUMMON_SUCCESS)
-    e4:SetProperty(EFFECT_FLAG_DELAY)
-    e4:SetTarget(c10111191.tg)
-    e4:SetOperation(c10111191.op)
-    c:RegisterEffect(e4)
-    
-    -- 素材检查效果
-    local e5=Effect.CreateEffect(c)
-    e5:SetType(EFFECT_TYPE_SINGLE)
-    e5:SetCode(EFFECT_MATERIAL_CHECK)
-    e5:SetValue(c10111191.valcheck)
-    e5:SetLabelObject(e4)
-    c:RegisterEffect(e5)
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(10111191,0))
+	e4:SetCategory(CATEGORY_REMOVE+CATEGORY_TOHAND)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_SUMMON_SUCCESS)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetTarget(c10111191.tg)
+	e4:SetOperation(c10111191.op)
+	c:RegisterEffect(e4)
+	
+	-- 素材检查效果
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_MATERIAL_CHECK)
+	e5:SetValue(c10111191.valcheck)
+	e5:SetLabelObject(e4)
+	c:RegisterEffect(e5)
 end
 function c10111191.rfilter(c,tp)
 	return c:IsRace(RACE_DINOSAUR) and (c:IsControler(tp) or c:IsFaceup())
@@ -87,49 +87,51 @@ end
 
 -- 素材检查（保持不变）
 function c10111191.valcheck(e,c)
-    local g=c:GetMaterial()
-    if g:IsExists(Card.IsSetCard,1,nil,0x1185) then
-        e:GetLabelObject():SetLabel(1)
-    else
-        e:GetLabelObject():SetLabel(0)
-    end
+	local g=c:GetMaterial()
+	if g:IsExists(Card.IsSetCard,1,nil,0x1185) then
+		e:GetLabelObject():SetLabel(1)
+	else
+		e:GetLabelObject():SetLabel(0)
+	end
 end
 
 -- 目标选择
 
 function c10111191.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then 
-        return (Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,nil) and e:GetLabel()==0) or (Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,nil) and e:GetLabel()==1)
-    end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-    local g=Group.CreateGroup()
-    if e:GetLabel()==1 then
-        g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,1,nil)
-    else
-        g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,1,nil)
-    end
-    if #g>0 then
-        e:SetLabelObject(g:GetFirst())
-        if e:GetLabel()==1 then
-            Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
-        else
-            Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
-        end
-    end
+	if chk==0 then 
+		return (Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,nil) and e:GetLabel()==0) or (Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,nil) and e:GetLabel()==1)
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Group.CreateGroup()
+	if e:GetLabel()==1 then
+		g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,1,nil)
+	else
+		g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,1,nil)
+	end
+	if #g>0 then
+		e:SetLabelObject(g:GetFirst())
+		if e:GetLabel()==1 then
+			e:SetCategory(CATEGORY_TOHAND)
+			Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+		else
+			e:SetCategory(CATEGORY_REMOVE)
+			Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+		end
+	end
 end
 
 -- 效果处理
 function c10111191.op(e,tp,eg,ep,ev,re,r,rp)
-    local tc=e:GetLabelObject()
-    if not tc or not tc:IsLocation(LOCATION_SZONE+LOCATION_GRAVE) then return end
-    
-    local replace=(e:GetLabel()==1)
-    
-    if replace then
-        if Duel.SendtoHand(tc,tp,REASON_EFFECT)~=0 then
-            Duel.ConfirmCards(1-tp,tc)
-        end
-    else
-        Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
-    end
+	local tc=e:GetLabelObject()
+	if not tc or not tc:IsLocation(LOCATION_SZONE+LOCATION_GRAVE) then return end
+	
+	local replace=(e:GetLabel()==1)
+	
+	if replace then
+		if Duel.SendtoHand(tc,tp,REASON_EFFECT)~=0 then
+			Duel.ConfirmCards(1-tp,tc)
+		end
+	else
+		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+	end
 end
