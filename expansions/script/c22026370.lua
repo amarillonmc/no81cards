@@ -47,7 +47,7 @@ function c22026370.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function c22026360.afilter(c)
+function c22026370.afilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xff1) and c:IsFaceup()
 end
 function c22026370.aegcon(e,tp,eg,ep,ev,re,r,rp)

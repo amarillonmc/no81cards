@@ -33,9 +33,9 @@ function s.initial_effect(c)
 	e3:SetTarget(s.sctg)
 	e3:SetOperation(s.scop)
 	c:RegisterEffect(e3)
-	if not c17338900.global_check then
-		c17338900.global_check=true
-		c17338900.effect_list={}
+	if not s.global_check then
+		s.global_check=true
+		s.effect_list={}
 	end
 end
 function s.mfilter(c,xyzc)
@@ -47,39 +47,46 @@ function s.copycost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function c17338900.efilter(e)
-	local ct=#c17338900.effect_list
-	if (e:GetCode()==EVENT_SUMMON_SUCCESS or e:GetCode()==EVENT_SPSUMMON_SUCCESS) and e:IsActivated() then c17338900.effect_list[ct+1]=e end
-	return false
-end
-function c17338900.tlfilter(te,tp)
-	return not (te:GetHandler():IsOriginalCodeRule(91812341) and te:GetCode()==EVENT_SUMMON_SUCCESS and Duel.IsExistingTarget(Card.IsType,tp,0,LOCATION_ONFIELD,1,nil,TYPE_SPELL+TYPE_TRAP))
-end
-function c17338900.cfilter(c,e,tp,eg,ep,ev,re,r,rp)
-	if not (c:IsSetCard(0x108a) and c:IsLevel(4)) then return false end
-	c17338900.effect_list={}
-	c:IsOriginalEffectProperty(c17338900.efilter)
-	for _,te in ipairs(c17338900.effect_list) do
-		local tg=te:GetTarget()
-		if (not tg or tg(e,tp,eg,ep,ev,re,r,rp,0)) and c17338900.tlfilter(te,tp) then return true end
+function s.regefilter(e)
+	local ct=#s.effect_list
+	if (e:GetCode()==EVENT_SUMMON_SUCCESS or e:GetCode()==EVENT_SPSUMMON_SUCCESS) and e:IsActivated() then 
+		s.effect_list[ct+1]=e 
 	end
 	return false
 end
-function c17338900.copytg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingTarget(c17338900.cfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,eg,ep,ev,re,r,rp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectTarget(tp,c17338900.cfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp)
+
+function s.tlfilter(te,tp)
+	return not (te:GetHandler():IsOriginalCodeRule(91812341) and te:GetCode()==EVENT_SUMMON_SUCCESS and Duel.IsExistingTarget(Card.IsType,tp,0,LOCATION_ONFIELD,1,nil,TYPE_SPELL+TYPE_TRAP))
 end
-function c17338900.copyop(e,tp,eg,ep,ev,re,r,rp)
+
+function s.cfilter(c,e,tp,eg,ep,ev,re,r,rp)
+	if not (c:IsSetCard(0x108a) and c:IsLevel(4)) then return false end
+	s.effect_list={}
+	c:IsOriginalEffectProperty(s.regefilter)
+	for _,te in ipairs(s.effect_list) do
+		local tg=te:GetTarget()
+		if (not tg or tg(e,tp,eg,ep,ev,re,r,rp,0)) and s.tlfilter(te,tp) then return true end
+	end
+	return false
+end
+
+function s.copytg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingTarget(s.cfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,eg,ep,ev,re,r,rp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local g=Duel.SelectTarget(tp,s.cfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp)
+end
+
+function s.copyop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToChain() then return end
-	c17338900.effect_list={}
-	tc:IsOriginalEffectProperty(c17338900.efilter)
+	s.effect_list={}
+	tc:IsOriginalEffectProperty(s.regefilter)
 	local e_list={}
-	for _,te in ipairs(c17338900.effect_list) do
+	for _,te in ipairs(s.effect_list) do
 		local tg=te:GetTarget()
 		if not tg or tg(e,tp,eg,ep,ev,re,r,rp,0) then table.insert(e_list,te) end
 	end
+	if #e_list==0 then return end
 	local te=e_list[1]
 	if #e_list>1 then
 		local des_list={}
@@ -87,7 +94,7 @@ function c17338900.copyop(e,tp,eg,ep,ev,re,r,rp)
 		local op=Duel.SelectOption(tp,table.unpack(des_list))
 		te=e_list[op+1]
 	end
-	c17338900.effect_list={}
+	s.effect_list={}
 	e:SetProperty(te:GetProperty())
 	local tg=te:GetTarget()
 	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
@@ -95,11 +102,14 @@ function c17338900.copyop(e,tp,eg,ep,ev,re,r,rp)
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 end
+
 function s.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.scfilter,tp,LOCATION_EXTRA,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
+
 function s.scfilter(c) return c:IsType(TYPE_XYZ) and c:IsXyzSummonable(nil) end
+
 function s.scop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(s.scfilter,tp,LOCATION_EXTRA,0,nil)
 	if #g>0 then

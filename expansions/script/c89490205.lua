@@ -43,7 +43,7 @@ function s.cfilter2(c)
 	return c:IsFaceup() and c:IsCode(56099748)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_MZONE,0,1,nil) then
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_ONFIELD,0,1,nil) then
 		Duel.BreakEffect()
 		Duel.Damage(1-tp,1500,REASON_EFFECT)
 	end
