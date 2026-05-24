@@ -39,18 +39,6 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.eftg)
 	e3:SetLabelObject(e2)
 	c:RegisterEffect(e3)
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e6:SetCode(EVENT_CHAINING)
-	e6:SetRange(LOCATION_MZONE)
-	e6:SetOperation(cm.eop)
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-	e5:SetRange(LOCATION_SZONE)
-	e5:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e5:SetTarget(cm.eftg)
-	e5:SetLabelObject(e6)
-	c:RegisterEffect(e5)
 	local e9=Effect.CreateEffect(c)
 	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e9:SetCode(EVENT_CHAIN_SOLVING)
@@ -81,6 +69,20 @@ function cm.initial_effect(c)
 		ge0:SetCode(EVENT_ADJUST)
 		ge0:SetOperation(cm.adop)
 		Duel.RegisterEffect(ge0,0)
+		local e6=Effect.CreateEffect(c)
+		e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e6:SetCode(EVENT_CHAINING)
+		e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e6:SetRange(LOCATION_MZONE)
+		e6:SetOperation(cm.eop)
+		local e5=Effect.CreateEffect(c)
+		e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+		e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		--e5:SetRange(LOCATION_SZONE)
+		e5:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+		--e5:SetTarget(cm.eftg)
+		e5:SetLabelObject(e6)
+		Duel.RegisterEffect(e5,0)
 		local _GetActivateLocation=Effect.GetActivateLocation
 		local _GetActivateSequence=Effect.GetActivateSequence
 		local _NegateActivation=Duel.NegateActivation
@@ -272,9 +274,11 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	else
 		local flag=eset[1]
 		local tab=cm[flag]
-		if not tab[ct] or tab[ct]~=e:GetHandler():GetSequence() then bool=true end
+		Debug.Message(c:GetCode().." "..(tab[ct] or 1000).." "..c:GetSequence())
+		if not tab[ct] or tab[ct]~=c:GetSequence() then bool=true end
 	end
-	if bool then
+	if bool and c:GetColumnGroup():FilterCount(Card.IsControler,nil,1-c:GetControler())>0 then
+		Duel.HintSelection(Group.FromCards(c))
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.Destroy(c:GetColumnGroup():Filter(Card.IsControler,nil,1-c:GetControler()),REASON_EFFECT)
 	end
