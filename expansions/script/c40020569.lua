@@ -75,7 +75,7 @@ end
 function s.apply_lock(e,tc)
 
 	if not tc:IsPosition(POS_DEFENSE) then
-		Duel.ChangePosition(tc,POS_DEFENSE)
+		Duel.ChangePosition(tc,POS_FACEUP_DEFENSE)
 	end
 	
 	local turn_count = (Duel.GetTurnPlayer()==tc:GetControler()) and 2 or 1
