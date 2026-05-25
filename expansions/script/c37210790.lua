@@ -1,7 +1,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	-- 这个卡名的①②效果1回合各能使用1次。
-	
+	aux.AddCodeList(c,22702055)
 	-- ①：自己·对方的回合，手卡的这张卡是持续公开的场合才能发动。这张卡特殊召唤。
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
