@@ -6,15 +6,13 @@ function s.initial_effect(c)
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsAttribute,ATTRIBUTE_WATER),1)
 	c:EnableReviveLimit()
 
-	--①：检索+变星
+	--①：同调召唤的场合检索与变星
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH) -- 变星不属于主要Category，可选加CATEGORY_LVCHANGE
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,id)
 	e1:SetTarget(s.thtg)
 	e1:SetOperation(s.thop)
@@ -57,10 +55,8 @@ end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e) then return end
-	
 	-- 获取目标卡的类型
 	local ty = tc:GetType() & (TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)
-	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,ty)
 	if #g>0 then
@@ -68,16 +64,32 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,g)
 			
 			local c=e:GetHandler()
-			-- 那之后，可以宣言1～12的任意等级，这张卡的等级变成宣言的等级
-			if c:IsRelateToEffect(e) and c:IsFaceup() and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-				Duel.BreakEffect()
-				local lv=Duel.AnnounceLevel(tp,1,9,e:GetHandler():GetLevel())
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_CHANGE_LEVEL)
-				e1:SetValue(lv)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-				c:RegisterEffect(e1)
+			if c:IsFaceup() and c:IsLevelAbove(1) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+			Duel.BreakEffect()
+			local b1 = true
+			local b2 = c:GetLevel()>1 -- 如果等级是1，就不能下降了
+			local op = 0
+			
+			if b1 and b2 then
+				op = Duel.SelectOption(tp,aux.Stringid(id,2),aux.Stringid(id,3)) -- "上升等级" / "下降等级"
+			elseif b1 then
+				Duel.SelectOption(tp,aux.Stringid(id,2))
+				op = 0
+			end
+			local t={}
+			for i=1,4 do
+				if op==0 or (op==1 and c:GetLevel()>i) then
+					table.insert(t,i)
+				end
+			end
+			local lv=Duel.AnnounceNumber(tp,table.unpack(t))
+			if op==1 then lv=-lv end
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UPDATE_LEVEL)
+			e1:SetValue(lv)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+			c:RegisterEffect(e1)
 			end
 		end
 	end

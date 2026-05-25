@@ -5,9 +5,12 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.spcon)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
@@ -24,6 +27,26 @@ function s.initial_effect(c)
 	e2:SetTarget(s.restg)
 	e2:SetOperation(s.resop)
 	c:RegisterEffect(e2)
+
+		if not s.global_check then
+		s.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SUMMON_SUCCESS)
+		ge1:SetOperation(s.checkop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(ge2,0)
+	end
+end
+
+function s.checkop(e,tp,eg,ep,ev,re,r,rp)
+	for tc in aux.Next(eg) do
+		if tc:IsLocation(LOCATION_MZONE) and tc:GetSequence()==2 then
+			Duel.RegisterFlagEffect(0,id,RESET_PHASE+PHASE_END,0,1)
+		end
+	end
 end
 
 --字段：朦雨
@@ -33,6 +56,10 @@ end
 
 function s.spfilter(c)
 	return c:IsSetCard(0x613) and (c:IsLinkBelow(2) or c:IsLevel(5))
+end
+
+function s.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp or Duel.GetFlagEffect(0,id)>=3
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

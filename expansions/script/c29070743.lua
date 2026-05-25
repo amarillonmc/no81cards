@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	--aux.AddCodeList(c,29065500)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCountLimit(1,m)
@@ -15,6 +15,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--skill
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,m+1)
@@ -23,7 +24,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.spcfilter(c)
-	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsFaceup() and ((_G["c"..c:GetCode()] and _G["c"..c:GetCode()].named_with_Arknight) or c:IsSetCard(0x87af))
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.spcfilter,tp,LOCATION_ONFIELD,0,1,nil)
@@ -31,42 +32,46 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_ONFIELD)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) and Duel.IsExistingMatchingCard(Card.IsDiscardable, tp,LOCATION_HAND,0,1,nil,REASON_EFFECT) and Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+			Duel.BreakEffect()
+	  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+			local g=Duel.DiscardHand(tp, Card.IsDiscardable, 1, 1, REASON_EFFECT, nil, REASON_EFFECT)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local dg=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
+			Duel.Destroy(dg,REASON_EFFECT)
+		end
 	end
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local fd=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0xe000e0)
-	Duel.SetTargetParam(fd)
-	Duel.Hint(HINT_ZONE,tp,fd)
-	local fd2=fd
-	if fd>=1<<16 then fd2=fd>>16 else fd2=fd<<16 end
-	Duel.Hint(HINT_ZONE,1-tp,fd2)
+	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)>0 end
+	local flag=Duel.SelectDisableField(tp,1,0,LOCATION_MZONE,0)
+	local seq=math.log(flag,2)
+	if tp==0 then
+		seq=20-seq
+	else
+		seq=4-seq
+	end
+	e:SetLabel(seq)
+	Duel.Hint(HINT_ZONE,tp,flag)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local fd=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
-	local tid=Duel.GetTurnCount()
+	local seq=e:GetLabel()
+	Debug.Message(seq)
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetLabel(fd,tid)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e1:SetCountLimit(1)
+	e1:SetCode(EVENT_MOVE)
+	e1:SetLabel(seq)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCondition(cm.descon)
 	e1:SetOperation(cm.desop2)
 	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	Duel.RegisterEffect(e2,tp)
-	local e3=e1:Clone()
-	e3:SetCode(EVENT_MOVE)
-	e3:SetCondition(cm.descon2)
-	Duel.RegisterEffect(e3,tp)
 end
 function cm.GetCardsInZone(tp,fd)
 	if fd==0x400020 then return Duel.GetFieldCard(tp,LOCATION_MZONE,5) or Duel.GetFieldCard(1-tp,LOCATION_MZONE,6) end
@@ -84,37 +89,21 @@ function cm.GetCardsInZone(tp,fd)
 	end
 	return Duel.GetFieldCard(p,loc,math.floor(seq+0.5))
 end
-function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	local fd,tid=e:GetLabel()
-	if Duel.GetFlagEffect(tp,m+tid)>0 then return false end
-	local tc=cm.GetCardsInZone(tp,fd)
-	local res1,res2,res3=false,false,false
-	res1=(tc and eg:IsContains(tc))
-	if fd<=0x8 or (fd<=0x80000 and fd>=0x10000) then
-		local tc2=cm.GetCardsInZone(tp,fd<<1)
-		res2=(tc2 and eg:IsContains(tc2))
+function cm.fdcheck(c,tp,seq)
+	if not c:IsOnField() then return false end
+	if not c:IsControler(1-tp) then return false end
+	local col=aux.GetColumn(c, tp)
+	if col==5 then
+		return col == 5 and seq==1
+	elseif col==6 then
+		return col == 6 and seq==3
+	else
+		return (math.abs(col - seq)==1 and c:IsLocation(LOCATION_MZONE) and c:GetSequence()<5) or seq==col
 	end
-	if (fd>=0x2 and fd<=0x10) or (fd<=0x100000 and fd>=0x20000) then
-		local tc3=cm.GetCardsInZone(tp,fd>>1)
-		res3=(tc3 and eg:IsContains(tc3))
-	end
-	return res1 or res2 or res3
 end
-function cm.descon2(e,tp,eg,ep,ev,re,r,rp)
-	local fd,tid=e:GetLabel()
-	if Duel.GetFlagEffect(tp,m+tid)>0 then return false end
-	local tc=cm.GetCardsInZone(tp,fd)
-	local res1,res2,res3=false,false,false
-	res1=(tc and tc:IsPreviousLocation(LOCATION_REMOVED) and not tc:IsReason(REASON_SPSUMMON) and eg:IsContains(tc))
-	if fd<=0x8 or (fd<=0x80000 and fd>=0x10000) then
-		local tc2=cm.GetCardsInZone(tp,fd<<1)
-		res2=(tc2 and tc2:IsPreviousLocation(LOCATION_REMOVED) and not tc2:IsReason(REASON_SPSUMMON) and eg:IsContains(tc2))
-	end
-	if (fd>=0x2 and fd<=0x10) or (fd<=0x100000 and fd>=0x20000) then
-		local tc3=cm.GetCardsInZone(tp,fd>>1)
-		res3=(tc3 and tc3:IsPreviousLocation(LOCATION_REMOVED) and not tc3:IsReason(REASON_SPSUMMON) and eg:IsContains(tc3))
-	end
-	return res1 or res2 or res3
+function cm.descon(e,tp,eg,ep,ev,re,r,rp)
+	local fg=eg:Filter(cm.fdcheck,nil,tp,e:GetLabel())
+	return fg and fg:GetCount()>0
 end
 function cm.desfilter(c,p,loc,seq)
 	local seq1=c:GetSequence()
@@ -122,20 +111,9 @@ function cm.desfilter(c,p,loc,seq)
 end
 function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	local fd,tid=e:GetLabel()
-	local g=Group.CreateGroup()
-	local tc=cm.GetCardsInZone(tp,fd)
-	if tc then g:AddCard(tc) end
-	if fd<=0x8 or (fd<=0x80000 and fd>=0x10000) then
-		local tc2=cm.GetCardsInZone(tp,fd<<1)
-		if tc2 then g:AddCard(tc2) end
-	end
-	if (fd>=0x2 and fd<=0x10) or (fd<=0x100000 and fd>=0x20000) then
-		local tc3=cm.GetCardsInZone(tp,fd>>1)
-		if tc3 then g:AddCard(tc3) end
-	end
+	local g=Duel.GetMatchingGroup(cm.fdcheck,tp,0,LOCATION_ONFIELD,nil,tp,e:GetLabel())
 	if #g>0 then
 		Duel.Destroy(g,REASON_EFFECT)
 	end
-	Duel.RegisterFlagEffect(tp,m+tid,0,0,1)
+	e:Reset()
 end

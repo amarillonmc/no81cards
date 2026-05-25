@@ -42,7 +42,6 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterFlagEffect(1,code+1,RESET_PHASE+PHASE_END,0,1)
 	end
 end
-
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_EFFECT)
@@ -70,14 +69,15 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_DESTROYED)
 	e1:SetOperation(s.delayed_th)
-	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
+
 function s.delayed_th(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	e:Reset()

@@ -46,10 +46,21 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCountLimit(1)
+	e4:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e4:SetCondition(cm.con)
 	e4:SetTarget(cm.target)
 	e4:SetOperation(cm.operation)
 	c:RegisterEffect(e4)
+	local e4_1=Effect.CreateEffect(c)
+	e4_1:SetDescription(aux.Stringid(m,0))
+	e4_1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e4_1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4_1:SetCode(EVENT_SUMMON_SUCCESS)
+	e4_1:SetProperty(EFFECT_FLAG_DELAY)
+	e4_1:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e4_1:SetTarget(cm.target)
+	e4_1:SetOperation(cm.operation)
+	c:RegisterEffect(e4_1)
 	--set
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,1))
@@ -67,8 +78,8 @@ end
 function cm.filter(c,tp)
 	return c:IsCode(14000105) and (c:IsAbleToHand() or c:GetActivateEffect():IsActivatable(tp,true,true))
 end
-function cm.cfilter(c,tp)
-	return c:GetSummonPlayer()==1-tp
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsSummonPlayer,1,e:GetHandler(),1-tp)
 end
 function cm.setfilter1(c,e,tp)
 	return c:IsFaceup()
@@ -77,9 +88,9 @@ function cm.filter1(c,e,tp)
 	return c:IsCode(14000106) and (c:IsAbleToHand() or c:IsSSetable())
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(cm.setfilter1,tp,LOCATION_FZONE,0,1,nil) and Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_DECK,0,1,nil,tp)
+	local b1=Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_DECK,0,1,nil,tp)
 	local b2=Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,tp)
-	if chk==0 then return eg:IsExists(cm.cfilter,1,nil,tp) and (b1 or b2) end
+	if chk==0 then return (b1 or b2) end
 	local off=1
 	local ops={}
 	local opval={}
@@ -168,6 +179,6 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-	e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+	e1:SetValue(TYPE_SPELL)
 	c:RegisterEffect(e1)
 end

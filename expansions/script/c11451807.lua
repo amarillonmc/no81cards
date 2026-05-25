@@ -33,19 +33,25 @@ end
 function cm.immval(e,te)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
-	local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+m)}
-	local res=(te:GetOwner()~=c and c:IsFacedown())
+	local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+11451807)}
+	local eset2={c:IsHasEffect(EFFECT_FLAG_EFFECT+11451808)}
+	local res=(te:GetOwner()~=c and c:IsFacedown() and c:IsLocation(LOCATION_MZONE))
 	local ctns=false
 	if not te:IsHasType(EFFECT_TYPE_ACTIONS) then
 		for _,se in pairs(eset) do
 			if se:GetLabelObject()==te then ctns=true end
 		end
+	elseif te:IsActivated() then
+		for _,se in pairs(eset2) do
+			if se:GetLabelObject()==te and se:GetLabel()==Duel.GetCurrentChain() then ctns=true end
+		end
 	end
+	--if res then Debug.Message(te:GetHandler():GetCode()) end
 	if res and not ctns then
-		local flag=c:GetFlagEffect(m)
+		local flag=c:GetFlagEffect(11451807)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_FLAG_EFFECT+m)
+		e1:SetCode(EFFECT_FLAG_EFFECT+11451807)
 		e1:SetLabelObject(te)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
@@ -55,6 +61,16 @@ function cm.immval(e,te)
 		e4:SetCode(EVENT_ADJUST)
 		e4:SetOperation(cm.imcop)
 		Duel.RegisterEffect(e4,tp)
+		if te:IsActivated() then
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_FLAG_EFFECT+11451808)
+			e2:SetLabelObject(te)
+			e2:SetLabel(Duel.GetCurrentChain())
+			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+			c:RegisterEffect(e2,true)
+		end
 	end
 	return res
 end
@@ -65,7 +81,7 @@ end
 function cm.fliptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local c=e:GetHandler()
-	local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+m)}
+	local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+11451807)}
 	if #eset>0 then
 		if rp>=2 then
 			if tp==0 then rp=1 end

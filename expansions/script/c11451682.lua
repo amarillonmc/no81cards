@@ -211,7 +211,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
 		e3:SetRange(LOCATION_ONFIELD)
 		e3:SetCode(EFFECT_IMMUNE_EFFECT)
-		e3:SetCondition(cm.econ)
+		--e3:SetCondition(cm.econ)
 		e3:SetValue(cm.eval)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e3)
@@ -222,7 +222,12 @@ function cm.econ(e)
 end
 function cm.eval(e,te)
 	local res=te:IsActivated()
-	if res then e:SetLabel(1) end
+	if res then 
+		e:SetLabelObject(te)
+		e:SetLabel(Duel.GetCurrentChain())
+		e:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+		e:SetValue(function(e,te) return e:GetLabelObject() and te==e:GetLabelObject() and e:GetLabel()==Duel.GetCurrentChain() end)
+	end
 	return res
 end
 function cm.tgfilter2(c,e,tp)

@@ -202,7 +202,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 		local ct=Duel.GetCounter(tp,1,1,0x1972)
 		if ct>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,ct//2,ct//2,nil)
+			local rg=aux.SelectCardFromFieldFirst(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,ct//2,ct//2,nil)
 			if #rg>0 then
 				Duel.HintSelection(rg)
 				Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)

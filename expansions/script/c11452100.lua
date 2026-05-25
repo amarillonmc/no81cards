@@ -89,7 +89,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
 	e3:SetLabel(e:GetLabel())
-	e3:SetCondition(cm.econ)
+	--e3:SetCondition(cm.econ)
 	e3:SetValue(cm.eval)
 	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e3)
@@ -108,8 +108,11 @@ end
 function cm.eval(e,te)
 	local c=e:GetHandler()
 	local res=te:IsActivated() and e:GetOwnerPlayer()~=te:GetOwnerPlayer() and e:GetLabel()&te:GetActiveType()>0
-	if res then
-		e:SetLabel(100)
+	if res then 
+		e:SetLabelObject(te)
+		e:SetLabel(Duel.GetCurrentChain())
+		e:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+		e:SetValue(function(e,te) return e:GetLabelObject() and te==e:GetLabelObject() and e:GetLabel()==Duel.GetCurrentChain() end)
 	end
 	return res
 end

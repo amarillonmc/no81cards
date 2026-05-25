@@ -2,6 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
+	c:SetSPSummonOnce(id)
 	local e1=Effect.CreateEffect(c)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -35,7 +36,7 @@ end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_SZONE,LOCATION_SZONE,nil)
 	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_REMOVE)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sc=g:Select(tp,1,1,nil):GetFirst()
 		if Duel.Remove(sc,POS_FACEUP,REASON_EFFECT)>0 then
 			local sp=sc:GetControler()
@@ -60,7 +61,7 @@ function s.addop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	local g=Duel.GetMatchingGroup(s.addfilter,tp,LOCATION_REMOVED,0,nil)
 	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,sg)

@@ -64,6 +64,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+
 function s.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,id+1)==0
 end
@@ -73,7 +74,6 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_DESTROYED)
 	e1:SetOperation(s.delayed_sp_op)
-	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.delayed_sp_op(e,tp,eg,ep,ev,re,r,rp)

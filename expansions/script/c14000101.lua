@@ -41,15 +41,26 @@ function cm.initial_effect(c)
 	--pos change
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,0))
-	e4:SetCategory(CATEGORY_POSITION)
+	e4:SetCategory(CATEGORY_POSITION+CATEGORY_MSET)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCountLimit(1)
+	e4:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e4:SetCondition(cm.con)
 	e4:SetTarget(cm.target)
 	e4:SetOperation(cm.operation)
 	c:RegisterEffect(e4)
+	local e4_1=Effect.CreateEffect(c)
+	e4_1:SetDescription(aux.Stringid(m,0))
+	e4_1:SetCategory(CATEGORY_POSITION+CATEGORY_MSET)
+	e4_1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4_1:SetCode(EVENT_SUMMON_SUCCESS)
+	e4_1:SetProperty(EFFECT_FLAG_DELAY)
+	e4_1:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e4_1:SetTarget(cm.target)
+	e4_1:SetOperation(cm.operation)
+	c:RegisterEffect(e4_1)
 	--set
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,1))
@@ -64,17 +75,22 @@ end
 function cm.poscon(e)
 	return e:GetHandler():IsAttackPos()
 end
-function cm.filter(c,e,tp)
-	return c:IsFaceup() and c:IsCanTurnSet() and c:GetSummonPlayer()==1-tp and (not e or c:IsRelateToEffect(e))
+function cm.filter(c)
+	return c:IsFaceup() and c:IsCanTurnSet() and c:IsSummonType(SUMMON_TYPE_SPECIAL)
+end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsSummonPlayer,1,e:GetHandler(),1-tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(cm.filter,1,nil,nil,tp) end
-	Duel.SetTargetCard(eg)
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,eg,eg:GetCount(),0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,nil,1,tp,LOCATION_MZONE)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(cm.filter,nil,e,tp)
-	Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,2,nil)
+	if #g>0 then
+		Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
+	end
 end
 function cm.setfilter(c,e,tp)
 	return c:IsFaceup() and c:GetSequence()<5
@@ -97,6 +113,6 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-	e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+	e1:SetValue(TYPE_SPELL)
 	c:RegisterEffect(e1)
 end

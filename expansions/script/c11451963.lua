@@ -73,7 +73,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 						if te:GetLabel()==e:GetLabel() then res=true break end
 					end
 					if not res then e:SetLabel(0) return false end
-					return not c:IsCode(m)
+					return not c:IsCode(m) and ((c:GetType()==TYPE_TRAP) or c:IsType(TYPE_QUICKPLAY))
 				end)
 	e1:SetCost(function(e,tp,eg,ep,ev,re,r,rp,chk)
 					if chk==0 then return true end

@@ -76,7 +76,7 @@ function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local b1=re:IsActiveType(TYPE_MONSTER) and Duel.GetFlagEffect(tp,m)==0
 	local b2=re:IsActiveType(TYPE_SPELL) and Duel.GetFlagEffect(tp,m-1)==0
 	local b3=re:IsActiveType(TYPE_TRAP) and Duel.GetFlagEffect(tp,m-2)==0
-	return rp==1-tp and Duel.IsChainDisablable(ev) and (Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_REMOVED,0,3,nil) or c:IsAbleToRemove(tp,POS_FACEDOWN)) and (b1 or b2 or b3)
+	return rp==1-tp and Duel.IsChainDisablable(ev) and (Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_REMOVED,0,5,nil) or c:IsAbleToRemove(tp,POS_FACEDOWN)) and (b1 or b2 or b3)
 end
 function cm.filter2(c)
 	return c:IsFacedown() and c:IsAbleToDeck()
@@ -87,10 +87,10 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_CARD,0,m)
 		if Duel.NegateEffect(ev) then
-			if Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_REMOVED,0,3,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+			if Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_REMOVED,0,5,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-				local g=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_REMOVED,0,3,3,nil)
+				local g=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_REMOVED,0,5,5,nil)
 				Duel.SendtoDeck(g,tp,2,REASON_EFFECT)
 			else
 				Duel.BreakEffect()

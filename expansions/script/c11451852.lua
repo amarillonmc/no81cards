@@ -204,7 +204,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e0)
 	--search
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_COIN+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_COIN+CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCode(EVENT_CHAINING)
@@ -263,7 +263,14 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local ct=Duel.GetDrawCount(tp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetOperation(cm.draw)
+	Duel.RegisterEffect(e1,tp)
+	--[[local ct=Duel.GetDrawCount(tp)
 	if Duel.GetTurnCount()==1 then
 		ct=1
 		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_DRAW_COUNT)}
@@ -281,7 +288,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
 	end
 	Duel.RegisterEffect(e2,tp)
-	--[[local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
+	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
 	if #g>0 then
 		local tc=g:GetMinGroup(Card.GetSequence):GetFirst()
 		Duel.DisableShuffleCheck()
@@ -294,6 +301,15 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ShuffleDeck(c:GetControler())
 			if res==1 then c:ReverseInDeck() end
 		end
+	end
+end
+function cm.draw(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
+	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
+	if #g>0 then
+		local tc=g:GetMinGroup(Card.GetSequence):GetFirst()
+		Duel.DisableShuffleCheck()
+		Duel.SendtoHand(tc,tp,REASON_EFFECT)
 	end
 end
 function cm.topfilter(c)

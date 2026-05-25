@@ -2,7 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--连接召唤
-	aux.AddLinkProcedure(c,nil,3,99,s.lcheck)
+	aux.AddLinkProcedure(c,nil,2,99,s.lcheck)
 	c:EnableReviveLimit()
 
 	--②：连接状态的自己的水属性怪兽的攻击宣言时必发（不入连锁连续效果）
@@ -121,34 +121,4 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	-- ②.加上1次可以直接攻击 (累加)
 	c:RegisterFlagEffect(id+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	
-	-- ③.额外卡组特殊召唤判断
-	if e:GetLabel()==1 then
-		-- HOPT判断：1回合只有1次
-		if Duel.GetFlagEffect(tp,id)==0 
-			and Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_LINK)>0 
-			and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) 
-			and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-			
-			Duel.BreakEffect()
-			Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
-			
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-			if #sg>0 then
-				-- 0x60 表示强制特殊召唤进额外怪兽区域
-				Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP,0x60)
-			end
-			
-			-- 挂上本回合连接召唤的自肃
-			local e3=Effect.CreateEffect(c)
-			e3:SetType(EFFECT_TYPE_FIELD)
-			e3:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-			e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
-			e3:SetDescription(aux.Stringid(id,3))
-			e3:SetTargetRange(1,0)
-			e3:SetTarget(s.splimit)
-			e3:SetReset(RESET_PHASE+PHASE_END)
-			Duel.RegisterEffect(e3,tp)
-		end
-	end
 end

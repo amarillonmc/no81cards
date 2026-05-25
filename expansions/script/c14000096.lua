@@ -47,14 +47,16 @@ function cm.setfilter1(c)
 	return cm.BRAVE(c) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	local ft=2
+	if e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter1,tp,LOCATION_DECK,0,2,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>ft end
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=1 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,cm.setfilter1,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.setfilter1,tp,LOCATION_DECK,0,2,2,nil)
 	local tc=g:GetFirst()
-	if tc then
+	while tc do
 		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
 		Duel.ConfirmCards(1-tp,tc)
 		local e1=Effect.CreateEffect(e:GetHandler())
@@ -62,8 +64,9 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+		e1:SetValue(TYPE_SPELL)
 		tc:RegisterEffect(e1)
+		tc=g:GetNext()
 	end
 end
 function cm.spcon(e)
@@ -74,7 +77,7 @@ function cm.spfilter(c,e,tp)
 	return cm.BRAVE(c) and c:IsLevelBelow(8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
 function cm.tgfilter(c)
-	return cm.BRAVE(c) and c:IsAbleToGrave() and c:GetOriginalType()&TYPE_MONSTER==TYPE_MONSTER
+	return c:IsAbleToGrave()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_ONFIELD,0,2,nil) end

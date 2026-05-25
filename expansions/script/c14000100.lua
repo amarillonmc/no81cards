@@ -55,10 +55,21 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetProperty(EFFECT_FLAG_DELAY)
-	e5:SetCountLimit(1)
+	e5:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e5:SetCondition(cm.con)
 	e5:SetTarget(cm.target)
 	e5:SetOperation(cm.operation)
 	c:RegisterEffect(e5)
+	local e5_1=Effect.CreateEffect(c)
+	e5_1:SetDescription(aux.Stringid(m,0))
+	e5_1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e5_1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e5_1:SetCode(EVENT_SUMMON_SUCCESS)
+	e5_1:SetProperty(EFFECT_FLAG_DELAY)
+	e5_1:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e5_1:SetTarget(cm.target)
+	e5_1:SetOperation(cm.operation)
+	c:RegisterEffect(e5_1)
 	--search
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(m,1))
@@ -93,8 +104,11 @@ end
 function cm.spfilter(c,e,tp)
 	return cm.BRAVE(c) and c:IsLevelBelow(8) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsSummonPlayer,1,e:GetHandler(),1-tp)
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -102,7 +116,17 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_ATTACK)~=0 then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+			e1:SetValue(1)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			g:GetFirst():RegisterEffect(e1)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+			g:GetFirst():RegisterEffect(e2)
+		end
 	end
 end
 function cm.setfilter(c,e,tp)
@@ -112,7 +136,7 @@ function cm.thcon(e)
 	local tp=e:GetHandlerPlayer()
 	return not Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_SZONE,0,1,nil)
 end
-function cm.thfilter(c)
+function cm.thfilter(c,e,tp)
 	return c:IsCode(14000099) and c:IsAbleToHand()
 end
 function cm.tdfilter(c)
@@ -125,11 +149,13 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_GRAVE,0,nil)
-	if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+	if #g<=0 then return end
+	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+	local tg=Duel.GetOperatedGroup()
+	if tg:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if #g>0 then
+		local g=Duel.GetFirstMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,nil)
+		if g then
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
 		end

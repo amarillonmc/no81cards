@@ -6,13 +6,13 @@ function c29039321.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,29039321+EFFECT_COUNT_CODE_OATH)
+	--e1:SetCountLimit(1,29039321+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c29039321.target)
 	e1:SetOperation(c29039321.activate)
 	c:RegisterEffect(e1)
 end
 function c29039321.filter(c)
-	return (c:IsCode(29065500) or aux.IsCodeListed(c,29065500)) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return ((c:IsCode(29065500) or aux.IsCodeListed(c,29065500)) or (c:IsCode(29065502) or aux.IsCodeListed(c,29065502)) or (c:IsCode(29056009) or aux.IsCodeListed(c,29056009))) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c29039321.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29039321.filter,tp,LOCATION_DECK,0,1,nil) end

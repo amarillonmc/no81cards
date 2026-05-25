@@ -36,6 +36,7 @@ function cm.initial_effect(c)
 end
 function cm.efilter(e,te)
 	if te:GetHandler():IsHasEffect(m) and te:IsHasType(EFFECT_TYPE_GRANT) then return false end
+	if not te:IsActiveType(TYPE_MONSTER) then return false end
 	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	return not g or (g:IsContains(e:GetHandler()) and #g==1) --g:IsContains(e:GetHandler())

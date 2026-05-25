@@ -5,18 +5,18 @@ function cm.initial_effect(c)
 	--summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SUMMON+CATEGORY_POSITION)
+	e1:SetCategory(CATEGORY_SUMMON+CATEGORY_POSITION+CATEGORY_MSET)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCondition(cm.con)
 	e1:SetTarget(cm.tg)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	--act in set turn
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e2:SetCondition(cm.actcon)
 	c:RegisterEffect(e2)
 	--tohand
@@ -45,24 +45,41 @@ end
 function cm.filter(c,e,tp)
 	return c:IsFaceup() and c:IsCanTurnSet() and c:GetSummonPlayer()==1-tp and (not e or c:IsRelateToEffect(e))
 end
-function cm.sumfilter(c)
-	return cm.BRAVE(c) and c:IsSummonable(true,nil,1)
+function cm.sumfilter(c,tp)
+	if c:IsLevelBelow(4) or not cm.BRAVE(c) then return false end
+	if c:IsLocation(LOCATION_SZONE) then
+		local min,max=c:GetTributeRequirement()
+		local ct=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
+		local ct1=Duel.GetReleaseGroupCount(tp)
+		ct=ct+ct1
+		if ct<1 or ct<min then return false end
+	end
+	return c:IsSummonable(true,nil,1)
+end
+function cm.filter(c)
+	return c:IsFaceup() and c:IsCanTurnSet() and c:IsSummonType(SUMMON_TYPE_SPECIAL)
+end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsSummonPlayer,1,e:GetHandler(),1-tp)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(cm.filter,1,nil,nil,tp) and Duel.IsExistingMatchingCard(cm.sumfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil) end
-	Duel.SetTargetCard(eg)
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,eg,eg:GetCount(),0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,nil,1,tp,LOCATION_MZONE)
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(cm.filter,nil,e,tp)
-	if Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)~=0 then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-		local g=Duel.SelectMatchingCard(tp,cm.sumfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,1,nil)
-		local tc=g:GetFirst()
-		if tc then
-			Duel.Summon(tp,tc,true,nil,1)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,2,nil)
+	if #g>0 then
+		if Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)~=0 and Duel.IsExistingMatchingCard(cm.sumfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+			local g=Duel.SelectMatchingCard(tp,cm.sumfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,1,nil,tp)
+			local tc=g:GetFirst()
+			if tc then
+				if tc:IsFacedown() and tc:IsOnField() then Duel.ConfirmCards(1-tp,tc) end
+				Duel.Summon(tp,tc,true,nil,1)
+			end
 		end
 	end
 end

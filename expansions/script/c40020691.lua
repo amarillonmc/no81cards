@@ -52,7 +52,7 @@ function s.repfilter(c)
 	if not c:IsAbleToGraveAsCost() then return false end
 	local loc = c:GetLocation()
 	if loc == LOCATION_HAND or loc == LOCATION_DECK then return true end
-	if loc == LOCATION_EXTRA or loc == LOCATION_REMOVED then return c:IsFaceup() end
+	if loc == LOCATION_EXTRA then return c:IsFaceup() end
 	return false
 end
 

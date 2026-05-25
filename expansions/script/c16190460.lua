@@ -8,6 +8,7 @@ function s.initial_effect(c)
     e1:SetCategory(CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+    e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
 	e1:SetOperation(s.setop)
 	c:RegisterEffect(e1)
 	--抽卡
@@ -27,11 +28,10 @@ function s.setfilter(c)
 end
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_DECK,0,nil)
-	if g:GetCount()>0 and Duel.GetFlagEffect(tp,id)==0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SSet(tp,sg)
-        Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
 	end        
 end        
 function s.cfilter(c)

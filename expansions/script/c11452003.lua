@@ -23,7 +23,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e0)
 
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CUSTOM+id)
 	e4:SetProperty(EFFECT_FLAG_EVENT_PLAYER+EFFECT_FLAG_DELAY)
 	e4:SetRange(LOCATION_MZONE)
@@ -326,6 +326,7 @@ function s.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	-- 此处的 tp 即为对方玩家
 	if chk==0 then return true end 
 	
+	Duel.Hint(HINT_CARD, 0, id)
 	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_EFFECT)
 	-- id,1 为双方送墓+检索；id,2 为双方特召+减伤
 	local op = Duel.SelectOption(tp, aux.Stringid(id, 0), aux.Stringid(id, 1))

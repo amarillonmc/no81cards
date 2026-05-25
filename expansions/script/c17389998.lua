@@ -1,3 +1,4 @@
+
 local s,id=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,17390000)   
@@ -51,7 +52,6 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_DESTROYED)
 	e1:SetOperation(s.delayed_th)
-	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.delayed_th(e,tp,eg,ep,ev,re,r,rp)

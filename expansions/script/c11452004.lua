@@ -583,10 +583,8 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 		-- ●双方各自宣言1个卡名。
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 		local code1=Duel.AnnounceCard(tp)
-		Duel.Hint(HINT_CODE,1-tp,code1)
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CODE)
 		local code2=Duel.AnnounceCard(1-tp)
-		Duel.Hint(HINT_CODE,tp,code2)
 		
 		-- 记录限制回合数 (当回合结束时，值过期，限制自动解除)
 		s.restricted_codes[code1] = Duel.GetTurnCount()

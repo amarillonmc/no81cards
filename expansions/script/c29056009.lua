@@ -34,6 +34,29 @@ function c29056009.initial_effect(c)
 	e4:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e4:SetCondition(c29056009.spcon2)
 	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(29056009,2))
+	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e5:SetType(EFFECT_TYPE_IGNITION)
+	e5:SetRange(LOCATION_HAND)
+	e5:SetCountLimit(1,29056011)
+	e5:SetCondition(c29056009.con1)
+	e5:SetTarget(c29056009.tg1)
+	e5:SetOperation(c29056009.op1)
+	c:RegisterEffect(e5)
+end
+--e1
+function c29056009.con1(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
+	return g:IsExists(Card.IsCode,1,nil,29065500,29065502)
+end
+function c29056009.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function c29056009.op1(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
 end
 	--chenweiduixiang sp
 function c29056009.tgfilter(c,tp)
@@ -55,12 +78,12 @@ function c29056009.spfilter(c,e,tp)
 	end
 end
 function c29056009.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c29056009.spfilter),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA+LOCATION_GRAVE)
+	if chk==0 then return Duel.IsExistingMatchingCard(c29056009.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c29056009.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c29056009.spfilter),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,c29056009.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 		Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
 end
 --search
@@ -73,15 +96,15 @@ function c29056009.amyfilter(c)
 end
 function c29056009.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29056009.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	e:SetLabel(0)
-	if Duel.IsExistingMatchingCard(c29056009.amyfilter,tp,LOCATION_ONFIELD,0,1,nil) then e:SetLabel(1) end
+	--e:SetLabel(0)
+	--if Duel.IsExistingMatchingCard(c29056009.amyfilter,tp,LOCATION_ONFIELD,0,1,nil) then e:SetLabel(1) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c29056009.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c29056009.thfilter,tp,LOCATION_DECK,0,nil)
 	if #g<=0 then return end
 	local ct=1
-	if e:GetLabel()==1 then ct=2 end
+	--if e:GetLabel()==1 then ct=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g1=Duel.SelectMatchingCard(tp,c29056009.thfilter,tp,LOCATION_DECK,0,1,ct,nil)
 	Duel.SendtoHand(g1,nil,REASON_EFFECT)

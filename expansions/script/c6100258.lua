@@ -1,7 +1,7 @@
 --朦雨的远目·艾科
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--连接召唤：包含「朦雨」怪兽的怪兽3只以上
+
 	aux.AddLinkProcedure(c,nil,2,99,s.lcheck)
 	c:EnableReviveLimit()
 	
@@ -11,7 +11,7 @@ function s.initial_effect(c)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(s.cond1)
+	e1:SetCondition(s.lkcon)
 	e1:SetValue(500)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
@@ -28,23 +28,10 @@ function s.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCountLimit(2,id)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e3:SetTarget(s.tgtg)
-	e3:SetOperation(s.tgop)
+	e3:SetTarget(s.efftg)
+	e3:SetOperation(s.effop)
 	c:RegisterEffect(e3)
 	
-	--③：暂时除外+回复
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(id,1))
-	e4:SetCategory(CATEGORY_RECOVER)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_FREE_CHAIN)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,id+1)
-	e4:SetCondition(s.rmcon)
-	e4:SetCost(s.rmcost)
-	e4:SetTarget(s.rmtg)
-	e4:SetOperation(s.rmop)
-	c:RegisterEffect(e4)
 end
 
 -- 连接素材检查
@@ -56,131 +43,88 @@ function s.lcheck(g)
 end
 
 -- === 效果① ===
-function s.cond1(e)
-	return e:GetHandler():GetLinkedGroupCount()>0
+function s.lkcon(e)
+	return e:GetHandler():GetLinkedGroupCount() > 0
 end
 
 -- === 效果② ===
-function s.tgfilter(c,atk)
-	return c:IsFaceup() and c:GetAttack()<atk
+function s.tgfilter(c,atk,b1,b2)
+	if not (c:IsFaceup() and c:GetAttack() < atk) then return false end
+	-- b1 代表"破坏"选项尚未被使用过
+	local can_des = b1
+	-- b2 代表"无效"选项尚未被使用过，且该怪兽可以被无效
+	local can_dis = b2 and aux.NegateAnyFilter(c)
+	return can_des or can_dis
 end
 
-function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function s.efftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	local atk=c:GetAttack()
-	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and s.tgfilter(chkc,atk) end
-	if chk==0 then return Duel.IsExistingTarget(s.tgfilter,tp,0,LOCATION_MZONE,1,nil,atk) end
+	local b1 = Duel.GetFlagEffect(tp,id)==0
+	local b2 = Duel.GetFlagEffect(tp,id+1)==0
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.tgfilter(chkc,c:GetAttack(),b1,b2) end
+	if chk==0 then return (b1 or b2) and Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,c:GetAttack(),b1,b2) end
 	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,s.tgfilter,tp,0,LOCATION_MZONE,1,1,nil,atk)
+	local g=Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,c:GetAttack(),b1,b2)
 	local tc=g:GetFirst()
 	
-	-- 构建选项
-	-- 选项0: 破坏 (默认总是显示，除非有极特殊情况，但作为效果选项通常列出)
-	-- 选项1: 无效 (需要表侧且非无效状态)
-	-- 选项2: 变成里侧 (需要可翻转)
+	local can_des = b1
+	local can_dis = b2 and aux.NegateAnyFilter(tc)
+	local op=0
 	
-	local b_des=true 
-	local b_neg=aux.NegateMonsterFilter(tc)
-	local b_set=tc:IsCanTurnSet()
-	
-	local ops={}
-	local opval={}
-	local off=1
-	
-	-- 选项：破坏
-	ops[off]=aux.Stringid(id,2)
-	opval[off]=0
-	off=off+1
-	
-	-- 选项：效果无效
-	if b_neg then
-		ops[off]=aux.Stringid(id,3)
-		opval[off]=1
-		off=off+1
+	-- 根据当前合法且未被使用过的选项弹出选择窗口
+	if can_des and can_dis then
+		op = Duel.SelectOption(tp,aux.Stringid(id,0),aux.Stringid(id,1))
+	elseif can_des then
+		op = Duel.SelectOption(tp,aux.Stringid(id,0))
+	else
+		op = Duel.SelectOption(tp,aux.Stringid(id,1)) + 1
 	end
+	e:SetLabel(op)
 	
-	-- 选项：变成里侧
-	if b_set then
-		ops[off]=aux.Stringid(id,4)
-		opval[off]=2
-		off=off+1
-	end
-	
-	local op=Duel.SelectOption(tp,table.unpack(ops))
-	local sel=opval[op+1]
-	e:SetLabel(sel)
-	
-	if sel==0 then
+	if op==0 then
+		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
 		e:SetCategory(CATEGORY_DESTROY)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-	elseif sel==1 then
+	else
+		Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
 		e:SetCategory(CATEGORY_DISABLE)
 		Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
-	elseif sel==2 then
-		e:SetCategory(CATEGORY_POSITION)
-		Duel.SetOperationInfo(0,CATEGORY_POSITION,g,1,0,0)
 	end
 end
 
-function s.tgop(e,tp,eg,ep,ev,re,r,rp)
+function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	local sel=e:GetLabel()
-	if tc:IsRelateToEffect(e) then
-		if sel==0 then
-			Duel.Destroy(tc,REASON_EFFECT)
-		elseif sel==1 then
-			if tc:IsFaceup() and not tc:IsDisabled() then
-				Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-				local e1=Effect.CreateEffect(e:GetHandler())
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_DISABLE)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				tc:RegisterEffect(e1)
-				local e2=Effect.CreateEffect(e:GetHandler())
-				e2:SetType(EFFECT_TYPE_SINGLE)
-				e2:SetCode(EFFECT_DISABLE_EFFECT)
-				e2:SetValue(RESET_TURN_SET)
-				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-				tc:RegisterEffect(e2)
-			end
-		elseif sel==2 then
-			if tc:IsFaceup() then
-				Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
+	if not tc:IsRelateToEffect(e) or tc:IsFacedown() then return end
+	local op=e:GetLabel()
+	
+	if op==0 then
+		-- ●那只怪兽破坏。
+		Duel.Destroy(tc,REASON_EFFECT)
+		
+	elseif op==1 then
+		-- ●那只怪兽的效果无效化。
+		if tc:IsCanBeDisabledByEffect(e) then
+			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+			local c=e:GetHandler()
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+			if tc:IsType(TYPE_TRAPMONSTER) then
+				local e3=Effect.CreateEffect(c)
+				e3:SetType(EFFECT_TYPE_SINGLE)
+				e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+				e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e3)
 			end
 		end
 	end
-end
-
--- === 效果③ ===
-function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==1-tp
-end
-
-function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToRemoveAsCost() end
-	if Duel.Remove(c,POS_FACEUP,REASON_COST+REASON_TEMPORARY)~=0 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabelObject(c)
-		e1:SetCountLimit(1)
-		e1:SetOperation(s.retop)
-		Duel.RegisterEffect(e1,tp)
-	end
-end
-
-function s.retop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ReturnToField(e:GetLabelObject())
-end
-
-function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
-end
-
-function s.rmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Recover(tp,1000,REASON_EFFECT)
 end

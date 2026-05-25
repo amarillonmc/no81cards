@@ -1,4 +1,4 @@
---困难重重仍要勇往直前！
+--困难重重仍要勇往直前
 local s,id=GetID()
 local AVAIL_FLAG = id+100         -- 可使用次数标记
 local USED_FLAG = id+200          -- 已使用次数标记
@@ -40,7 +40,7 @@ function s.initial_effect(c)
   c:RegisterEffect(e3)
 end
 function s.ffilter(c,fc,sub,mg,sg)
-	return c:IsOnField() and (not sg or sg:FilterCount(aux.TRUE,c)==0 or (sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()) and sg:IsExists(Card.IsRace,1,c,c:GetRace())))
+	return (not sg or sg:FilterCount(aux.TRUE,c)==0 or (sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()) and sg:IsExists(Card.IsRace,1,c,c:GetRace())))
 end
 
 function s.con2(e,tp,eg,ep,ev,re,r,rp)
@@ -75,7 +75,7 @@ end
 function s.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     local c=e:GetHandler()
     local used=c:GetFlagEffect(USED_FLAG)
-    local x=math.max(1, used+1)
+    local x=math.max(1, used)
     if chk==0 then
         return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
     end

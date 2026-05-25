@@ -50,15 +50,26 @@ function cm.initial_effect(c)
 	--pos change
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,0))
-	e5:SetCategory(CATEGORY_POSITION)
+	e5:SetCategory(CATEGORY_POSITION+CATEGORY_MSET+CATEGORY_SSET)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetProperty(EFFECT_FLAG_DELAY)
-	e5:SetCountLimit(1)
+	e5:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e5:SetCondition(cm.con)
 	e5:SetTarget(cm.target)
 	e5:SetOperation(cm.operation)
 	c:RegisterEffect(e5)
+	local e5_1=Effect.CreateEffect(c)
+	e5_1:SetDescription(aux.Stringid(m,0))
+	e5_1:SetCategory(CATEGORY_POSITION+CATEGORY_MSET+CATEGORY_SSET)
+	e5_1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e5_1:SetCode(EVENT_SUMMON_SUCCESS)
+	e5_1:SetProperty(EFFECT_FLAG_DELAY)
+	e5_1:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e5_1:SetTarget(cm.target)
+	e5_1:SetOperation(cm.operation)
+	c:RegisterEffect(e5_1)
 	--set
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(m,1))
@@ -86,30 +97,38 @@ end
 function cm.filter(c,tp)
 	return c:GetSummonPlayer()==1-tp
 end
+function cm.rsfilter(c)
+	return not c:IsType(TYPE_TOKEN)
+end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsSummonPlayer,1,e:GetHandler(),1-tp)
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp) and Duel.IsExistingMatchingCard(cm.rsfilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,nil,1,0,LOCATION_ONFIELD)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and not c:IsType(TYPE_TOKEN) end,tp,0,LOCATION_ONFIELD,1,nil) then return end
+	if not Duel.IsExistingMatchingCard(cm.rsfilter,tp,0,LOCATION_ONFIELD,1,nil) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectMatchingCard(tp,function(c) return c:IsFaceup() and not c:IsType(TYPE_TOKEN) end,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.rsfilter,tp,0,LOCATION_ONFIELD,1,2,nil)
 	local tc=g:GetFirst()
-	if not tc then return end
-	local bool1=1
-	if tc:IsCanTurnSet() and not tc:IsType(TYPE_PENDULUM) then
-		tc:CancelToGrave()
-		if tc:IsType(TYPE_MONSTER) then
-			Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
-		else
-			Duel.ChangePosition(tc,POS_FACEDOWN)
-			Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+	while tc do
+		local bool1=1
+		if tc:IsCanTurnSet() and not tc:IsType(TYPE_PENDULUM) then
+			tc:CancelToGrave()
+			if tc:IsType(TYPE_MONSTER) then
+				Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
+			else
+				Duel.ChangePosition(tc,POS_FACEDOWN)
+				Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+			end
+			local g=Duel.GetOperatedGroup()
+			if #g>0 then bool1=0 end
 		end
-		local g=Duel.GetOperatedGroup()
-		if #g>0 then bool1=0 end
-	end
-	if not tc:IsType(TYPE_TOKEN) and (tc:IsFaceup() or not tc:IsLocation(LOCATION_REMOVED)) and bool1==1 then
-		Duel.Remove(tc,POS_FACEDOWN,REASON_RULE)
+		if not tc:IsType(TYPE_TOKEN) and (tc:IsFaceup() or not tc:IsLocation(LOCATION_REMOVED)) and bool1==1 then
+			Duel.Remove(tc,POS_FACEDOWN,REASON_RULE)
+		end
+		tc=g:GetNext()
 	end
 end
 function cm.setfilter(c,e,tp)

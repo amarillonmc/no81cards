@@ -1,6 +1,13 @@
 --朦雨的清扫 (赤晶的清扫)
 local s,id,o=GetID()
 function s.initial_effect(c)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e0:SetCost(s.cost)
+	e0:SetDescription(aux.Stringid(id,1))
+	c:RegisterEffect(e0)
+
 	--①：弹手卡 + 允许手卡发动陷阱
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -13,22 +20,21 @@ function s.initial_effect(c)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
 
-	--②：墓地复刻适用效果并回卡组
+	--②：墓地反制，回卡组底并无效
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_TODECK)
+	e2:SetDescription(aux.Stringid(id,5))
+	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1,id) -- 同样绑定 id，实现二选一
-	e2:SetCost(s.gycost)
-	e2:SetTarget(s.gytg)
-	e2:SetOperation(s.gyop)
+	e2:SetCountLimit(1,id+1)
+	e2:SetCondition(s.discon)
+	e2:SetCost(s.discost)
+	e2:SetTarget(s.distg)
+	e2:SetOperation(s.disop)
 	c:RegisterEffect(e2)
 end
 
--- 判定是否为表侧的「朦雨」卡
 function s.is_faceup_mengyu(c)
 	return c:IsFaceup() and c:IsSetCard(0x613)
 end
@@ -72,7 +78,12 @@ function s.my_filter(c,tp,e,selected_group,need_mengyu)
 	return true
 end
 
--- === 效果① ===
+
+function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,500) end
+			Duel.PayLPCost(tp, 500)
+end
+
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end -- 屏蔽单体自动选取
 	if chk==0 then return Duel.IsExistingMatchingCard(s.my_filter,tp,LOCATION_ONFIELD,0,1,nil,tp,e,nil,true) end
@@ -140,27 +151,29 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 
 end
 
--- === 效果② ===
-function s.gycost(e,tp,eg,ep,ev,re,r,rp,chk)
+-- === 效果②：墓地反制 ===
+function s.discon(e,tp,eg,ep,ev,re,r,rp)
+	-- 包含把怪兽特殊召唤的效果由对方在自己回合发动时
+	return rp==1-tp and Duel.GetTurnPlayer()==tp
+		and re:IsHasCategory(CATEGORY_SPECIAL_SUMMON)
+		and Duel.IsChainDisablable(ev)
+end
+
+function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,500) end
 	Duel.PayLPCost(tp,500)
 end
 
-function s.gytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then 
-		-- 判断本卡能否回卡组，同时预执行①的选卡检测
-		return e:GetHandler():IsAbleToDeck() and s.target(e,tp,eg,ep,ev,re,r,rp,0,chkc) 
-	end
-	s.target(e,tp,eg,ep,ev,re,r,rp,1,chkc)
+function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToDeck() end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end
 
-function s.gyop(e,tp,eg,ep,ev,re,r,rp)
-	s.activate(e,tp,eg,ep,ev,re,r,rp)
+function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.BreakEffect()
-		Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,SEQ_DECKBOTTOM,REASON_EFFECT)>0 and c:IsLocation(LOCATION_DECK) then
+		-- 回到了卡组最下面，将效果无效
+		Duel.NegateEffect(ev)
 	end
 end

@@ -57,13 +57,13 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EVENT_DESTROYED)
 	e1:SetCondition(s.thcon) 
 	e1:SetOperation(s.delayed_th)
-	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
 
 function s.thfilter(c)
 	return c:IsAbleToHand() and s.destroyed_list[c:GetCode()]
 end
+
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE,0,1,nil)
 end

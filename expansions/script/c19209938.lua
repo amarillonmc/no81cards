@@ -66,11 +66,24 @@ function c19209938.spop(e,tp,eg,ep,ev,re,r,rp)
 		local p=1-tp
 		local sg=g:Filter(Card.IsCanBeSpecialSummoned,nil,e,0,p,false,false)
 		if #sg>0 and Duel.GetMZoneCount(p)>0 and Duel.SelectYesNo(tp,aux.Stringid(19209938,3)) then
+			local sc=sg:GetFirst()
 			if #sg>1 then
 				Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
-				sg=sg:Select(p,1,1,nil)
+				sc=sg:Select(p,1,1,nil):GetFirst()
 			end
-			Duel.SpecialSummon(sg,0,p,p,false,false,POS_FACEUP)
+			Duel.SpecialSummon(sc,0,p,p,false,false,POS_FACEUP)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			sc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			sc:RegisterEffect(e2)
+			Duel.SpecialSummonComplete()
 		end
 	elseif op==2 then
 		Duel.BreakEffect()

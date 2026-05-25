@@ -29,13 +29,20 @@ function s.initial_effect(c)
 	e2:SetCountLimit(1)
 	e2:SetOperation(s.eop)
 	c:RegisterEffect(e2)
+	--cannot link material
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	e3:SetValue(1)
+	c:RegisterEffect(e3)
 	if not s.global_check then
 		s.global_check=true
 		if not s.match_summons then s.match_summons={} end
 		if MATCH_MODE and Duel.GetRegistryValue("Kitt_Summon")then
 			s.load_match_data_string(Duel.GetRegistryValue("Kitt_Summon"))
 		else
-			--s.load_match_data_string("65711558")
+			--s.load_match_data_string("")
 		end
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -108,20 +115,7 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
 		Duel.MajesticCopy(c,tc)
-		--Link Summon Lock
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_FIELD)
-		e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e2:SetTargetRange(1,0)
-		e2:SetTarget(s.splimit)
-		e2:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e2,tp)
 	end
-end
-
-function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return (sumtype&SUMMON_TYPE_LINK)==SUMMON_TYPE_LINK
 end
 function s.efilter(c)
 	return c:GetFlagEffect(id)>0

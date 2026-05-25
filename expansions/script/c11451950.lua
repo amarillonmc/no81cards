@@ -251,6 +251,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterFlagEffect(m,RESET_CHAIN,0,1)
 	if cm[c]==1 or Duel.GetFlagEffect(tp,m)>0 or not c:IsSpecialSummonable(0) or not cm.spcon(e,c) then cm[c]=nil c:ResetFlagEffect(m) return end
 	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
+	--Debug.Message(cm.spcon(e,c))
 	if cm[c]==2 or Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,0)) then
 		if not cm[c] then
 			local sg=Duel.GetMatchingGroup(function(c) return c:IsCode(m+1) end,tp,LOCATION_EXTRA,0,nil)
@@ -260,7 +261,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			local rg0=g0:Filter(function(c) return c:IsSpecialSummonable(0) and cm.spcon(e,c) end,nil)
 			for tc in aux.Next(g0-rg0) do tc:ResetFlagEffect(m) end
 			if #sg>0 then
-				if Duel.SelectEffectYesNo(tp,sg:GetFirst(),aux.Stringid(m,0)) then
+				if Duel.SelectEffectYesNo(tp,sg:GetFirst(),aux.Stringid(m,3)) then
 					c:ResetFlagEffect(m)
 					for tc in aux.Next(g0) do cm[tc]=1 end
 					cm[c]=nil

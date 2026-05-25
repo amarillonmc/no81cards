@@ -68,19 +68,48 @@ function cm.immcon(e)
 	local flag=c:GetFlagEffectLabel(m)
 	return (not flag or flag<3)
 end
+function cm.eval(e,te)
+	local res=te:IsActivated()
+	if res then 
+		e:SetLabelObject(te)
+		e:SetLabel(Duel.GetCurrentChain())
+		e:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+		e:SetValue(function(e,te) return e:GetLabelObject() and te==e:GetLabelObject() and e:GetLabel()==Duel.GetCurrentChain() end)
+	end
+	return res
+end
 function cm.immval(e,te_or_c)
+	local c=e:GetHandler()
 	local res=aux.GetValueType(te_or_c)~="Effect" or (te_or_c:IsActivated() and te_or_c:GetOwner()~=e:GetHandler())
 	if res then
-		if aux.GetValueType(te_or_c)=="Effect" then Duel.Hint(HINT_CARD,0,m) end
 		local c=e:GetHandler()
 		local flag=c:GetFlagEffectLabel(m)
-		if flag then
-			flag=flag+1
-			c:ResetFlagEffect(m)
-			c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(m,flag+3))
-		else
-			c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(m,4))
+		local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+m-1)}
+		local ctns=false
+		if aux.GetValueType(te_or_c)=="Effect" then
+			for _,se in pairs(eset) do
+				if se:GetLabelObject()==te and se:GetLabel()==Duel.GetCurrentChain() then ctns=true end
+			end
+			if not ctns then
+				Duel.Hint(HINT_CARD,0,m)
+				local e2=Effect.CreateEffect(c)
+				e2:SetType(EFFECT_TYPE_SINGLE)
+				e2:SetCode(EFFECT_FLAG_EFFECT+m-1)
+				e2:SetLabelObject(te)
+				e2:SetLabel(Duel.GetCurrentChain())
+				e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+				c:RegisterEffect(e2,true)
+				if flag then
+					flag=flag+1
+					c:ResetFlagEffect(m)
+					c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(m,flag+3))
+				else
+					c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(m,4))
+				end
+			end
 		end
+		
 	end
 	return res
 end

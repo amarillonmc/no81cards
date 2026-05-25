@@ -12,29 +12,12 @@ function cm.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(cm.splimit)
 	c:RegisterEffect(e1)
-	--remove
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetCategory(CATEGORY_REMOVE)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
-	e3:SetCondition(cm.rmcon)
-	e3:SetTarget(cm.rmtg)
-	e3:SetOperation(cm.rmop)
-	c:RegisterEffect(e3)
-	----To hand
-	--local e4=Effect.CreateEffect(c)
-	--e4:SetCategory(CATEGORY_TOHAND)
-	--e4:SetType(EFFECT_TYPE_IGNITION)
-	--e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	--e4:SetRange(LOCATION_MZONE)
-	--e4:SetCountLimit(1)
-	--e4:SetTarget(cm.thtg)
-	--e4:SetOperation(cm.thop)
-	--c:RegisterEffect(e4)
+	--LP LOST
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
+	e2:SetOperation(cm.llop)
+	c:RegisterEffect(e2)
 	--atk limit
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD)
@@ -52,6 +35,24 @@ function cm.initial_effect(c)
 	e6:SetCondition(cm.discon)
 	e6:SetOperation(cm.disop)
 	c:RegisterEffect(e6)
+	--damage val
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_SINGLE)
+	e7:SetCode(EFFECT_NO_BATTLE_DAMAGE)
+	e7:SetValue(1)
+	c:RegisterEffect(e7)
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+	e8:SetValue(1)
+	c:RegisterEffect(e8)
+end
+function cm.llop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
+	local c=e:GetHandler()
+	local atk=c:GetAttack()
+	local lp=Duel.GetLP(1-tp)
+	Duel.SetLP(1-tp,lp-atk)
 end
 function cm.discfilter(c,tp)
 	return c:IsControler(tp) and c:IsOnField()
@@ -72,49 +73,3 @@ function cm.splimit(e,se,sp,st)
 	local sc=se:GetHandler()
 	return sc and sc:IsCode(29056009)
 end
-function cm.cfilter(c)
-	return c:IsFaceup() and (c:IsCode(29056009) or c:IsCode(29009213))
-end
-function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
-end
-function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and chkc:IsAbleToRemove() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
-end
-function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
-	end
-end
---function cm.thfilter(c)
-	--return c:IsSetCard(0x87af) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
---end
---function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	--if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.thfilter(chkc) end
-	--if chk==0 then return Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	--local g=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	--Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
---end
---function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	--local tc=Duel.GetFirstTarget()
-	--if tc:IsRelateToEffect(e) then
-		--Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		--Duel.ConfirmCards(1-tp,tc)
-	--end
---end
-
-
-
-
-
-
-
-
-
-

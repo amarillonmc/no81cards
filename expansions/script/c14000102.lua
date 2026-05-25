@@ -46,10 +46,21 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCountLimit(1)
+	e4:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e4:SetCondition(cm.con)
 	e4:SetTarget(cm.target)
 	e4:SetOperation(cm.operation)
 	c:RegisterEffect(e4)
+	local e4_1=Effect.CreateEffect(c)
+	e4_1:SetDescription(aux.Stringid(m,0))
+	e4_1:SetCategory(CATEGORY_DESTROY)
+	e4_1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4_1:SetCode(EVENT_SUMMON_SUCCESS)
+	e4_1:SetProperty(EFFECT_FLAG_DELAY)
+	e4_1:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e4_1:SetTarget(cm.target)
+	e4_1:SetOperation(cm.operation)
+	c:RegisterEffect(e4_1)
 	--set
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,1))
@@ -64,11 +75,11 @@ end
 function cm.poscon(e)
 	return e:GetHandler():IsAttackPos()
 end
-function cm.filter(c,tp)
-	return c:GetSummonPlayer()==1-tp
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsSummonPlayer,1,e:GetHandler(),1-tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp) and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,LOCATION_ONFIELD)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -100,6 +111,6 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-	e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+	e1:SetValue(TYPE_SPELL)
 	c:RegisterEffect(e1)
 end

@@ -60,10 +60,20 @@ function cm.etg(e,c)
 	return c:GetFlagEffect(m)==0
 end
 function cm.eval(e,te,c)
-	local res=c:GetFlagEffect(m)==0 and te:IsActivated() --and te:GetOwner()~=e:GetOwnerPlayer()
-	if res then
+	local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+m-2)}
+	local ctns=false
+	if te:IsActivated() then
+		for _,se in pairs(eset) do
+			if se:GetLabelObject()==te and se:GetLabel()==Duel.GetCurrentChain() then ctns=true end
+		end
+	end
+	local res=ctns or (c:GetFlagEffect(m)==0 and te:IsActivated()) --and te:GetOwner()~=e:GetOwnerPlayer()
+	if res and not ctns then
 		Duel.Hint(HINT_CARD,0,m)
 		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+		local ge2=c:RegisterFlagEffect(m-2,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+		ge2:SetLabelObject(te)
+		ge2:SetLabel(Duel.GetCurrentChain())
 	end
 	return res
 end

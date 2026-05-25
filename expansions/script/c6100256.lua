@@ -54,7 +54,7 @@ end
 
 -- 效果②
 function s.spfilter(c,e,tp,zone)
-	return c:IsSetCard(0x613) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE,tp,zone)
+	return c:IsSetCard(0x613) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -72,7 +72,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local zone=c:GetLinkedZone(tp)
 	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and zone~=0 then
-		if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE,zone)>0 then
+		if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone)>0 then
 			-- 赋予抗性：不会成为对方的效果的对象
 			local e1=Effect.CreateEffect(c)
 			e1:SetDescription(aux.Stringid(id,1))

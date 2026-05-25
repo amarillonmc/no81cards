@@ -280,21 +280,19 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		ge2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		tc:RegisterEffect(ge2,true)
 	end
-	if not KOISHI_CHECK then
-		local e5=Effect.CreateEffect(c)
-		e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e5:SetCode(EVENT_ADJUST)
-		e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e5:SetLabel(fid)
-		e5:SetCondition(function() return not pnfl_adjusting end)
-		e5:SetOperation(cm.acop)
-		Duel.RegisterEffect(e5,tp)
-		local e6=e5:Clone()
-		e6:SetCode(EVENT_CHAIN_SOLVED)
-		e6:SetCondition(aux.TRUE)
-		e6:SetOperation(cm.acop2)
-		Duel.RegisterEffect(e6,tp)
-	end
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_ADJUST)
+	e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e5:SetLabel(fid)
+	e5:SetCondition(function() return not pnfl_adjusting end)
+	e5:SetOperation(cm.acop)
+	Duel.RegisterEffect(e5,tp)
+	local e6=e5:Clone()
+	e6:SetCode(EVENT_CHAIN_SOLVED)
+	e6:SetCondition(aux.TRUE)
+	e6:SetOperation(cm.acop2)
+	Duel.RegisterEffect(e6,tp)
 end
 function cm.chkval(e,te)
 	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
@@ -302,14 +300,21 @@ function cm.chkval(e,te)
 			Duel.DisableActionCheck(true)
 			pcall(Duel.SendtoHand,e:GetHandler(),nil,REASON_EFFECT)
 			Duel.DisableActionCheck(false)
-		else
+		end
+		if e:GetHandler():IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) then
 			e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1,e:GetLabel())
 		end
 		--Duel.AdjustAll()
 		--Duel.Readjust()
-		e:SetValue(aux.FALSE)
+		if te:IsActivated() then
+			e:SetLabelObject(te)
+			e:SetLabel(Duel.GetCurrentChain())
+			e:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+		end
+		e:SetValue(function(e,te) return e:GetLabelObject() and te==e:GetLabelObject() and e:GetLabel()==Duel.GetCurrentChain() end)
 		e:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e:SetDescription(0)
+		e:GetHandler():ResetFlagEffect(m+0xffffff)
 		if Duel.GetFlagEffect(tp,0xffff+m)==0 then
 			Duel.RegisterFlagEffect(tp,0xffff+m,RESET_CHAIN,0,1)
 			if SetCardData then

@@ -1,10 +1,10 @@
 --方舟骑士-阿米娅
 c29065500.named_with_Arknight=1
 function c29065500.initial_effect(c)
-	aux.AddCodeList(c,29065502,29065510) 
+	aux.AddCodeList(c,29065502,29065510,29056009) 
 	--summon with no tribute
 	local e0=Effect.CreateEffect(c)
-	e0:SetDescription(aux.Stringid(67136033,0))
+	e0:SetDescription(aux.Stringid(29065500,0))
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_SUMMON_PROC)
 	e0:SetCondition(c29065500.ntcon)
@@ -25,7 +25,7 @@ function c29065500.initial_effect(c)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
 	c29065500.speffect=e1   
-	--fdcd
+	--active filed
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_MZONE)
@@ -100,7 +100,7 @@ function c29065500.actfilter(c,tp)
 	return c:IsCode(29065510) and c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
 function c29065500.bsfilter(c)
-	return c:IsCode(29065502) and c:IsFaceup()
+	return (c:IsCode(29065502) or c:IsCode(29056009)) and c:IsFaceup()
 end
 function c29065500.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

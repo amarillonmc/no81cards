@@ -267,6 +267,13 @@ function cm.initial_effect(c)
 		ge3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 		ge3:SetLabelObject(ge2)
 		Duel.RegisterEffect(ge3,0)
+		--check
+		cm.tgph={}
+		local ge0=Effect.CreateEffect(c)
+		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge0:SetCode(EVENT_TO_GRAVE)
+		ge0:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) for tc in aux.Next(eg) do cm.tgph[tc]=Duel.GetCurrentPhase() end end)
+		Duel.RegisterEffect(ge0,0)
 	end
 end
 cm.toss_coin=true
@@ -281,7 +288,7 @@ function cm.chkval0(e,te)
 	return false
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==1-tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+	return Duel.GetTurnPlayer()==1-tp --and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x6e) and c:IsLevel(2) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -292,7 +299,9 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
 end
 function cm.rfilter(c)
-	return Duel.GetTurnCount()~=c:GetTurnID() and not c:IsReason(REASON_RETURN) and c:IsAbleToHand()
+	local ph=Duel.GetCurrentPhase()
+	--local ph2=cm.tgph[c]
+	return not c:IsReason(REASON_RETURN) and c:IsAbleToHand() and Duel.GetTurnCount()~=c:GetTurnID() --(not ph2 or (Duel.GetTurnCount()~=c:GetTurnID()) or (ph~=ph2 and (ph<=PHASE_MAIN1 or ph>=PHASE_MAIN2 or ph2<=PHASE_MAIN1 or ph2>=PHASE_MAIN2)))
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

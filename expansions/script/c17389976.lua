@@ -19,13 +19,11 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	
 end
-
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(function(c) return c:IsSetCard(0x5f51) and c:IsType(TYPE_SPELL+TYPE_TRAP) end,tp,LOCATION_DECK,0,1,nil)
 		and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,0x5f51) end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,2,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_DECK)
 end
-
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.GetMatchingGroup(function(c) return c:IsSetCard(0x5f51) and c:IsType(TYPE_SPELL+TYPE_TRAP) end,tp,LOCATION_DECK,0,nil)
 	local g2=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,0x5f51)
@@ -40,16 +38,13 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(sg1,REASON_EFFECT)
 	end
 end
-
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_DESTROYED)
 	e1:SetOperation(s.delayed_sp)
-	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-
 function s.delayed_sp(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	e:Reset()

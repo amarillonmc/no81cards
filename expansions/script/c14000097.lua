@@ -37,10 +37,21 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCountLimit(1)
+	e4:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e4:SetCondition(cm.con)
 	e4:SetTarget(cm.target)
 	e4:SetOperation(cm.operation)
 	c:RegisterEffect(e4)
+	local e4_1=Effect.CreateEffect(c)
+	e4_1:SetDescription(aux.Stringid(m,0))
+	e4_1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+	e4_1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4_1:SetCode(EVENT_SUMMON_SUCCESS)
+	e4_1:SetProperty(EFFECT_FLAG_DELAY)
+	e4_1:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e4_1:SetTarget(cm.target)
+	e4_1:SetOperation(cm.operation)
+	c:RegisterEffect(e4_1)
 	--set
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,1))
@@ -63,11 +74,11 @@ end
 function cm.filter(c)
 	return cm.BRAVE(c) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
-function cm.cfilter(c,tp)
-	return c:GetSummonPlayer()==1-tp
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsSummonPlayer,1,e:GetHandler(),1-tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(cm.cfilter,1,nil,tp) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -89,8 +100,8 @@ function cm.sumcon(e)
 	return not Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_SZONE,0,1,nil)
 end
 function cm.sumfilter(c,tp)
-	if not cm.BRAVE(c) then return false end
-	if c:IsLocation(LOCATION_SZONE) and c:IsLevelAbove(5) then
+	if c:IsLevelBelow(4) or not cm.BRAVE(c) then return false end
+	if c:IsLocation(LOCATION_SZONE) then
 		local min,max=c:GetTributeRequirement()
 		local ct=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 		local ct1=Duel.GetReleaseGroupCount(tp)
@@ -100,7 +111,7 @@ function cm.sumfilter(c,tp)
 	return c:IsSummonable(true,nil,1)
 end
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(cm.sfilter,1,nil,nil,tp) and Duel.IsExistingMatchingCard(cm.sumfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.sumfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
@@ -109,6 +120,7 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.sumfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if tc then
+		if tc:IsFacedown() and tc:IsOnField() then Duel.ConfirmCards(1-tp,tc) end
 		Duel.Summon(tp,tc,true,nil,1)
 	end
 end

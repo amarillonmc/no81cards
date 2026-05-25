@@ -52,12 +52,12 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_DESTROYED)
 	e1:SetOperation(s.delayed_sp)
-	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.delayed_sp(e,tp,eg,ep,ev,re,r,rp)
