@@ -1,6 +1,6 @@
 local s,id=GetID()
 function s.initial_effect(c)
-	-- 场地魔法发动
+	aux.AddCodeList(c,22702055)
 	-- 这个卡名的卡1回合只能发动1张。
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
