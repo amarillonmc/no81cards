@@ -82,7 +82,7 @@ function c17337708.attrcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.ShuffleHand(tp)
 end
 function c17337708.disfilter(c,ec)
-	return aux.NegateMonsterFilter() and c:IsAttribute(ec:GetAttribute())
+	return aux.NegateMonsterFilter(c) and c:IsAttribute(ec:GetAttribute())
 end
 function c17337708.attrop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

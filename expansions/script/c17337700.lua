@@ -72,7 +72,7 @@ function c17337700.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c17337700.chkfilter,1,nil,tp)
 end
 function c17337700.setfilter(c,tp)
-	return c:IsSetCard(0x3f51) and c:IsType(TYPE_FIELD) and (not c:IsLocation(LOCATION_HAND) and c:IsAbleToHand() or not c:IsForbidden() and c:CheckUniqueOnField(tp))
+	return c:IsSetCard(0x3f51) and c:IsType(TYPE_FIELD) and (c:IsAbleToHand() or not c:IsForbidden() and c:CheckUniqueOnField(tp))--not c:IsLocation(LOCATION_HAND) and 
 end
 function c17337700.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -81,10 +81,10 @@ function c17337700.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c17337700.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not (c:IsRelateToChain() and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>Duel.GetFieldGroupCount(tp,0,LOCATION_HAND) and Duel.IsExistingMatchingCard(c17337700.setfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(17337700,1))) then return end
+	if not (c:IsRelateToChain() and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>Duel.GetFieldGroupCount(tp,0,LOCATION_HAND) and Duel.IsExistingMatchingCard(c17337700.setfilter,tp,LOCATION_DECK,0,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(17337700,1))) then return end
 	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local tc=Duel.SelectMatchingCard(tp,c17337700.setfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,tp):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c17337700.setfilter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
 	if not tc:IsLocation(LOCATION_HAND) and tc:IsAbleToHand() and (tc:IsForbidden() or not tc:CheckUniqueOnField(tp) or Duel.SelectOption(tp,1190,aux.Stringid(17337700,2))==0) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
