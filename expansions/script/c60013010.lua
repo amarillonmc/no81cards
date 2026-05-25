@@ -117,7 +117,7 @@ function cm.AnXiop(e,tp,eg,ep,ev,re,r,rp)
 	elseif op==2 then Duel.Draw(tp,2,REASON_EFFECT)
 	elseif op==3 then
 		local rg=Duel.GetDecktopGroup(1-tp,3)
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+		Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 	end
 end
 
