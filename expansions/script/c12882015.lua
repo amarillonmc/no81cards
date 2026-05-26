@@ -71,6 +71,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		local fid=c:GetFieldID()
 		local e1=Effect.CreateEffect(c)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -86,24 +87,30 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_END then
 			ge1:SetReset(EVENT_PHASE+PHASE_END+RESET_SELF_TURN,2)
 			ge1:SetValue(Duel.GetTurnCount())
-			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+EVENT_PHASE+PHASE_END+RESET_SELF_TURN,0,2)
+			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+EVENT_PHASE+PHASE_END+RESET_SELF_TURN,0,2,fid)
 		else
 			ge1:SetReset(EVENT_PHASE+PHASE_END+RESET_SELF_TURN)
 			ge1:SetValue(0)
-			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+EVENT_PHASE+PHASE_END+RESET_SELF_TURN,0,1)
+			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+EVENT_PHASE+PHASE_END+RESET_SELF_TURN,0,1,fid)
 		end
 		ge1:SetCountLimit(1)
+		ge1:SetLabel(fid)
 		ge1:SetCondition(s.descon)
 		ge1:SetOperation(s.desop)
 		Duel.RegisterEffect(ge1,tp)
 	end
 end
+function s.desfilter(c,fid)
+	return c:GetFlagEffectLabel(id)==fid
+end
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
+	local fid=e:GetLabel()
 	if Duel.GetTurnPlayer()~=tp or Duel.GetTurnCount()==e:GetValue() then return false end
-	return Duel.IsExistingMatchingCard(function(c) return c:GetFlagEffect(id)>0 end,tp,LOCATION_SZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_SZONE,0,1,nil,fid)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(function(c) return c:GetFlagEffect(id)>0 end,tp,LOCATION_SZONE,0,nil)
+	local fid=e:GetLabel()
+	local g=Duel.GetMatchingGroup(s.desfilter,tp,LOCATION_SZONE,0,nil,fid)
 	for tc in aux.Next(g) do
 		tc:ResetFlagEffect(id)
 	end

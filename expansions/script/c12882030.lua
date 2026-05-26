@@ -9,6 +9,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
+	e1:SetCost(s.cost)
 	e1:SetTarget(s.target1)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
@@ -26,12 +27,9 @@ function s.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,2))
 	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetValue(id)
 	e3:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e3:SetCondition(s.condition)
-	e3:SetCost(s.cost)
-	e3:SetLabelObject(e1)
 	c:RegisterEffect(e3)
 end
 function s.condition(e)
@@ -39,7 +37,11 @@ function s.condition(e)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	e:GetLabelObject():SetLabel(1)
+	if e:GetHandler():IsStatus(STATUS_SET_TURN) and e:GetHandler():IsLocation(LOCATION_ONFIELD) then
+		e:SetLabel(1)
+	else
+		e:SetLabel(0)
+	end
 end
 function s.spfilter(c,e,tp)
 	return c:IsSetCard(0x5a7d) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
