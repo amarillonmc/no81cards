@@ -18,11 +18,13 @@ function s.initial_effect(c)
 	e2:SetCondition(s.handcon)
 	c:RegisterEffect(e2)
 end
-function s.cfilter(c,e,tp,atk)
-	return c:GetAttack()+c:GetDefense()==atk and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+-- 增加了 att 参数：属性不同
+function s.cfilter(c,e,tp,atk,att)
+	return c:GetAttack()+c:GetDefense()==atk and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsAttribute(att)
 end
+-- filter 增加了属性判断，并传入 att
 function s.filter(c,e,tp)
-	return (c:IsFaceup() or c:IsControler(tp)) and c:IsAbleToDeck() and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp,c:GetAttack()+c:GetDefense()) 
+	return (c:IsFaceup() or c:IsControler(tp)) and c:IsAbleToDeck() and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp,c:GetAttack()+c:GetDefense(),c:GetAttribute())
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.filter(chkc,e,tp) end
@@ -38,7 +40,8 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		if tc:IsFacedown() then
 			Duel.ConfirmCards(1-tp,tc)
 		end
-		local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil,e,tp,tc:GetAttack()+tc:GetDefense())
+		-- 这里传入了对象怪兽的属性
+		local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil,e,tp,tc:GetAttack()+tc:GetDefense(),tc:GetAttribute())
 		if Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and (tc:IsLocation(LOCATION_DECK) or tc:IsLocation(LOCATION_EXTRA)) and g:GetCount()>0 then
 			Duel.SpecialSummon(g:Select(tp,1,1,nil),0,tp,tp,false,false,POS_FACEUP)
 		end

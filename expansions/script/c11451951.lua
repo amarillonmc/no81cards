@@ -4,7 +4,7 @@ function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,cm.filter0,cm.filter02,true)
-	local e11=aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,Duel.Remove,POS_FACEUP,REASON_COST)
+	local e11=aux.AddContactFusionProcedure(c,cm.filter,LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,Duel.Remove,POS_FACEUP,REASON_COST)
 	local op=e11:GetOperation()
 	e11:SetOperation(function(e,tp,...) 
 		local c=e:GetHandler()

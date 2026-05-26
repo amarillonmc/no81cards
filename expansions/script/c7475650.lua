@@ -28,8 +28,8 @@ function s.spfilter2(c,e,tp)
 	return c:IsSetCard(0xed) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(s.posfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp)
-	local b2=Duel.IsExistingMatchingCard(s.posfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp)
+	local b1=Duel.IsExistingTarget(s.posfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp)
+	local b2=Duel.IsExistingTarget(s.posfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and (s.posfilter1(chkc,e,tp) or s.posfilter2(chkc,e,tp)) end
 	if chk==0 then return b1 or b2 end
 	local op=0
