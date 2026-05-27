@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_INACTIVATE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetRange(LOCATION_ONFIELD)
@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_EQUIP)
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_UNCOPYABLE)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTarget(cm.eqtg)
 	e3:SetOperation(cm.eqop)
@@ -104,6 +104,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
 	end
 end
+function cm.eqfilter(c,tp)
+	return not c:IsForbidden() and c:CheckUniqueOnField(tp,LOCATION_SZONE)
+end
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and re:GetHandler()~=c and c:GetFlagEffect(m)<3 and not c:IsStatus(STATUS_BATTLE_DESTROYED) end
@@ -134,11 +137,12 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 			ctg:Merge(Duel.GetDecktopGroup(tp,ac1))
 			ctg:Merge(Duel.GetDecktopGroup(1-tp,ac2))
 		end
-		local tc=ctg:Select(tp,1,1,nil):GetFirst()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+		local tc=ctg:FilterSelect(tp,cm.eqfilter,1,1,nil):GetFirst()
 		if Duel.Equip(tp,tc,c,true) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE)
+			e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
 			e1:SetCode(EFFECT_EQUIP_LIMIT)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e1:SetValue(cm.eqlimit)
@@ -171,11 +175,8 @@ end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
-function cm.gyeqfilter(c,tp)
-	return c:IsControlerCanBeChanged() or c:IsControler(tp)
-end
 function cm.gyeqcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg and eg:IsExists(aux.NecroValleyFilter(cm.gyeqfilter),1,nil,tp)
+	return eg and eg:IsExists(aux.NecroValleyFilter(cm.eqfilter),1,nil,tp)
 end
 function cm.gyeqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) end
@@ -185,11 +186,12 @@ function cm.gyeqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.SelectEffectYesNo(tp,c) then
 		Duel.Hint(HINT_CARD,0,m)
-		local tc=eg:FilterSelect(tp,cm.gyeqfilter,1,1,nil,tp):GetFirst()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+		local tc=eg:FilterSelect(tp,aux.NecroValleyFilter(cm.eqfilter),1,1,nil,tp):GetFirst()
 		if Duel.Equip(tp,tc,c,true) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE)
+			e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
 			e1:SetCode(EFFECT_EQUIP_LIMIT)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e1:SetValue(cm.eqlimit)

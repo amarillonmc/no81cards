@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_INACTIVATE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetRange(LOCATION_ONFIELD)
@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_EQUIP)
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_UNCOPYABLE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTarget(cm.eqtg)
 	e3:SetOperation(cm.eqop)
@@ -94,7 +94,7 @@ end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local fg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD+LOCATION_DECK,0,nil)
 	local tg=fg:Filter(Card.IsAbleToGraveAsCost,nil)
-	if chk==0 then return #fg==#tg and #tg<15 end
+	if chk==0 then return #fg==#tg and #tg<=10 end
 	Duel.SendtoGrave(tg,REASON_COST)
 end
 function cm.spfilter(c,e,tp)
@@ -114,8 +114,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
 	end
 end
-function cm.ctfilter(c,tp)
-	return c:IsControler(tp) or c:IsAbleToChangeControler()
+function cm.eqfilter(c,tp)
+	return not c:IsForbidden() and c:CheckUniqueOnField(tp,LOCATION_SZONE)
 end
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -124,15 +124,19 @@ function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tg=Duel.GetMatchingGroup(cm.ctfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_EXTRA,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_EXTRA,c,tp)
+	local tg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.eqfilter),tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_EXTRA,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_EXTRA,c,tp)
 	if #tg>0 and Duel.SelectEffectYesNo(tp,c) then
 		Duel.Hint(HINT_CARD,0,m)
 		c:RegisterFlagEffect(m,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1,0,0)
+		local g=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
+		Duel.ConfirmCards(tp,g)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local tc=tg:Select(tp,1,1,nil):GetFirst()
+		if tc:IsOnField() then tc:CancelToGrave() end
 		if Duel.Equip(tp,tc,c,true) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE)
+			e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
 			e1:SetCode(EFFECT_EQUIP_LIMIT)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e1:SetValue(cm.eqlimit)
@@ -182,10 +186,10 @@ function cm.epop(e,tp,eg,ep,ev,re,r,rp)
 	if not dg1 then ct1=5 else ct1=5-#dg1 end
 	if not dg2 then ct2=5 else ct2=5-#dg2 end
 	if ct1>0 then
-		dg3:Merge(Duel.GetDecktopGroup(tp,ct1))
+		dg3:Merge(Duel.GetDecktopGroup(tp,ct1*2))
 	end
 	if ct2>0 then
-		dg3:Merge(Duel.GetDecktopGroup(1-tp,ct2))
+		dg3:Merge(Duel.GetDecktopGroup(1-tp,ct2*2))
 	end
 	if dg3 and #dg3>0 then
 		Duel.SendtoGrave(dg3,REASON_RULE)
