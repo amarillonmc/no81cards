@@ -579,7 +579,7 @@ end
 function rsef.STO_Flip(reg_obj, desc_obj, lim_obj, ctgy, flag, con, cost, tg, op, rst_obj)
 	local desc_obj2, ctgy2, flag2 = s.switch_old_string(desc_obj, ctgy, flag)
 	local lim_obj2 = s.switch_old_count_limit(lim_obj)
-	return Scl.CreateFlipOptionalEffect(reg_obj, desc_obj2, lim_obj2, ctgy2, flag2, con, cost, tg, op, rst_obj)		  
+	return Scl.CreateFlipOptionalEffect(reg_obj, desc_obj2, lim_obj2, ctgy2, flag2, con, cost, tg, op, rst_obj)	   
 end
 function rsef.STF_Flip(reg_obj, desc_obj, lim_obj, ctgy, flag, con, cost, tg, op, rst_obj)
 	local desc_obj2, ctgy2, flag2 = s.switch_old_string(desc_obj, ctgy, flag)
@@ -774,13 +774,24 @@ function rsop.dis(dn_str, ex_op)
 end
 function s.get_effect_array(checkfun, endfun, list_typ, a1, a2, a3, ...)
 	local arr = { }
-	if type(a1) == "table" and (not a2 or (type(a2) == "table" )) and (not a3 or type(a3) == "table") then
-		arr = { a1, a2, a3, ... }
+	-- 安全处理参数，避免将 nil 写入 table
+	if type(a1) == "table" then
+		table.insert(arr, a1)
+		if type(a2) == "table" then table.insert(arr, a2) end
+		if type(a3) == "table" then table.insert(arr, a3) end
+		local extra = { ... }
+		for _, v in ipairs(extra) do
+			if type(v) == "table" then table.insert(arr, v) end
+		end
 	else
-		arr = { { a1, a2, a3, ... } }
+		-- 如果 a1 不是 table，则把所有可变参数整体打包作为第一个子表
+		local sub_arr = { a1, a2, a3, ... }
+		table.insert(arr, sub_arr)
 	end
+
 	local cache_arr = Scl.CloneArray(arr)
-	--boom nil
+	
+	-- 此时 pairs(arr) 遍历出的 arr2 必定是安全的 table
 	for idx, arr2 in pairs(arr) do
 		if type(arr2[1]) == "string" then
 			if not arr2[3] and arr2[4] then
@@ -792,6 +803,7 @@ function s.get_effect_array(checkfun, endfun, list_typ, a1, a2, a3, ...)
 			end
 		end
 	end
+	
 	--insert list type
 	for idx, arr2 in pairs(arr) do
 		if type(arr2[1]) ~= "string" then
@@ -887,10 +899,10 @@ function s.get_effect_array(checkfun, endfun, list_typ, a1, a2, a3, ...)
 			arr[2] = ctgy_obj
 			arr[3] = filter_obj
 		end
-
 	end
 	return cache_arr2
 end
+
 function s.chk_fun(chkfun)
 	return function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
 		if chkc then 
@@ -902,6 +914,7 @@ function s.chk_fun(chkfun)
 		return true
 	end
 end
+
 function s.end_fun(endfun)
 	return function(e, tp, eg, ep, ev, re, r, rp, chk)
 		if chk == 0 then
@@ -910,56 +923,70 @@ function s.end_fun(endfun)
 		return endfun(Scl.Last_Selected_Group, e, tp, eg, ep, ev, re, r, rp)
 	end
 end
-function rstg.target0(checkfun,  endfun,  ...)
+
+function rstg.target0(checkfun, endfun, ...)
 	local effect_arr = s.get_effect_array(checkfun, endfun, "Target", ...)
 	return scl.list_format_cost_or_target_or_operation(effect_arr)
 end
+
 function rstg.target(...)
 	local effect_arr = s.get_effect_array(nil, nil, "Target", ...)
 	return scl.list_format_cost_or_target_or_operation(effect_arr)
 end
+
 function rstg.target2(endfun, ...)
 	local effect_arr = s.get_effect_array(nil, endfun, "Target", ...)
 	return scl.list_format_cost_or_target_or_operation(effect_arr)
 end
+
 function rstg.target3(checkfun, ...)
 	local effect_arr = s.get_effect_array(checkfun, nil, "Target", ...)
 	return scl.list_format_cost_or_target_or_operation(effect_arr)
 end
-function rsop.target0(checkfun,  endfun,  ...)
+
+function rsop.target0(checkfun, endfun, ...)
 	local effect_arr = s.get_effect_array(checkfun, endfun, "~Target", ...)
 	return scl.list_format_cost_or_target_or_operation(effect_arr)
 end
+
 function rsop.target(...)
 	local effect_arr = s.get_effect_array(nil, nil, "~Target", ...)
 	return scl.list_format_cost_or_target_or_operation(effect_arr)
 end
+
 function rsop.target2(endfun, ...)
 	local effect_arr = s.get_effect_array(nil, endfun, "~Target", ...)
 	return scl.list_format_cost_or_target_or_operation(effect_arr)
 end
+
 function rsop.target3(checkfun, ...)
 	local effect_arr = s.get_effect_array(checkfun, nil, "~Target", ...)
 	return scl.list_format_cost_or_target_or_operation(effect_arr)
 end
-function rscost.cost0(checkfun,  endfun,  ...)
+
+function rscost.cost0(checkfun, endfun, ...)
 	local effect_arr = s.get_effect_array(checkfun, endfun, "Cost", ...)
 	return scl.list_format_cost_or_target_or_operation(effect_arr)
 end
+
 function rscost.cost(...)
 	local effect_arr = s.get_effect_array(nil, nil, "Cost", ...)
 	return scl.list_format_cost_or_target_or_operation(effect_arr)
 end
+
 function rscost.cost2(endfun, ...)
 	local effect_arr = s.get_effect_array(nil, endfun, "Cost", ...)
 	return scl.list_format_cost_or_target_or_operation(effect_arr)
 end
+
 function rscost.cost3(checkfun, ...)
 	local effect_arr = s.get_effect_array(checkfun, nil, "Cost", ...)
 	return scl.list_format_cost_or_target_or_operation(effect_arr)
 end
+
 function rsop.cost(...)
-	local effect_arr = s.get_effect_array(checkfun, nil, "Operation", ...)
+	-- 修正原作者漏传 checkfun 导致可能引发的潜在问题
+	local effect_arr = s.get_effect_array(nil, nil, "Operation", ...)
 	return scl.list_format_cost_or_target_or_operation(effect_arr)
 end
 rsop.list = function(...)
