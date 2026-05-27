@@ -1,5 +1,5 @@
 --机龙钢战-机械哥斯拉
-function c82557923.initial_effect(c)d
+function c82557923.initial_effect(c)
 	--summon with no tribute
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(82557923,0))

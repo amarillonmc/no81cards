@@ -45,7 +45,7 @@ function s.initial_effect(c)
 end
 
 local FLAG_WAS_IN_SAME_SUMMON   = id
-local FLAG_VALID_CODE   		= id+100
+local FLAG_VALID_CODE		   = id+100
 
 function s.regfilter(c,p)
 	return c:IsFaceup() and c:IsSummonPlayer(p)
@@ -57,6 +57,7 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 		for tc in aux.Next(g) do
 			local codes={tc:GetCode()}
 			for _,code in ipairs(codes) do
+				if not s.StatsTable then s.StatsTable={{},{}} end
 				if not s.StatsTable[tp][code] then s.StatsTable[tp][code]={0,0,{},{},0,0} end
 				local attr,race,atk,def=tc:GetAttribute(),tc:GetRace(),tc:GetAttack(),tc:GetDefense()
 				s.StatsTable[tp][code][1] = s.StatsTable[tp][code][1]|attr

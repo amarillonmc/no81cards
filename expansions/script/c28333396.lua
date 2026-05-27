@@ -24,7 +24,7 @@ function c28333396.initial_effect(c)
 	e2:SetCondition(c28333396.indescon)
 	c:RegisterEffect(e2)
 	--defense
-	local e3z=Effect.CreateEffect(c)
+	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_UPDATE_DEFENSE)
 	e3:SetRange(LOCATION_FZONE)

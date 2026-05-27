@@ -50,7 +50,7 @@ function c33703020.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	c:RegisterEffect(e2)
 end
 function c33703020.costfilter(c)
-	return c:IsSetCard(0x442) and c:IsDiscardable() and 
+	return c:IsSetCard(0x442) and c:IsDiscardable()-- and 
 end 
 function c33703020.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

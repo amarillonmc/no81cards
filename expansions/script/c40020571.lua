@@ -103,7 +103,7 @@ function s.lockcon(e)
 
 	local b1=Duel.IsExistingMatchingCard(s.huracan_filter,tp,LOCATION_PZONE,0,1,nil)
 	
-	local b2=Duel.IsExistingMatchingCard(Card.IsPosition,tp,LOCATION_MZONE,0,1,nil,POS_DEFENSE)
+	local b2=Duel.IsExistingMatchingCard(Card.IsPosition,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,POS_DEFENSE)
 	
 	return b1 and b2
 end
