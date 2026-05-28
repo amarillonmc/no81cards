@@ -1,6 +1,6 @@
 --方舟骑士-迷迭香
 function c29065546.initial_effect(c)
-	aux.AddCodeList(c,29065500,29065502)
+	aux.AddCodeList(c,29065500,29065502,29056009)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29065546,0))
