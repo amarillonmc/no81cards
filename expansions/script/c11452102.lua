@@ -53,7 +53,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local b2 = Duel.GetFlagEffect(tp,id+1)==0 and Duel.IsExistingMatchingCard(s.ffilter,tp,LOCATION_HAND,0,1,nil,tp)
 	local b3 = Duel.GetFlagEffect(tp,id+2)==0 and Duel.IsExistingMatchingCard(s.sfilter,tp,LOCATION_HAND,0,1,nil)
 	if not (b1 or b2 or b3) then return end
-	if not Duel.SelectYesNo(tp,aux.Stringid(id,4)) then return end
+	--if not Duel.SelectYesNo(tp,aux.Stringid(id,4)) then return end
 	Duel.Hint(HINT_CARD,0,id)
 	local ops={}
 	local opval={}
@@ -69,6 +69,8 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		table.insert(ops,aux.Stringid(id,2))
 		table.insert(opval,3)
 	end
+	table.insert(ops,aux.Stringid(11451910,2))
+	table.insert(opval,4)
 	local op=Duel.SelectOption(tp,table.unpack(ops))+1
 	local sel=opval[op]
 	local res=false

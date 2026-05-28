@@ -98,7 +98,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_MOVE)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	--e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetLabelObject(sc)
 	e2:SetCondition(cm.condition2)
 	e2:SetOperation(cm.operation2)
@@ -113,6 +113,15 @@ function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(sc) and sc:IsPreviousLocation(LOCATION_HAND) and not sc:IsLocation(LOCATION_HAND) and sc:GetPreviousPosition()&POS_FACEUP>0 and sc:GetFlagEffect(m)>0
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_ADJUST)
+	e1:SetLabelObject(e:GetLabelObject())
+	e1:SetOperation(cm.operation3)
+	e1:SetReset(RESET_PHASE+PHASE_END) 
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sc=e:GetLabelObject()
 	e:Reset()
@@ -138,13 +147,13 @@ function cm.spfilter(c,loc)
 	return c:IsLocation(loc) and not c:IsPreviousLocation(loc)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and e:GetHandler():IsType(TYPE_PENDULUM) end
+	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and e:GetHandler():GetOriginalType()&TYPE_PENDULUM~=0 end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local loc=c:GetLocation()
 	if loc&LOCATION_ONFIELD>0 then loc=LOCATION_ONFIELD end
-	if c:IsRelateToEffect(e) and c:IsType(TYPE_PENDULUM) and Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
+	if c:IsRelateToEffect(e) and e:GetHandler():GetOriginalType()&TYPE_PENDULUM~=0 and Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
 		--overseer+
 		local e1=Effect.CreateEffect(c)
 		local sid=0

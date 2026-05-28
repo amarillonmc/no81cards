@@ -65,6 +65,9 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+function c33701434.discon(e,tp,eg,ep,ev,re,r,rp)
+	return tp~=ep and Duel.GetCurrentChain()==0
+end
 function cm.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local ct=e:GetLabel()
