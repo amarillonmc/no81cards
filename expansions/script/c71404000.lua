@@ -700,28 +700,39 @@ end
 function yume.stellar_memories.BanishSpellFilter(c,sid,tp)
 	return c:IsCode(sid) and c:IsAbleToRemove(tp)
 end
-function yume.stellar_memories.SendSpellFilter(c,sid)
-	return c:IsCode(sid) and c:IsFaceup() and c:IsAbleToDeck()
+function yume.stellar_memories.TempBanishSpellCheck(sid,tp)
+	return Duel.IsExistingMatchingCard(yume.stellar_memories.BanishSpellFilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,sid,tp)
 end
-function yume.stellar_memories.BanishorSendSpellCheck(sid,tp)
-	return Duel.IsExistingMatchingCard(yume.stellar_memories.BanishSpellFilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,1,nil,sid,tp)
-		or Duel.IsExistingMatchingCard(yume.stellar_memories.SendSpellFilter,tp,LOCATION_REMOVED,0,1,nil,sid)
-end
-function yume.stellar_memories.BanishorSendSpell(sid,tp,msg1,msg2)
-	local g1=Duel.GetMatchingGroup(aux.NecroValleyFilter(yume.stellar_memories.BanishSpellFilter),tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,nil,sid,tp)
-	local g2=Duel.GetMatchingGroup(yume.stellar_memories.SendSpellFilter,tp,LOCATION_REMOVED,0,nil,sid)
-	local op=aux.SelectFromOptions(tp,
-		{#g1>0,msg1},
-		{#g2>0,msg2})
-	if op==1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=g1:Select(tp,1,1,nil)
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-	elseif op==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local g=g2:Select(tp,1,1,nil)
-		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+function yume.stellar_memories.TempBanishSpell(c,sid,tp)
+	local g1=Duel.GetMatchingGroup(aux.NecroValleyFilter(yume.stellar_memories.BanishSpellFilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,nil,sid,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=g1:Select(tp,1,1,nil)
+	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 then
+		local tc=g:GetFirst()
+		local fid=tc:GetFieldID()
+		tc:RegisterFlagEffect(71404000,RESET_EVENT+RESETS_STANDARD,0,1,fid)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetCountLimit(1)
+		e1:SetLabel(fid)
+		e1:SetLabelObject(tc)
+		e1:SetCondition(yume.stellar_memories.BanishedSpellRetCon)
+		e1:SetOperation(yume.stellar_memories.BanishedSpellRetOp)
+		Duel.RegisterEffect(e1,tp)
 	end
+end
+function yume.stellar_memories.BanishedSpellRetCon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffectLabel(71404000)~=e:GetLabel() then
+		e:Reset()
+		return false
+	else return true end
+end
+function yume.stellar_memories.BanishedSpellRetOp(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end
 --filters for common spell effects
 function yume.stellar_memories.SpellActivationBanishFilter(c,cid,tp)
@@ -763,6 +774,33 @@ function yume.stellar_memories.LowSpellActivationOp(rid,lid,msg1,msg2)
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 					local g=g2:Select(tp,1,1,nil)
 					Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+				end
+			end
+end
+--spell for high level and high link
+function yume.stellar_memories.HighSpellActivationTg(cid,lid)
+	return function(e,tp,eg,ep,ev,re,r,rp,chk)
+				if chk==0 then
+					return Duel.IsExistingMatchingCard(yume.stellar_memories.SpellActivationBanishFilter,tp,LOCATION_DECK,0,1,nil,cid,tp)
+						or Duel.IsExistingMatchingCard(yume.stellar_memories.SpellActivationSendFilter,tp,LOCATION_REMOVED,0,1,nil,lid)
+				end
+			end
+end
+function yume.stellar_memories.HighSpellActivationOp(cid,lid,msg1,msg2)
+	return	function(e,tp,eg,ep,ev,re,r,rp)
+				local g1=Duel.GetMatchingGroup(yume.stellar_memories.SpellActivationBanishFilter,tp,LOCATION_DECK,0,nil,cid,tp)
+				local g2=Duel.GetMatchingGroup(yume.stellar_memories.SpellActivationSendFilter,tp,LOCATION_REMOVED,0,nil,lid)
+				local op=aux.SelectFromOptions(tp,
+					{#g1>0,msg1},
+					{#g2>0,msg2})
+				if op==1 then
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+					local g=g1:Select(tp,1,1,nil)
+					Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+				elseif op==2 then
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+					local g=g2:Select(tp,1,1,nil)
+					Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT)
 				end
 			end
 end
