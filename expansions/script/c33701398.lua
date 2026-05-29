@@ -95,7 +95,7 @@ function cm.spfilter(c,e,tp)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_EXTRA+LOCATION_DECK,0,nil,e,tp)
-	if g:GetCount()>0 Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=g:Select(tp,1,1,nil)
 		if g:GetCount()>0 then

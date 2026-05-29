@@ -151,14 +151,14 @@ function c11533718.rrfil(c,tp)
 	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0xb4) and (c:IsReleasable() or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_HAND) and (val==nil or val(re,c)~=true)))
 end 
 function c11533718.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11533718.rrfil,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
-	local g=Duel.GetMatchingGroup(c11533718.rrfil,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
+	if chk==0 then return Duel.IsExistingMatchingCard(c11533718.rrfil,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	local g=Duel.GetMatchingGroup(c11533718.rrfil,tp,LOCATION_HAND,0,1,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,1,0,0)
 end
 function c11533718.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,c11533718.rrfil,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
+	local g=Duel.SelectMatchingCard(tp,c11533718.rrfil,tp,LOCATION_HAND,0,1,1,e:GetHandler())
 	if #g>0 and Duel.SendtoGrave(g,REASON_EFFECT+REASON_RELEASE)~=0 then
 		Duel.NegateActivation(ev)
 	end

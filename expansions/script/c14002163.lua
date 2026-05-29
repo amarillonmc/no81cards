@@ -81,7 +81,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
 		if tgp~=tp and Duel.NegateActivation(i) then
 			local tc=te:GetHandler()
-			if tc:IsRelateToEffect(e) and tc:IsRelateToEffect(te) then
+			if tc:IsRelateToEffect(te) then
 				dg:AddCard(tc)
 			end
 		end
