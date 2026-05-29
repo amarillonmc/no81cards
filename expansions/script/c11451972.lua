@@ -26,9 +26,12 @@ function cm.initial_effect(c)
 	e3:SetDescription(aux.Stringid(m,2))
 	c:RegisterEffect(e3)
 end
+function cm.nfilter(c)
+	return not c:IsAbleToDeckOrExtraAsCost()
+end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeckOrExtraAsCost,tp,LOCATION_GRAVE,0,nil)
-	if chk==0 then return #g>0 end
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_GRAVE,0,nil)
+	if chk==0 then return #g>0 and not g:IsExists(cm.nfilter,1,nil) end
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)

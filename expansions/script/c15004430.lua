@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.desfilter(c,e,tp)
-	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c) and c:IsRace(RACE_WINDBEAST) and c:IsAttribute(ATTRIBUTE_FIRE)
+	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c) and c:IsRace(RACE_WINDBEAST) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsFaceupEx()
 end
 function cm.spfilter(c,e,tp,tc)
 	return c:IsSetCard(0xaf31)

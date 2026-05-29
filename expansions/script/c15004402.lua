@@ -54,7 +54,7 @@ function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function cm.desfilter(c)
-	return c:IsRace(RACE_WINDBEAST) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsType(TYPE_MONSTER)
+	return c:IsRace(RACE_WINDBEAST) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx()
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
