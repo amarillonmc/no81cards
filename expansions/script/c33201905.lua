@@ -269,6 +269,5 @@ function s.gyop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	-- 选对方场上1张卡破坏
 	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
-	if #g>0 then Duel.Destroy(g,REASON_EFFECT)>0 end
-	end
+	if #g>0 then Duel.Destroy(g,REASON_EFFECT) end
 end

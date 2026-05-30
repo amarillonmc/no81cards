@@ -65,7 +65,7 @@ function cm.check0(e,tp,eg,ep,ev,re,r,rp)
 	local tg=te:GetTarget()
 	if tg then
 		function Card.IsCanBeSpecialSummoned(c,e,st,...)
-			if st&SUMMON_TYPE_RITUAL>0 then cm[1]=true end
+			if st&SUMMON_TYPE_RITUAL==SUMMON_TYPE_RITUAL then cm[1]=true end
 			return _IsCanBeSpecialSummoned(c,e,st,...)
 		end
 		pcall(tg,te,te:GetHandlerPlayer(),eg,ep,ev,re,r,rp,0)
