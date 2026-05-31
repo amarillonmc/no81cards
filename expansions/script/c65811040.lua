@@ -4,6 +4,16 @@ function s.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,2,1,nil,nil,99)
 	c:EnableReviveLimit()
+	--activate trap in hand
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(id,0))
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e0:SetRange(LOCATION_MZONE)
+	e0:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xd4))
+	e0:SetTargetRange(LOCATION_HAND,0)
+	e0:SetValue(id)
+	c:RegisterEffect(e0)
 	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -12,7 +22,7 @@ function s.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetValue(s.efilter)
 	c:RegisterEffect(e1)
-	--不被无效
+	--[[不被无效
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_CANNOT_INACTIVATE)
@@ -24,7 +34,7 @@ function s.initial_effect(c)
 	e4:SetCode(EFFECT_CANNOT_DISEFFECT)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetValue(s.chainfilter)
-	c:RegisterEffect(e4)
+	c:RegisterEffect(e4)]]
 	--search
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
@@ -50,7 +60,7 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function s.thfilter(c)
-	return c:IsSetCard(0xd4) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0xd4) and c:IsType(TYPE_TRAP) and c:IsAbleToHand() and c:IsFaceupEx()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end

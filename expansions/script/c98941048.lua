@@ -13,11 +13,53 @@ function c98941048.initial_effect(c)
 	e2:SetRange(LOCATION_DECK)
 	e2:SetCost(c98941048.cost)
 	c:RegisterEffect(e2)
+	local e30=Effect.CreateEffect(c)
+	e30:SetType(EFFECT_TYPE_FIELD)
+	e30:SetCode(EFFECT_ACTIVATE_COST)
+	e30:SetRange(LOCATION_DECK)
+	e30:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e30:SetTargetRange(1,0)
+	e30:SetLabelObject(e2)
+	e30:SetTarget(c98941048.actarget1)
+	e30:SetOperation(c98941048.costop1)
+	c:RegisterEffect(e30)
 	--act in hand
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	c:RegisterEffect(e3)
+end
+function c98941048.actarget1(e,te,tp)
+	e:SetLabelObject(te)
+	return te:GetHandler()==e:GetHandler()
+end
+function c98941048.costop1(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	e:GetHandler():CreateEffectRelation(te)
+	local c=e:GetHandler()
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+	e1:SetOperation(c98941048.rsop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+end
+function c98941048.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+	end
 end
 function c98941048.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

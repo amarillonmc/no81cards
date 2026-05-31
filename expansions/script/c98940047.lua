@@ -15,6 +15,16 @@ function c98940047.initial_effect(c)
 	local e0=e1:Clone()
 	e0:SetRange(LOCATION_DECK)
 	c:RegisterEffect(e0)
+	local e30=Effect.CreateEffect(c)
+	e30:SetType(EFFECT_TYPE_FIELD)
+	e30:SetCode(EFFECT_ACTIVATE_COST)
+	e30:SetRange(LOCATION_DECK)
+	e30:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e30:SetTargetRange(1,0)
+	e30:SetLabelObject(e0)
+	e30:SetTarget(c98940047.actarget1)
+	e30:SetOperation(c98940047.costop1)
+	c:RegisterEffect(e30)
 	--effect gain
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(98940047,0))
@@ -99,6 +109,38 @@ if not c98940047.globle_check then
 		end
 	end
 end
+function c98940047.actarget1(e,te,tp)
+	e:SetLabelObject(te)
+	return te:GetHandler()==e:GetHandler()
+end
+function c98940047.costop1(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	e:GetHandler():CreateEffectRelation(te)
+	local c=e:GetHandler()
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+	e1:SetOperation(c98940047.rsop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+end
+function c98940047.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+	end
+end
 function c98940047.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(e:GetHandlerPlayer(),98940047)>0
 end
@@ -111,9 +153,6 @@ function s.cfilter(c)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_HAND,0,1,nil) end
-	if e:GetHandler():IsLocation(LOCATION_DECK) then
-		Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-	end
 	Duel.RegisterFlagEffect(e:GetHandlerPlayer(),98940047,RESET_PHASE+PHASE_END,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_HAND,0,1,1,nil)
@@ -146,10 +185,8 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 					local lg=Duel.SelectMatchingCard(tp,c98940047.lkfilter,tp,LOCATION_EXTRA,0,1,1,nil)
 					local tc=lg:GetFirst()
-				  	if tc:IsType(TYPE_LINK) then
-						Duel.LinkSummon(tp,tc,nil)
-					else 
-						Duel.XyzSummon(tp,tc,nil)			
+				  	if tc then
+						Duel.SpecialSummonRule(tp,tc,nil)		
 					end
 				end
 			else
@@ -159,7 +196,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c98940047.lkfilter(c)
-	return c:IsLinkSummonable(nil) or c:IsXyzSummonable(nil)
+	return c:IsSpecialSummonable(nil)
 end
 function c98940047.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

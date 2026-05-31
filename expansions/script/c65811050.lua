@@ -1,7 +1,7 @@
 --狂野伯吉斯异兽·寒武耙虾
 local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xd4),2,2)
+	aux.AddLinkProcedure(c,nil,2,2)
 	c:EnableReviveLimit()
 	--immune
 	local e1=Effect.CreateEffect(c)
@@ -13,7 +13,6 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	--发动陷阱
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
@@ -36,7 +35,6 @@ function s.efilter(e,re)
 	return re:IsActiveType(TYPE_MONSTER) and re:GetOwner()~=e:GetOwner()
 end
 
-
 function s.cfilter(c)
 	return c:IsAbleToGraveAsCost()
 end
@@ -47,34 +45,136 @@ function s.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 
-function s.filter(c,tp)
-	return c:IsSetCard(0xd4) and c:IsType(TYPE_TRAP) and c:IsAbleToGrave()
-end
-function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_ONFIELD)
-end
-function s.setop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
-	local tc = nil
-	if g:GetCount()>0 then
-		if Duel.SendtoGrave(g,REASON_EFFECT)>0 then
-			tc = g:GetFirst()
+function s.filter1(c,e,tp,eg,ep,ev,re,r,rp)
+	-- 获取卡片的发动效果
+	local check=false
+	if c:GetOriginalCode()==id-10 then check=true end
+	local te=c:CheckActivateEffect(check,false,false)
+	if not te then return false end
+
+	-- 必须是伯吉斯异兽陷阱卡且可发动
+	if not (c:IsSetCard(0xd4) and c:GetType()==TYPE_TRAP and te:CheckCountLimit(tp) and c:IsFaceupEx()) then
+		return false
+	end
+
+	-- 模拟发动前的检查
+	local con=te:GetCondition()
+	local co=te:GetCost()
+	local tg=te:GetTarget()
+
+	-- 检查 condition
+	if con and not con(te,tp,eg,ep,ev,re,r,rp) then
+		return false
+	end
+
+	-- 检查 cost（chk=0 模拟支付检查）
+	if co and not co(te,tp,eg,ep,ev,re,r,rp,0) then
+		return false
+	end
+
+	-- 检查 target（chk=0 模拟目标检查）
+	if c:IsSetCard(0x95) then
+		if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then
+			return false
+		end
+	else
+		if tg and not tg(te,tp,eg,ep,ev,re,r,rp,0) then
+			return false
 		end
 	end
-	if tc and tc:CheckActivateEffect(false,true,false)~=nil 
-		and Duel.SelectYesNo(tp,aux.Stringid(id,0))  
-	then
-		Duel.BreakEffect()
-		local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(true,true,true)
-		e:SetProperty(te:GetProperty())
-		local tg=te:GetTarget()
-		if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
-		Duel.ClearOperationInfo(0)
-		local op=te:GetOperation()
-		if op then op(e,tp,eg,ep,ev,re,r,rp) end		
+
+	return true
+end
+
+-- 目标函数（不取对象，只检查是否存在可发动的卡）
+function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		return Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp,eg,ep,ev,re,r,rp)
 	end
+end
+
+function s.setop(e,tp,eg,ep,ev,re,r,rp)
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+    local g=Duel.SelectMatchingCard(tp,s.filter1,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp)
+    local tc=g:GetFirst()
+    if not tc then return end
+
+    local te=tc:GetActivateEffect()
+    local tpe=tc:GetType()
+    local con=te:GetCondition()
+    local co=te:GetCost()
+    local tg=te:GetTarget()
+    local op=te:GetOperation()
+    e:SetCategory(te:GetCategory())
+    e:SetProperty(te:GetProperty())
+    Duel.ClearTargetCard()
+
+    -- 移动到场上
+    if bit.band(tpe,TYPE_EQUIP+TYPE_CONTINUOUS)~=0 or tc:IsHasEffect(EFFECT_REMAIN_FIELD) then
+        if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+        Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+    elseif bit.band(tpe,TYPE_FIELD)~=0 then
+        Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+    else
+        if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+        Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+				tc:SetStatus(STATUS_LEAVE_CONFIRMED,true)
+    end
+
+    -- 手动注册连锁结束时送墓的效果（仅对通常陷阱等需要送墓的卡）
+    if bit.band(tpe,TYPE_EQUIP+TYPE_CONTINUOUS)==0 and not tc:IsHasEffect(EFFECT_REMAIN_FIELD) and bit.band(tpe,TYPE_FIELD)==0 then
+        local e1=Effect.CreateEffect(e:GetHandler())
+        e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+        e1:SetCode(EVENT_CHAIN_END)
+        e1:SetLabelObject(tc)
+        e1:SetCountLimit(1)
+        e1:SetOperation(s.leaveop)
+        Duel.RegisterEffect(e1,tp)
+    end
+
+    tc:CreateEffectRelation(te)
+    if co then co(te,tp,eg,ep,ev,re,r,rp,1) end
+    if tg then
+        if tc:IsSetCard(0x95) then
+            tg(e,tp,eg,ep,ev,re,r,rp,1)
+        else
+            tg(te,tp,eg,ep,ev,re,r,rp,1)
+        end
+    end
+    Duel.BreakEffect()
+    local tgc=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+    if tgc and #tgc>0 then
+        local etc=tgc:GetFirst()
+        while etc do
+            etc:CreateEffectRelation(te)
+            etc=tgc:GetNext()
+        end
+    end
+    if op then
+        if tc:IsSetCard(0x95) then
+            op(e,tp,eg,ep,ev,re,r,rp)
+        else
+            op(te,tp,eg,ep,ev,re,r,rp)
+        end
+    end
+    tc:ReleaseEffectRelation(te)
+    if tgc and #tgc>0 then
+        local etc=tgc:GetFirst()
+        while etc do
+            etc:ReleaseEffectRelation(te)
+            etc=tgc:GetNext()
+        end
+    end
+    te:UseCountLimit(tp,1)
+end
+
+-- 连锁结束时送墓的操作
+function s.leaveop(e,tp,eg,ep,ev,re,r,rp)
+    local tc=e:GetLabelObject()
+    if tc and tc:IsLocation(LOCATION_SZONE) and tc:IsFaceup() then
+        Duel.SendtoGrave(tc,REASON_RULE)
+    end
+    e:Reset()
 end
 
 
