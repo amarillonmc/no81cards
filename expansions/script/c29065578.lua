@@ -1,9 +1,7 @@
 --Mon3tr
 local cm,m,o=GetID()
-cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	aux.AddCodeList(c,29056009)
-	c:SetUniqueOnField(1,1,m)
 	c:EnableReviveLimit()
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
@@ -35,17 +33,34 @@ function cm.initial_effect(c)
 	e6:SetCondition(cm.discon)
 	e6:SetOperation(cm.disop)
 	c:RegisterEffect(e6)
-	--damage val
+	--avoid battle damage
 	local e7=Effect.CreateEffect(c)
-	e7:SetType(EFFECT_TYPE_SINGLE)
-	e7:SetCode(EFFECT_NO_BATTLE_DAMAGE)
+	e7:SetType(EFFECT_TYPE_FIELD)
+	e7:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+	e7:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e7:SetRange(LOCATION_PZONE)
+	e7:SetTargetRange(LOCATION_MZONE,0)
+	e7:SetTarget(cm.efilter)
 	e7:SetValue(1)
 	c:RegisterEffect(e7)
+	--indes
 	local e8=Effect.CreateEffect(c)
-	e8:SetType(EFFECT_TYPE_SINGLE)
-	e8:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+	e8:SetType(EFFECT_TYPE_FIELD)
+	e8:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e8:SetRange(LOCATION_MZONE)
+	e8:SetTargetRange(LOCATION_MZONE,0)
+	e8:SetTarget(cm.imtg)
 	e8:SetValue(1)
 	c:RegisterEffect(e8)
+	local e9=e8:Clone()
+	e9:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	c:RegisterEffect(e9)
+end
+function cm.imtg(e,c)
+	return c:IsCode(29056009)
+end
+function cm.efilter(e,c)
+	return c:IsCode(29056009)
 end
 function cm.llop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)

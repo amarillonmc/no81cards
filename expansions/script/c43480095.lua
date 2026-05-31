@@ -1,7 +1,7 @@
 --被遗忘的研究 十六月雨煌忍
 function c43480095.initial_effect(c)
 	--Synchro summon
-	aux.AddSynchroProcedure(c,function(c) return c:IsSetCard(0x3f13) end,function(c) return c:IsSetCard(0x3f13) and (c:IsType(TYPE_PENDULUM) or not c:IsType(TYPE_TUNER)) end,1)
+	aux.AddSynchroProcedure(c,function(c) return c:IsSetCard(0x3fb3) end,function(c) return c:IsSetCard(0x3fb3) and (c:IsType(TYPE_PENDULUM) or not c:IsType(TYPE_TUNER)) end,1)
 	c:EnableReviveLimit()
 	--synchro level
 	local e1=Effect.CreateEffect(c)
@@ -24,7 +24,7 @@ function c43480095.initial_effect(c)
 	e2:SetRange(LOCATION_EXTRA)
 	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e2:SetTarget(function(e,c) 
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3f13) end)
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3fb3) end)
 	e2:SetLabelObject(e1)
 	c:RegisterEffect(e2)
 	--des 
@@ -96,7 +96,7 @@ function c43480095.slevel(e,c)
 	end 
 end
 function c43480095.desfil(c,tp) 
-	return not (c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
+	return not (c:IsFaceup() and c:IsSetCard(0x3fb3) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
 end 
 function c43480095.destg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local dg=Duel.GetMatchingGroup(c43480095.desfil,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
@@ -164,7 +164,7 @@ function c43480095.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
 end
 function c43480095.setfil(c) 
-	return c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()  
+	return c:IsFaceup() and c:IsSetCard(0x3fb3) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()  
 end 
 function c43480095.penop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -175,7 +175,7 @@ function c43480095.penop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end 
 function c43480095.rlfil(c) 
-	return c:IsReleasableByEffect() and c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM) 
+	return c:IsReleasableByEffect() and c:IsFaceup() and c:IsSetCard(0x3fb3) and c:IsType(TYPE_PENDULUM) 
 end 
 function c43480095.rlgck(g,tp) 
 	return Duel.GetMZoneCount(tp,g)>0   

@@ -6,7 +6,6 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
@@ -17,7 +16,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetCountLimit(1,m+1)
+	e3:SetCountLimit(1,m)
 	e3:SetCondition(cm.pzcon)
 	e3:SetCost(cm.pzcost)
 	e3:SetTarget(cm.pztg)
@@ -269,12 +268,12 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
 	local fid=c:GetFieldID()
 	for tc in aux.Next(sg) do
+		tc:RegisterFlagEffect(m+0xffffff,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,10))
 		local ge2=Effect.CreateEffect(c)
-		ge2:SetDescription(aux.Stringid(m,10))
 		ge2:SetType(EFFECT_TYPE_SINGLE)
 		ge2:SetCode(EFFECT_IMMUNE_EFFECT)
 		ge2:SetRange(LOCATION_ONFIELD+LOCATION_GRAVE)
-		ge2:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_SET_AVAILABLE)
+		ge2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		ge2:SetLabel(fid)
 		ge2:SetValue(cm.chkval)
 		ge2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
@@ -295,26 +294,34 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e6,tp)
 end
 function cm.chkval(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
+	if e:GetHandler():GetFlagEffect(m+0xffffff)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
 		if KOISHI_CHECK then
 			Duel.DisableActionCheck(true)
 			pcall(Duel.SendtoHand,e:GetHandler(),nil,REASON_EFFECT)
 			Duel.DisableActionCheck(false)
 		end
-		if e:GetHandler():IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) then
-			e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1,e:GetLabel())
+		if e:GetHandler():IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and e:GetHandler():IsAbleToHand() then
+			e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN-RESET_TURN_SET,0,1,e:GetLabel())
 		end
 		--Duel.AdjustAll()
 		--Duel.Readjust()
-		if te:IsActivated() then
+		if te:IsHasType(EFFECT_TYPE_ACTIONS) then
 			e:SetLabelObject(te)
 			e:SetLabel(Duel.GetCurrentChain())
 			e:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 		end
-		e:SetValue(function(e,te) return e:GetLabelObject() and te==e:GetLabelObject() and e:GetLabel()==Duel.GetCurrentChain() end)
+		e:SetValue(function(e,te) return (e:GetLabelObject() and te==e:GetLabelObject() and e:GetLabel()==Duel.GetCurrentChain()) or e:GetHandler():GetFlagEffect(m)>0 end) --return e2:GetLabel()~=e:GetLabel() end)
 		e:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e:SetDescription(0)
 		e:GetHandler():ResetFlagEffect(m+0xffffff)
+		local e8=Effect.CreateEffect(e:GetHandler())
+		e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e8:SetCode(EVENT_BREAK_EFFECT)
+		e8:SetOperation(function(fe) e:SetValue(function(e,te) return e:GetHandler():GetFlagEffect(m)>0 end) fe:Reset() end)
+		Duel.RegisterEffect(e8,0)
+		local e9=e8:Clone()
+		e9:SetCode(EVENT_ADJUST)
+		Duel.RegisterEffect(e9,0)
 		if Duel.GetFlagEffect(tp,0xffff+m)==0 then
 			Duel.RegisterFlagEffect(tp,0xffff+m,RESET_CHAIN,0,1)
 			if SetCardData then

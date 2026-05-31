@@ -26,7 +26,6 @@ function c71404001.initial_effect(c)
 	e2:SetCategory(CATEGORY_EQUIP+CATEGORY_REMOVE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,71504001)
-	e2:SetCost(yume.stellar_memories.LimitCost)
 	e2:SetTarget(c71404001.tg2)
 	e2:SetOperation(c71404001.op2)
 	c:RegisterEffect(e2)
@@ -44,10 +43,8 @@ function c71404001.initial_effect(c)
 end
 function c71404001.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetFlagEffect(tp,71404000,tp)==0
-		and c:IsAbleToRemoveAsCost() end
+	if chk==0 then return c:IsAbleToRemoveAsCost() end
 	Duel.Remove(c,POS_FACEUP,REASON_COST)
-	yume.stellar_memories.RegCostLimit(e,tp)
 end
 function c71404001.filter1(c,tp)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsAbleToRemove(tp)

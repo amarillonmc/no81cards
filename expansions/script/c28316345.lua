@@ -8,11 +8,18 @@ function c28316345.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,28316345)
+	e1:SetCondition(c28316345.icon)
 	e1:SetCost(c28316345.spcost)
 	e1:SetTarget(c28316345.sptg)
 	e1:SetOperation(c28316345.spop)
 	e1:SetLabel(1)
 	c:RegisterEffect(e1)
+	local e0=e1:Clone()
+	e0:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e0:SetType(EFFECT_TYPE_QUICK_O)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetCondition(c28316345.qcon)
+	c:RegisterEffect(e0)
 	--recover
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28316345,1))
@@ -21,13 +28,19 @@ function c28316345.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,38316345)
+	e2:SetCountLimit(1,28316345+1)
 	e2:SetCondition(c28316345.reccon)
 	e2:SetCost(c28316345.cost)
 	e2:SetTarget(c28316345.rectg)
 	e2:SetOperation(c28316345.recop)
 	e2:SetLabel(2)
 	c:RegisterEffect(e2)
+end
+function c28316345.icon(e,tp,eg,ep,ev,re,r,rp)
+	return not (Duel.IsPlayerAffectedByEffect(tp,28361833)~=nil and e:GetHandler():IsOriginalSetCard(0x283))
+end
+function c28316345.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsPlayerAffectedByEffect(tp,28361833)~=nil and e:GetHandler():IsOriginalSetCard(0x283)
 end
 function c28316345.chkfilter(c)
 	return (c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsNonAttribute(ATTRIBUTE_FIRE) or c:IsCode(28335405)) and not c:IsPublic()
@@ -37,32 +50,51 @@ function c28316345.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	c28316345.cost(e,tp,eg,ep,ev,re,r,rp,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,c28316345.chkfilter,tp,LOCATION_HAND,0,1,1,nil)
-	if g:GetFirst():IsLevel(4) then e:SetLabel(1) else e:SetLabel(0) end
-	Duel.ConfirmCards(1-tp,g)
+	e:SetLabelObject(g:GetFirst())
 	Duel.ShuffleHand(tp)
 end
 function c28316345.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMZoneCount(tp)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+end
+function c28316345.efilter(e)
+	local ct=#c28316345.effect_list
+	if e:IsHasRange(LOCATION_HAND) and e:IsActivated() then c28316345.effect_list[ct+1]=e end
+	return false--e:IsHasRange(LOCATION_HAND) and e:IsActivated()
 end
 function c28316345.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x286) and c:IsType(TYPE_MONSTER)
 end
 function c28316345.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local sel=e:GetLabel()
-	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and true and Duel.GetMZoneCount(tp)>0 and Duel.IsExistingMatchingCard(c28316345.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(28316345,3)) then
-		Duel.BreakEffect()
-		local g=Duel.GetMatchingGroup(c28316345.spfilter,tp,LOCATION_HAND,0,nil,e,tp)
-		local sc=g:GetFirst()
-		if #g>1 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			sc=g:Select(tp,1,1,nil):GetFirst()
-		end
-		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
+	if not c:IsRelateToChain() or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	local tc=e:GetLabelObject()
+	if not tc or not tc:IsType(TYPE_MONSTER) then return end
+	c28316345.effect_list={}
+	tc:IsOriginalEffectProperty(c28316345.efilter)
+	local e_list={}
+	for _,te in ipairs(c28316345.effect_list) do
+		local tg=te:GetTarget()
+		if not tg or tg(te,tp,eg,ep,ev,re,r,rp,0) then table.insert(e_list,te) end--if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then table.remove(c28316345.effect_list,i) end
 	end
+	if #e_list==0 or not Duel.SelectYesNo(tp,aux.Stringid(28316345,3)) then return end
+	Duel.BreakEffect()
+	local te=e_list[1]
+	--[[if #e_list>1 then
+		local des_list={}
+		for _,te in ipairs(e_list) do table.insert(des_list,te:GetDescription()) end
+		local op=Duel.SelectOption(tp,table.unpack(des_list))
+		te=e_list[op+1]
+	end]]--
+	c28316345.effect_list={}
+	--copy
+	tc:CreateEffectRelation(e)--Card.IsRelateToChain
+	tc:CreateEffectRelation(te)--Card.IsRelateToEffect
+	local tg=te:GetTarget()
+	if tg then tg(te,tp,eg,ep,ev,re,r,rp,1) end
+	local op=te:GetOperation()
+	if op then op(te,tp,eg,ep,ev,re,r,rp) end
 end
 function c28316345.reccon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsSummonLocation,1,nil,LOCATION_HAND+LOCATION_EXTRA) and #eg==1 and not eg:IsContains(e:GetHandler())

@@ -48,7 +48,7 @@ function c43480010.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c43480010.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3f13)
+	return c:IsFaceup() and c:IsSetCard(0x3fb3)
 end
 function c43480010.pspcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c43480010.cfilter,tp,LOCATION_MZONE,0,1,nil) or Duel.IsEnvironment(43480070,tp) 
@@ -68,14 +68,14 @@ function c43480010.pspop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 		e1:SetTargetRange(1,0)
 		e1:SetTarget(function(e,c) 
-		return not c:IsSetCard(0x3f13) end)
+		return not c:IsSetCard(0x3fb3) end)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1,true) 
 		Duel.SpecialSummonComplete()
 	end
 end
 function c43480010.desfil(c,tp) 
-	return not (c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
+	return not (c:IsFaceup() and c:IsSetCard(0x3fb3) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
 end 
 function c43480010.destg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local dg=Duel.GetMatchingGroup(c43480010.desfil,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
@@ -92,13 +92,13 @@ function c43480010.desop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end 
 function c43480010.xckfil(c,tp) 
-	return c:IsSummonPlayer(tp) and c:IsFaceup() and c:IsSetCard(0x3f13)  
+	return c:IsSummonPlayer(tp) and c:IsFaceup() and c:IsSetCard(0x3fb3)  
 end 
 function c43480010.eqcon(e,tp,eg,ep,ev,re,r,rp) 
 	return eg:IsExists(c43480010.xckfil,1,nil,tp) 
 end 
 function c43480010.eqfil(c) 
-	return c:IsFaceup() and c:IsSetCard(0x3f13) and not c:IsType(TYPE_PENDULUM) 
+	return c:IsFaceup() and c:IsSetCard(0x3fb3) and not c:IsType(TYPE_PENDULUM) 
 end 
 function c43480010.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c43480010.eqfil(chkc) end
@@ -124,7 +124,7 @@ function c43480010.eqop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end 
 function c43480010.cpfilter(c)
-	return c:GetType()==TYPE_SPELL and c:IsSetCard(0x3f13) and c:IsAbleToRemoveAsCost() and c:CheckActivateEffect(true,true,false)~=nil
+	return c:GetType()==TYPE_SPELL and c:IsSetCard(0x3fb3) and c:IsAbleToRemoveAsCost() and c:CheckActivateEffect(true,true,false)~=nil
 end
 function c43480010.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)

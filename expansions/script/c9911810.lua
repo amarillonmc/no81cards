@@ -1,4 +1,4 @@
---烬灵啸聚之地-火神山
+--烬灵鸠合之处-火神山
 function c9911810.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

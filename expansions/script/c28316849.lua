@@ -3,15 +3,22 @@ function c28316849.initial_effect(c)
 	--hokura spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(28316849,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,28316849)
+	e1:SetCondition(c28316849.icon)
 	e1:SetCost(c28316849.spcost)
 	e1:SetTarget(c28316849.sptg)
 	e1:SetOperation(c28316849.spop)
 	e1:SetLabel(1)
 	c:RegisterEffect(e1)
+	local e0=e1:Clone()
+	e0:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e0:SetType(EFFECT_TYPE_QUICK_O)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetCondition(c28316849.qcon)
+	c:RegisterEffect(e0)
 	--to deck
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28316849,1))
@@ -20,7 +27,7 @@ function c28316849.initial_effect(c)
 	e2:SetCode(EVENT_TO_HAND)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,38316849)
+	e2:SetCountLimit(1,28316849+1)
 	e2:SetCondition(c28316849.reccon)
 	e2:SetCost(c28316849.cost)
 	e2:SetTarget(c28316849.rectg)
@@ -28,6 +35,12 @@ function c28316849.initial_effect(c)
 	e2:SetLabel(2)
 	c:RegisterEffect(e2)
 c28316849.counter_add_list={0x1283}
+end
+function c28316849.icon(e,tp,eg,ep,ev,re,r,rp)
+	return not (Duel.IsPlayerAffectedByEffect(tp,28361833)~=nil and e:GetHandler():IsOriginalSetCard(0x283))
+end
+function c28316849.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsPlayerAffectedByEffect(tp,28361833)~=nil and e:GetHandler():IsOriginalSetCard(0x283)
 end
 function c28316849.chkfilter(c)
 	return c:IsSetCard(0x283) and c:IsNonAttribute(ATTRIBUTE_WIND) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
@@ -47,9 +60,16 @@ function c28316849.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28316849.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if not c:IsRelateToChain() or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
+	if #g==0 or not Duel.SelectYesNo(tp,aux.Stringid(28316048,3)) then return end
+	Duel.BreakEffect()
+	if #g>1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		g=g:Select(tp,1,1,nil)
 	end
+	Duel.HintSelection(g)
+	Duel.Destroy(g,REASON_EFFECT)
 end
 function c28316849.cfilter(c)
 	return c:IsType(TYPE_MONSTER) and not c:IsReason(REASON_DRAW) and (c:IsPublic() or (not c:IsStatus(STATUS_TO_HAND_WITHOUT_CONFIRM) and (c:IsPreviousLocation(LOCATION_DECK) or c:IsPreviousPosition(POS_FACEUP))))

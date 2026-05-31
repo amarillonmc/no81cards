@@ -89,8 +89,9 @@ function c28363720.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28363720.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() end
-	Duel.Release(e:GetHandler(),REASON_COST)
+	if chk==0 then return e:GetHandler():IsAbleToExtraAsCost() end
+	Duel.HintSelection(Group.FromCards(e:GetHandler()))
+	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKTOP,REASON_COST)
 end
 function c28363720.thfilter(c)
 	if not (c:IsSetCard(0x286) and c:IsAbleToHand()) then return false end

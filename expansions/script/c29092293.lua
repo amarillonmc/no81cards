@@ -1,7 +1,6 @@
 --方舟骑士团-乌尔比安
 local m=29092293
 local cm=_G["c"..m]
-cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--disable summon
 	local e1=Effect.CreateEffect(c)

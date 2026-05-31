@@ -34,7 +34,7 @@ function c43480030.initial_effect(c)
 end
 
 function c43480030.eqfil(c,tp) 
-	return c:IsFaceup() and c:IsSetCard(0x3f13) and c:GetOriginalType()&TYPE_PENDULUM~=0  
+	return c:IsFaceup() and c:IsSetCard(0x3fb3) and c:GetOriginalType()&TYPE_PENDULUM~=0  
 end 
 
 function c43480030.spetg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -63,7 +63,7 @@ function c43480030.speop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c43480030.plfilter(c)
-	return c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return c:IsSetCard(0x3fb3) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c43480030.pltg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c43480030.plfilter,tp,LOCATION_DECK,0,1,nil) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) end

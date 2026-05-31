@@ -1,6 +1,7 @@
 --约定的荣耀 高文
 local m=60002171
 local cm=_G["c"..m]
+Duel.LoadScript("c60001511.lua")
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x624)
 	--to hand
@@ -45,16 +46,16 @@ function cm.initial_effect(c)
 	end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,m)>=5 then
+	if byd.rally(e:GetHandler(),50) then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
-	if Duel.GetFlagEffect(tp,m)>=10 then
+	if byd.rally(e:GetHandler(),10) then
 		if e:GetHandler():IsRelateToEffect(e) then
 			e:GetHandler():AddCounter(0x624,1)
 			Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 		end
 	end
-	if Duel.GetFlagEffect(tp,m)>=15 then
+	if byd.rally(e:GetHandler(),15) then
 		if e:GetHandler():IsRelateToEffect(e) then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
@@ -64,7 +65,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			e:GetHandler():RegisterEffect(e1)
 		end
 	end
-	if Duel.GetFlagEffect(tp,m)>=20 then
+	if byd.rally(e:GetHandler(),20) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)

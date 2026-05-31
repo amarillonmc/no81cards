@@ -1,6 +1,7 @@
 --维萨斯-甘露磐龟族
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,56099748)
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)

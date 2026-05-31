@@ -36,10 +36,10 @@ function c43480040.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c43480040.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3f13)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3fb3)
 end
 function c43480040.pbfil(c) 
-	return not c:IsPublic() and c:IsSetCard(0x3f13)  
+	return not c:IsPublic() and c:IsSetCard(0x3fb3)  
 end 
 function c43480040.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
@@ -54,7 +54,7 @@ function c43480040.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c43480040.setfilter(c)
-	return c:IsSetCard(0x3f13) and c:IsType(TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0x3fb3) and c:IsType(TYPE_TRAP) and c:IsSSetable()
 end
 function c43480040.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c43480040.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end 
@@ -73,7 +73,7 @@ function c43480040.tecost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(pg,POS_FACEDOWN,REASON_COST)  
 end
 function c43480040.tefil(c)
-	return c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM) and c:IsAbleToExtra()
+	return c:IsSetCard(0x3fb3) and c:IsType(TYPE_PENDULUM) and c:IsAbleToExtra()
 end
 function c43480040.tetg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c43480040.tefil,tp,LOCATION_DECK,0,1,nil) end  

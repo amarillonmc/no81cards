@@ -28,14 +28,14 @@ function c43480085.tecost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end 
 function c43480085.tefil(c) 
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3f13) and c:IsAbleToExtra()   
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3fb3) and c:IsAbleToExtra()   
 end 
 function c43480085.tetg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c43480085.tefil,tp,LOCATION_DECK,0,1,nil) end 
 	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_DECK)
 end 
 function c43480085.eqfil(c) 
-	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3f13) 
+	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3fb3) 
 end 
 function c43480085.teop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
@@ -68,7 +68,7 @@ function c43480085.gsptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end  
 function c43480085.rtfil(c) 
-	return c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsAbleToHand()  
+	return c:IsFaceup() and c:IsSetCard(0x3fb3) and c:IsAbleToHand()  
 end 
 function c43480085.gspop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()  

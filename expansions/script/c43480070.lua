@@ -37,7 +37,7 @@ function c43480070.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c43480070.plfilter(c)
-	return c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return c:IsSetCard(0x3fb3) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c43480070.pltg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c43480070.plfilter,tp,LOCATION_DECK,0,1,nil) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) end
@@ -52,14 +52,14 @@ function c43480070.plop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end 
 function c43480070.matval(e,lc,mg,c,tp)
-	if not lc:IsSetCard(0x3f13) then return false,nil end
+	if not lc:IsSetCard(0x3fb3) then return false,nil end
 	return true,not mg or mg:GetCount()>0  
 end
 function c43480070.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_EFFECT)~=0 
 end
 function c43480070.spfilter(c,e,tp)
-	if not (c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)) then return false end 
+	if not (c:IsSetCard(0x3fb3) and c:IsType(TYPE_PENDULUM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)) then return false end 
 	if c:IsLocation(LOCATION_EXTRA) then  
 		return c:IsFaceup() and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 
 	else 

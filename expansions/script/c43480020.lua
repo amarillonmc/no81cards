@@ -46,7 +46,7 @@ function c43480020.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c43480020.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3f13)
+	return c:IsFaceup() and c:IsSetCard(0x3fb3)
 end
 function c43480020.pspcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c43480020.cfilter,tp,LOCATION_MZONE,0,1,nil) or Duel.IsEnvironment(4348070,tp) 
@@ -63,7 +63,7 @@ function c43480020.pspop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c43480020.desfil(c,tp) 
-	return not (c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
+	return not (c:IsFaceup() and c:IsSetCard(0x3fb3) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
 end 
 function c43480020.destg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local dg=Duel.GetMatchingGroup(c43480020.desfil,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
@@ -80,17 +80,17 @@ function c43480020.desop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end 
 function c43480020.mfilter(c,tp)
-	return c:IsLocation(LOCATION_MZONE) and c:IsSetCard(0x3f13) and c:IsControler(tp)
+	return c:IsLocation(LOCATION_MZONE) and c:IsSetCard(0x3fb3) and c:IsControler(tp)
 end
 function c43480020.exmfilter(c)
 	return c:IsLocation(LOCATION_HAND) and c:IsCode(43480020)
 end
 function c43480020.matval(e,lc,mg,c,tp)
-	if not lc:IsSetCard(0x3f13) then return false,nil end
+	if not lc:IsSetCard(0x3fb3) then return false,nil end
 	return true,not mg or mg:IsExists(c43480020.mfilter,1,nil,tp) and not mg:IsExists(c43480020.exmfilter,1,nil)
 end
 function c43480020.spfil(c,e,tp) 
-	return c:IsFaceup() and c:GetOriginalType()&TYPE_PENDULUM ~= 0 and c:IsSetCard(0x3f13) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return c:IsFaceup() and c:GetOriginalType()&TYPE_PENDULUM ~= 0 and c:IsSetCard(0x3fb3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end 
 function c43480020.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc) 
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_SZONE) and c43480020.spfil(chkc,e,tp) and chkc~=e:GetHandler() end 

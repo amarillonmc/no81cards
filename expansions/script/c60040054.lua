@@ -1,4 +1,5 @@
 --勇气玛纳
+Duel.LoadScript("c60001511.lua")
 local cm,m,o=GetID()
 function cm.initial_effect(c)
 	--Activate
@@ -11,22 +12,11 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
-	if not cm.global_check then
-		cm.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_TO_HAND)
-		ge1:SetCondition(cm.regcon)
-		ge1:SetOperation(cm.regop)
-		Duel.RegisterEffect(ge1,0)
-		local ge2=ge1:Clone()
-		Duel.RegisterEffect(ge2,1)
-	end
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local num=Duel.GetFlagEffect(tp,m)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) or num>=3 end
-	if num<2 or not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) or num>=5 end
+	if not byd.link(e:GetHandler(),4) or not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST,nil)
 	end
 end
@@ -42,14 +32,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,g)
-		local num=Duel.GetFlagEffect(tp,m)
-		if num>=6 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		if byd.link(e:GetHandler(),6) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
 			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 			e1:SetTargetRange(1,0)
-			e1:SetValue(3)
+			e1:SetValue(2)
 			e1:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e1,tp)
 		end

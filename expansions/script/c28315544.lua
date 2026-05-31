@@ -3,15 +3,22 @@ function c28315544.initial_effect(c)
 	--hokura spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(28315544,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,28315544)
+	e1:SetCondition(c28315544.icon)
 	e1:SetCost(c28315544.spcost)
 	e1:SetTarget(c28315544.sptg)
 	e1:SetOperation(c28315544.spop)
 	e1:SetLabel(1)
 	c:RegisterEffect(e1)
+	local e0=e1:Clone()
+	e0:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e0:SetType(EFFECT_TYPE_QUICK_O)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetCondition(c28315544.qcon)
+	c:RegisterEffect(e0)
 	--recover
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28315544,1))
@@ -27,6 +34,12 @@ function c28315544.initial_effect(c)
 	e2:SetOperation(c28315544.recop)
 	e2:SetLabel(2)
 	c:RegisterEffect(e2)
+end
+function c28315544.icon(e,tp,eg,ep,ev,re,r,rp)
+	return not (Duel.IsPlayerAffectedByEffect(tp,28361833)~=nil and e:GetHandler():IsOriginalSetCard(0x283))
+end
+function c28315544.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsPlayerAffectedByEffect(tp,28361833)~=nil and e:GetHandler():IsOriginalSetCard(0x283)
 end
 function c28315544.chkfilter(c)
 	return c:IsSetCard(0x283) and c:IsNonAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
@@ -46,9 +59,16 @@ function c28315544.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28315544.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if not c:IsRelateToChain() or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_REMOVED,0,nil)
+	if #g==0 or not Duel.SelectYesNo(tp,aux.Stringid(28315544,3)) then return end
+	Duel.BreakEffect()
+	if #g>1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		g=g:Select(tp,1,3,nil)
 	end
+	Duel.HintSelection(g)
+	Duel.SendtoGrave(g,REASON_EFFECT+REASON_RETURN)
 end
 function c28315544.cfilter(c)
 	return c:IsSummonLocation(LOCATION_DECK+LOCATION_EXTRA) and c:IsAttackPos()

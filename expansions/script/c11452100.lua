@@ -113,6 +113,14 @@ function cm.eval(e,te)
 		e:SetLabel(Duel.GetCurrentChain())
 		e:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 		e:SetValue(function(e,te) return e:GetLabelObject() and te==e:GetLabelObject() and e:GetLabel()==Duel.GetCurrentChain() end)
+		local e8=Effect.CreateEffect(e:GetHandler())
+		e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e8:SetCode(EVENT_BREAK_EFFECT)
+		e8:SetOperation(function(fe) e:SetValue(aux.FALSE) fe:Reset() end)
+		Duel.RegisterEffect(e8,0)
+		local e9=e8:Clone()
+		e9:SetCode(EVENT_ADJUST)
+		Duel.RegisterEffect(e9,0)
 	end
 	return res
 end

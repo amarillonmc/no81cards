@@ -37,10 +37,10 @@ function c43480045.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c43480045.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3f13)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3fb3)
 end
 function c43480045.eqfilter(c,tp)
-	return c:IsSetCard(0x3f13) and c:IsFaceup() and c:CheckUniqueOnField(tp) and not c:IsForbidden()
+	return c:IsSetCard(0x3fb3) and c:IsFaceup() and c:CheckUniqueOnField(tp) and not c:IsForbidden()
 end 
 function c43480045.eqtg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local ct=e:GetHandler():GetMaterial():FilterCount(Card.IsType,nil,TYPE_PENDULUM) 

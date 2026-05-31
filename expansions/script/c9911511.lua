@@ -1,4 +1,4 @@
---觅迹人奇境 大西洲海底城
+--觅迹人奇境 澄江水下城
 function c9911511.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

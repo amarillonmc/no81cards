@@ -176,12 +176,12 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc then
+		tc:RegisterFlagEffect(m+0xffffff,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,10))
 		local ge2=Effect.CreateEffect(c)
-		ge2:SetDescription(aux.Stringid(m,10))
 		ge2:SetType(EFFECT_TYPE_SINGLE)
 		ge2:SetCode(EFFECT_IMMUNE_EFFECT)
 		ge2:SetRange(0x1c)
-		ge2:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_SET_AVAILABLE)
+		ge2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		ge2:SetValue(cm.chkval)
 		ge2:SetOwnerPlayer(e:GetLabel())
 		ge2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
@@ -197,7 +197,7 @@ function cm.shfilter(c)
 	return c:GetFlagEffect(m)>0
 end
 function cm.chkval(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) then
+	if e:GetHandler():GetFlagEffect(m+0xffffff)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) then
 		local tp=te:GetOwnerPlayer()
 		local e3=Effect.CreateEffect(e:GetOwner())
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -207,6 +207,7 @@ function cm.chkval(e,te)
 		Duel.RegisterEffect(e3,tp)
 		e:SetValue(aux.FALSE)
 		e:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e:GetHandler():ResetFlagEffect(m+0xffffff)
 		e:SetDescription(0)
 		if tp==e:GetOwnerPlayer() then
 			if SetCardData then

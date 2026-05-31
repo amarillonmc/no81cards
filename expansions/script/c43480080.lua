@@ -31,7 +31,7 @@ end
 
 -- 检查是否是“被遗忘的研究”系列卡
 function s.is_theme(c)
-	return c:IsSetCard(0x3f13) 
+	return c:IsSetCard(0x3fb3) 
 end
 
 -- ① 效果 Cost：展示 1 张手牌

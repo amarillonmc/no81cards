@@ -27,10 +27,10 @@ function c43480035.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c43480035.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3f13)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3fb3)
 end
 function c43480035.pbfil(c) 
-	return not c:IsPublic() and c:IsSetCard(0x3f13)  
+	return not c:IsPublic() and c:IsSetCard(0x3fb3)  
 end 
 function c43480035.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 

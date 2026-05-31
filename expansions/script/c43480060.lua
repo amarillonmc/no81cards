@@ -24,7 +24,7 @@ function c43480060.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c43480060.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3f13)  
+	return c:IsFaceup() and c:IsSetCard(0x3fb3)  
 end
 function c43480060.condition(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(c43480060.cfilter,tp,LOCATION_ONFIELD,0,1,nil) then return false end
@@ -36,7 +36,7 @@ function c43480060.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0) 
 end
 function c43480060.spfil(c,e,tp)  
-	if not (c:IsSetCard(0x3f13) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)) then return false end 
+	if not (c:IsSetCard(0x3fb3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)) then return false end 
 	if c:IsLocation(LOCATION_EXTRA) then  
 		return c:IsFaceup() and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 
 	else 
@@ -52,10 +52,10 @@ function c43480060.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c43480060.eqfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_LINK) and Duel.IsExistingMatchingCard(c43480060.eqeqfilter,tp,LOCATION_DECK,0,1,nil,c,tp)
+	return c:IsFaceup() and c:IsSetCard(0x3fb3) and c:IsType(TYPE_LINK) and Duel.IsExistingMatchingCard(c43480060.eqeqfilter,tp,LOCATION_DECK,0,1,nil,c,tp)
 end
 function c43480060.eqeqfilter(c,tc,tp)
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3f13) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3fb3) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
 end
 function c43480060.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c43480060.eqfilter(chkc,tp) end 

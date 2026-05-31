@@ -31,7 +31,7 @@ function c43480065.zones(e,tp,eg,ep,ev,re,r,rp)
 	return zone
 end
 function c43480065.pctfil(c,e,tp) 
-	return c:IsAbleToGraveAsCost() and c:IsSetCard(0x3f13) and c:IsType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(c43480065.plfilter,tp,LOCATION_DECK,0,1,nil)
+	return c:IsAbleToGraveAsCost() and c:IsSetCard(0x3fb3) and c:IsType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(c43480065.plfilter,tp,LOCATION_DECK,0,1,nil)
 end 
 function c43480065.plcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c43480065.pctfil,tp,LOCATION_DECK,0,1,nil,e,tp) end 
@@ -39,7 +39,7 @@ function c43480065.plcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST)
 end 
 function c43480065.plfilter(c)
-	return c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return c:IsSetCard(0x3fb3) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c43480065.pltg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c43480065.plfilter,tp,LOCATION_DECK,0,1,nil) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) end
@@ -59,7 +59,7 @@ function c43480065.eqfilter(c,tp)
 	return c:IsFaceup() and c:IsCode(43480030) and Duel.IsExistingMatchingCard(c43480065.eqeqfilter,tp,LOCATION_DECK,0,1,nil,tp)
 end
 function c43480065.eqeqfilter(c,tp)
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3f13) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3fb3) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
 end
 function c43480065.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c43480065.eqfilter(chkc,tp) end 

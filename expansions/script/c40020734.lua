@@ -34,6 +34,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1, id + 1)
+	e2:SetCost(s.setcost)
 	e2:SetTarget(s.settg)
 	e2:SetOperation(s.setop)
 	c:RegisterEffect(e2)
@@ -103,7 +104,13 @@ function s.disop(e, tp, eg, ep, ev, re, r, rp)
 		end
 	end
 end
-
+function s.cfilter2(c)
+	return  s.WeaponInsect(c) and c:IsDiscardable()
+end
+function s.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	Duel.DiscardHand(tp,s.cfilter2,1,1,REASON_COST+REASON_DISCARD,e:GetHandler())
+end
 function s.settg(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then
 		return Duel.GetLocationCount(tp, LOCATION_SZONE) > 0

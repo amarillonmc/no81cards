@@ -42,7 +42,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.desfilter(c)
-	return c:IsCode(12580477,14532163,69162969) and c:IsAbleToHand()
+	return c:IsCode(6325660,12580477,14532163) and c:IsAbleToHand()
 end
 function cm.destg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)<5 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.desfilter),tp,LOCATION_DECK,0,1,nil) end

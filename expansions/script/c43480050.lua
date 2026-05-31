@@ -35,7 +35,7 @@ function c43480050.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c43480050.lcheck(g)
-	return g:IsExists(function(c) return c:IsLinkSetCard(0x3f13) and c:IsLinkType(TYPE_PENDULUM) end,1,nil)
+	return g:IsExists(function(c) return c:IsLinkSetCard(0x3fb3) and c:IsLinkType(TYPE_PENDULUM) end,1,nil)
 end 
 function c43480050.ddtg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chkc then return chkc:IsControler(tp) and chkc:IsOnField() end  

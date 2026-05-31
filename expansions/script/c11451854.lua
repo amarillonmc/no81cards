@@ -300,8 +300,8 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.rfilter(c)
 	local ph=Duel.GetCurrentPhase()
-	--local ph2=cm.tgph[c]
-	return not c:IsReason(REASON_RETURN) and c:IsAbleToHand() and Duel.GetTurnCount()~=c:GetTurnID() --(not ph2 or (Duel.GetTurnCount()~=c:GetTurnID()) or (ph~=ph2 and (ph<=PHASE_MAIN1 or ph>=PHASE_MAIN2 or ph2<=PHASE_MAIN1 or ph2>=PHASE_MAIN2)))
+	local ph2=cm.tgph[c]
+	return not c:IsReason(REASON_RETURN) and c:IsAbleToHand() and (not ph2 or (Duel.GetTurnCount()~=c:GetTurnID()) or (ph~=ph2 and (ph<=PHASE_MAIN1 or ph>=PHASE_MAIN2 or ph2<=PHASE_MAIN1 or ph2>=PHASE_MAIN2)))
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

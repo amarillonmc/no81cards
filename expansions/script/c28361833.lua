@@ -10,7 +10,7 @@ function c28361833.initial_effect(c)
 	ge0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	ge0:SetRange(0xff)
 	ge0:SetValue(c28361833.synclv)
-	--effect gain
+	--effect grant
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
 	e0:SetRange(LOCATION_EXTRA)
@@ -31,7 +31,7 @@ function c28361833.initial_effect(c)
 	e3:SetOperation(c28361833.regop)
 	e3:SetLabelObject(e2) 
 	c:RegisterEffect(e3)
-c28361833.shinycounter=true
+--c28361833.counter_add_list={0x1283}
 end
 function c28361833.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x283)
@@ -52,6 +52,7 @@ function c28361833.regcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c28361833.regop(e,tp,eg,ep,ev,re,r,rp)
 	local vt=e:GetLabelObject():GetLabel()
+	if vt>5 then vt=5 end
 	local c=e:GetHandler()
 	if vt>=2 then
 		--to hand
@@ -64,33 +65,20 @@ function c28361833.regop(e,tp,eg,ep,ev,re,r,rp)
 		e0:SetOperation(c28361833.thop)
 		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e0)
-		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28361833,5))
+		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28361833,vt))
 	end
 	if vt>=3 then
-		--battle indes
+		--
 		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(28361833)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e1:SetRange(LOCATION_MZONE)
+		e1:SetTargetRange(1,0)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(1)
 		c:RegisterEffect(e1)
-		--atk
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_UPDATE_ATTACK)
-		e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e2:SetRange(LOCATION_MZONE)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e2:SetValue(vt*400)
-		c:RegisterEffect(e2)
-		local e3=e2:Clone()
-		e3:SetCode(EFFECT_UPDATE_DEFENSE)
-		c:RegisterEffect(e3)
-		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28361833,0))
 	end
-	if  vt>=4 then
+	if vt>=4 then
 		--effect indes
 		local e4=Effect.CreateEffect(c)
 		e4:SetType(EFFECT_TYPE_SINGLE)
@@ -109,12 +97,11 @@ function c28361833.regop(e,tp,eg,ep,ev,re,r,rp)
 		e5:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e5:SetValue(aux.tgoval)
 		c:RegisterEffect(e5)
-		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28361833,1))
 	end
 	if vt>=5 then
 		local e6=Effect.CreateEffect(c)
 		e6:SetDescription(aux.Stringid(28361833,3))
-		e6:SetCategory(CATEGORY_NEGATE+CATEGORY_COUNTER)
+		e6:SetCategory(CATEGORY_NEGATE)--+CATEGORY_COUNTER
 		e6:SetType(EFFECT_TYPE_QUICK_O)
 		e6:SetCode(EVENT_CHAINING)
 		e6:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -125,16 +112,13 @@ function c28361833.regop(e,tp,eg,ep,ev,re,r,rp)
 		e6:SetOperation(c28361833.disop)
 		e6:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e6)
-		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28361833,2))   
 	end
 end
 function c28361833.discon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsCanAddCounter(0x1283,1) and rp==1-tp and Duel.IsChainNegatable(ev)
+	return rp==1-tp and Duel.IsChainNegatable(ev)
 end
 function c28361833.disop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsFaceup() then
-		e:GetHandler():AddCounter(0x1283,1)
-	end
+	Duel.NegateActivation(ev)
 end
 function c28361833.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x283)
@@ -153,8 +137,5 @@ function c28361833.thop(e,tp,eg,ep,ev,re,r,rp)
 	if #tg>0 then
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tg)
-	end
-	if false and Duel.SelectYesNo(tp,aux.Stringid(28361833,4)) then
-		Duel.Recover(tp,500,REASON_EFFECT)
 	end
 end

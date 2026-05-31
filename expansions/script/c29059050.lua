@@ -1,8 +1,8 @@
 --方舟骑士团－Mon3tr
 local m=29059050
 local cm=_G["c"..m]
-cm.named_with_Arknight=1
 function cm.initial_effect(c)
+	aux.AddCodeList(c,29065500,29065502,29056009)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)   
 	--token
@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	e0:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e0:SetType(EFFECT_TYPE_IGNITION)
 	e0:SetRange(LOCATION_PZONE)
-	e0:SetCountLimit(1,m)
+	e0:SetCountLimit(1)
 	e0:SetCost(cm.spcost)
 	e0:SetTarget(cm.sptg)
 	e0:SetOperation(cm.spop)
@@ -22,12 +22,17 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_PZONE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,m+1)
+	e1:SetCountLimit(1)
 	e1:SetCost(cm.spcost1)
 	e1:SetTarget(cm.sptg1)
 	e1:SetOperation(cm.spop1)
 	c:RegisterEffect(e1)
+	--LP LOST
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
+	e2:SetOperation(cm.llop)
+	c:RegisterEffect(e2)
 	--search
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,2))
@@ -43,37 +48,29 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
 	cm.speffect=e3
-	--Leave Set
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e5:SetCode(EVENT_LEAVE_FIELD)
-	e5:SetOperation(cm.MontoPenop)
-	c:RegisterEffect(e5)
-	--To Pzone
-	local e6=Effect.CreateEffect(c)
-	e6:SetDescription(aux.Stringid(m,3))
-	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e6:SetCode(EVENT_PHASE+PHASE_END)
-	e6:SetRange(LOCATION_MZONE)
-	e6:SetCountLimit(1)
-	e6:SetTarget(cm.pentg)
-	e6:SetOperation(cm.penop)
-	c:RegisterEffect(e6)
+	--indes
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_FIELD)
+	e8:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e8:SetRange(LOCATION_MZONE)
+	e8:SetTargetRange(LOCATION_MZONE,0)
+	e8:SetTarget(cm.imtg)
+	e8:SetValue(1)
+	c:RegisterEffect(e8)
+	local e9=e8:Clone()
+	e9:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	c:RegisterEffect(e9)
 cm.kinkuaoi_Akscsst=true
 end
-function cm.MontoPenop(e)
-	local tp=e:GetHandlerPlayer()
+function cm.imtg(e,c)
+	return c:IsCode(29056009) or c:IsCode(29065500) or c:IsCode(29065502)
+end
+function cm.llop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
 	local c=e:GetHandler()
-	local rp=c:GetReasonPlayer()
-	if tp~=1-rp then return end
-	if not c:IsPreviousLocation(LOCATION_MZONE) or c:IsPreviousPosition(POS_FACEDOWN) then return end
-	if (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and not c:IsForbidden() and c:CheckUniqueOnField(tp) then
-		Duel.Hint(HINT_CARD,0,c:GetOriginalCode())
-		local g=Group.FromCards(c)
-		g=g:Select(tp,1,1,nil)
-		Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,false)
-		c:SetStatus(STATUS_EFFECT_ENABLED,true)
-	end
+	local atk=c:GetAttack()
+	local lp=Duel.GetLP(1-tp)
+	Duel.SetLP(1-tp,lp-atk)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
@@ -93,24 +90,31 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cfilter1(c,tp)
-	return c:IsType(TYPE_TOKEN) and Duel.GetMZoneCount(tp,c)>0 and (c:IsFaceup() or c:IsControler(tp))
+	return c:IsCode(29059051) and c:IsFaceup() and c:IsType(TYPE_MONSTER)
 end
 function cm.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.cfilter1,1,nil,tp) end
 	local g=Duel.SelectReleaseGroup(tp,cm.cfilter1,1,1,nil,tp)
-	Duel.Release(g,REASON_COST)
+	local tc=g:GetFirst()
+	local seq=tc:GetSequence()
+	e:SetLabel(seq)
+	Duel.Release(tc,REASON_COST)
 end
 function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x87af,TYPE_MONSTER+TYPE_EFFECT,2500,1650,6,RACE_ROCK,ATTRIBUTE_DARK) end
+	local c=e:GetHandler()
+	local seq=e:GetLabel()
+	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or not Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x87af,TYPE_MONSTER+TYPE_EFFECT,2500,1650,6,RACE_ROCK,ATTRIBUTE_DARK) then return end
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	local seq=e:GetLabel()
+	if c:IsRelateToEffect(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,1<<seq) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP,1<<seq)
+	end
 end
 function cm.addfilter(c,e,tp)
-	if not ((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsType(TYPE_MONSTER) and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode())) then return false end
+	if not ((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER)) or c:IsCode(m) then return false end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	return c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))  
 end

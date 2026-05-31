@@ -3,13 +3,10 @@ function c9911820.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCountLimit(1,9911820)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e1:SetCondition(c9911820.spcon)
 	e1:SetTarget(c9911820.sptg)
 	e1:SetOperation(c9911820.spop)
 	c:RegisterEffect(e1)
@@ -22,9 +19,6 @@ function c9911820.initial_effect(c)
 	e2:SetTarget(c9911820.settg)
 	e2:SetOperation(c9911820.setop)
 	c:RegisterEffect(e2)
-end
-function c9911820.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c9911820.spfilter(c)
 	local b1=c:IsSetCard(0xa957)
@@ -46,7 +40,6 @@ function c9911820.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 and tc:IsRelateToEffect(e) then
-		Duel.BreakEffect()
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
 end

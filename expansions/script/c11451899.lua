@@ -74,6 +74,14 @@ function cm.eval(e,te,c)
 		local ge2=c:RegisterFlagEffect(m-2,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 		ge2:SetLabelObject(te)
 		ge2:SetLabel(Duel.GetCurrentChain())
+		local e8=Effect.CreateEffect(e:GetHandler())
+		e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e8:SetCode(EVENT_BREAK_EFFECT)
+		e8:SetOperation(function(fe) ge2:SetLabelObject(nil) fe:Reset() end)
+		Duel.RegisterEffect(e8,0)
+		local e9=e8:Clone()
+		e9:SetCode(EVENT_ADJUST)
+		Duel.RegisterEffect(e9,0)
 	end
 	return res
 end

@@ -159,11 +159,11 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.efilter(e,te)
+	local tc=te:GetHandler()
 	if e:GetHandler():GetFlagEffect(m+0xffffff)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) then
 		if KOISHI_CHECK then
 			Duel.DisableActionCheck(true)
 			pcall(Duel.HintSelection,Group.FromCards(e:GetHandler()))
-			local tc=te:GetHandler()
 			local e1=Effect.CreateEffect(tc)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(m)
@@ -174,24 +174,32 @@ function cm.efilter(e,te)
 			e1:Reset()
 			Duel.DisableActionCheck(false)
 		else
-			local e5=Effect.CreateEffect(te:GetHandler())
+			local e5=Effect.CreateEffect(tc)
 			e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e5:SetCode(EVENT_ADJUST)
 			e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 			e5:SetLabel(te:GetOwnerPlayer())
 			e5:SetCondition(function() return not pnfl_adjusting end)
 			e5:SetOperation(cm.acop)
-			Duel.RegisterEffect(e5,tp)
+			Duel.RegisterEffect(e5,te:GetOwnerPlayer())
 		end
-		if e:GetHandler():GetFlagEffect(11451965)>0 then
+		if te:IsHasType(EFFECT_TYPE_ACTIONS) then --e:GetHandler():GetFlagEffect(11451965)>0 then
 			e:SetLabelObject(te)
 			e:SetLabel(Duel.GetCurrentChain())
-			e:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN)
+			e:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 		end
 		e:GetHandler():ResetFlagEffect(m+0xffffff)
 		e:SetValue(function(e,te) return e:GetLabelObject() and te==e:GetLabelObject() and e:GetLabel()==Duel.GetCurrentChain() end)
 		e:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e:SetDescription(0)
+		local e8=Effect.CreateEffect(e:GetHandler())
+		e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e8:SetCode(EVENT_BREAK_EFFECT)
+		e8:SetOperation(function(fe) e:SetValue(aux.FALSE) fe:Reset() end)
+		Duel.RegisterEffect(e8,0)
+		local e9=e8:Clone()
+		e9:SetCode(EVENT_ADJUST)
+		Duel.RegisterEffect(e9,0)
 		return true
 	end
 	return false

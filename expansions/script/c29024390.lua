@@ -59,7 +59,7 @@ function c29024390.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --e1
 function c29024390.filter(c,tp)
-	return (aux.IsCodeListed(c,22702055) or c:GetOriginalCode()==295517 or c:GetOriginalCode()==2819435 or c:GetOriginalCode()==26534688 or c:GetOriginalCode()==34103656) and c:IsType(TYPE_FIELD) and c:IsType(TYPE_SPELL) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true)
+	return (aux.IsCodeListed(c,22702055) or c:GetOriginalCode()==295517 or c:GetOriginalCode()==2819435 or c:GetOriginalCode()==26534688 or c:GetOriginalCode()==34103656) and c:IsType(TYPE_FIELD) and not c:IsForbidden()
 end
 function c29024390.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29024390.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
@@ -77,11 +77,5 @@ function c29024390.acop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 		end
 		Duel.MoveToField(tc,tp,to,LOCATION_FZONE,POS_FACEUP,true)
-		local te=tc:GetActivateEffect()
-		te:UseCountLimit(tp,1,true)
-		local tep=tc:GetControler()
-		local cost=te:GetCost()
-		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-		Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 	end
 end

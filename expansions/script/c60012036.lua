@@ -1,23 +1,13 @@
 -- 丽金花·云庆
 local cm,m,o=GetID()
+Duel.LoadScript("c60001511.lua")
 function cm.initial_effect(c)
   -- 添加丽金花系列的卡名记述
   aux.AddCodeList(c,60012036)
   -- 注册进化指示物的许可
   c:EnableCounterPermit(0x624)
   
-  -- 统计自己的召唤/特殊召唤次数，整个决斗的
-  if not cm.global_check then
-		cm.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_SUMMON_SUCCESS)
-		ge1:SetOperation(cm.checkop)
-		Duel.RegisterEffect(ge1,0)
-		local ge2=ge1:Clone()
-		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
-		Duel.RegisterEffect(ge2,0)
-	end
+
   
   -- ①：特殊召唤的效果，1回合1次
   local e1=Effect.CreateEffect(c)
@@ -72,14 +62,6 @@ function cm.initial_effect(c)
   c:RegisterEffect(e4)
 end
 
--- 统计召唤次数的操作
-function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	while tc do
-		Duel.RegisterFlagEffect(tc:GetSummonPlayer(),m,0,0,1)
-		tc=eg:GetNext()
-	end
-end
 
 -- ①的条件：自己场上没有表侧的卡
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -176,14 +158,14 @@ end
 
 -- 回合结束的目标
 function cm.endtg(e,tp,eg,ep,ev,re,r,rp,chk)
-  if chk==0 then return Duel.GetFlagEffect(tp,m)>=20 and Duel.GetMatchingGroupCount(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)>0 end
-  local ct=Duel.GetFlagEffect(tp,m)/20
+  if chk==0 then return Duel.GetFlagEffect(tp,60002165)>=20 and Duel.GetMatchingGroupCount(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)>0 end
+  local ct=math.floor(Duel.GetFlagEffect(tp,60002165)/20)
   Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,ct,1-tp,LOCATION_HAND)
 end
 
 -- 回合结束的操作
 function cm.endop(e,tp,eg,ep,ev,re,r,rp)
-  local ct=Duel.GetFlagEffect(tp,m)
+  local ct=Duel.GetFlagEffect(tp,60002165)
   local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
   if #g==0 then return end
   for i=1,ct do

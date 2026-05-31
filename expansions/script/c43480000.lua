@@ -46,7 +46,7 @@ function c43480000.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c43480000.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3f13)
+	return c:IsFaceup() and c:IsSetCard(0x3fb3)
 end
 function c43480000.pspcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c43480000.cfilter,tp,LOCATION_MZONE,0,1,nil) or Duel.IsEnvironment(4348070,tp) 
@@ -65,14 +65,14 @@ function c43480000.pspop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 		e1:SetTargetRange(1,0)
 		e1:SetTarget(function(e,c) 
-		return not c:IsSetCard(0x3f13) end)
+		return not c:IsSetCard(0x3fb3) end)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1,true) 
 		Duel.SpecialSummonComplete()
 	end
 end
 function c43480000.desfil(c,tp) 
-	return not (c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
+	return not (c:IsFaceup() and c:IsSetCard(0x3fb3) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
 end 
 function c43480000.destg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local dg=Duel.GetMatchingGroup(c43480000.desfil,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
@@ -89,7 +89,7 @@ function c43480000.desop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end 
 function c43480000.eqfil(c) 
-	return c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_LINK) 
+	return c:IsFaceup() and c:IsSetCard(0x3fb3) and c:IsType(TYPE_LINK) 
 end 
 function c43480000.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c43480000.eqfil(chkc) end
@@ -137,7 +137,7 @@ function c43480000.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetEquipTarget()~=nil 
 end
 function c43480000.spfil(c,e,tp) 
-	if not (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x3f13) and c:IsFaceup()) then return false end 
+	if not (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x3fb3) and c:IsFaceup()) then return false end 
 	if c:IsLocation(LOCATION_EXTRA) then 
 		return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 
 	else 

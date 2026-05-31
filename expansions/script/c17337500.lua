@@ -1,8 +1,11 @@
 local s,id=GetID()
 function s.initial_effect(c)
+	--link
+	aux.AddMaterialCodeList(c,17337400)
 	aux.AddCodeList(c,17337400)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3f50),2,4,s.lcheck)
+	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_DRAW+CATEGORY_TODECK+CATEGORY_TOEXTRA)
@@ -24,58 +27,72 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	if not s.global_check then
 		s.global_check=true
+		--dead display
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_TO_GRAVE)
-		ge1:SetOperation(s.checkop)
+		ge1:SetProperty(EFFECT_FLAG_DELAY)
+		ge1:SetOperation(c17337500.intop)
 		Duel.RegisterEffect(ge1,0)
+		c17337500.dead_count={}
+		c17337500.dead_count[0],c17337500.dead_count[1]=0,0
 	end
 end
-function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	for tc in aux.Next(eg) do
-		if tc:IsCode(17337400) then
-			Duel.RegisterFlagEffect(tc:GetPreviousControler(),id+2,0,0,1)
-		end
+function c17337500.chkfilter(c)
+	return c:IsCode(17337400) and not c:IsReason(REASON_RETURN)
+end
+function c17337500.intop(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(c17337500.chkfilter,nil)
+	if #g==0 then return end
+	for tc in aux.Next(g) do
+		local p=tc:GetControler()
+		c17337500.dead_count[p]=c17337500.dead_count[p]+1
+		local ct=c17337500.dead_count[p]>7 and 7 or c17337500.dead_count[p]
+		for _,te in pairs({Duel.IsPlayerAffectedByEffect(p,EFFECT_FLAG_EFFECT+17337500)}) do te:Reset() end
+		local te=Effect.CreateEffect(e:GetHandler())
+		te:SetDescription(aux.Stringid(17337500,ct))
+		te:SetType(EFFECT_TYPE_FIELD)
+		te:SetCode(EFFECT_FLAG_EFFECT+17337500)
+		te:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		te:SetTargetRange(1,0)
+		--te:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(te,p)
 	end
 end
 function s.lcheck(g,lc)
-	return g:IsExists(Card.IsFusionCode,1,nil,17337400)
+	return g:IsExists(Card.IsLinkCode,1,nil,17337400)
 end
-function s.thfilter(c,tp)
-	if not (c:IsControler(tp) and (c:IsSetCard(0x3f50) or aux.IsCodeListed(c,17337400))) then return false end
-	local loc_check = c:IsLocation(LOCATION_GRAVE) or (c:IsLocation(LOCATION_ONFIELD) and c:IsFaceup())
-	return loc_check and (c:IsAbleToHand() or c:IsAbleToExtra())
+function s.thfilter(c)
+	if not (c:IsSetCard(0x3f50) or aux.IsCodeListed(c,17337400)) then return false end
+	return c:IsFaceupEx() and (c:IsAbleToHand() or c:IsAbleToExtra())
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and s.thfilter(chkc,tp) end
-	local ct=Duel.GetFlagEffect(tp,id+2) 
-	if chk==0 then return ct>0 and Duel.IsExistingTarget(s.thfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil,tp) 
-		and Duel.IsPlayerCanDraw(tp,ct) end
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and chkc:IsControler(tp) and s.thfilter(chkc) end
+	local ct=c17337500.dead_count[tp]
+	if chk==0 then return ct>0 and Duel.IsExistingTarget(s.thfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) and Duel.IsPlayerCanDraw(tp,ct) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectTarget(tp,s.thfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil,tp)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,ct,tp,LOCATION_HAND)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if not (tc and tc:IsRelateToEffect(e)) then return end
-	if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and (tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA)) then
-		local ct=Duel.GetFlagEffect(tp,id+2)
+	if tc and tc:IsRelateToChain() and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA) then
+		local ct=c17337500.dead_count[tp]
 		if ct>0 and Duel.Draw(tp,ct,REASON_EFFECT)==ct then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)		   
+			Duel.ShuffleHand(tp)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)  
 			local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Select(tp,ct,ct,nil)
-			if #g>0 then			   
+			if #g>0 then
 				Duel.SendtoDeck(g,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
 			end
 		end
 	end
 end
 function s.mira_filter(c,tp)
-	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)
-		and (c:IsSetCard(0x3f50) or aux.IsCodeListed(c,17337400))
-		and c:GetReasonPlayer()==1-tp
+	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE) and c:GetReasonPlayer()==1-tp and c:IsPreviousPosition(POS_FACEUP) and (c:IsPreviousSetCard(0x3f50) or aux.IsCodeListed(c,17337400))
 end
 function s.spcon_check(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsLocation(LOCATION_GRAVE) 
@@ -97,7 +114,7 @@ function s.sp_final_action(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,id+1)==0 
 		and c:IsLocation(LOCATION_GRAVE) 
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) then		
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) then	 
 		Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
 		Duel.Hint(HINT_CARD,0,id)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)

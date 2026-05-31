@@ -1,6 +1,7 @@
 --武装千金的大参谋
 local m=60002170
 local cm=_G["c"..m]
+Duel.LoadScript("c60001511.lua")
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x624)
 	--to hand
@@ -76,10 +77,10 @@ function cm.incon(e)
 	return Card.GetCounter(e:GetHandler(),0x624)>=1
 end
 function cm.cd1(e,c)
-	return Duel.GetFlagEffect(tp,m)<=9
+	return not byd.rally(e:GetHandler(),10)
 end
 function cm.cd2(e,c)
-	return Duel.GetFlagEffect(tp,m)>=10
+	return byd.rally(e:GetHandler(),10)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()

@@ -1,6 +1,7 @@
 --荣光剑士 奥蕾莉亚
 local m=60002172
 local cm=_G["c"..m]
+Duel.LoadScript("c60001511.lua")
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x624)
 	--sp summon
@@ -107,7 +108,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-		if Duel.GetFlagEffect(tp,m)>=7 then
+		if byd.rally(e:GetHandler(),7) then
 			Duel.Draw(tp,1,REASON_EFFECT)
 			if e:GetHandler():IsRelateToEffect(e) then
 				e:GetHandler():AddCounter(0x624,1)

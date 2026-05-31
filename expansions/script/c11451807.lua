@@ -31,6 +31,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function cm.immval(e,te)
+	if not (te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS))) then return false end
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+11451807)}
@@ -41,7 +42,7 @@ function cm.immval(e,te)
 		for _,se in pairs(eset) do
 			if se:GetLabelObject()==te then ctns=true end
 		end
-	elseif te:IsActivated() then
+	else
 		for _,se in pairs(eset2) do
 			if se:GetLabelObject()==te and se:GetLabel()==Duel.GetCurrentChain() then ctns=true end
 		end
@@ -61,7 +62,7 @@ function cm.immval(e,te)
 		e4:SetCode(EVENT_ADJUST)
 		e4:SetOperation(cm.imcop)
 		Duel.RegisterEffect(e4,tp)
-		if te:IsActivated() then
+		if te:IsHasType(EFFECT_TYPE_ACTIONS) then
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetCode(EFFECT_FLAG_EFFECT+11451808)
@@ -70,6 +71,14 @@ function cm.immval(e,te)
 			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 			c:RegisterEffect(e2,true)
+			local e8=Effect.CreateEffect(e:GetHandler())
+			e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e8:SetCode(EVENT_BREAK_EFFECT)
+			e8:SetOperation(function(fe) e2:SetLabelObject(nil) fe:Reset() end)
+			Duel.RegisterEffect(e8,0)
+			local e9=e8:Clone()
+			e9:SetCode(EVENT_ADJUST)
+			Duel.RegisterEffect(e9,0)
 		end
 	end
 	return res

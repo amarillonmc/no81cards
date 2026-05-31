@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	--e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
@@ -159,16 +159,17 @@ function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.SSet(tp,c,tp,true)
 		--c:RegisterFlagEffect(m-11,RESET_CHAIN,0,1)
+		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 		cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 end
+	if chk==0 then return true end --Duel.GetFlagEffect(tp,m)==0 end
 	e:GetHandler():SetStatus(STATUS_EFFECT_ENABLED,true)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,m)>0 then return end
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+	--if Duel.GetFlagEffect(tp,m)>0 then return end
+	--Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local fd=Duel.SelectField(tp,2,LOCATION_SZONE,0,~0x1f00)
@@ -272,6 +273,7 @@ function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
 		local cl=cm.column
 		cm.column=cm.column&~(1<<cid)
 		Duel.ResetFlagEffect(tp,m+0xffff+i)
+		e:GetHandler():ResetFlagEffect(m+0xffff+i)
 		if cl~=0 and cm.column==0 then
 			if SetCardData then
 				Duel.Hint(24,0,aux.Stringid(m,8))

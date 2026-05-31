@@ -49,7 +49,7 @@ function c43480015.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c43480015.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3f13)
+	return c:IsFaceup() and c:IsSetCard(0x3fb3)
 end
 function c43480015.pspcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c43480015.cfilter,tp,LOCATION_MZONE,0,1,nil) or Duel.IsEnvironment(43480070,tp) 
@@ -66,7 +66,7 @@ function c43480015.pspop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c43480015.desfil(c,tp) 
-	return not (c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
+	return not (c:IsFaceup() and c:IsSetCard(0x3fb3) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
 end 
 function c43480015.destg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local dg=Duel.GetMatchingGroup(c43480015.desfil,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
@@ -110,7 +110,7 @@ function c43480015.raop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end 
 function c43480015.eqfil(c) 
-	return c:IsFaceup() and c:IsSetCard(0x3f13) and c:GetOriginalType()&TYPE_PENDULUM~=0 
+	return c:IsFaceup() and c:IsSetCard(0x3fb3) and c:GetOriginalType()&TYPE_PENDULUM~=0 
 end 
 function c43480015.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and c43480015.eqfil(chkc) and chkc~=e:GetHandler() end

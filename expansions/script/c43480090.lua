@@ -47,7 +47,7 @@ function c43480090.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c43480090.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3f13)
+	return c:IsFaceup() and c:IsSetCard(0x3fb3)
 end
 function c43480090.pspcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c43480090.cfilter,tp,LOCATION_MZONE,0,1,nil) or Duel.IsEnvironment(4348070,tp) 
@@ -63,7 +63,7 @@ function c43480090.pspop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c43480090.desfil(c,tp) 
-	return not (c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
+	return not (c:IsFaceup() and c:IsSetCard(0x3fb3) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
 end 
 function c43480090.destg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local dg=Duel.GetMatchingGroup(c43480090.desfil,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
@@ -96,7 +96,7 @@ function c43480090.thscon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetEquipTarget()~=nil 
 end
 function c43480090.thfil(c) 
-	return c:IsAbleToHand() and c:IsSetCard(0x3f13) and c:IsType(TYPE_MONSTER) 
+	return c:IsAbleToHand() and c:IsSetCard(0x3fb3) and c:IsType(TYPE_MONSTER) 
 end 
 function c43480090.thstg(e,tp,eg,ep,ev,re,r,rp,chk,chkc) 
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c43480090.thfil(chkc) end 
@@ -105,7 +105,7 @@ function c43480090.thstg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
 end
 function c43480090.xspfil(c,e,tp) 
-	return c:IsSetCard(0x3f13) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
+	return c:IsSetCard(0x3fb3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
 end 
 function c43480090.thsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -22,11 +22,11 @@ function c43480055.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c43480055.pspfil(c,e,tp) 
-	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3f13) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false) or c:IsDestructable(e))
+	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3fb3) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false) or c:IsDestructable(e))
 end 
 
 function c43480055.thfilter(c)
-	return c:IsSetCard(0x3f13)
+	return c:IsSetCard(0x3fb3)
 		and c:IsAbleToHand()
 end
 

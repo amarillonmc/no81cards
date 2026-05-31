@@ -1,7 +1,8 @@
---苏生玛纳
+-- 苏生玛纳
+Duel.LoadScript("c60001511.lua")
 local cm,m,o=GetID()
 function cm.initial_effect(c)
-	--Activate
+	-- Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -25,8 +26,8 @@ function cm.initial_effect(c)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local num=Duel.GetFlagEffect(tp,m)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) or num>=3 end
-	if num<2 or not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) or num>=5 end
+	if not byd.link(e:GetHandler(),3) or not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST,nil)
 	end
 end
@@ -34,7 +35,7 @@ function cm.filter(c)
 	return c:IsCode(60040052) and c:IsAbleToHand()
 end
 function cm.filter2(c,e,tp)
-	return c:IsSetCard(0x644) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xc629) and c:IsLevelBelow(5) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
@@ -46,8 +47,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,g)
 		local num=Duel.GetFlagEffect(tp,m)
-		if num>=6 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		if byd.link(e:GetHandler(),6) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 			if g:GetCount()>0 then

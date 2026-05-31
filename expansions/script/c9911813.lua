@@ -1,4 +1,4 @@
---攒聚疮痍烬灵
+--踩踏疮痍烬灵
 function c9911813.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)

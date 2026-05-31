@@ -1,6 +1,7 @@
 --失落武士 景光
 local m=60002165
 local cm=_G["c"..m]
+Duel.LoadScript("c60001511.lua")
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x624)
 	--to hand
@@ -35,17 +36,17 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.tgtg)
 	e4:SetOperation(cm.tgop)
 	c:RegisterEffect(e4)
-	if not cm.global_check then
-		cm.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_SUMMON_SUCCESS)
-		ge1:SetOperation(cm.checkop)
-		Duel.RegisterEffect(ge1,0)
-		local ge2=ge1:Clone()
-		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
-		Duel.RegisterEffect(ge2,0)
-	end
+	--if not cm.global_check then
+		--cm.global_check=true
+		--local ge1=Effect.CreateEffect(c)
+		--ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		--ge1:SetCode(EVENT_SUMMON_SUCCESS)
+		--ge1:SetOperation(cm.checkop)
+		--Duel.RegisterEffect(ge1,0)
+		--local ge2=ge1:Clone()
+		--ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
+		--Duel.RegisterEffect(ge2,0)
+	--end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
@@ -55,7 +56,8 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,m)>=10 then
+	local c=e:GetHandler()
+	if byd.rally(e:GetHandler(),10) then
 		if e:GetHandler():IsRelateToEffect(e) then
 			e:GetHandler():AddCounter(0x624,1)
 			Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)

@@ -7,11 +7,18 @@ function c28314946.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,28314946)
+	e1:SetCondition(c28314946.icon)
 	e1:SetCost(c28314946.spcost)
 	e1:SetTarget(c28314946.sptg)
 	e1:SetOperation(c28314946.spop)
 	e1:SetLabel(1)
 	c:RegisterEffect(e1)
+	local e0=e1:Clone()
+	e0:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e0:SetType(EFFECT_TYPE_QUICK_O)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetCondition(c28314946.qcon)
+	c:RegisterEffect(e0)
 	--recover
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28314946,1))
@@ -27,6 +34,16 @@ function c28314946.initial_effect(c)
 	e2:SetOperation(c28314946.recop)
 	e2:SetLabel(2)
 	c:RegisterEffect(e2)
+	if not c28314946.global_check then
+		c28314946.global_check=true
+		c28314946.effect_list={}
+	end
+end
+function c28314946.icon(e,tp,eg,ep,ev,re,r,rp)
+	return not (Duel.IsPlayerAffectedByEffect(tp,28361833)~=nil and e:GetHandler():IsOriginalSetCard(0x283))
+end
+function c28314946.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsPlayerAffectedByEffect(tp,28361833)~=nil and e:GetHandler():IsOriginalSetCard(0x283)
 end
 function c28314946.chkfilter(c)
 	return c:IsSetCard(0x283) and c:IsNonAttribute(ATTRIBUTE_EARTH) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
@@ -37,6 +54,7 @@ function c28314946.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,c28314946.chkfilter,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.ConfirmCards(1-tp,g)
+	e:SetLabelObject(g:GetFirst())
 	Duel.ShuffleHand(tp)
 end
 function c28314946.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -44,11 +62,41 @@ function c28314946.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
+function c28314946.efilter(e)
+	local ct=#c28314946.effect_list
+	if e:IsHasRange(LOCATION_ONFIELD) and e:IsActivated() then c28314946.effect_list[ct+1]=e end
+	return false--e:IsHasRange(LOCATION_ONFIELD) and e:IsActivated()
+end
 function c28314946.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if not c:IsRelateToChain() or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	local tc=e:GetLabelObject()
+	if not tc then return end
+	c28314946.effect_list={}
+	tc:IsOriginalEffectProperty(c28314946.efilter)
+	local e_list={}
+	for _,te in ipairs(c28314946.effect_list) do
+		local tg=te:GetTarget()
+		if not tg or tg(e,tp,eg,ep,ev,re,r,rp,0) then table.insert(e_list,te) end--if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then table.remove(c28314946.effect_list,i) end
 	end
+	if #e_list==0 or not Duel.SelectYesNo(tp,aux.Stringid(28314946,3)) then return end
+	Duel.BreakEffect()
+	local te=e_list[1]
+	if #e_list>1 then
+		local des_list={}
+		for _,te in ipairs(e_list) do table.insert(des_list,te:GetDescription()) end
+		local op=Duel.SelectOption(tp,table.unpack(des_list))
+		te=e_list[op+1]
+	end
+	c28314946.effect_list={}
+	--copy
+	c:CreateEffectRelation(e)
+	e:SetProperty(te:GetProperty())
+	local tg=te:GetTarget()
+	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
+	local op=te:GetOperation()
+	if op then op(e,tp,eg,ep,ev,re,r,rp) end
+	e:SetProperty(0)--Original Property
 end
 function c28314946.reccon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER)

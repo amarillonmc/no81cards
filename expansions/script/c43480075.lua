@@ -64,7 +64,7 @@ end
 
 
 -- 辅助过滤
-function s.matfilter1(c) return c:IsSetCard(0x3f13) end
+function s.matfilter1(c) return c:IsSetCard(0x3fb3) end
 function s.matfilter2(c) return c:IsType(TYPE_PENDULUM) end
 
 -- 接触融合逻辑
@@ -74,7 +74,7 @@ end
 
 -- 【灵摆效果】特招
 function s.penfilter(c, e, tp)
-	return c:IsSetCard(0x3f13) and (c:IsLocation(LOCATION_GRAVE) or (c:IsFaceup() and c:IsType(TYPE_PENDULUM)))
+	return c:IsSetCard(0x3fb3) and (c:IsLocation(LOCATION_GRAVE) or (c:IsFaceup() and c:IsType(TYPE_PENDULUM)))
 		and c:IsCanBeSpecialSummoned(e, 0, tp, false, false)
 end
 function s.pentg(e, tp, eg, ep, ev, re, r, rp, chk, chk_target)
@@ -93,7 +93,7 @@ end
 
 -- ① 检索
 function s.thfilter(c)
-	return c:IsSetCard(0x3f13) and c:IsAbleToHand()
+	return c:IsSetCard(0x3fb3) and c:IsAbleToHand()
 end
 function s.thtg(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then return Duel.IsExistingMatchingCard(s.thfilter, tp, LOCATION_DECK, 0, 1, nil) end
@@ -113,7 +113,7 @@ function s.spcon2(e, tp, eg, ep, ev, re, r, rp)
 	return ep ~= tp and re:IsActiveType(TYPE_MONSTER) and Duel.GetTurnPlayer() == tp
 end
 function s.spfilter2(c, e, tp)
-	return c:IsSetCard(0x3f13) and c:IsType(TYPE_LINK) and c:GetLink() <= 3
+	return c:IsSetCard(0x3fb3) and c:IsType(TYPE_LINK) and c:GetLink() <= 3
 		and c:IsCanBeSpecialSummoned(e, 0, tp, false, false)
 end
 function s.sptg2(e, tp, eg, ep, ev, re, r, rp, chk)

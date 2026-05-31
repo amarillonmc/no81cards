@@ -20,7 +20,6 @@ function s.initial_effect(c)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,id)
-	e1:SetCost(yume.stellar_memories.LimitCost)
 	e1:SetTarget(s.tg1)
 	e1:SetOperation(s.op1)
 	c:RegisterEffect(e1)
@@ -133,10 +132,8 @@ function s.chainlm(e,rp,tp)
 end
 function s.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetFlagEffect(tp,71404000,tp)==0
-		and c:IsAbleToExtraAsCost() end
+	if chk==0 then return c:IsAbleToExtraAsCost() end
 	Duel.SendtoDeck(c,nil,SEQ_DECKTOP,REASON_COST)
-	yume.stellar_memories.RegCostLimit(e,tp)
 end
 function s.filter3(c,tp)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsAbleToRemove(tp)

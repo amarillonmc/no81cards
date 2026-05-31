@@ -1,6 +1,7 @@
 --武皇执行人 雷帝尓
 local m=60002174
 local cm=_G["c"..m]
+Duel.LoadScript("c60001511.lua")
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x624)
 	--tohand
@@ -92,7 +93,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetFlagEffect(tp,m)>=20 then
+	if byd.rally(e:GetHandler(),20) then
 		local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 		Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
 	else

@@ -23,25 +23,22 @@ function c28361666.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28361666.spfilter(c,e,tp)
-	return c:IsSetCard(0x286) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-	and Duel.IsExistingMatchingCard(c28361666.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,c:GetAttribute())
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(c28361666.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,nil,c:GetAttribute()) and c:IsSetCard(0x286)
 end
 function c28361666.cfilter(c,attr)
-	return c:IsNonAttribute(attr) and c:IsFaceup()
+	return c:IsNonAttribute(attr) and c:IsFaceupEx()
 end
 function c28361666.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMZoneCount(tp)>0
-		and Duel.IsExistingMatchingCard(c28361666.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)
-	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28361666.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c28361666.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetMZoneCount(tp)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28361666.spfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
+	local sc=Duel.SelectMatchingCard(tp,c28361666.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,LOCATION_MZONE,nil)
 	g:AddCard(sc)
-	if sc and Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) and aux.GetAttributeCount(g)<=3 and sc:IsSummonLocation(LOCATION_DECK) then
+	if sc and Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) and aux.GetAttributeCount(g)<=3 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(28361666,0))
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -64,8 +61,7 @@ function c28361666.tgfilter(c,e,tp,chk)
 	return (chk~=0 or Duel.GetMZoneCount(tp,c)>0) and (c:IsAbleToHand() and (chk~=0 or Duel.IsExistingMatchingCard(c28361666.gspfilter,tp,LOCATION_HAND,0,1,nil,e,tp)) or c:IsAbleToGrave() and (chk~=0 or Duel.IsExistingMatchingCard(c28361666.gspfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)))
 end
 function c28361666.gspfilter(c,e,tp)
-	return c:IsSetCard(0x286) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-	and Duel.IsExistingMatchingCard(c28361666.chkfilter,0,LOCATION_MZONE,LOCATION_MZONE,1,nil,c:GetAttribute())
+	return c:IsSetCard(0x286) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)--and Duel.IsExistingMatchingCard(c28361666.chkfilter,0,LOCATION_MZONE,LOCATION_MZONE,1,nil,c:GetAttribute())
 end
 function c28361666.chkfilter(c,attr)
 	return c:IsAttribute(attr) and c:IsFaceup()
