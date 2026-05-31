@@ -41,7 +41,7 @@ function s.lcheck(g)
 	return g:IsExists(Card.IsLinkSetCard,1,nil,0x1d1)
 end
 function s.setfilter(c)
-	return c:IsCode(5318639) and c:IsSSetable()
+	return c:IsFaceupEx() and c:IsCode(5318639) and c:IsSSetable()
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.setfilter,tp,0x31,0,1,nil) end
