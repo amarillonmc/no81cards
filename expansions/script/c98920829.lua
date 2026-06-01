@@ -37,7 +37,7 @@ function c98920829.filter2(c,e,tp,mc,no)
 	return aux.GetXyzNumber(c)==no and c:IsSetCard(0x1048) and mc:IsCanBeXyzMaterial(c)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
-function c98920829.eqfilter1(c,tp)
+function c98920829.eqfilter1(c,e,tp)
 	local no=aux.GetXyzNumber(c)
 	return c:IsFaceup() and c:IsSetCard(0x1048) and no and no>=101 and no<=107 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(c98920829.eqfilter2,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,no)
 end
@@ -48,7 +48,7 @@ end
 function c98920829.eftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then
 		if e:GetLabel()==0 then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c98920829.spfilter(chkc,e,tp)
-		else return chkc:IsLocation(LOCATION_GRAVE) and c98920829.eqfilter1(chkc,tp) end
+		else return chkc:IsLocation(LOCATION_GRAVE) and c98920829.eqfilter1(chkc,e,tp) end
 	end
 	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingTarget(c98920829.spfilter,tp,LOCATION_MZONE,0,1,nil,e,tp)
 	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingTarget(c98920829.eqfilter1,tp,LOCATION_GRAVE,0,1,nil,e,tp)
@@ -68,7 +68,7 @@ function c98920829.eftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	else
 		e:SetCategory(CATEGORY_EQUIP)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-		Duel.SelectTarget(tp,c98920829.eqfilter1,tp,LOCATION_GRAVE,0,1,1,nil,tp)
+		Duel.SelectTarget(tp,c98920829.eqfilter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,0)
 	end
 end

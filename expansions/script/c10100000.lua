@@ -1336,7 +1336,7 @@ function Scl.RegisterActivateCountLimit(reg_eff, lim_obj)
 					 (type(val) == "string" and val == "Share") then
 					lim_code = EFFECT_COUNT_CODE_SINGLE 
 				elseif type(val) == "string" and val == "Chain" then
-			 	  	lim_code = EFFECT_COUNT_CODE_CHAIN 
+					lim_code = EFFECT_COUNT_CODE_CHAIN 
 				else
 					lim_code = lim_obj[2]
 				end
@@ -5201,7 +5201,7 @@ function Scl.ActivateCard(tc, actp, apply_effect, lim_zone)
 			local tg = te:GetTarget() or aux.TRUE
 			local op = te:GetOperation() or aux.TRUE
 			tg(te, actp, ceg, cep, cev, cre, cr, crp, 1)
-			op(te, actp, ceg, cep, cev, cre, cr, crp)		  
+			op(te, actp, ceg, cep, cev, cre, cr, crp)		 
 		end
 		if zone == LOCATION_FZONE then
 			Duel.RaiseEvent(tc, 4179255, te, 0, tp, tp, Duel.GetCurrentChain())
@@ -5221,9 +5221,9 @@ end
 function Scl.Return2Field(card_obj, pos, zone)
 	local e, _, tp = Scl.GetCurrentEffectInfo()
 	zone = zone or 0x3f1f3f1f
-	local mzone = { [tp] = zone & 0x001f,		   [1 - tp] = (zone & 0x001f0000) / 0x0010000 }
+	local mzone = { [tp] = zone & 0x001f,		  [1 - tp] = (zone & 0x001f0000) / 0x0010000 }
 	local szone = { [tp] = (zone & 0x1f00) / 0x100, [1 - tp] = (zone & 0x1f000000) / 0x1000000 }
-	local fzone = { [tp] = zone & 0x2000,		   [1 - tp] = zone & 0x20000000 }
+	local fzone = { [tp] = zone & 0x2000,		  [1 - tp] = zone & 0x20000000 }
 	local sg = Scl.Mix2Group(card_obj)
 	local mon = sg:Filter(Scl.IsPreviouslyInZone, nil, "MonsterZone")
 	local st = sg:Filter(Scl.IsPreviouslyInZone, nil, "Spell&TrapZone")
@@ -5710,7 +5710,7 @@ function Scl.RecursionGroupCheck(record_idx, card_obj, final_filter, not_filter,
 	local lcg = Scl.Recursion_Group_Checked_Group_List[record_idx]
 	if #lcg > 0 and #(lcg - mg ) == 0 and s.recursion_group_check_group_filter(lcg, lcg, record_idx, final_filter, not_filter, minct, maxct, max_filter_obj, ...) then 
 		return true
-	end	
+	end 
 	return mg:IsExists(s.recursion_group_check_filter, 1, nil, Group.CreateGroup(), mg, record_idx, final_filter, not_filter, minct, maxct, max_filter_obj, ...)
 end
 function s.recursion_group_check_filter(c, checked_cards, mg, record_idx, final_filter, not_filter, minct, maxct, max_filter_obj, ...)
@@ -5919,7 +5919,7 @@ end
 	3. Love.IsLinkSeries(c)  -- equal to Scl.IsLinkSeries(c, "YiFanJiang") 
 	4. Love.IsPreviousSeries(c) -- equal to Scl.IsPreviousSeries(c, "YiFanJiang")
 	5. Love.IsOriginalSeries(c) -- equal to Scl.IsOriginalSeries(c, "YiFanJiang")
-	6~10 Love.IsXXXXSeriesMonster(c) (XXXX can be "", "Fusion", "Link" ……, see above)	-- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_MONSTER)
+	6~10 Love.IsXXXXSeriesMonster(c) (XXXX can be "", "Fusion", "Link" ……, see above)   -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_MONSTER)
 	11~15 Love.IsXXXXSeriesSpell(c) (XXXX can be "", "Fusion", "Link" ……, see above)		-- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL)
 	16~20 Love.IsXXXXSeriesTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)   -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_TRAP)
 	21~25 Love.IsXXXXSeriesSpellOrTrap(c) (XXXX can be "", "Fusion", "Link" ……, see above)  -- equal to Scl.IsXXXXSeries(c, "YiFanJiang") and c:IsType(TYPE_SPELL + TYPE_TRAP)
@@ -6871,9 +6871,14 @@ function s.check_series(c, chk_typ, ...)
 		local inside_series_arr  
 		local res = not _G["c"..code] and true or false
 		if res then _G["c"..code] = { } end
+		local _TGetID=GetID
+		GetID=function()
+			return _G["c"..code],code,code<100000000 and 1 or 100
+		end
 		if pcall(function() dofile("expansions/script/c"..code..".lua") end) or pcall(function() dofile("script/c"..code..".lua") end) then
 			inside_series_arr = _G["c"..code].scl_inside_series
 		end
+		GetID=_TGetID
 		if res then 
 			_G["c"..code] = nil 
 		end
