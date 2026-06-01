@@ -135,7 +135,7 @@ function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeckAsCost,tp,LOCATION_HAND,0,1,1,nil)
 	g:AddCard(c)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
-	Duel.ConfirmCards(1-tp,e:GetHandler())
+	Duel.ConfirmCards(1-tp,c)
 end
 function cm.thfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsRace(RACE_INSECT) and c:IsAbleToHand() and not c:IsSummonableCard()

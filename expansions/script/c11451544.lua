@@ -114,7 +114,7 @@ function cm.spfilter2(c,e,tp,att)
 	e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
 	e1:SetValue(att)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
-	c:RegisterEffect(e1,true)
+	--c:RegisterEffect(e1,true)
 	--Duel.AdjustAll()
 	local res=c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 	e1:Reset()
@@ -139,7 +139,7 @@ function cm.adop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter2(c,re,tp,r)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsReason(REASON_RELEASE) and bit.band(r,REASON_COST)~=0 and re and aux.GetValueType(re)=="Effect" and re:IsActivated() and re:GetHandler()==c and re:GetHandlerPlayer()==tp
+	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsReason(REASON_RELEASE) and bit.band(r,REASON_COST)~=0 and re and aux.GetValueType(re)=="Effect" and re:IsActivated() and re:GetHandler()==c and re:GetHandler():GetControler()==tp
 end
 function Group.ForEach(group,func,...)
 	if aux.GetValueType(group)=="Group" and group:GetCount()>0 then

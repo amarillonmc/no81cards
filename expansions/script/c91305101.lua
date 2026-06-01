@@ -127,7 +127,6 @@ function rsdc.handcon(e)
 end
 ------------------------------------
 
-if c91305101 then return end
 local m,cm=rscf.DefineCard(91305101,"DragonCaller")
 function cm.initial_effect(c)
 	local e1=rsef.SV_ADD(c,"att",ATTRIBUTE_WATER+ATTRIBUTE_FIRE+ATTRIBUTE_WIND)
