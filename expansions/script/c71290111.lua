@@ -75,17 +75,9 @@ function cm.levelchangecon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.levelchangeop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local lv=Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_HAND,0,nil)
+	local lv=Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_HAND,0,nil)+1
 	if lv==0 then lv=1 end
 	if lv>13 then lv=13 end
-	local plv=c:GetLevel()
-	local pnum=Duel.GetFlagEffect(tp,71290111)
-	Duel.ResetFlagEffect(tp,71290111)
-	if pnum>plv then 
-		for i=1,pnum-plv+lv do
-			Duel.RegisterFlagEffect(tp,71290111,0,0,1)
-		end
-	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -94,4 +86,14 @@ function cm.levelchangeop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(lv)
 	e1:SetReset(RESET_EVENT+0xff0000)
 	c:RegisterEffect(e1)
+  
+	--change effect type
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCode(71290111)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(1,0)
+	e1:SetReset(RESET_EVENT+0xff0000)
+	c:RegisterEffect(e2)
 end

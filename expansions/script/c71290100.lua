@@ -185,13 +185,18 @@ end
 function Heita.atkval(e,c)
 	local num=300
 	if Duel.IsPlayerAffectedByEffect(c:GetOwner(),71290105) then num=num+200 end
-	if Duel.GetFlagEffect(c:GetOwner(),71290111)~=0 then num=num+100*Duel.GetFlagEffect(c:GetOwner(),71290111) end
+	if Duel.IsPlayerAffectedByEffect(c:GetOwner(),71290111) then 
+		local u=Heita.GetMatchingGroup(Card.IsCode,c:GetOwner(),LOCATION_MZONE,0,nil,71290111):GetSum(Heita.atkfil)
+		num=num+u*100
+	end
   return Duel.GetMatchingGroupCount(aux.TRUE,c:GetControler(),LOCATION_HAND,0,nil)*num
 end
 function Heita.splimit(e,c,sump,sumtype,sumpos,targetp)
 	return c:IsLocation(LOCATION_EXTRA)
 end
-
+function Heita.atkfil(c)
+	return c:GetAttack()
+end
 
 
 
