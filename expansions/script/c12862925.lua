@@ -28,6 +28,11 @@ function s.initial_effect(c)
         _ori_hastype = Effect.IsHasType
         _ori_gettype = Effect.GetType
         _ori_getchaininfo = Duel.GetChainInfo
+        gmskip=Duel.SkipPhase
+        function Duel.SkipPhase(player,...)
+            player=Duel.GetTurnPlayer()
+			return gmskip(player,...)
+		end
     end
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -72,6 +77,7 @@ function s.filter1(c,e,tp,eg,ep,ev,re,r,rp)
         local cond=te:GetCondition() or aux.TRUE
         local cost=te:GetCost() or aux.TRUE
         local tg=te:GetTarget()
+        if tg==nil then tg=aux.TRUE end
         if cond(te,tp,eg,ep,ev,re,r,rp) and cost(te,tp,eg,ep,ev,re,r,rp,0) and tg(te,tp,eg,ep,ev,re,r,rp,0) then
             return true
         end
@@ -150,6 +156,24 @@ function s.resolveoperation(f)
                         e:Reset()
     end
 end
+function s.rmfilter(c,check)
+	if check==0 and c:IsLocation(LOCATION_DECK) then return false end
+	return c:IsSetCard(0x5A76) and c:IsAbleToRemove()
+end
+function s.nbfilter(c)
+	return c:IsFaceup() and aux.NegateAnyFilter(c) and c:IsAbleToRemove()
+end
+function s.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+    local c=e:GetHandler()
+	e:SetLabel(1)
+	if chkc then return chkc:IsOnField() and s.nbfilter(chkc) and c~=chkc end
+	if chk==0 then return Duel.IsExistingTarget(s.nbfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) 
+	and Duel.IsExistingMatchingCard(s.rmfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,c,e:GetLabel()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local g=Duel.SelectTarget(tp,s.nbfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
+end
 function s.rseop(e,tp,eg,ep,ev,re,r,rp)
     local ag=Duel.GetMatchingGroup(s.filter1, tp, LOCATION_HAND, 0, nil, e,tp,eg,ep,ev,re,r,rp)
     if ag:GetCount()>0 and s.check_act_Hand[tp+1] and Duel.SelectYesNo(tp, aux.Stringid(id, 3)) then
@@ -163,19 +187,21 @@ function s.rseop(e,tp,eg,ep,ev,re,r,rp)
         local pro1,pro2=ae:GetProperty()
         if cost==nil then cost=aux.TRUE end
         if tg==nil then tg=aux.TRUE end
-        if tg==nil then tg=aux.TRUE end                
         local ge=ae:Clone()
         ge:SetType(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_SINGLE)
-        ge:SetCode(EVENT_CUSTOM + id)
+        ge:SetCode(EVENT_CUSTOM+id)
         ge:SetProperty(EFFECT_FLAG_DELAY|pro1,pro2)
         ge:SetRange(LOCATION_HAND)
         ge:SetCondition(function(...) return Duel.GetCurrentChain()==0 end )
         ge:SetCost(s.resolvecost(cost))
         ge:SetLabelObject(ae)
         ge:SetTarget(tg)
+        if ac:GetOriginalCode()==12862920 then
+            ge:SetTarget(s.tg)
+        end
         ge:SetOperation(s.resolveoperation(op))
         ac:RegisterEffect(ge,true)
-      Duel.RaiseSingleEvent(ac, EVENT_CUSTOM + id, re, r, rp, ep, ev)
+        Duel.RaiseSingleEvent(ac,EVENT_CUSTOM+id,re,r,rp,ep,ev)
     end
     if Duel.GetCurrentChain()>0 then
         e:Reset()

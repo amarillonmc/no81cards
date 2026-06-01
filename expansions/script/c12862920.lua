@@ -33,10 +33,10 @@ end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and c:GetType()==TYPE_SPELL then 
-      e:SetLabel(1)
-  else
-      e:SetLabel(0)
-  end
+			e:SetLabel(1)
+	else
+			e:SetLabel(0)
+	end
 	if chkc then return chkc:IsOnField() and s.nbfilter(chkc) and c~=chkc end
 	if chk==0 then return Duel.IsExistingTarget(s.nbfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) 
 	and Duel.IsExistingMatchingCard(s.rmfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,c,e:GetLabel()) end
