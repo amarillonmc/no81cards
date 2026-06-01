@@ -26,28 +26,28 @@ if not Htcheck then
 	Heita.GetAttacker=Duel.GetAttacker
 	Duel.GetAttacker=function()
 		local tc=Heita.GetAttacker()
-		if tc.isPlaneswalker and tc:IsFaceup() and tc:IsLocation(LOCATION_MZONE) then
+		if tc and tc.isPlaneswalker and tc:IsFaceup() and tc:IsLocation(LOCATION_MZONE) then
 			return nil else return tc end
 	end
 
 	Heita.GetAttackerTarget=Duel.GetAttackerTarget
 	Duel.GetAttackerTarget=function()
 		local tc=Heita.GetAttackerTarget()
-		if tc.isPlaneswalker and tc:IsFaceup() and tc:IsLocation(LOCATION_MZONE) then
+		if tc and tc.isPlaneswalker and tc:IsFaceup() and tc:IsLocation(LOCATION_MZONE) then
 			return nil else return tc end
 	end
 
 	Heita.GetBattleMonster=Duel.GetBattleMonster
 	Duel.GetBattleMonster=function(player)
 		local tc=Heita.GetBattleMonster()
-		if tc.isPlaneswalker and tc:IsFaceup() and tc:IsLocation(LOCATION_MZONE) then
+		if tc and tc.isPlaneswalker and tc:IsFaceup() and tc:IsLocation(LOCATION_MZONE) then
 			return nil else return tc end
 	end
 
 	Heita.GetFieldCard=Duel.GetFieldCard
 	Duel.GetFieldCard=function(player,location,seq)
 		local tc=Heita.GetFieldCard(player,location,seq)
-		if tc.isPlaneswalker and tc:IsFaceup() and tc:IsLocation(LOCATION_MZONE) then
+		if tc and tc.isPlaneswalker and tc:IsFaceup() and tc:IsLocation(LOCATION_MZONE) then
 			return nil else return tc end
 	end
 
