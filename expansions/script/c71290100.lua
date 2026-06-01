@@ -186,8 +186,10 @@ function Heita.atkval(e,c)
 	local num=300
 	if Duel.IsPlayerAffectedByEffect(c:GetOwner(),71290105) then num=num+200 end
 	if Duel.IsPlayerAffectedByEffect(c:GetOwner(),71290111) then 
-		local u=Heita.GetMatchingGroup(Card.IsCode,c:GetOwner(),LOCATION_MZONE,0,nil,71290111):GetSum(Heita.atkfil)
-		num=num+u*100
+		local ug=Heita.GetMatchingGroup(Card.IsCode,c:GetOwner(),LOCATION_MZONE,0,nil,60010045)
+		for uc in aux.Next(ug) do
+			num=num+uc:GetLevel()*100
+		end
 	end
   return Duel.GetMatchingGroupCount(aux.TRUE,c:GetControler(),LOCATION_HAND,0,nil)*num
 end
