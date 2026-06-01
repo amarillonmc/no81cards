@@ -62,7 +62,7 @@ function c28316849.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToChain() or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
-	if #g==0 or not Duel.SelectYesNo(tp,aux.Stringid(28316048,3)) then return end
+	if #g==0 or not Duel.SelectYesNo(tp,aux.Stringid(28316849,3)) then return end
 	Duel.BreakEffect()
 	if #g>1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
