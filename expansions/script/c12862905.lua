@@ -95,7 +95,7 @@ function s.recon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.repfilter(c,re)
 	if not (c:IsLocation(LOCATION_REMOVED) and c:IsFaceupEx()) then return false end
-	if c:IsReason(REASON_REDIRECT) and c:GetFlagEffect(12862905)>0 then 
+	if c:IsReason(REASON_REDIRECT) and c:GetFlagEffect(id)>0 then 
 		return true
 	else
   	return re:GetHandler():IsSetCard(0x5A76) and c:IsReason(REASON_EFFECT) 

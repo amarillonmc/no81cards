@@ -1,5 +1,4 @@
-if not require and dofile then function require(str) return dofile(str..".lua") end end
-if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
+Duel.LoadScript("c53702500.lua")
 local s,id,o=GetID()
 function s.initial_effect(c)
 	SNNM.LostLink(c)
@@ -123,7 +122,7 @@ function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
 	local tc=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_MZONE,0,1,1,nil,e,tp):GetFirst()
 	Duel.HintSelection(Group.FromCards(tc))
-	if not EFFECT_REMOVE_LINK_MARKER_KOISHI and not Duel.Exile then
+	if not EFFECT_REMOVE_LINK_MARKER_KOISHI then
 		EFFECT_REMOVE_LINK_MARKER_KOISHI=id+1000
 		local _GetLink=Card.GetLink
 		local _GetLinkCount=aux.GetLinkCount
@@ -187,6 +186,7 @@ end
 function s.immval(e,te)
 	local c=e:GetHandler()
 	if not c:IsLocation(LOCATION_MZONE) or not te:IsActivated() or not s.chain_solving or te:GetOwner()==c then return false end
+	if c:GetFlagEffect(id+1000)>0 then return true end
 	local tp=c:GetControler()
 	local res=Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil)
 	if res then
@@ -195,13 +195,16 @@ function s.immval(e,te)
 		e1:SetCode(EVENT_ADJUST)
 		e1:SetOperation(s.imcop)
 		Duel.RegisterEffect(e1,tp)
+		c:RegisterFlagEffect(id+1000,RESET_CHAIN,0,1)
 	end
 	return res
 end
 function s.imcop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_CARD,0,id)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then Duel.SendtoGrave(g,REASON_COST) end
 	e:Reset()
+	c:ResetFlagEffect(id+1000)
 end 

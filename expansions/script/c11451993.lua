@@ -117,7 +117,7 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 					end
 	Duel.IsPlayerCanDraw=function(p,ct,...)
 						local dg=Duel.GetDecktopGroup(p,ct):Filter(Card.IsAbleToRemove,nil)
-						if t==Duel.GetTurnCount() and r&REASON_EFFECT>0 and #dg==ct then return true end
+						if t==Duel.GetTurnCount() and Duel.GetDecktopGroup(p,ct)==ct and #dg==ct then return true end
 						return _IsPlayerCanDraw(p,ct,...)
 					end
 	Duel.IsPlayerCanSendtoHand=function(p,...)
@@ -135,7 +135,7 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 					end
 	Duel.IsPlayerCanDiscardDeck=function(p,ct,...)
 						local dg=Duel.GetDecktopGroup(p,ct):Filter(Card.IsAbleToRemove,nil)
-						if t==Duel.GetTurnCount() and r&REASON_EFFECT>0 and #dg==ct then return true end
+						if t==Duel.GetTurnCount() and Duel.GetDecktopGroup(p,ct)==ct and #dg==ct then return true end
 						return _IsPlayerCanDiscardDeck(p,ct,...)
 					end
 	Duel.IsPlayerCanSendtoGrave=function(p,...)
