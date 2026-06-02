@@ -58,7 +58,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.spfilter),tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp)
 	local b2=Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
-	local both=e:GetLabel()==1
+	local both=Duel.IsExistingMatchingCard(s.ritualfilter,tp,LOCATION_MZONE,0,1,nil)
 	local off=1
 	local ops={}
 	local opval={}

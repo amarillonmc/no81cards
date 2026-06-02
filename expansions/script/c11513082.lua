@@ -27,14 +27,6 @@ function c11513082.initial_effect(c)
 	e3:SetTarget(c11513082.thtg)
 	e3:SetOperation(c11513082.thop)
 	c:RegisterEffect(e3)
-	if not c11513082.global_check then
-		c11513082.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_TO_HAND)
-		ge1:SetOperation(c11513082.checkop)
-		Duel.RegisterEffect(ge1,0) 
-	end
 end
 function c11513082.checkop(e,tp,eg,ep,ev,re,r,rp)  
 	local tc=eg:GetFirst()

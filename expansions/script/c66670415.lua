@@ -59,7 +59,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ex=e:GetHandler()
 	local b1=Duel.IsExistingMatchingCard(s.ssfilter,tp,LOCATION_DECK,0,1,nil)
 	local b2=Duel.IsExistingMatchingCard(s.negfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,ex)
-	local both=e:GetLabel()==1
+	local both=Duel.IsExistingMatchingCard(s.ritualfilter,tp,LOCATION_MZONE,0,1,nil)
 	local off=1
 	local ops={}
 	local opval={}
