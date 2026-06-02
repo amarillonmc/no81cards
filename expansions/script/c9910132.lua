@@ -28,26 +28,13 @@ end
 function c9910132.xfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ)
 end
-function c9910132.spfilter(c,e,tp,lv)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CHANGE_LEVEL)
-	e1:SetValue(lv)
-	e1:SetReset(RESET_EVENT+0xff0000)
-	c:RegisterEffect(e1)
-	local res=c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-	e1:Reset()
-	return res
-end
 function c9910132.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local check=Duel.IsPlayerAffectedByEffect(tp,9910113) and c:IsCanOverlay()
 		and Duel.IsExistingMatchingCard(c9910132.xfilter,tp,LOCATION_MZONE,0,1,nil)
-	local b1=c9910132.spfilter(c,e,tp,4)
-	local b2=c9910132.spfilter(c,e,tp,5)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and (b1 or b2) and (c:IsAbleToDeck() or check) end
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsAbleToDeck() or check) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c9910132.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -57,21 +44,15 @@ function c9910132.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
 	if tc:IsSetCard(0x9958) and tc:IsType(TYPE_MONSTER) then
-		local b1=c9910132.spfilter(c,e,tp,4)
-		local b2=c9910132.spfilter(c,e,tp,5)
 		if not c:IsRelateToEffect(e) then return end
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not (b1 or b2) then
-			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-			return
-		end
-		local lv=aux.SelectFromOptions(tp,{b1,aux.Stringid(9910132,0),4},{b2,aux.Stringid(9910132,1),5})
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CHANGE_LEVEL)
-		e1:SetValue(lv)
-		e1:SetReset(RESET_EVENT+0xff0000)
-		c:RegisterEffect(e1)
 		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+			local lv=aux.SelectFromOptions(tp,{true,aux.Stringid(9910132,0),4},{true,aux.Stringid(9910132,1),5})
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CHANGE_LEVEL)
+			e1:SetValue(lv)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+			c:RegisterEffect(e1)
 			if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not tc:IsForbidden() then
 				Duel.DisableShuffleCheck()
 				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
