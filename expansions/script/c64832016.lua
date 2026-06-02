@@ -46,7 +46,7 @@ function c64832016.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c64832016.condition(e,tp,eg,ep,ev,re,r,rp)
-	return ep==1-tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev) and re:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL)
+	return ep==1-tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev) and re:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL) and re:GetHandler():IsLocation(LOCATION_MZONE)
 		and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function c64832016.target(e,tp,eg,ep,ev,re,r,rp,chk)

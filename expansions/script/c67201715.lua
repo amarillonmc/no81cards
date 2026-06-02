@@ -104,8 +104,12 @@ function c67201715.damop(e,tp,eg,ep,ev,re,r,rp)
 		e:Reset()
 		return
 	end
-	Duel.Hint(HINT_CARD,0,67201715)
-	Duel.Damage(tc:GetPreviousControler(),tc:GetBaseAttack(),REASON_EFFECT)
+	local tcc=tc:GetFlagEffect(67201715)
+	while tcc>0 do
+		Duel.Hint(HINT_CARD,0,67201715)
+		Duel.Damage(tc:GetPreviousControler(),tc:GetBaseAttack(),REASON_EFFECT)
+		tcc=tcc-1
+	end
 	tc:ResetFlagEffect(67201715)
 	e:Reset()
 end

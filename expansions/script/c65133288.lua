@@ -11,9 +11,9 @@ function s.initial_effect(c)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetTurnCount()+1
-	if chk==0 then return ct<=22 end
+	if chk==0 then return ct<=24 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-	local zone=Duel.SelectDisableField(tp,ct,LOCATION_ONFIELD,LOCATION_ONFIELD,0)
+	local zone=Duel.SelectField(tp,ct,LOCATION_ONFIELD,LOCATION_ONFIELD,0)
 	e:SetLabel(zone)
 	Duel.Hint(HINT_ZONE,tp,zone)
 end
@@ -47,7 +47,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.filter(c,zone,tp)
 	local b=s.get_zone_bit(c,tp)
-	return bit.band(zone,b)~=0
+	return bit.band(zone,b)~=0 and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED))
 end
 function s.banop(e,tp,eg,ep,ev,re,r,rp)
 	if rp==tp then return end
