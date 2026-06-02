@@ -47,6 +47,9 @@ function c19209935.initial_effect(c)
 	e4:SetOperation(c19209935.spop)
 	c:RegisterEffect(e4)
 end
+
+s.CATEGORY_RITUAL_SUMMON=true 
+
 function c19209935.rfilter(c,tp)
 	return Duel.GetMZoneCount(tp,c)>0
 end

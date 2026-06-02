@@ -54,7 +54,9 @@ function s.field_kuuga_filter(c,tp)
 	return s.Kuuga(c) and c:IsFaceup() and c:IsAbleToHand() 
 		and Duel.GetMZoneCount(tp,c)>0 
 end
-
+function s.filter(c)
+	return c:IsFaceup()
+end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil)
@@ -75,7 +77,7 @@ end
 
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil)
+	local g=Duel.GetMatchingGroup(s.filter,tp,0,LOCATION_MZONE,nil)
 	if #g==0 then return end
 	
 	local min_atk=g:GetMinGroup(Card.GetAttack)
