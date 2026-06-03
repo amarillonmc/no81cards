@@ -39,7 +39,7 @@ if not Htcheck then
 
 	Heita.GetBattleMonster=Duel.GetBattleMonster
 	Duel.GetBattleMonster=function(player)
-		local tc=Heita.GetBattleMonster()
+		local tc=Heita.GetBattleMonste(player)
 		if tc and tc.isPlaneswalker and tc:IsFaceup() and tc:IsLocation(LOCATION_MZONE) then
 			return nil else return tc end
 	end
