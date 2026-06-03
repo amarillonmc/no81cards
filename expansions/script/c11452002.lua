@@ -80,10 +80,10 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 		-- 提示词需在 strings.conf 中注册，对应 id, 2~9
 		local marker_list = {
 			{LINK_MARKER_TOP_LEFT,   aux.Stringid(id, 2)},  -- 左上
-			{LINK_MARKER_TOP,		 aux.Stringid(id, 3)},  -- 正上
+			{LINK_MARKER_TOP,		aux.Stringid(id, 3)},  -- 正上
 			{LINK_MARKER_TOP_RIGHT, aux.Stringid(id, 4)},  -- 右上
-			{LINK_MARKER_LEFT,	   aux.Stringid(id, 5)},  -- 正左
-			{LINK_MARKER_RIGHT,	 aux.Stringid(id, 6)},  -- 正右
+			{LINK_MARKER_LEFT,	 aux.Stringid(id, 5)},  -- 正左
+			{LINK_MARKER_RIGHT,  aux.Stringid(id, 6)},  -- 正右
 			{LINK_MARKER_BOTTOM_LEFT,  aux.Stringid(id, 7)},  -- 左下
 			{LINK_MARKER_BOTTOM,	   aux.Stringid(id, 8)},  -- 正下
 			{LINK_MARKER_BOTTOM_RIGHT, aux.Stringid(id, 9)}   -- 右下
@@ -205,16 +205,33 @@ function s.immunetg(e,c)
 end
 
 function s.immuneval(e,te,c)
-	-- c: 受保护的怪兽； te: 企图发动的效果
-	-- 条件1：必须是“发动的效果”
-	-- 条件2：效果的控制者，不能是受保护怪兽的控制者（即：从控制者来看的对方）
-	if not (te:IsActivated() and te:GetOwnerPlayer() ~= c:GetControler()) then return false end
-	-- 那个场合攻击力变成一半
-	local e_atk = Effect.CreateEffect(c)
-	e_atk:SetType(EFFECT_TYPE_SINGLE)
-	e_atk:SetCode(EFFECT_SET_ATTACK_FINAL)
-	e_atk:SetValue(math.ceil(c:GetAttack() / 2))
-	e_atk:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e_atk,true)
-	return true
+	local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+m)}
+	local ctns=false
+	if te:IsActivated() then
+		for _,se in pairs(eset) do
+			if se:GetLabelObject()==te and se:GetLabel()==Duel.GetCurrentChain() then ctns=true end
+		end
+	end
+	local res=ctns or (te:IsActivated() and te:GetOwner()~=c:GetControler())
+	if res and not ctns then
+		Duel.Hint(HINT_CARD,0,m)
+		local ge2=c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+		ge2:SetLabelObject(te)
+		ge2:SetLabel(Duel.GetCurrentChain())
+		local e8=Effect.CreateEffect(e:GetHandler())
+		e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e8:SetCode(EVENT_BREAK_EFFECT)
+		e8:SetOperation(function(fe) ge2:SetLabelObject(nil) fe:Reset() end)
+		Duel.RegisterEffect(e8,0)
+		local e9=e8:Clone()
+		e9:SetCode(EVENT_ADJUST)
+		Duel.RegisterEffect(e9,0)
+		local e_atk = Effect.CreateEffect(c)
+		e_atk:SetType(EFFECT_TYPE_SINGLE)
+		e_atk:SetCode(EFFECT_SET_ATTACK_FINAL)
+		e_atk:SetValue(math.ceil(c:GetAttack() / 2))
+		e_atk:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e_atk,true)
+	end
+	return res
 end
