@@ -114,7 +114,7 @@ function s.create()
 						_G["c"..int]={}
 						_G["c"..int].__index=_G["c"..int]
 					end
-					m=function()
+					GetID=function()
 						return _G["c"..int],int
 					end
 					if pcall(function() require("expansions/script/c"..int) end) or pcall(function() require("script/c"..int) end) then
@@ -124,6 +124,7 @@ function s.create()
 							ac=token:GetCode()
 						end
 					end
+					GetID=_TGetID
 				end
 			end
 	return ac   

@@ -127,7 +127,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if ce and aux.GetValueType(ce)=="Effect" then de:SetLabelObject(ce) end
 end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and rp==tp
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) --and rp==tp
 end
 local KOISHI_CHECK=false
 if Duel.DisableActionCheck then KOISHI_CHECK=true end

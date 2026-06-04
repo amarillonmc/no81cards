@@ -99,7 +99,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Group.CreateGroup()
 	local ng1=Group.CreateGroup()
 	local ac=nil
-	local _TGetID=m
+	local _TGetID=GetID
 	if num>0 then
 		local tab1={}
 		for i=1,num do
@@ -128,8 +128,8 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 						_G["c"..int]={}
 						_G["c"..int].__index=_G["c"..int]
 					end
-					m=function()
-						return _G["c"..int],int
+					GetID=function()
+						return _G["c"..int],int,int<100000000 and 1 or 100
 					end
 					if pcall(function() require("expansions/script/c"..int) end) or pcall(function() require("script/c"..int) end) then
 						_G["c"..int]=nil
@@ -138,6 +138,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 							ac=token:GetCode()
 						end
 					end
+					GetID=_TGetID
 				end
 			end
 			table.insert(tab1,ac)

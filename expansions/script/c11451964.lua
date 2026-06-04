@@ -129,7 +129,7 @@ function cm.actarget2(e,te,tp)
 	return te:IsHasType(EFFECT_TYPE_ACTIVATE) and not cm[e][te]
 end
 function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
-	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451961)}
+	local eset={Duel.IsPlayerAffectedByEffect(e:GetHandlerPlayer(),EFFECT_FLAG_EFFECT+11451961)}
 	local res=false
 	for _,te in pairs(eset) do
 		if te:GetLabel()==e:GetLabel() then res=true break end

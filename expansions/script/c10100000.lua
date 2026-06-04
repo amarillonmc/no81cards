@@ -6871,14 +6871,16 @@ function s.check_series(c, chk_typ, ...)
 		local inside_series_arr  
 		local res = not _G["c"..code] and true or false
 		if res then _G["c"..code] = { } end
-		local _TGetID=GetID
-		GetID=function()
-			return _G["c"..code],code,code<100000000 and 1 or 100
+		if aux.GetValueType(code)=="number" then
+			local _TGetID=GetID
+			GetID=function()
+				return _G["c"..code],code,code<100000000 and 1 or 100
+			end
+			if pcall(function() dofile("expansions/script/c"..code..".lua") end) or pcall(function() dofile("script/c"..code..".lua") end) then
+				inside_series_arr = _G["c"..code].scl_inside_series
+			end
+			GetID=_TGetID
 		end
-		if pcall(function() dofile("expansions/script/c"..code..".lua") end) or pcall(function() dofile("script/c"..code..".lua") end) then
-			inside_series_arr = _G["c"..code].scl_inside_series
-		end
-		GetID=_TGetID
 		if res then 
 			_G["c"..code] = nil 
 		end
