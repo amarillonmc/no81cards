@@ -43,8 +43,10 @@ function c98920659.initial_effect(c)
 	e2:SetOperation(c98920659.thop)
 	c:RegisterEffect(e2)
 end
-function c98920659.actfilter(e,c)
-	return c:IsAttackBelow(e:GetHandler():GetAttack())
+function c98920659.actfilter(e,re,tp)
+	local rc=re:GetHandler()
+	return re:IsActiveType(TYPE_MONSTER) and rc:IsAttackBelow(e:GetHandler():GetAttack())
+end
 end
 function c98920659.acon(e)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)

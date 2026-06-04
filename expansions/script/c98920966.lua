@@ -5,21 +5,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--融合召唤条件: 等级不同的「狱火机」怪兽×2只以上
 	c:EnableReviveLimit()
-	aux.AddFusionProcMixRep(c,true,true,aux.FilterBoolFunction(Card.IsSetCard,0xbb),2,99,cm.ffilter)
-	
-	--记录融合素材数量
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_MATERIAL_CHECK)
-	e0:SetValue(cm.valcheck)
-	c:RegisterEffect(e0)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCondition(cm.regcon)
-	e1:SetOperation(cm.regop)
-	c:RegisterEffect(e1)
-	e0:SetLabelObject(e1)
+	aux.AddFusionProcFunRep(c,c98920966.ffilter,2,true)
 
 	--①：这张卡不会被效果破坏
 	local e2=Effect.CreateEffect(c)
@@ -38,6 +24,7 @@ function cm.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
+	e3:SetCondition(cm.tgcon)
 	e3:SetTarget(cm.tgtg)
 	e3:SetOperation(cm.tgop)
 	c:RegisterEffect(e3)
@@ -58,28 +45,17 @@ function cm.initial_effect(c)
 end
 
 --融合素材过滤（等级不同）
-function cm.ffilter(c,fc,sub,mg,sg)
-	return not sg or not sg:IsExists(Card.IsLevel,1,c,c:GetLevel())
-end
-
---记录素材数量
-function cm.valcheck(e,c)
-	local mg=c:GetMaterial()
-	e:GetLabelObject():SetLabel(mg:GetCount())
-end
-function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
-end
-function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local ct=e:GetLabel()
-	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,ct)
+function c98920966.ffilter(c,fc,sub,mg,sg)
+	return c:IsFusionSetCard(0xbb) and (not sg or not sg:IsExists(Card.IsLevel,1,c,c:GetLevel()))
 end
 
 --②效果
+function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
+end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() end
-	local ct=e:GetHandler():GetFlagEffectLabel(m) or 0
+	local ct=e:GetHandler():GetMaterialCount()
 	if chk==0 then return ct>0 and Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,ct,nil)
