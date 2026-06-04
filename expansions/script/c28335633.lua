@@ -24,7 +24,7 @@ function c28335633.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28335633.chkfilter(c,tp)
-	return c:IsSetCard(0x286) and not c:IsPublic() and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),0x286,TYPES_TOKEN_MONSTER+TYPE_TUNER,2000,2000,4,RACE_AQUA,c:GetAttribute()) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x286) and c:IsType(TYPE_MONSTER) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),0x286,TYPES_TOKEN_MONSTER+TYPE_TUNER,2000,2000,4,RACE_AQUA,c:GetAttribute())
 end
 function c28335633.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28335633.chkfilter,tp,LOCATION_HAND+0x10,0,1,nil,tp) and Duel.GetMZoneCount(tp)>0 end
