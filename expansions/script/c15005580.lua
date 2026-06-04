@@ -81,7 +81,7 @@ function cm.initial_effect(c)
 	end
 end
 local KOISHI_CHECK=false
-if Duel.Exile then KOISHI_CHECK=true end
+if Card.SetEntityCode then KOISHI_CHECK=true end
 function cm.valcheck(e,c)
 	local g=c:GetMaterial()
 	if g:IsExists(Card.IsLinkAbove,1,nil,4) then
