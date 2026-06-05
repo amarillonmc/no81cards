@@ -1,5 +1,6 @@
 --圣魔兽 塞勒凯特
 function c98940001.initial_effect(c)
+	aux.AddCodeList(c,29762407)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(98940001,0))
