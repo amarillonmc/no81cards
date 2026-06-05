@@ -4,8 +4,8 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,id)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
@@ -23,7 +23,8 @@ end
 function s.rtfilter(c)
 	return c:IsSetCard(0xc3a) and c:IsAbleToDeck()
 end
-function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and s.rtfilter(chkc) end
 	local g=Duel.GetMatchingGroup(s.rtfilter,tp,LOCATION_GRAVE,0,nil)
 	if chk==0 then return #g>=3 end
 	local op=aux.SelectFromOptions(tp,{#g>=3,aux.Stringid(id,0)},{#g>=6,aux.Stringid(id,1)})

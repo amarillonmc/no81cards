@@ -29,7 +29,8 @@ function s.getzone(tp)
 	end
 	return zone&0x1f
 end
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return false end
 	local g=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_GRAVE,0,nil,e,tp,s.getzone(tp))
 	if chk==0 then
 		local zone=s.getzone(tp)

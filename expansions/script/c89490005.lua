@@ -40,7 +40,8 @@ end
 function s.spfilter(c,e,tp,zone,attr)
 	return c:IsFaceupEx() and c:IsAttribute(attr) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
 end
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return false end
 	local zone=e:GetHandler():GetLinkedZone(tp)&0x1f
 	if chk==0 then
 		local ct=Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)
