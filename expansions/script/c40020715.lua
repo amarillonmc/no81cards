@@ -6,6 +6,7 @@ function s.WeaponInsect(c)
 	return m and m.named_with_WeaponInsect
 end
 s.RAHERAKHTY_CODE = 40020713
+s.OMEGA_CODE = 40020839
 function s.initial_effect(c)
 	
 	c:EnableReviveLimit()
@@ -123,7 +124,10 @@ function s.setfilter(c)
 	return s.WeaponInsect(c) and not (c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS))
 end
 function s.rafilter(c)
-	return c:IsCode(s.RAHERAKHTY_CODE)
+	return c:IsCode(s.RAHERAKHTY_CODE) and c:IsFaceup()
+end
+function s.omegafilter(c)
+	return c:IsCode(s.OMEGA_CODE)
 end
 function s.thop(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
@@ -164,45 +168,65 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	if Duel.IsExistingMatchingCard(s.rafilter, tp, LOCATION_SZONE, 0, 1, nil)
 	   and Duel.SelectYesNo(tp, aux.Stringid(id, 3)) then
-		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_XMATERIAL)
-		local rg = Duel.SelectMatchingCard(tp, s.rafilter, tp, LOCATION_SZONE, 0, 1, 1, nil)
-		if #rg > 0 then
-			Duel.Overlay(c, rg)
-			local maxset = math.min(Duel.GetLocationCount(tp, LOCATION_SZONE), 2)
-			if maxset > 0 and Duel.IsExistingMatchingCard(s.setfilter, tp, LOCATION_DECK, 0, 1, nil) then
-				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOFIELD)
-				local sg = Duel.SelectMatchingCard(tp, s.setfilter, tp, LOCATION_DECK, 0, 1, maxset, nil)
-				if #sg > 0 then
-					local stc = sg:GetFirst()
-					while stc do
-						Duel.MoveToField(stc, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
-						local ot = stc:GetOriginalType()
-						if (ot & TYPE_MONSTER) ~= 0 then
-							local e1 = Effect.CreateEffect(c)
-							e1:SetType(EFFECT_TYPE_SINGLE)
-							e1:SetCode(EFFECT_CHANGE_TYPE)
-							e1:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
-							e1:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
-							stc:RegisterEffect(e1)
-						else
-							local e1a = Effect.CreateEffect(c)
-							e1a:SetType(EFFECT_TYPE_SINGLE)
-							e1a:SetCode(EFFECT_ADD_TYPE)
-							e1a:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-							e1a:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
-							e1a:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
-							stc:RegisterEffect(e1a, true)
-							
-							local e1b = Effect.CreateEffect(c)
-							e1b:SetType(EFFECT_TYPE_SINGLE)
-							e1b:SetCode(EFFECT_REMOVE_TYPE)
-							e1b:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-							e1b:SetValue(ot)
-							e1b:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
-							stc:RegisterEffect(e1b, true)
-						end
-						stc = sg:GetNext()
+		local hasOmega = Duel.IsExistingMatchingCard(s.omegafilter, tp, LOCATION_EXTRA, 0, 1, nil)
+		if hasOmega and Duel.SelectYesNo(tp, aux.Stringid(40020839, 0)) then
+
+			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_XMATERIAL)
+			local rg = Duel.SelectMatchingCard(tp, s.rafilter, tp, LOCATION_SZONE, 0, 1, 1, nil)
+			if #rg > 0 then
+				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
+				local og = Duel.SelectMatchingCard(tp, s.omegafilter, tp, LOCATION_EXTRA, 0, 1, 1, nil)
+				if #og > 0 then
+					local oc = og:GetFirst()
+					oc:SetMaterial(rg)
+					Duel.Overlay(oc, rg)
+					Duel.SpecialSummon(oc, SUMMON_TYPE_XYZ, tp, tp, false, false, POS_FACEUP)
+					oc:CompleteProcedure()
+				end
+			end
+		else
+			-- Normal: overlay Ra as Xyz material on this card
+			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_XMATERIAL)
+			local rg = Duel.SelectMatchingCard(tp, s.rafilter, tp, LOCATION_SZONE, 0, 1, 1, nil)
+			if #rg > 0 then
+				Duel.Overlay(c, rg)
+			end
+		end
+		-- Continue: set WeaponInsect cards from deck
+		local maxset = math.min(Duel.GetLocationCount(tp, LOCATION_SZONE), 2)
+		if maxset > 0 and Duel.IsExistingMatchingCard(s.setfilter, tp, LOCATION_DECK, 0, 1, nil) then
+			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOFIELD)
+			local sg = Duel.SelectMatchingCard(tp, s.setfilter, tp, LOCATION_DECK, 0, 1, maxset, nil)
+			if #sg > 0 then
+				local stc = sg:GetFirst()
+				while stc do
+					Duel.MoveToField(stc, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
+					local ot = stc:GetOriginalType()
+					if (ot & TYPE_MONSTER) ~= 0 then
+						local e1 = Effect.CreateEffect(c)
+						e1:SetType(EFFECT_TYPE_SINGLE)
+						e1:SetCode(EFFECT_CHANGE_TYPE)
+						e1:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
+						e1:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+						stc:RegisterEffect(e1)
+					else
+						local e1a = Effect.CreateEffect(c)
+						e1a:SetType(EFFECT_TYPE_SINGLE)
+						e1a:SetCode(EFFECT_ADD_TYPE)
+						e1a:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+						e1a:SetValue(TYPE_TRAP + TYPE_CONTINUOUS)
+						e1a:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+						stc:RegisterEffect(e1a, true)
+						
+						local e1b = Effect.CreateEffect(c)
+						e1b:SetType(EFFECT_TYPE_SINGLE)
+						e1b:SetCode(EFFECT_REMOVE_TYPE)
+						e1b:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+						e1b:SetValue(ot)
+						e1b:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+						stc:RegisterEffect(e1b, true)
 					end
+					stc = sg:GetNext()
 				end
 			end
 		end

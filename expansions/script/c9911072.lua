@@ -45,34 +45,47 @@ function c9911072.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
-function c9911072.setfilter(c)
-	return c:IsSetCard(0x8e,0x9954) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+function c9911072.setfilter1(c,e)
+	return c:IsSetCard(0x8e,0x9954) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and c:IsCanBeEffectTarget(e)
+end
+function c9911072.gselect(g,ft)
+	local fc=g:FilterCount(Card.IsType,nil,TYPE_FIELD)
+	return fc<=1 and #g-fc<=ft
 end
 function c9911072.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local st=Duel.GetTargetCount(c9911072.setfilter,tp,LOCATION_GRAVE,0,e:GetHandler())
+	local maxc=0
+	local g=Duel.GetMatchingGroup(c9911072.setfilter1,tp,LOCATION_GRAVE,0,e:GetHandler(),e)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	local maxc=math.min(st,ft,2)
+	if #g>0 then
+		maxc=1
+		if g:CheckSubGroup(c9911072.gselect,2,2,ft) then maxc=2 end
+	end
 	if chk==0 then return maxc>0 and aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,chk) and Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) end
 	aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.RemoveOverlayCard(tp,1,0,1,maxc,REASON_COST)
 	e:SetLabel(ct)
 end
 function c9911072.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9911072.setfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9911072.setfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9911072.setfilter1(chkc,e) end
+	if chk==0 then return true end
 	local ct=e:GetLabel()
+	local g=Duel.GetMatchingGroup(c9911072.setfilter1,tp,LOCATION_GRAVE,0,nil,e)
+	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectTarget(tp,c9911072.setfilter,tp,LOCATION_GRAVE,0,ct,ct,nil)
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,g:GetCount(),0,0)
+	local sg=g:SelectSubGroup(tp,c9911072.gselect,false,ct,ct,ft)
+	Duel.SetTargetCard(sg)
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,sg,#sg,0,0)
+end
+function c9911072.setfilter2(c,e)
+	return c:IsSSetable() and c:IsRelateToEffect(e)
 end
 function c9911072.setop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(c9911072.setfilter2,nil,e)
+	if #g==0 then return end
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if #tg==0 or ft<=0 then return end
-	if #tg>ft then
+	if #g==2 and not g:CheckSubGroup(c9911072.gselect,2,2,ft) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		tg=tg:Select(tp,1,ft,nil)
+		g=g:Select(tp,1,1,nil)
 	end
-	Duel.SSet(tp,tg)
+	Duel.SSet(tp,g)
 end

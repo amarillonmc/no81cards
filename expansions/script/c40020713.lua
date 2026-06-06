@@ -9,6 +9,8 @@ function s.WeaponInsect(c)
 	local m = _G["c"..c:GetCode()]
 	return m and m.named_with_WeaponInsect
 end
+s.RAHERAKHTY_CODE = 40020713
+s.OMEGA_CODE = 40020839
 function s.initial_effect(c)
 
 	aux.EnablePendulumAttribute(c)
@@ -45,6 +47,12 @@ function s.szfilter(c, e, tp)
 	end
 	return false
 end
+function s.szfilter2(c, e, tp)
+	if c:GetSequence() >= 5 then return false end
+	if s.szfilter(c, e, tp) then return true end
+	if c:IsCode(s.RAHERAKHTY_CODE) and c:IsFaceup() and c:GetSequence() >= 5 then return true end
+	return false
+end
 function s.settg(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then
 		if not Duel.IsExistingMatchingCard(s.setfilter, tp, LOCATION_DECK, 0, 1, nil) then return false end
@@ -52,6 +60,60 @@ function s.settg(e, tp, eg, ep, ev, re, r, rp, chk)
 		local canReplace = Duel.IsExistingMatchingCard(s.szfilter, tp, LOCATION_SZONE, 0, 1, nil, e, tp)
 		return hasEmpty or canReplace
 	end
+end
+function s.rafilter_pzone(c)
+	return c:IsCode(s.RAHERAKHTY_CODE) and c:IsFaceup() and c:GetSequence() >= 5
+end
+function s.omegafilter(c)
+	return c:IsCode(s.OMEGA_CODE)
+end
+function s.replace_card(sc, e, tp)
+	local seq = sc:GetSequence()
+	local isRa = sc:IsCode(s.RAHERAKHTY_CODE) and sc:IsFaceup() and seq >= 5
+	local hasOmega = Duel.IsExistingMatchingCard(s.omegafilter, tp, LOCATION_EXTRA, 0, 1, nil)
+	if isRa and hasOmega then
+		if Duel.SelectYesNo(tp, aux.Stringid(40020839, 0)) then
+			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
+			local og = Duel.SelectMatchingCard(tp, s.omegafilter, tp, LOCATION_EXTRA, 0, 1, 1, nil)
+			if #og > 0 then
+				local oc = og:GetFirst()
+				local rg = Group.FromCards(sc)
+				oc:SetMaterial(rg)
+				Duel.Overlay(oc, rg)
+				Duel.SpecialSummon(oc, SUMMON_TYPE_XYZ, tp, tp, false, false, POS_FACEUP)
+				oc:CompleteProcedure()
+				return true, (1 << seq)
+			end
+			return false, nil
+		end
+	end
+
+	local canth = sc:IsAbleToHand()
+	local cansp = (sc:GetOriginalType() & TYPE_MONSTER) ~= 0
+		and sc:IsCanBeSpecialSummoned(e, 0, tp, false, false) 
+		and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0
+	if canth and cansp then
+		if Duel.SelectYesNo(tp, aux.Stringid(id, 1)) then
+			if Duel.SendtoHand(sc, nil, REASON_EFFECT) > 0 then
+				Duel.ConfirmCards(1 - tp, sc)
+				return true, (1 << seq)
+			end
+		else
+			if Duel.SpecialSummon(sc, 0, tp, tp, false, false, POS_FACEUP) > 0 then
+				return true, (1 << seq)
+			end
+		end
+	elseif canth then
+		if Duel.SendtoHand(sc, nil, REASON_EFFECT) > 0 then
+			Duel.ConfirmCards(1 - tp, sc)
+			return true, (1 << seq)
+		end
+	elseif cansp then
+		if Duel.SpecialSummon(sc, 0, tp, tp, false, false, POS_FACEUP) > 0 then
+			return true, (1 << seq)
+		end
+	end
+	return false, nil
 end
 function s.setop(e, tp, eg, ep, ev, re, r, rp)
 	local hasEmpty = Duel.GetLocationCount(tp, LOCATION_SZONE) > 0
@@ -61,65 +123,18 @@ function s.setop(e, tp, eg, ep, ev, re, r, rp)
 		local sg = Duel.SelectMatchingCard(tp, s.szfilter, tp, LOCATION_SZONE, 0, 1, 1, nil, e, tp)
 		if #sg == 0 then return end
 		local sc = sg:GetFirst()
-		local seq = sc:GetSequence()
-		local canth = sc:IsAbleToHand()
-		local cansp = (sc:GetOriginalType() & TYPE_MONSTER) ~= 0
-			and sc:IsCanBeSpecialSummoned(e, 0, tp, false, false) 
-			and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0
-		if canth and cansp then
-			if Duel.SelectYesNo(tp, aux.Stringid(id, 1)) then
-				if Duel.SendtoHand(sc, nil, REASON_EFFECT) > 0 then
-					Duel.ConfirmCards(1 - tp, sc)
-					place_zone = (1 << seq)
-				end
-			else
-				if Duel.SpecialSummon(sc, 0, tp, tp, false, false, POS_FACEUP) > 0 then
-					place_zone = (1 << seq)
-				end
-			end
-		elseif canth then
-			if Duel.SendtoHand(sc, nil, REASON_EFFECT) > 0 then
-				Duel.ConfirmCards(1 - tp, sc)
-				place_zone = (1 << seq)
-			end
-		elseif cansp then
-			if Duel.SpecialSummon(sc, 0, tp, tp, false, false, POS_FACEUP) > 0 then
-				place_zone = (1 << seq)
-			end
-		else
-			return
-		end
+		local replaced, pz = s.replace_card(sc, e, tp)
+		if not replaced then return end
+		place_zone = pz
 	else
 		local sg = Duel.GetMatchingGroup(s.szfilter, tp, LOCATION_SZONE, 0, nil, e, tp)
 		if #sg > 0 and Duel.SelectYesNo(tp, aux.Stringid(id, 3)) then
 			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TARGET)
 			local rg = sg:Select(tp, 1, 1, nil)
 			local sc = rg:GetFirst()
-			local seq = sc:GetSequence()
-			local canth = sc:IsAbleToHand()
-			local cansp = (sc:GetOriginalType() & TYPE_MONSTER) ~= 0
-				and sc:IsCanBeSpecialSummoned(e, 0, tp, false, false) 
-				and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0
-			if canth and cansp then
-				if Duel.SelectYesNo(tp, aux.Stringid(id, 1)) then
-					if Duel.SendtoHand(sc, nil, REASON_EFFECT) > 0 then
-						Duel.ConfirmCards(1 - tp, sc)
-						place_zone = (1 << seq)
-					end
-				else
-					if Duel.SpecialSummon(sc, 0, tp, tp, false, false, POS_FACEUP) > 0 then
-						place_zone = (1 << seq)
-					end
-				end
-			elseif canth then
-				if Duel.SendtoHand(sc, nil, REASON_EFFECT) > 0 then
-					Duel.ConfirmCards(1 - tp, sc)
-					place_zone = (1 << seq)
-				end
-			elseif cansp then
-				if Duel.SpecialSummon(sc, 0, tp, tp, false, false, POS_FACEUP) > 0 then
-					place_zone = (1 << seq)
-				end
+			local replaced, pz = s.replace_card(sc, e, tp)
+			if replaced then
+				place_zone = pz
 			end
 		end
 	end
@@ -133,7 +148,7 @@ function s.setop(e, tp, eg, ep, ev, re, r, rp)
 	else
 		Duel.MoveToField(tc, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
 	end
-	local ot = tc:GetOriginalType()	
+	local ot = tc:GetOriginalType() 
 	if (ot & TYPE_MONSTER) ~= 0 then
 		local e1 = Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -159,6 +174,7 @@ function s.setop(e, tp, eg, ep, ev, re, r, rp)
 		tc:RegisterEffect(e1b, true)
 	end
 end
+
 function s.pzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsFaceup()
 end
