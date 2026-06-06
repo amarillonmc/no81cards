@@ -41,7 +41,7 @@ function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function s.thfilter(c,tc)
-	return s.DarkSnake(c) and c:IsType(TYPE_MONSTER) and c:GetCode()~=tc:GetCode()
+	return s.DarkSnake(c) and c:GetCode()~=tc:GetCode()
 end
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

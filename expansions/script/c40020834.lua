@@ -83,7 +83,10 @@ function s.multitg(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
 end
 
 function s.multiop(e, tp, eg, ep, ev, re, r, rp)
-	local tg = Duel.GetTargetCards(e)
+	local g = Duel.GetChainInfo(0, CHAININFO_TARGET_CARDS)
+	if not g then return end
+	local tg = g:Filter(Card.IsRelateToEffect, nil, e)
+	
 	local sp_count = 0
 	if #tg > 0 then
 		local ft = Duel.GetLocationCount(tp, LOCATION_MZONE)
@@ -91,6 +94,7 @@ function s.multiop(e, tp, eg, ep, ev, re, r, rp)
 			sp_count = Duel.SpecialSummon(tg, 0, tp, tp, false, false, POS_FACEUP)
 		end
 	end
+	
 	if sp_count == 0 then return end
 	local can_pos = Duel.IsExistingMatchingCard(s.posfilter, tp, 0, LOCATION_ONFIELD, 1, nil)
 	local can_set = Duel.GetLocationCount(tp, LOCATION_SZONE) >= 2 
