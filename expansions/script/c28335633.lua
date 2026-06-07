@@ -58,8 +58,8 @@ function c28335633.activate(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(attr)
 		token:RegisterEffect(e2)
 		local des=aux.Stringid(28335633,2)
-		for i,v in pairs({ATTRIBUTE_DARK,ATTRIBUTE_EARTH,ATTRIBUTE_WATER,ATTRIBUTE_FIRE,ATTRIBUTE_WIND }) do
-			if attr==v then des=aux.Stringid(28335633,i+2) break end
+		for i,v in pairs({ATTRIBUTE_LIGHT,ATTRIBUTE_DARK,ATTRIBUTE_EARTH,ATTRIBUTE_WATER,ATTRIBUTE_FIRE,ATTRIBUTE_WIND }) do
+			if attr==v then des=aux.Stringid(28335633,i+1) break end
 		end
 		Duel.AdjustAll()
 		Duel.Hint(HINT_OPSELECTED,tp,des)
