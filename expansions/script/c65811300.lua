@@ -97,7 +97,7 @@ function s.adjustop(e, tp, eg, ep, ev, re, r, rp)
     VS_Deck_To_Hand_Group = Group.CreateGroup()
     VS_Deck_To_Hand_Group:KeepAlive()
 
-    -- 挂载全局的发动Cost拦截器 (北极天熊机制)
+    -- 挂载全局的发动Cost拦截器
     local ge1 = Effect.CreateEffect(c)
     ge1:SetType(EFFECT_TYPE_FIELD)
     ge1:SetCode(EFFECT_ACTIVATE_COST)
@@ -354,7 +354,7 @@ function s.adjustop(e, tp, eg, ep, ev, re, r, rp)
                     end)
                 end
                 
-                -- 黑魔法：抹除“同一连锁上不能发动”
+                --[[ 黑魔法：抹除“同一连锁上不能发动”
                 if tg then
                     eff:SetTarget(function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
                         VS_Target_Flag = true
@@ -375,6 +375,7 @@ function s.adjustop(e, tp, eg, ep, ev, re, r, rp)
                         return res
                     end)
                 end
+                ]]
             end
             
             table.insert(table_effect, eff)
