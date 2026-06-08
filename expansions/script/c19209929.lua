@@ -81,11 +81,12 @@ function c19209929.cfop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
 				sg=sg:Select(p,ft,ft,nil)
 			end
+			local og=Group.CreateGroup()
 			if Duel.SpecialSummon(sg,0,p,p,false,false,POS_FACEUP)>=2 then
+				og=Duel.GetOperatedGroup()
 				Duel.BreakEffect()
 				Duel.Draw(p,2,REASON_EFFECT)
 			end
-			local og=Duel.GetOperatedGroup()
 				for tc in aux.Next(og) do
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)
