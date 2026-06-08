@@ -34,7 +34,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 			local dif=math.abs(tc:GetAttack()-tc:GetBaseAttack())
 			if dif>0 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-				local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,dif)
+				local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,dif)
 				if #g>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 and g:GetFirst():IsLocation(LOCATION_HAND) then
 					Duel.ConfirmCards(1-tp,g)
 					local e1=Effect.CreateEffect(e:GetHandler())
@@ -43,7 +43,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 					e1:SetValue(tc:GetBaseAttack())
 					e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 					tc:RegisterEffect(e1)
-					local g2=Duel.GetMatchingGroup(s.thfilter2,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,g:GetFirst())
+					local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.thfilter2),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,g:GetFirst())
 					if g2:GetClassCount(Card.GetCode)>=2 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 						local sg=g2:SelectSubGroup(tp,aux.dncheck,false,2,2)

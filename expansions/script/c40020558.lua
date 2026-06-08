@@ -17,7 +17,7 @@ function s.initial_effect(c)
 
 	local e2 = Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id, 1))
-	e2:SetCategory(CATEGORY_TOHAND + CATEGORY_SEARCH + CATEGORY_DECKDES)
+	e2:SetCategory(CATEGORY_TOGRAVE + CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCountLimit(1, id + 100)
@@ -50,35 +50,18 @@ function s.activate(e, tp, eg, ep, ev, re, r, rp)
 	end
 end
 
-function s.thtg(e, tp, eg, ep, ev, re, r, rp, chk)
-	if chk == 0 then return Duel.GetFieldGroupCount(tp, LOCATION_DECK, 0) >= 3 end
-	Duel.SetOperationInfo(0, CATEGORY_TOHAND, nil, 1, 0, LOCATION_DECK)
-	Duel.SetOperationInfo(0, CATEGORY_DECKDES, nil, 0, tp, 2)
-end
-
 function s.thfilter(c)
-	return s.InfernalLord(c) and not c:IsCode(id) and c:IsAbleToHand()
+	return s.InfernalLord(c) and not c:IsCode(id) and c:IsAbleToGrave()
 end
-
-function s.thop(e, tp, eg, ep, ev, re, r, rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
-	if Duel.GetFieldGroupCount(tp, LOCATION_DECK, 0) < 3 then return end
-
-	Duel.ConfirmDecktop(tp, 3)
-	local g = Duel.GetDecktopGroup(tp, 3)
-	
-	if #g > 0 then
-		Duel.DisableShuffleCheck()
-		if g:IsExists(s.thfilter, 1, nil) and Duel.SelectYesNo(tp, aux.Stringid(id, 2)) then
-			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_ATOHAND)
-			local sg = g:FilterSelect(tp, s.thfilter, 1, 1, nil)
-			Duel.SendtoHand(sg, nil, REASON_EFFECT)
-			Duel.ConfirmCards(1 - tp, sg)
-			Duel.ShuffleHand(tp)
-			g:Sub(sg)
-		end
-
-		Duel.SendtoGrave(g, REASON_EFFECT + REASON_REVEAL)
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+end
+function s.thoperation(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end
 

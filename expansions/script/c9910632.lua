@@ -1,7 +1,7 @@
 --猫偶飞行家
 function c9910632.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,nil,5,2,nil,nil,99)
+	aux.AddXyzProcedureLevelFree(c,c9910632.mfilter,nil,2,99)
 	--extra attack
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -24,6 +24,9 @@ function c9910632.initial_effect(c)
 	e2:SetTarget(c9910632.distg)
 	e2:SetOperation(c9910632.disop)
 	c:RegisterEffect(e2)
+end
+function c9910632.mfilter(c,xyzc)
+	return c:IsXyzLevel(xyzc,5) or (c:IsRace(RACE_PSYCHO) and c:IsType(TYPE_LINK))
 end
 function c9910632.extg(e,c)
 	return c:IsType(TYPE_XYZ) and c:GetOverlayGroup():IsExists(Card.IsRace,1,nil,RACE_PSYCHO)

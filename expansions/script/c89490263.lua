@@ -77,7 +77,7 @@ function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	return true
 end
-function s.cfilter(c,ft)
+function s.cfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_EQUIP) and c:IsAbleToHandAsCost()
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)

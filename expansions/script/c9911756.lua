@@ -46,7 +46,7 @@ function c9911756.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c9911756.rmfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	local tc=g:GetFirst()
 	local res=Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
-	if res>0 and tc:IsLocation(LOCATION_REMOVED) and c:IsRelateToEffect(e) then
+	if res>0 and tc:IsLocation(LOCATION_REMOVED) and c:IsRelateToEffect(e) and c:IsFaceup() then
 		Duel.MajesticCopy(c,tc)
 	end
 end

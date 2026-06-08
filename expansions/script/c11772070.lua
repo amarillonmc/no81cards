@@ -74,16 +74,6 @@ function s.spop1(e,tp,eg,ep,ev,re,r,rp)
 			local g2=g:FilterSelect(tp,s.diff_code_filter,1,1,tc1,tc1:GetCode())
 			g1:Merge(g2)
 			if #g1==2 and Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)>0 then
-				local tc=g1:GetFirst()
-				while tc do
-					local e1=Effect.CreateEffect(e:GetHandler())
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetCode(EFFECT_CANNOT_TRIGGER)
-					e1:SetCondition(s.actcon)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-					tc:RegisterEffect(e1)
-					tc=g1:GetNext()
-				end
 			end
 		end
 	end
@@ -112,7 +102,7 @@ function s.op2(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(1000)
+		e1:SetValue(1500)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
 		local e2=e1:Clone()

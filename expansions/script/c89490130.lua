@@ -158,7 +158,8 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.GetControl(g,tp)
 	end
 end
-function s.target2(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc~=Duel.GetAttackTarget() end
 	if chk==0 then return true end
 	local a,d=Duel.GetBattleMonster(0)
 	local ad=Group.FromCards(a,d)

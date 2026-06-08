@@ -28,8 +28,7 @@ function s.initial_effect(c)
 	e3:SetOperation(s.negop)
 	c:RegisterEffect(e3)
 end
-
--function s.thfilter(c)
+function s.thfilter(c)
 	return not c:IsCode(id) and c:IsSetCard(0xab0) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

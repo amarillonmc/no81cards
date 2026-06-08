@@ -26,7 +26,7 @@ function s.filter(c)
 	return c:IsAttribute(ATTRIBUTE_FIRE) and c:IsRace(RACE_PSYCHO+RACE_WYRM) and c:IsType(TYPE_LINK) and c:IsFaceup()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return s.filter(chkc) and c:IsControler(tp) end
+	if chkc then return s.filter(chkc) and chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) end
 	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,0,1,1,nil)

@@ -78,7 +78,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(g) do
 		zone=zone|tc:GetLinkedZone()
 	end
-	if tc:IsRelateToEffect(e) and zone>0 and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone)>0 then
+	if tc:IsRelateToEffect(e) and zone>0 and aux.NecroValleyFilter()(tc) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone)>0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)

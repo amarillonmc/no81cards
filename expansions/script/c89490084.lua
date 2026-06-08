@@ -45,7 +45,7 @@ function s.chainlm(e,rp,tp)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToChain() then
+	if tc:IsRelateToChain() and aux.NecroValleyFilter()(tc) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 end

@@ -61,7 +61,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 	local e1=Effect.CreateEffect(c)

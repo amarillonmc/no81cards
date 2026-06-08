@@ -22,7 +22,6 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END+TIMING_END_PHASE)
 	e3:SetCountLimit(1,m+1)
-	e3:SetCondition(cm.spcon1)
 	e3:SetTarget(cm.lvtg)
 	e3:SetOperation(cm.operation)
 	c:RegisterEffect(e3)
@@ -34,7 +33,6 @@ function cm.initial_effect(c)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END+TIMING_END_PHASE)
 	e4:SetCountLimit(1)
-	e4:SetCondition(cm.spcon)
 	e4:SetTarget(cm.destg)
 	e4:SetOperation(cm.desop)
 	c:RegisterEffect(e4)
@@ -78,7 +76,6 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SSet(tp,g:GetFirst())
 		Duel.ConfirmCards(1-tp,g)
-		e:GetHandler():RegisterFlagEffect(m,RESET_PHASE+PHASE_END,0,1)
 	end
 	end
 end
@@ -118,7 +115,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e3)
 		end
-		e:GetHandler():RegisterFlagEffect(m+3,RESET_PHASE+PHASE_END,0,1)
+
 		  if Duel.IsPlayerAffectedByEffect(tp,4878130) then
 	Duel.Draw(tp,1,REASON_EFFECT)
    end

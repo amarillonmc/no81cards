@@ -58,14 +58,14 @@ end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not Duel.IsPlayerCanRemove(1-tp) then return end
-	local g=Duel.GetMatchingGroup(s.rfilter,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,nil,1-tp,POS_FACEUP,REASON_RULE)
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.rfilter),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,nil,1-tp,POS_FACEUP,REASON_RULE)
 	if g:GetCount()>0 then
 		local n=Duel.GetMatchingGroup(s.tfilter,tp,LOCATION_GRAVE,0,nil):GetClassCount(Card.GetCode)
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
 		local sg=g:Select(1-tp,n,n,nil)
 		if sg:GetCount()>0 then
 			local rn=Duel.Remove(sg,POS_FACEUP,REASON_RULE,1-tp)
-			local rg=Duel.GetMatchingGroup(s.rtfilter,tp,LOCATION_GRAVE,0,nil)
+			local rg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.rtfilter),tp,LOCATION_GRAVE,0,nil)
 			if rn>0 and #rg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 				local rg1=rg:Select(1-tp,1,rn,nil)

@@ -31,8 +31,33 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
 	e3:SetCondition(cm.atkcon)
-	e3:SetOperation(cm.atkop)
+	e3:SetTarget(cm.thtg)
+	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3)
+end
+
+function cm.thfilter(c)
+	return c:IsSetCard(0x48f,0x48c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+local tc=g:GetFirst()
+local number=tc:GetAttack()
+local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetValue(number)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+	e:GetHandler():RegisterEffect(e1)
+	end
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler():IsSetCard(0x48f) and rp==tp and re:IsActiveType(TYPE_TRAP)
@@ -50,21 +75,6 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.cfilter1(c,tp)
 	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_SZONE) and c:GetPreviousSequence()<5 and c:IsSetCard(0x48f)
-end
-function cm.thfilter(c)
-	return c:IsSetCard(0x48f) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
-end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
 end
 function cm.seqfilter(c)
 	local tp=c:GetControler()

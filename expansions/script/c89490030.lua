@@ -57,7 +57,7 @@ function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g1=Duel.SelectMatchingCard(tp,s.posfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,e:GetHandler())
+	local g1=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.posfilter),tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,e:GetHandler())
 	if #g1<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil)

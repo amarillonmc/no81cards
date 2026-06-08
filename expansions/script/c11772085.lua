@@ -1,27 +1,24 @@
 local s,id=GetID()
 function s.initial_effect(c)
-	-- 添加卡名记述
+	-- 记述了卡名「11772070」
 	aux.AddCodeList(c,11772070)
 	
-	-- ①：特殊召唤效果
+	-- ①：从卡组把1只有「11772070」卡名记述的怪兽加入手卡。那之后...
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
+	e1:SetType(EFFECT_TYPE_ACTIVATE) -- 如果是怪兽，请改为 EFFECT_TYPE_IGNITION
 	e1:SetCode(EVENT_FREE_CHAIN)
-	-- ①效果1回合只能使用1次
 	e1:SetCountLimit(1,id)
-	e1:SetCondition(s.spcon)
-	e1:SetTarget(s.sptg)
-	e1:SetOperation(s.spop)
+	e1:SetTarget(s.thtg)
+	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
 	
-	-- ②：代替破坏效果
+	-- ②：自己场上的5星以上的怪兽被战斗·效果破坏的场合，可以作为代替把墓地的这张卡除外。
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EFFECT_DESTROY_REPLACE)
 	e2:SetRange(LOCATION_GRAVE)
-	-- ②效果1回合只能使用1次
 	e2:SetCountLimit(1,id+1)
 	e2:SetTarget(s.reptg)
 	e2:SetValue(s.repval)
@@ -29,71 +26,81 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 
--- ==================== ① 效果相关 ====================
-function s.cfilter(c)
-	-- 过滤出“不满足条件”的怪兽：里侧表示（无等级），或者等级不是5星及以上（包含1-4星、超量、连接怪兽）
-	return c:IsFacedown() or not c:IsLevelAbove(5)
-end
-function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
-	-- 自己场上没有怪兽（数量为0），或者存在的怪兽中没有“不满足条件”的怪兽（即全部是5星以上的怪兽）
-	return #g==0 or g:FilterCount(s.cfilter,nil)==0
+-- ==================== 效果①的函数 ====================
+function s.thfilter(c)
+	return aux.IsCodeListed(c,11772070) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function s.spfilter(c,e,tp)
-	return aux.IsCodeListed(c,11772070) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return aux.IsCodeListed(c,11772070) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+function s.relfilter(c)
+	return c:IsLevelAbove(5) and c:IsReleasableByEffect()
 end
-function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	-- 第一只怪兽特召成功后
-	if #g>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)>0 then
-		-- 结算此时场上的怪兽数量，判断对方怪兽是否比自己多
-		if Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE) > Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
-			-- 同时需要保证自己场上还有空位且卡组里还有符合条件的怪兽
-			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-			and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) then
-			
-			-- 询问是否要再特召1只
-			if Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-				Duel.BreakEffect()
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-				local sg=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-				if #sg>0 then
-					Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if #g>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 and g:GetFirst():IsLocation(LOCATION_HAND) then
+		Duel.ConfirmCards(1-tp,g)
+		
+		-- 检索成功后，检查是否可以解放怪兽并适用后续效果
+		local cg=Duel.GetMatchingGroup(s.relfilter,tp,LOCATION_MZONE,0,nil)
+		local b1=Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
+		local b2=Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil)
+		
+		-- 如果有可以解放的怪兽，并且后续两个效果至少有一个能处理，则询问是否发动
+		if #cg>0 and (b1 or b2) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+			local tg=cg:Select(tp,1,1,nil)
+			if Duel.Release(tg,REASON_EFFECT)>0 then
+				local op=0
+				if b1 and b2 then
+					op=Duel.SelectOption(tp,aux.Stringid(id,2),aux.Stringid(id,3))
+				elseif b1 then
+					op=Duel.SelectOption(tp,aux.Stringid(id,2))
+				else
+					op=Duel.SelectOption(tp,aux.Stringid(id,3))+1
+				end
+				
+				if op==0 then
+					-- 适用效果：特殊召唤
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+					local sg=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+					if #sg>0 then
+						Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+					end
+				else
+					-- 适用效果：除外对方卡片
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+					local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,nil)
+					if #rg>0 then
+						Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
+					end
 				end
 			end
 		end
 	end
 end
 
--- ==================== ② 效果相关 ====================
+-- ==================== 效果②的函数 ====================
 function s.repfilter(c,tp)
-	-- 必须是自己场上的表侧表示、5星以上的怪兽，且因为战斗或效果被破坏
-	return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) 
-		and c:IsLevelAbove(5) and not c:IsReason(REASON_REPLACE) and c:IsReason(REASON_BATTLE+REASON_EFFECT)
+	return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsLevelAbove(5)
+		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	-- 判断将要被破坏的卡中是否有符合条件的怪兽，且墓地的此卡能够被除外
-	if chk==0 then return c:IsAbleToRemove() and eg:IsExists(s.repfilter,1,nil,tp) end
-	-- 弹窗提示是否使用代替破坏效果（96 是系统预设的通用“代替提示”文本ID）
-	if Duel.SelectEffectYesNo(tp,c,96) then
-		return true
-	else
-		return false
-	end
+	if chk==0 then return e:GetHandler():IsAbleToRemove() and eg:IsExists(s.repfilter,1,nil,tp) end
+	-- 96 是系统默认的“是否作为代替除外？”的提示文字
+	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
 end
 function s.repval(e,c)
-	-- 返回需要被代破的卡
 	return s.repfilter(c,e:GetHandlerPlayer())
 end
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
-	-- 执行代替动作：将墓地的这张卡除外
-	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT+REASON_REPLACE)
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT)
 end

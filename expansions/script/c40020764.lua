@@ -1,6 +1,7 @@
 --创界神 库库尔坎
 local s,id=GetID()
 s.named_with_Grandwalker=1
+s.named_with_Vulrica=1
 function s.Grandwalker(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Grandwalker
@@ -8,7 +9,7 @@ end
 function s.DarkSnake(c)
 	local m = _G["c"..c:GetCode()]
 	if m and m.named_with_DarkSnake then return true end
-	if c:GetCode() == id and c:IsLocation(LOCATION_PZONE) then return true end	
+	if c:GetCode() == id and c:IsLocation(LOCATION_PZONE) then return true end  
 	return false
 end
 function s.initial_effect(c)

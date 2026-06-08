@@ -26,14 +26,43 @@ function cm.initial_effect(c)
 	e3:SetDescription(aux.Stringid(m,2))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_CHAINING)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
 	e3:SetCondition(cm.atkcon)
-	e3:SetTarget(cm.distg)
-	e3:SetOperation(cm.disop)
+	e3:SetTarget(cm.seqtg)
+	e3:SetOperation(cm.seqop)
 	c:RegisterEffect(e3)
+end
+function cm.seqfilter(c)
+	local tp=c:GetControler()
+	return c:GetSequence()<5 and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0
+end
+function cm.seqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.seqfilter(chkc) and chkc~=c end
+	if chk==0 then return Duel.IsExistingTarget(cm.seqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c) end
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
+	Duel.SelectTarget(tp,cm.seqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,c)
+end
+function cm.seqop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	local ttp=tc:GetControler()
+	if not tc:IsRelateToEffect(e) or tc:IsImmuneToEffect(e)
+		or Duel.GetLocationCount(ttp,LOCATION_MZONE,PLAYER_NONE,0)<=0 then return end
+	local p1,p2
+	if tc:IsControler(tp) then
+		p1=LOCATION_MZONE
+		p2=0
+	else
+		p1=0
+		p2=LOCATION_MZONE
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+	local seq=math.log(Duel.SelectDisableField(tp,1,p1,p2,0),2)
+	if tc:IsControler(1-tp) then seq=seq-16 end
+	Duel.MoveSequence(tc,seq)
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler():IsSetCard(0x48f) and rp==tp and re:IsActiveType(TYPE_TRAP)

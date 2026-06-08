@@ -1,6 +1,11 @@
 --创界神 宙斯
 local s,id=GetID()
 s.named_with_Grandwalker=1
+s.named_with_Olym=1
+function s.Olym(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Olym
+end
 function s.Grandwalker(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Grandwalker
@@ -16,7 +21,15 @@ function s.EmperorBeast(c)
 end
 function s.initial_effect(c)
 
-	aux.EnablePendulumAttribute(c)
+	aux.EnablePendulumAttribute(c,false)
+	--Activate
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(1160)
+	e0:SetType(EFFECT_TYPE_ACTIVATE)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetRange(LOCATION_HAND)
+	e0:SetCost(s.reg)
+	c:RegisterEffect(e0)
 
 	--change effect type
 	local e1=Effect.CreateEffect(c)
@@ -26,6 +39,18 @@ function s.initial_effect(c)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetTargetRange(1,0)
 	c:RegisterEffect(e1)
+
+	--to hand
+	local e5=Effect.CreateEffect(c)
+	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e5:SetType(EFFECT_TYPE_IGNITION)
+	e5:SetRange(LOCATION_PZONE)
+	e5:SetCountLimit(1,id+10)
+	e5:SetCondition(s.thcon)
+	e5:SetTarget(s.thtg)
+	e5:SetOperation(s.thop)
+	c:RegisterEffect(e5)
+
 
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
@@ -37,6 +62,12 @@ function s.initial_effect(c)
 	e3:SetOperation(s.pzop)
 	c:RegisterEffect(e3)	
 end
+function s.reg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	e:GetHandler():RegisterFlagEffect(id+10,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+end
+
+
 function s.repval(e, tp, eg, ep, ev, re, r, rp)
 
 	if r & REASON_COST == 0 then return false end
@@ -77,6 +108,29 @@ function s.repop(e, tp, eg, ep, ev, re, r, rp)
 		LOCATION_HAND + LOCATION_DECK + LOCATION_EXTRA + LOCATION_REMOVED, 0, 1, 1, nil)
 	if #g > 0 then
 		Duel.SendtoGrave(g, REASON_EFFECT + REASON_REPLACE)
+	end
+end
+
+function s.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(id+10)~=0
+end
+function s.thfilter(c)
+	return not c:IsCode(id) and s.Olym(c) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
+end
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsDestructable()
+		and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) or Duel.Destroy(c,REASON_EFFECT)==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 

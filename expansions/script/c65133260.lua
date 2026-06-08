@@ -18,9 +18,10 @@ function s.initial_effect(c)
 		s.global_check=true
 		_ChangeChainOperation=Duel.ChangeChainOperation
 		function Duel.ChangeChainOperation(ev,op)
+			local te=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
 			local e,tp=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
 			if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetMatchingGroupCount(s.affilter,tp,LOCATION_DECK+LOCATION_HAND,0,nil,tp)>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-				_ChangeChainOperation(ev,s.chop2(op))
+				_ChangeChainOperation(ev,s.chop2(op,te))
 			else
 				_ChangeChainOperation(ev,op)
 			end
@@ -44,7 +45,7 @@ end
 function s.affilter(c,tp)
 	return c:IsCode(id) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true) and not c:IsForbidden()
 end
-function s.chop2(op)
+function s.chop2(op,te)
 	return function(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetLocationCount(tp,LOCATION_SZONE)==0 then return end
 		local tc=Duel.GetMatchingGroup(s.affilter,tp,LOCATION_DECK+LOCATION_HAND,0,nil,tp):Select(tp,1,1,nil):GetFirst()
@@ -57,6 +58,7 @@ function s.chop2(op)
 			ae:SetOperation(op)
 			ae:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(ae)
+			if te then tc:SetHint(CHINT_CARD,te:GetHandler():GetOriginalCode()) end
 		end
 	end
 end

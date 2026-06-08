@@ -27,10 +27,17 @@ function c17337716.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,17337716+1)
+	e2:SetCondition(c17337716.icon)
 	e2:SetCost(c17337716.cpcost)
 	--e2:SetTarget(c17337716.cptg)
 	e2:SetOperation(c17337716.cpop)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetHintTiming(TIMING_DAMAGE_STEP,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCondition(c17337716.qcon)
+	c:RegisterEffect(e3)
 end
 function c17337716.redcon(e)
 	local c=e:GetHandler()
@@ -60,6 +67,12 @@ function c17337716.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		if tc:IsPreviousLocation(LOCATION_DECK) then Duel.ConfirmCards(1-tp,tc) end
 	end
+end
+function c17337716.icon(e,tp,eg,ep,ev,re,r,rp)
+	return not (Duel.IsPlayerAffectedByEffect(tp,17337721)~=nil and e:GetHandler():IsOriginalSetCard(0x3f51))
+end
+function c17337716.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsPlayerAffectedByEffect(tp,17337721)~=nil and e:GetHandler():IsOriginalSetCard(0x3f51)
 end
 function c17337716.cpfilter(c)
 	return c:IsCode(17337700) and c:IsType(TYPE_MONSTER) and not c:IsPublic()

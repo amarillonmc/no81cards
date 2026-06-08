@@ -97,9 +97,9 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		local b1=Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.gthfilter),tp,0,LOCATION_GRAVE,1,nil)
 		local b2=Duel.IsPlayerCanDraw(1-tp,1)
 		local op=aux.SelectFromOptions(1-tp,
-			{b1,aux.Stringid(id,2),1},
-			{b2,aux.Stringid(id,3),2},
-			{true,aux.Stringid(id,4),3})
+			{b1,aux.Stringid(id,3),1},
+			{b2,aux.Stringid(id,4),2},
+			{true,aux.Stringid(id,5),3})
 		if op~=3 then Duel.BreakEffect() end
 		if op==1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

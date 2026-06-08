@@ -55,7 +55,7 @@ function s.xfilter(c)
 end
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c) then
 		local op=aux.SelectFromOptions(tp,{Duel.GetLocationCount(tp,LOCATION_SZONE)>0,aux.Stringid(id,0)},{Duel.IsEnvironment(89490061) and c:IsCanOverlay() and Duel.IsExistingMatchingCard(s.xfilter,tp,LOCATION_MZONE,0,1,nil),aux.Stringid(id,1)})
 		if op==1 then
 			Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)

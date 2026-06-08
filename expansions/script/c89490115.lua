@@ -97,7 +97,6 @@ function s.setfilter(c)
 	return c:IsFaceupEx() and c:IsSetCard(0xc37) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function s.target3(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil)
 	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) and Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil) end
 end
 function s.fcheck3(g)

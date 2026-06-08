@@ -45,10 +45,10 @@ function c17337730.mfilter(c,syncard)
 	return c:IsTuner(syncard) or c:IsCode(17337400)
 end
 function c17337730.icon(e,tp,eg,ep,ev,re,r,rp)
-	return not (Duel.IsPlayerAffectedByEffect(tp,17337721)~=nil and e:GetHandler():IsOriginalSetCard(0x3f51) and e:GetHandler():IsType(TYPE_SYNCHRO))
+	return not (Duel.IsPlayerAffectedByEffect(tp,17337721)~=nil and e:GetHandler():IsOriginalSetCard(0x3f51))
 end
 function c17337730.qcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,17337721)~=nil and e:GetHandler():IsOriginalSetCard(0x3f51) and e:GetHandler():IsType(TYPE_SYNCHRO)
+	return Duel.IsPlayerAffectedByEffect(tp,17337721)~=nil and e:GetHandler():IsOriginalSetCard(0x3f51)
 end
 function c17337730.costfilter(c)
 	return c:IsSetCard(0x3f50,0x3f51) and c:IsFaceup() and c:IsAbleToHandAsCost()

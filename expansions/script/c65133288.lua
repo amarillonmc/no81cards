@@ -16,6 +16,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local zone=Duel.SelectField(tp,ct,LOCATION_ONFIELD,LOCATION_ONFIELD,0)
 	e:SetLabel(zone)
 	Duel.Hint(HINT_ZONE,tp,zone)
+	Duel.Hint(HINT_ZONE,1-tp,zone<<16)
 end
 function s.get_zone_bit(c,tp)
 	local seq=c:GetSequence()

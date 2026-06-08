@@ -28,7 +28,7 @@ function s.initial_effect(c)
 		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e2:SetCode(EVENT_BATTLE_DESTROYING)
 		e2:SetOperation(s.regop)
-		Duel.RegisterEffect(e2,tp)
+		Duel.RegisterEffect(e2,0)
 	end
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
@@ -68,7 +68,7 @@ end
 function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	if chk==0 then return Duel.IsExistingTarget(s.desfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingTarget(s.spfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	local g1=Duel.SelectTarget(tp,s.desfilter,tp,LOCATION_MZONE,0,1,1,nil,ft)
+	local g1=Duel.SelectTarget(tp,s.desfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	local g2=Duel.SelectTarget(tp,s.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE,g1,1,0,0)
 	e:SetLabelObject(g1:GetFirst())
@@ -84,7 +84,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(tc2:GetAttack())
 		tc1:RegisterEffect(e1)
-		if tc2:IsAbleToDeck() and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		if tc2:IsAbleToDeck() and aux.NecroValleyFilter()(tc2) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 			Duel.SendtoDeck(tc2,nil,2,REASON_EFFECT)
 		end
 	end

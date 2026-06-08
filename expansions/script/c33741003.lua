@@ -1,44 +1,31 @@
---「这只是战术性撤退！」
+--DEchoes #A4 - Challenge
 local s,id,o=GetID()
+Duel.LoadScript("c33741000.lua")
 function s.initial_effect(c)
-	--Activate
+	DEchoes.AddTechCounterPermit(c)
+	DEchoes.AddHandKernelProc(c,id,2)
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TODECK+CATEGORY_RECOVER)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetTarget(s.target)
-	e1:SetOperation(s.activate)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_ATKCHANGE)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
+	e1:SetCondition(s.atkcon)
+	e1:SetOperation(s.atkop)
 	c:RegisterEffect(e1)
 end
-function s.tdfilter(c)
-	return c:IsAbleToDeck()
+function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local bc=c:GetBattleTarget()
+	return bc and bc:IsFaceup() and bc:GetAttack()>c:GetAttack()
 end
-function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e and e:GetHandler()
-	local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_ONFIELD,0,nil)
-	if c then
-		g:RemoveCard(c)
-	end
-	if chk==0 then return g:GetCount()>0 end
-	local ct=g:GetCount()
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(ct*1200)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,ct,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,ct*1200)
-end
-function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	local c=e and e:GetHandler()
-	local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_ONFIELD,0,nil)
-	if c then
-		g:RemoveCard(c)
-	end
-	if g:GetCount()==0 then return end
-	local ct=aux.PlaceCardsOnDeckBottom(tp,g,REASON_EFFECT)
-	if ct>0 then
-		Duel.Recover(tp,ct*1200,REASON_EFFECT)
-		if ct>=5 then
-			Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_BATTLE_STEP,1)
-		end
+function s.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+		e1:SetValue(c:GetAttack()*2)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_DAMAGE_CAL)
+		c:RegisterEffect(e1)
 	end
 end

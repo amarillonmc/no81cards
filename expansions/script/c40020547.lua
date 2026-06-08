@@ -2,9 +2,14 @@
 
 local s, id = GetID()
 s.named_with_Grandwalker=1
+s.named_with_Olym=1
 function s.Grandwalker(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Grandwalker
+end
+function s.InfernalLord(c)
+	local m = _G["c" .. c:GetCode()]
+	return m and m.named_with_InfernalLord
 end
 function s.initial_effect(c)
 
@@ -21,6 +26,22 @@ function s.initial_effect(c)
 	e1:SetOperation(s.penop)
 	c:RegisterEffect(e1)
 
+	local sp_eff=Effect.CreateEffect(c)
+	sp_eff:SetDescription(aux.Stringid(id,2))
+	sp_eff:SetType(EFFECT_TYPE_FIELD)
+	sp_eff:SetCode(EFFECT_SPSUMMON_PROC)
+	sp_eff:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	sp_eff:SetRange(LOCATION_GRAVE)
+	sp_eff:SetCountLimit(1,id+1)
+	sp_eff:SetCondition(s.proc_con)
+
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e2:SetRange(LOCATION_PZONE)
+	e2:SetTargetRange(LOCATION_GRAVE,0)
+	e2:SetTarget(s.grtg)
+	e2:SetLabelObject(sp_eff)
+	c:RegisterEffect(e2)
 
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
@@ -56,12 +77,19 @@ function s.penop(e, tp, eg, ep, ev, re, r, rp)
 	end
 end
 
+function s.grtg(e,c)
+	return s.InfernalLord(c) and c:IsType(TYPE_MONSTER)
+end
 
+function s.proc_con(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+end
 
 function s.pzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsFaceup()
 end
-
 
 function s.pztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

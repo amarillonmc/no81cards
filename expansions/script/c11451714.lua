@@ -99,7 +99,7 @@ function cm.mvcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsLocation(LOCATION_MZONE) and c:IsPreviousLocation(LOCATION_REMOVED) and not c:IsReason(REASON_SPSUMMON) and not c:IsReason(REASON_SUMMON) and c:GetFlagEffect(11451717)>0
 end
 function cm.sumfilter(c,e,tp)
-	return c:IsAttribute(ATTRIBUTE_FIRE+ATTRIBUTE_WIND) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsRace(RACE_PSYCHO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.mvop1(e,tp,eg,ep,ev,re,r,rp)
 	local n=11451718

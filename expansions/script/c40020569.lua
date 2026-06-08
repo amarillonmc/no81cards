@@ -5,6 +5,7 @@ function s.Grandwalker(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Grandwalker
 end
+s.named_with_Vulrica=1
 function s.initial_effect(c)
 
 	aux.EnablePendulumAttribute(c)

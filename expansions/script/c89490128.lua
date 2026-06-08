@@ -65,7 +65,7 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local zone=bit.band(e:GetHandler():GetLinkedZone(tp),0x1f)
-	if tc:IsRelateToEffect(e) and zone~=0 then
+	if tc:IsRelateToEffect(e) and zone~=0 and aux.NecroValleyFilter()(tc) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone)
 	end
 end

@@ -82,7 +82,7 @@ end
 function s.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	local c=eg:GetFirst()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and tc:IsCanOverlay() then
+	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and tc:IsCanOverlay() and aux.NecroValleyFilter()(tc) then
 		Duel.Overlay(c,tc)
 	end
 end

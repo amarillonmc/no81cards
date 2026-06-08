@@ -78,16 +78,16 @@ function cm.thfilter(c)
 end
 function cm.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		--[[if rp==tp then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
-		else return Duel.IsExistingMatchingCard(cm.thfilter,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end--]]
-		if rp==tp then return Duel.IsExistingMatchingCard(Card.IsSSetable,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		else return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_HAND,1,nil) and Duel.IsPlayerCanDraw(1-tp,1) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0 end
+		if rp==tp then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
+		else return Duel.IsExistingMatchingCard(cm.thfilter,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end
+		--[[if rp==tp then return Duel.IsExistingMatchingCard(Card.IsSSetable,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		else return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_HAND,1,nil) and Duel.IsPlayerCanDraw(1-tp,1) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0 end--]]
 	end
 end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
 	Duel.ChangeTargetCard(ev,g)
-	Duel.ChangeChainOperation(ev,cm.repop2)
+	Duel.ChangeChainOperation(ev,cm.repop)
 end
 function cm.repop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsSSetable,tp,LOCATION_HAND,0,nil)

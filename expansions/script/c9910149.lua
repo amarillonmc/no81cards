@@ -1,4 +1,4 @@
---战车道的鬼屋
+--战车道的飙车
 function c9910149.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -18,16 +18,15 @@ function c9910149.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910149.cfilter(c)
-	return c:IsRace(RACE_MACHINE) and (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsAbleToGraveAsCost()
+	return c:IsRace(RACE_MACHINE) and (c:IsControler(tp) or c:IsFaceup())
 end
 function c9910149.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return (not c:IsLocation(LOCATION_HAND)
-		or Duel.IsExistingMatchingCard(c9910149.cfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)) end
+	if chk==0 then return (not c:IsLocation(LOCATION_HAND) or Duel.CheckReleaseGroup(tp,c9910149.cfilter,1,nil,tp)) end
 	if c:IsStatus(STATUS_ACT_FROM_HAND) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,c9910149.cfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,1,1,nil)
-		Duel.SendtoGrave(g,REASON_COST)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		local g=Duel.SelectReleaseGroup(tp,c9910149.cfilter,1,1,nil,tp)
+		Duel.Release(g,REASON_COST)
 	end
 end
 function c9910149.activate(e,tp,eg,ep,ev,re,r,rp)

@@ -30,9 +30,6 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
-	c:RegisterEffect(e4)
 	if not cm.global_check then
 		cm.global_check=true
 		local ge0=Effect.CreateEffect(c)

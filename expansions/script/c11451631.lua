@@ -166,7 +166,7 @@ function cm.cfilter1(c,tp)
 	return c:IsPreviousLocation(LOCATION_DECK) and c:IsPreviousControler(tp) and not (c:IsLocation(LOCATION_DECK) and c:IsControler(tp))
 end
 function cm.filter1(c)
-	return c:IsSetCard(0x1979) and c:IsAbleToHand()
+	return c:IsSetCard(0x979) and c:IsType(TYPE_TRAP) and c:IsSSetable()
 end
 function cm.flag(e,tp,code)
 	return e:GetHandler():GetFlagEffect(code)>0 or Duel.IsExistingMatchingCard(cm.ffilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,code)

@@ -40,7 +40,7 @@ function s.dffilter(c)
 	return c:IsSetCard(0xc33) and c:IsFaceup() and c:IsAbleToDeck()
 end
 function s.rettg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and s.dffilter(chkc) end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_REMOVED) and s.dffilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(s.dffilter,tp,LOCATION_REMOVED,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,s.dffilter,tp,LOCATION_REMOVED,0,1,1,nil)

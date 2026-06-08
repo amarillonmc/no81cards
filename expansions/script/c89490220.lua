@@ -68,7 +68,7 @@ end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local attr=tc:GetAttribute()
-	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)>0 and not (tc:IsLocation(LOCATION_HAND+LOCATION_DECK) or tc:IsLocation(LOCATION_REMOVED) and tc:IsFacedown()) and aux.NecroValleyFilter()(tc) and bit.band(attr,ATTRIBUTE_EARTH)==ATTRIBUTE_EARTH and tc:IsType(TYPE_MONSTER) and (not tc:IsLocation(LOCATION_EXTRA) and Duel.GetMZoneCount(tp)>0 or tc:IsLocation(LOCATION_EXTRA) and tc:IsFaceup() and Duel.GetLocationCountFromEx(tp,tp,nil,tc)>0) and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)>0 and not (tc:IsLocation(LOCATION_HAND+LOCATION_DECK) or tc:IsLocation(LOCATION_REMOVED) and tc:IsFacedown()) and aux.NecroValleyFilter()(tc) and bit.band(attr,ATTRIBUTE_EARTH)==ATTRIBUTE_EARTH and tc:IsType(TYPE_MONSTER) and (not tc:IsLocation(LOCATION_EXTRA) and Duel.GetMZoneCount(tp)>0 or tc:IsLocation(LOCATION_EXTRA) and tc:IsFaceup() and Duel.GetMZoneCount(tp)>0) and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 		Duel.BreakEffect()
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end

@@ -62,7 +62,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		local zone=c:GetLinkedZone(tp)&0x1f
 		local ct=Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)
-		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(aux.NecroValleyFilter(Card.IsRelateToEffect),nil,e)
 		if g:GetCount()==0 then return end
 		if g:GetCount()>=2 and Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
 		if g:GetCount()>ct then

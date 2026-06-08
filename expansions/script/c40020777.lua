@@ -11,15 +11,13 @@ function s.initial_effect(c)
 
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetCountLimit(1,id)
-	e1:SetTarget(s.placetg)
-	e1:SetOperation(s.placeop)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCost(s.thcost)
+	e1:SetTarget(s.thtg)
+	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e2)
 
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
@@ -33,34 +31,32 @@ function s.initial_effect(c)
 	e3:SetOperation(s.spop)
 	c:RegisterEffect(e3)
 end
-function s.placefilter(c)
-	return c:IsCode(40020764)
-		and (c:IsLocation(LOCATION_HAND)
-			or c:IsLocation(LOCATION_DECK)
-			or (c:IsLocation(LOCATION_EXTRA) and c:IsFaceup())
-			or c:IsLocation(LOCATION_GRAVE))
+function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsDiscardable() end
+	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
-function s.placetg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		return Duel.IsExistingMatchingCard(s.placefilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil)
-			and Duel.GetLocationCount(tp,LOCATION_PZONE)>0
+function s.cfilter(c,code)
+	return c:IsCode(code) and (c:IsFaceup() or not c:IsOnField())
+end
+function s.thfilter(c,tp)
+	return s.DarkSnake(c) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+		and not Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil,c:GetCode())
+end
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_TOFIELD,nil,1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE)
 end
-function s.placeop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,s.placefilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil)
-	local tc=g:GetFirst()
-	if not tc then return end
-	local seq=nil
-	if Duel.GetLocationCount(tp,LOCATION_PZONE)==2 then
-		local flag=Duel.SelectField(tp,1,LOCATION_PZONE,0,0)
-		seq=math.log(flag,2)
-	else
-		seq=Duel.GetFieldCard(tp,LOCATION_PZONE,0)==nil and 0 or 2
-	end
-	Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true,1<<seq)
-end
+
+
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(function(tc)
 		return tc:IsCode(40020764) and tc:IsLocation(LOCATION_GRAVE) and tc:IsControler(tp)

@@ -28,7 +28,7 @@ function s.cfilter(c)
 	return c:IsSetCard(0xc34) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and s.cfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(s.cfilter,tp,LOCATION_GRAVE,0,2,nil) and Duel.IsPlayerCanDraw(tp,2) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,s.cfilter,tp,LOCATION_GRAVE,0,2,2,nil)
@@ -36,7 +36,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetTargetsRelateToChain()
+	local g=Duel.GetTargetsRelateToChain():Filter(aux.NecroValleyFilter(),nil)
 	if Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)<1 or not g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) then return end
 	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
 	if Duel.Draw(tp,2,REASON_EFFECT)==2 then

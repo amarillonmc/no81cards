@@ -107,7 +107,8 @@ function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetMZoneCount(tp)>0 and Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)>0 then
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c) and Duel.GetMZoneCount(tp)>0 and Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)>0 then
 		Duel.NegateEffect(ev)
 	end
 end
@@ -118,7 +119,8 @@ function s.spfilter(c,e,tp)
 	return c:IsCode(97556336) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetMZoneCount(tp)>0 and Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)>0 then
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c) and Duel.GetMZoneCount(tp)>0 and Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)>0 then
 		Duel.NegateAttack()
 	end
 end

@@ -62,12 +62,6 @@ function cm.initial_effect(c)
 	e7:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	e7:SetValue(1)
 	c:RegisterEffect(e7)
-	local e8=e7:Clone()
-	e8:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
-	c:RegisterEffect(e8)
-	local e9=e7:Clone()
-	e9:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
-	c:RegisterEffect(e9)
 	if not cm.global_check then
 		cm.global_check=true
 		local ge1=Effect.CreateEffect(c)

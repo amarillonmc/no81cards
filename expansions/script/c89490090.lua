@@ -37,7 +37,7 @@ function s.filter(c,tp)
 	return c:GetLevel()>0 and c:IsFaceup() and c:IsSetCard(0xc35) and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0xc35,TYPES_NORMAL_TRAP_MONSTER,0,200,c:GetLevel(),RACE_AQUA,ATTRIBUTE_EARTH)
 end
 function s.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.filter(chkc) end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and s.filter(chkc) end
 	if chk==0 then return e:IsCostChecked() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,0,1,1,nil,tp)

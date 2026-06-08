@@ -76,10 +76,10 @@ function c17337728.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_HAND,0)>Duel.GetFieldGroupCount(e:GetHandlerPlayer(),0,LOCATION_HAND)
 end
 function c17337728.drcon1(e,tp,eg,ep,ev,re,r,rp)
-	return not (Duel.IsPlayerAffectedByEffect(tp,17337721)~=nil and e:GetHandler():IsOriginalSetCard(0x3f51) and e:GetHandler():IsType(TYPE_SYNCHRO))
+	return not (Duel.IsPlayerAffectedByEffect(tp,17337721)~=nil and e:GetHandler():IsOriginalSetCard(0x3f51))
 end
 function c17337728.drcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,17337721)~=nil and e:GetHandler():IsOriginalSetCard(0x3f51) and e:GetHandler():IsType(TYPE_SYNCHRO)
+	return Duel.IsPlayerAffectedByEffect(tp,17337721)~=nil and e:GetHandler():IsOriginalSetCard(0x3f51)
 end
 function c17337728.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHandAsCost,tp,LOCATION_ONFIELD,0,1,nil) end

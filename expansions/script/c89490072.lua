@@ -29,6 +29,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) then
 		Duel.ConfirmCards(1-tp,tc)
+		Duel.ShuffleHand(tp)
 		local g1=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
 		if tc:IsAttribute(ATTRIBUTE_EARTH) and #g1>0 and Duel.GetMZoneCount(1-tp)>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
