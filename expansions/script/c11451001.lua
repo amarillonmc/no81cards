@@ -103,6 +103,7 @@ function cm.initial_effect(c)
 			end
 		end
 		function Duel.RemoveOverlayCard(sp,s,o,min,max,r)
+			sp=sp or 0
 			if Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
 				local og=Duel.GetOverlayGroup(sp,s,o)
 				Duel.Hint(HINT_CARD,0,m)
@@ -120,6 +121,7 @@ function cm.initial_effect(c)
 			end
 		end
 		function Card.RemoveOverlayCard(oc,sp,min,max,r)
+			sp=sp or 0
 			if Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
 				local og=oc:GetOverlayGroup()
 				Duel.Hint(HINT_CARD,0,m)
@@ -134,6 +136,7 @@ function cm.initial_effect(c)
 			end
 		end
 		function Group.FilterSelect(g,sp,f,min,max,nc,...)
+			sp=sp or 0
 			if Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
 				local fg=cm.filter(g,f,nc,...)
 				return fg:Select(sp,min,max,nc)
@@ -142,6 +145,7 @@ function cm.initial_effect(c)
 			end
 		end
 		function Group.Select(g,sp,min,max,nc)
+			sp=sp or 0
 			if Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
 				local ng=g:Clone()
 				if aux.GetValueType(nc)=="Card" then ng:RemoveCard(nc) end
@@ -170,6 +174,7 @@ function cm.initial_effect(c)
 			end
 		end
 		function Group.CancelableSelect(g,sp,min,max,nc)
+			sp=sp or 0
 			if Duel.DisableActionCheck then Duel.DisableActionCheck(true) end
 			if Duel.GetFlagEffect(0,m)>0 and min<=1 and max==1 then
 				local ng=g:Clone()

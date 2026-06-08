@@ -47,12 +47,6 @@ function s.szfilter(c, e, tp)
 	end
 	return false
 end
-function s.szfilter2(c, e, tp)
-	if c:GetSequence() >= 5 then return false end
-	if s.szfilter(c, e, tp) then return true end
-	if c:IsCode(s.RAHERAKHTY_CODE) and c:IsFaceup() and c:GetSequence() >= 5 then return true end
-	return false
-end
 function s.settg(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then
 		if not Duel.IsExistingMatchingCard(s.setfilter, tp, LOCATION_DECK, 0, 1, nil) then return false end
@@ -64,36 +58,36 @@ end
 function s.rafilter_pzone(c)
 	return c:IsCode(s.RAHERAKHTY_CODE) and c:IsFaceup() and c:GetSequence() >= 5
 end
-function s.omegafilter(c)
-	return c:IsCode(s.OMEGA_CODE)
+function s.omegafilter(c, e, tp)
+	return c:IsCode(s.OMEGA_CODE) and c:IsCanBeSpecialSummoned(e, SUMMON_TYPE_XYZ, tp, false, false)
 end
 function s.replace_card(sc, e, tp)
 	local seq = sc:GetSequence()
-	local isRa = sc:IsCode(s.RAHERAKHTY_CODE) and sc:IsFaceup() and seq >= 5
-	local hasOmega = Duel.IsExistingMatchingCard(s.omegafilter, tp, LOCATION_EXTRA, 0, 1, nil)
-	if isRa and hasOmega then
-		if Duel.SelectYesNo(tp, aux.Stringid(40020839, 0)) then
-			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
-			local og = Duel.SelectMatchingCard(tp, s.omegafilter, tp, LOCATION_EXTRA, 0, 1, 1, nil)
-			if #og > 0 then
-				local oc = og:GetFirst()
-				local rg = Group.FromCards(sc)
-				oc:SetMaterial(rg)
-				Duel.Overlay(oc, rg)
-				Duel.SpecialSummon(oc, SUMMON_TYPE_XYZ, tp, tp, false, false, POS_FACEUP)
-				oc:CompleteProcedure()
-				return true, (1 << seq)
-			end
-			return false, nil
-		end
-	end
-
 	local canth = sc:IsAbleToHand()
 	local cansp = (sc:GetOriginalType() & TYPE_MONSTER) ~= 0
 		and sc:IsCanBeSpecialSummoned(e, 0, tp, false, false) 
 		and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0
+
 	if canth and cansp then
 		if Duel.SelectYesNo(tp, aux.Stringid(id, 1)) then
+			local isRa = sc:IsCode(s.RAHERAKHTY_CODE) and sc:IsFaceup()
+			local hasOmega = Duel.IsExistingMatchingCard(s.omegafilter, tp, LOCATION_EXTRA, 0, 1, nil, e, tp)
+				and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0
+			if isRa and hasOmega then
+				if Duel.SelectYesNo(tp, aux.Stringid(40020839, 0)) then
+					Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
+					local og = Duel.SelectMatchingCard(tp, s.omegafilter, tp, LOCATION_EXTRA, 0, 1, 1, nil, e, tp)
+					if #og > 0 then
+						local oc = og:GetFirst()
+						local rg = Group.FromCards(sc)
+						oc:SetMaterial(rg)
+						Duel.Overlay(oc, rg)
+						Duel.SpecialSummon(oc, SUMMON_TYPE_XYZ, tp, tp, false, false, POS_FACEUP)
+						oc:CompleteProcedure()
+						return true, (1 << seq)
+					end
+				end
+			end
 			if Duel.SendtoHand(sc, nil, REASON_EFFECT) > 0 then
 				Duel.ConfirmCards(1 - tp, sc)
 				return true, (1 << seq)
@@ -104,6 +98,24 @@ function s.replace_card(sc, e, tp)
 			end
 		end
 	elseif canth then
+		local isRa = sc:IsCode(s.RAHERAKHTY_CODE) and sc:IsFaceup()
+		local hasOmega = Duel.IsExistingMatchingCard(s.omegafilter, tp, LOCATION_EXTRA, 0, 1, nil, e, tp)
+			and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0
+		if isRa and hasOmega then
+			if Duel.SelectYesNo(tp, aux.Stringid(40020839, 0)) then
+				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
+				local og = Duel.SelectMatchingCard(tp, s.omegafilter, tp, LOCATION_EXTRA, 0, 1, 1, nil, e, tp)
+				if #og > 0 then
+					local oc = og:GetFirst()
+					local rg = Group.FromCards(sc)
+					oc:SetMaterial(rg)
+					Duel.Overlay(oc, rg)
+					Duel.SpecialSummon(oc, SUMMON_TYPE_XYZ, tp, tp, false, false, POS_FACEUP)
+					oc:CompleteProcedure()
+					return true, (1 << seq)
+				end
+			end
+		end
 		if Duel.SendtoHand(sc, nil, REASON_EFFECT) > 0 then
 			Duel.ConfirmCards(1 - tp, sc)
 			return true, (1 << seq)
@@ -174,6 +186,7 @@ function s.setop(e, tp, eg, ep, ev, re, r, rp)
 		tc:RegisterEffect(e1b, true)
 	end
 end
+
 
 function s.pzcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsFaceup()

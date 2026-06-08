@@ -146,9 +146,9 @@ function c33710913.op0(e)
 			Duel.SpecialSummonComplete()
 		end
 	else
-		if Duel.IsExistingMatchingCard(aux.TRUE,e:GetHandler():GetControler(),LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then
+		if Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,aux.TRUE,e:GetHandler():GetControler(),LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 		Duel.Destroy(g,REASON_EFFECT)
 		end
 		local g=Duel.GetMatchingGroup(c33710913.spfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
