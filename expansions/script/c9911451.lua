@@ -12,35 +12,35 @@ function c9911451.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(1,1)
 	c:RegisterEffect(e1)
-	c9911451.morfonica_mashiro_effect=e1
-	--change effect
+	--change effect check
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetCondition(c9911451.chcon)
-	e2:SetCost(c9911451.chcost)
-	e2:SetTarget(c9911451.chtg)
-	e2:SetOperation(c9911451.chop)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(9911451)
 	c:RegisterEffect(e2)
-	--to hand
+	--change effect
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_LEAVE_FIELD)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCondition(c9911451.thcon)
-	e3:SetTarget(c9911451.thtg)
-	e3:SetOperation(c9911451.thop)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1)
+	e3:SetCondition(c9911451.chcon)
+	e3:SetCost(c9911451.chcost)
+	e3:SetTarget(c9911451.chtg)
+	e3:SetOperation(c9911451.chop)
 	c:RegisterEffect(e3)
-end
-function c9911451.efffilter(e)
-	local c=e:GetHandler()
-	return e==c.morfonica_mashiro_effect
+	--to hand
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_LEAVE_FIELD)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetCondition(c9911451.thcon)
+	e4:SetTarget(c9911451.thtg)
+	e4:SetOperation(c9911451.thop)
+	c:RegisterEffect(e4)
 end
 function c9911451.chcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsDisabled() and e:GetHandler():IsOriginalEffectProperty(c9911451.efffilter)
+	return e:GetHandler():IsHasEffect(9911451)
 end
 function c9911451.chcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,rp,0,LOCATION_ONFIELD,1,nil) end

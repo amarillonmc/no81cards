@@ -90,7 +90,7 @@ function c19209943.drop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetTurnPlayer()~=tp then Duel.Draw(tp,ct,REASON_EFFECT) end
 end
 function c19209943.tdcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>=7
+	return Duel.GetTurnPlayer()==tp-- and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>=7
 end
 function c19209943.seqfilter(c)
 	return c:GetSequence()<5
