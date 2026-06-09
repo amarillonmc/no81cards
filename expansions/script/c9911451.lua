@@ -12,6 +12,7 @@ function c9911451.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(1,1)
 	c:RegisterEffect(e1)
+	c9911451.morfonica_mashiro_effect=e1
 	--change effect
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
@@ -34,8 +35,12 @@ function c9911451.initial_effect(c)
 	e3:SetOperation(c9911451.thop)
 	c:RegisterEffect(e3)
 end
+function c9911451.efffilter(e)
+	local c=e:GetHandler()
+	return e==c.morfonica_mashiro_effect
+end
 function c9911451.chcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsDisabled()
+	return not e:GetHandler():IsDisabled() and e:GetHandler():IsOriginalEffectProperty(c9911451.efffilter)
 end
 function c9911451.chcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,rp,0,LOCATION_ONFIELD,1,nil) end
