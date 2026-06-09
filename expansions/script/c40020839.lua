@@ -18,25 +18,14 @@ function s.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddXyzProcedure(c,nil,9,2)
 	
-	if not s.global_check then
-		s.global_check = true
-		local replace_codes = {
-			EFFECT_DESTROY_REPLACE,
-			EFFECT_SENDTO_GRAVE_REPLACE,
-			EFFECT_SENDTO_HAND_REPLACE,
-			EFFECT_SENDTO_DECK_REPLACE,
-			EFFECT_REMOVE_REPLACE
-		}
-		for _, code in ipairs(replace_codes) do
-			local ge = Effect.CreateEffect(c)
-			ge:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
-			ge:SetCode(code)
-			ge:SetTarget(s.reptg)
-			ge:SetValue(s.repval)
-			ge:SetOperation(s.repop)
-			Duel.RegisterEffect(ge, 0)
-		end
-	end
+if not s.global_check then
+	s.global_check = true
+	local ge1 = Effect.CreateEffect(c)
+	ge1:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
+	ge1:SetCode(EVENT_LEAVE_FIELD_P)
+	ge1:SetOperation(s.global_ovop)
+	Duel.RegisterEffect(ge1, 0)
+end
 	
 	local e1 = Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id, 1))
@@ -68,56 +57,57 @@ function s.omega_filter(c, e, tp)
 		and c:IsCanBeSpecialSummoned(e, SUMMON_TYPE_XYZ, tp, false, false)
 end
 
-function s.reptg(e, tp, eg, ep, ev, re, r, rp, chk)
-	if chk == 0 then
-		for p = 0, 1 do
-			if Duel.GetFlagEffect(p, id + 100) == 0 then
-				local tg = eg:Filter(function(c) return c:IsControler(p) and c:IsLocation(LOCATION_PZONE) and s.Grandwalker(c) end, nil)
-				if #tg > 0 and Duel.IsExistingMatchingCard(s.omega_filter, p, LOCATION_EXTRA, 0, 1, nil, e, p) then
-					return true
-				end
-			end
-		end
-		return false
-	end
+function s.global_ovop(e, tp, eg, ep, ev, re, r, rp)
 	for p = 0, 1 do
 		if Duel.GetFlagEffect(p, id + 100) == 0 then
-			local tg = eg:Filter(function(c) return c:IsControler(p) and c:IsLocation(LOCATION_PZONE) and s.Grandwalker(c) end, nil)
-			if #tg > 0 and Duel.IsExistingMatchingCard(s.omega_filter, p, LOCATION_EXTRA, 0, 1, nil, e, p) then
-				if Duel.SelectYesNo(p, aux.Stringid(id, 0)) then
-					Duel.RegisterFlagEffect(p, id + 100, RESET_PHASE + PHASE_END, 0, 1)
-					local tc = tg:GetFirst()
-					if #tg > 1 then
-						Duel.Hint(HINT_SELECTMSG, p, HINTMSG_XMATERIAL)
-						tc = tg:Select(p, 1, 1, nil):GetFirst()
+			local tg = eg:Filter(function(c) 
+				return c:IsControler(p) and c:IsLocation(LOCATION_PZONE) and s.Grandwalker(c)
+			end, nil)
+			
+			if #tg > 0 then
+				local omega_g = Duel.GetMatchingGroup(function(c) return c:IsCode(id) end, p, LOCATION_EXTRA, 0, nil)
+				if #omega_g > 0 then
+					local sc = omega_g:GetFirst()
+					if sc:IsCanBeSpecialSummoned(e, SUMMON_TYPE_XYZ, p, false, false) 
+					   and Duel.GetLocationCountFromEx(p, p, nil, sc) > 0 then
+						if Duel.SelectYesNo(p, aux.Stringid(id, 0)) then
+							Duel.RegisterFlagEffect(p, id + 100, RESET_PHASE + PHASE_END, 0, 1)
+							Duel.Hint(HINT_CARD, 0, id)
+							local tc = tg:GetFirst()
+							if #tg > 1 then
+								Duel.Hint(HINT_SELECTMSG, p, HINTMSG_XMATERIAL)
+								tc = tg:Select(p, 1, 1, nil):GetFirst()
+							end
+							local mg = tc:GetOverlayGroup()
+							if #mg ~= 0 then Duel.Overlay(sc, mg) end
+							sc:SetMaterial(Group.FromCards(tc))
+							Duel.Overlay(sc, Group.FromCards(tc))
+							tc:SetStatus(STATUS_LEAVE_CONFIRMED, true)
+							tc:SetStatus(STATUS_BATTLE_DESTROYED, false)
+							if Duel.SpecialSummon(sc, SUMMON_TYPE_XYZ, p, p, false, false, POS_FACEUP) ~= 0 then
+								sc:CompleteProcedure()
+							end
+							local e1 = Effect.CreateEffect(e:GetHandler())
+							e1:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
+							e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+							e1:SetCode(EVENT_ADJUST)
+							local recover_g = Group.FromCards(tc)
+							recover_g:KeepAlive()
+							e1:SetOperation(function()
+								e1:Reset()
+								if sc and sc:IsLocation(LOCATION_MZONE) and tc then
+									if not sc:GetOverlayGroup():IsContains(tc) then
+										Duel.Overlay(sc, recover_g)
+									end
+								end
+								recover_g:DeleteGroup()
+							end)
+							Duel.RegisterEffect(e1, p)
+						end
 					end
-					e:SetLabelObject(tc)
-					e:SetLabel(p)
-					return true
 				end
 			end
 		end
-	end
-	return false
-end
-
-function s.repval(e, c)
-	return c == e:GetLabelObject()
-end
-
-function s.repop(e, tp, eg, ep, ev, re, r, rp)
-	local tc = e:GetLabelObject()
-	local p = e:GetLabel()
-	Duel.Hint(HINT_CARD, 0, id)
-	Duel.Hint(HINT_SELECTMSG, p, HINTMSG_SPSUMMON)
-	local sc = Duel.SelectMatchingCard(p, s.omega_filter, p, LOCATION_EXTRA, 0, 1, 1, nil, e, p):GetFirst()
-	if sc then
-		local mg = tc:GetOverlayGroup()
-		if #mg ~= 0 then Duel.Overlay(sc, mg) end
-		sc:SetMaterial(Group.FromCards(tc))
-		Duel.Overlay(sc, Group.FromCards(tc))
-		Duel.SpecialSummon(sc, SUMMON_TYPE_XYZ, p, p, false, false, POS_FACEUP)
-		sc:CompleteProcedure()
 	end
 end
 function s.rapencon(e, tp, eg, ep, ev, re, r, rp)
