@@ -16,7 +16,8 @@ function cm.initial_effect(c)
 	--act in set turn
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e2:SetCondition(cm.actcon)
 	c:RegisterEffect(e2)
 	--tohand

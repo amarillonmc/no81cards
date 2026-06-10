@@ -27,6 +27,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_TO_HAND)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	e1:SetCondition(s.thcon)
 	e1:SetOperation(s.thop)
@@ -49,6 +50,16 @@ function s.sfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_ADJUST)
+	e1:SetLabelObject(e:GetLabelObject())
+	e1:SetOperation(s.operation13)
+	e1:SetReset(RESET_PHASE+PHASE_END) 
+	Duel.RegisterEffect(e1,tp)
+end
+function s.operation13(e,tp,eg,ep,ev,re,r,rp)
+	e:Reset()
 	local b1 = Duel.GetFlagEffect(tp,id)==0 and Duel.IsExistingMatchingCard(s.pfilter,tp,LOCATION_HAND,0,1,nil,tp)
 	local b2 = Duel.GetFlagEffect(tp,id+1)==0 and Duel.IsExistingMatchingCard(s.ffilter,tp,LOCATION_HAND,0,1,nil,tp)
 	local b3 = Duel.GetFlagEffect(tp,id+2)==0 and Duel.IsExistingMatchingCard(s.sfilter,tp,LOCATION_HAND,0,1,nil)
@@ -109,7 +120,20 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 		local tc=Duel.SelectMatchingCard(tp,s.sfilter,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
 		if tc then
-			res = (Duel.SSet(tp,tc,tp,false) > 0)
+			local loc=LOCATION_SZONE
+			if tc:IsType(TYPE_FIELD) then
+				loc=LOCATION_FZONE
+				local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+				if fc then
+					Duel.SendtoGrave(fc,REASON_RULE)
+					Duel.BreakEffect()
+				end
+			end
+			res = Duel.MoveToField(tc,tp,tp,loc,POS_FACEDOWN,false)
+			if res then
+				tc:SetStatus(STATUS_SET_TURN,true)
+				Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+			end
 		end
 	end
 	if res then

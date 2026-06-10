@@ -15,6 +15,7 @@ function c28318749.initial_effect(c)
 	c:RegisterEffect(e0)
 	--to deck
 	local e1=Effect.CreateEffect(c)
+	e1:SetHintTiming(TIMING_END_PHASE,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCategory(CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
