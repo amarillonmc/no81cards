@@ -438,15 +438,15 @@ end
 function cm.tgfilter(c,e)
 	return c:IsRelateToEffect(e) and c:IsOnField()
 end
-function cm.nfilter(c,g)
-	return g:IsExists(cm.nnfilter,1,nil,c)
+function cm.nfilter(c,g,e)
+	return g:IsExists(cm.nnfilter,1,nil,c,e)
 end
 function cm.nnfilter(c,tc,e)
 	local seq=c:GetSequence()
 	local s=tc:GetSequence()
 	local tp=tc:GetControler()
 	local loc=tc:GetLocation()
-	return (c==tc or (s<5 and seq<5 and math.abs(seq-s)<=1 and c:IsControler(tp) and c:IsLocation(loc))) and not c:IsImmuneToEffect(e)
+	return (c==tc or (s<5 and seq<5 and math.abs(seq-s)<=1 and c:IsControler(tp) and c:IsLocation(loc))) --and not c:IsImmuneToEffect(e)
 end
 local _IsCanTurnSet=Card.IsCanTurnSet
 function Card.IsCanTurnSet(c)
@@ -463,7 +463,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)
 	local fg=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	local ng=Duel.GetMatchingGroup(cm.dsfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	g=g:Filter(cm.nfilter,nil,ng)
+	g=g:Filter(cm.nfilter,nil,ng,e)
 	if #g>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(11451858,6)) then
 		local tc=g:GetFirst()
 		if #g>1 then
@@ -473,6 +473,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_CARD,0,m)
 		local rg=ng:Filter(cm.nnfilter,nil,tc,e)
 		Duel.HintSelection(rg)
+		rg=rg:Filter(function(c,e) return not c:IsImmuneToEffect(e) end,nil,e)
 		for tc in aux.Next(rg) do tc:CancelToGrave() end
 		if Duel.ChangePosition(rg,POS_FACEDOWN_DEFENSE)>0 then
 			rg=Duel.GetOperatedGroup():Filter(cm.tfilter,nil)

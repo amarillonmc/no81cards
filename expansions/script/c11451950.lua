@@ -261,7 +261,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			local rg0=g0:Filter(function(c) return c:IsSpecialSummonable(0) and cm.spcon(e,c) end,nil)
 			for tc in aux.Next(g0-rg0) do tc:ResetFlagEffect(m) end
 			if #sg>0 then
-				if Duel.SelectEffectYesNo(tp,sg:GetFirst(),aux.Stringid(m,3)) then
+				if Duel.SelectEffectYesNo(tp,sg:GetFirst(),aux.Stringid(m,4)) then
 					c:ResetFlagEffect(m)
 					for tc in aux.Next(g0) do cm[tc]=1 end
 					cm[c]=nil
