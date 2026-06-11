@@ -53,22 +53,33 @@ end
 function s.con1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
+
 function s.con2(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	return (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) and Duel.GetTurnPlayer()~=tp
 end
+
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,1)
 end
+
+function s.tgfilter(c)
+	return c:IsAbleToGrave()
+end
+
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.DiscardDeck(tp,1,REASON_EFFECT)==0 then return end
-	if Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil)
-		and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sg=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,1,nil)
-		if #sg>0 then
-			Duel.SendtoGrave(sg,REASON_EFFECT)
+	Duel.DiscardDeck(tp,1,REASON_EFFECT)
+	local og=Duel.GetOperatedGroup()
+	if og:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)>0 then
+		if Duel.IsExistingMatchingCard(s.tgfilter,tp,0,LOCATION_ONFIELD,1,nil)
+			and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			local sg=Duel.SelectMatchingCard(tp,s.tgfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
+			if #sg>0 then
+				Duel.SendtoGrave(sg,REASON_EFFECT)
+			end
 		end
 	end
 end

@@ -30,35 +30,46 @@ function s.initial_effect(c)
 	e2:SetOperation(s.op2)
 	c:RegisterEffect(e2)
 end
+
+function s.thfilter_pre(c, code)
+	return s.DarkSnake(c) and c:GetCode() ~= code and c:IsAbleToHand()
+end
+
+function s.tgfilter_check(c, tp)
+	if not (c:IsFaceup() and s.DarkSnake(c) and c:IsCanBeEffectTarget(c)) then return false end
+	local code = c:GetCode()
+	return Duel.IsExistingMatchingCard(s.thfilter_pre, tp, LOCATION_DECK, 0, 1, nil, code)
+end
+
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and s.DarkSnake(chkc) end
 	if chk==0 then
-		return Duel.IsExistingTarget(s.DarkSnake,tp,LOCATION_ONFIELD,0,1,nil)
-			and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil)
+		return Duel.IsExistingMatchingCard(s.tgfilter_check, tp, LOCATION_ONFIELD, 0, 1, nil, tp)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,s.DarkSnake,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectTarget(tp, s.tgfilter_check, tp, LOCATION_ONFIELD, 0, 1, 1, nil, tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function s.thfilter(c,tc)
-	return s.DarkSnake(c) and c:GetCode()~=tc:GetCode()
+
+function s.thfilter_op(c, tc)
+	return s.DarkSnake(c) and c:GetCode() ~= tc:GetCode() and c:IsAbleToHand()
 end
+
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc or not tc:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil,tc)
-	if #g>0 then
-		Duel.SendtoHand(g,tp,REASON_EFFECT)
+	local g=Duel.SelectMatchingCard(tp, s.thfilter_op, tp, LOCATION_DECK, 0, 1, 1, nil, tc)
+	if #g>0 and Duel.SendtoHand(g,tp,REASON_EFFECT)>0 then
 		Duel.ConfirmCards(1-tp,g)
-	end
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CHANGE_CODE)
-		e1:SetValue(40020764)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
+		if tc:IsRelateToEffect(e) and tc:IsFaceup() then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CHANGE_CODE)
+			e1:SetValue(40020764)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e1)
+		end
 	end
 end
 function s.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

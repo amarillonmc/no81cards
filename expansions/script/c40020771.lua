@@ -36,72 +36,67 @@ function s.xyzop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end
 	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
-function s.condition(e, tp, eg, ep, ev, re, r, rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
+function s.same_code_check(g)
+	return #g == 2 and g:GetClassCount(Card.GetCode) == 1
 end
-function s.cost(e, tp, eg, ep, ev, re, r, rp, chk)
-	if chk == 0 then return e:GetHandler():CheckRemoveOverlayCard(tp, 1, REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp, 1, 1, REASON_COST)
-end
+
 function s.target(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then
 		local g = Duel.GetMatchingGroup(Card.IsAbleToGrave, tp, LOCATION_HAND, 0, nil)
-		local has = false
-		for tc in aux.Next(g) do
-			local code = tc:GetCode()
-			if g:IsExists(Card.IsCode, 1, tc, code) then
-				has = true
-				break
-			end
-		end
-		return has
+		return g:CheckSubGroup(s.same_code_check, 2, 2)
 	end
 	Duel.SetOperationInfo(0, CATEGORY_TOGRAVE, nil, 2, tp, LOCATION_HAND)
 	Duel.SetOperationInfo(0, CATEGORY_TOHAND, nil, 1, tp, LOCATION_DECK)
 end
+
 function s.operation(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
 	local g = Duel.GetMatchingGroup(Card.IsAbleToGrave, tp, LOCATION_HAND, 0, nil)
+	if not g:CheckSubGroup(s.same_code_check, 2, 2) then return end
 	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOGRAVE)
-	local sg1 = g:Select(tp, 1, 1, nil)
-	local code = sg1:GetFirst():GetCode()
-	local g2 = g:Filter(Card.IsCode, nil, code)
-	g2:RemoveCard(sg1:GetFirst())
-	local sg2 = g2:Select(tp, 1, 1, nil)
-	sg1:Merge(sg2)
-	Duel.SendtoGrave(sg1, REASON_EFFECT)
-	local thg = Duel.GetMatchingGroup(s.DarkSnake, tp, LOCATION_DECK, 0, nil)
-	if #thg > 0 then
-		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_ATOHAND)
-		local tg = thg:SelectSubGroup(tp, aux.dncheck, false, 0, 4)
-		if #tg > 0 then
-			Duel.SendtoHand(tg, tp, REASON_EFFECT)
-			Duel.ConfirmCards(1 - tp, tg)
+	local sg = g:SelectSubGroup(tp, s.same_code_check, false, 2, 2)
+	if not sg or #sg ~= 2 then return end
+	local ct = Duel.SendtoGrave(sg, REASON_EFFECT)
+	local grave_ct = sg:FilterCount(Card.IsLocation, nil, LOCATION_GRAVE)
+	if grave_ct == 2 then
+		local thg = Duel.GetMatchingGroup(s.DarkSnake, tp, LOCATION_DECK, 0, nil)
+		if #thg > 0 then
+			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_ATOHAND)
+			local tg = thg:SelectSubGroup(tp, aux.dncheck, false, 1, 4)
+			if tg and #tg > 0 then
+				Duel.SendtoHand(tg, tp, REASON_EFFECT)
+				Duel.ConfirmCards(1 - tp, tg)
+			end
 		end
 	end
+	
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id, 2))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
-	e1:SetLabel(tp) 
+	e1:SetLabel(Duel.GetTurnCount()) 
 	e1:SetCondition(s.sendcon)
 	e1:SetOperation(s.sendop)
-	e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,1)
-	Duel.RegisterEffect(e1,tp)
+	e1:SetReset(RESET_PHASE+PHASE_END, 2) 
+	Duel.RegisterEffect(e1, tp)
 end
+
 function s.sendcon(e, tp, eg, ep, ev, re, r, rp)
-	return Duel.GetTurnCount() == e:GetLabel()
+	return Duel.GetTurnCount() ~= e:GetLabel()
 end
+
 function s.sendfilter(c)
-	return c:IsLocation(LOCATION_HAND)
-		or c:IsLocation(LOCATION_ONFIELD)
+	return c:IsLocation(LOCATION_HAND+LOCATION_ONFIELD)
 		or (c:IsLocation(LOCATION_EXTRA) and c:IsFaceup())
 end
+
 function s.sendop(e, tp, eg, ep, ev, re, r, rp)
 	local g = Duel.GetMatchingGroup(s.sendfilter, tp, LOCATION_HAND + LOCATION_ONFIELD + LOCATION_EXTRA, 0, nil)
 	local ct = #g
 	if ct == 0 then return end
+	
+	Duel.Hint(HINT_CARD, 0, id)
 	if ct <= 4 then
 		Duel.SendtoGrave(g, REASON_EFFECT)
 	else
