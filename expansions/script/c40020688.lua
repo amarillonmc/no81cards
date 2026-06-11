@@ -36,6 +36,7 @@ end
 function s.zeusfilter(c)
 	return c:GetCode() == s.ZEUS_CODE
 end
+
 function s.ritfilter(c)
 	return s.EmperorBeast(c)
 end
@@ -53,7 +54,9 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-
+function s.recfilter(c)
+	return s.EmperorBeast(c) or c:IsCode(40020683)
+end
 function s.thcon(e, tp, eg, ep, ev, re, r, rp)
 	return Duel.GetTurnPlayer() == tp
 end
