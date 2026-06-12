@@ -39,11 +39,12 @@ function c28335633.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetMZoneCount(tp)<=0 or #g==0 then return end
 	local ft=Duel.IsPlayerAffectedByEffect(tp,59822133) and 1 or Duel.GetMZoneCount(tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local sg=g:SelectSubGroup(tp,aux.dabcheck,false,1,ft)
-	Duel.ConfirmCards(1-tp,sg)
+	local tg=g:SelectSubGroup(tp,aux.dabcheck,false,1,ft)
+	Duel.ConfirmCards(1-tp,tg)
 	Duel.ShuffleHand(tp)
 	local fid=e:GetHandler():GetFieldID()
-	for tc in aux.Next(sg) do
+	local sg=Group.CreateGroup()
+	for tc in aux.Next(tg) do
 		local code=tc:GetCode()
 		local attr=tc:GetAttribute()
 		local token=Duel.CreateToken(tp,28335634)
@@ -64,6 +65,7 @@ function c28335633.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.AdjustAll()
 		Duel.Hint(HINT_OPSELECTED,tp,des)
 		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
+		sg:AddCard(token)
 		token:RegisterFlagEffect(28335633,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 	end
 	Duel.SpecialSummonComplete()

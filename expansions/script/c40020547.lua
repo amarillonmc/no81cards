@@ -96,7 +96,7 @@ function s.proc_con(e,c)
 	
 	if Duel.GetLocationCount(tp,LOCATION_MZONE) <= 0 then return false end
 	
-	if not c:IsCanBeSpecialSummoned(nil, 0, tp, false, false) then return false end
+	if not c:IsCanBeSpecialSummoned(e, 0, tp, false, false) then return false end
 	
 	if c:IsHasEffect(EFFECT_NECRO_VALLEY) then return false end
 	

@@ -21,7 +21,7 @@ function s.initial_effect(c)
 		s[tp]=1
 		--confirm
 		Duel.DisableActionCheck(true)
-		pcall(Duel.ConfirmCards,0,c)
+		--pcall(Duel.ConfirmCards,0,c)
 		pcall(Duel.Hint,HINT_CARD,0,id)
 		Duel.DisableActionCheck(false)
 		--to grave

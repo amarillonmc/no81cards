@@ -56,7 +56,7 @@ function c98920762.filter(c)
 end
 function c98920762.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
-		and Duel.IsExistingMatchingCard(c98920762.afilter,c:GetControler(),0,LOCATION_MZONE,1,nil)
+		and Duel.IsExistingMatchingCard(c98920762.afilter,e:GetHandler():GetControler(),0,LOCATION_MZONE,1,nil)
 end
 function c98920762.afilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_DRAGON)
