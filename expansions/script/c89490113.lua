@@ -57,6 +57,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	e5:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e5,tp)
 	if Duel.IsExistingMatchingCard(s.efilter,tp,LOCATION_MZONE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		Duel.BreakEffect()
 		local op=aux.SelectFromOptions(tp,{tc:IsAbleToRemove(),1102},{true,1131})
 		if op==1 then
 			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)

@@ -2,7 +2,6 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -31,6 +30,14 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local sg=Duel.SelectTarget(tp,s.rtfilter,tp,LOCATION_GRAVE,0,op*3,op*3,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,#sg,0,0)
+	local cat=CATEGORY_TODECK
+	if op==1 then
+		cat=cat|CATEGORY_DRAW
+		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	end
+	if op==2 then
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,1-tp,LOCATION_MZONE)
+	end
 end
 function s.rfilter(c)
 	return c:IsFaceup() and c:IsAbleToDeck()
@@ -38,15 +45,8 @@ end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetTargetsRelateToChain():Filter(aux.NecroValleyFilter(),nil)
 	if #sg==0 then return end
-	Duel.SendtoDeck(sg,nil,SEQ_DECKTOP,REASON_EFFECT)
-	local og=Duel.GetOperatedGroup()
-	local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK)
+	local ct=aux.PlaceCardsOnDeckBottom(tp,sg)
 	if ct==0 then return end
-	Duel.SortDecktop(tp,tp,ct)
-	for i=1,ct do
-		local mg=Duel.GetDecktopGroup(tp,1)
-		Duel.MoveSequence(mg:GetFirst(),1)
-	end
 	if ct>=3 and Duel.IsPlayerCanDraw(tp) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		Duel.BreakEffect()
 		Duel.Draw(tp,1,REASON_EFFECT)

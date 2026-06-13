@@ -9,28 +9,38 @@ function cm.initial_effect(c)
 	e0:SetCondition(cm.handcon)
 	c:RegisterEffect(e0)
 	--Activate
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
-	e1:SetTarget(cm.target)
-	e1:SetOperation(cm.activate)
-	c:RegisterEffect(e1)
+	--local e1=Effect.CreateEffect(c)
+	--e1:SetDescription(aux.Stringid(m,0))
+	--e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+	--e1:SetType(EFFECT_TYPE_ACTIVATE)
+	--e1:SetCode(EVENT_FREE_CHAIN)
+	--e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	--e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	--e1:SetTarget(cm.target)
+	--e1:SetOperation(cm.activate)
+	--c:RegisterEffect(e1)
 	--cost
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e2:SetCost(cm.cost)
 	e2:SetTarget(cm.target2)
-	e2:SetOperation(cm.activate2)
+	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
+	if not cm.global_check then
+		cm.global_check=true
+		cm[0]={}
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_PAY_LPCOST)
+		ge1:SetOperation(cm.regop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	if re then table.insert(cm[0],re) end
 end
 function cm.handcon(e)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_MZONE,0)==0 or (Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_MZONE,0)==1 and Duel.GetFieldGroup(e:GetHandlerPlayer(),LOCATION_MZONE,0):GetFirst():IsSetCard(0xf36))
@@ -83,7 +93,7 @@ function cm.splimit(e,c)
 end
 function cm.damval2(e,re,val,r,rp,rc)
 	local c=e:GetHandler()
-	if bit.band(r,REASON_EFFECT)~=0 and Duel.GetFlagEffect(e:GetHandlerPlayer(),m)==0 then
+	if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 and Duel.GetFlagEffect(e:GetHandlerPlayer(),m)==0 then
 		Duel.RegisterFlagEffect(e:GetHandlerPlayer(),m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		return 0
 	end
@@ -93,17 +103,42 @@ function cm.damcon(e)
 	return Duel.GetFlagEffect(e:GetHandlerPlayer(),m)==0
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLP(tp)>2000 end
-	local lp=Duel.GetLP(tp)
-	Duel.PayLPCost(tp,lp-2000)
+	local b1=true
+	local b2=(Duel.GetLP(tp)>2000 and Duel.IsExistingMatchingCard(cm.tg2filter,tp,LOCATION_DECK,0,1,nil))
+	if chk==0 then return b1 or b2 end
+	local op=aux.SelectFromOptions(tp,
+		{b1,aux.Stringid(m,0)},
+		{b2,aux.Stringid(m,1)})
+	if op==2 then
+		local lp=Duel.GetLP(tp)
+		Duel.PayLPCost(tp,lp-2000)
+	end
 end
 function cm.tg2filter(c)
 	return c:IsSetCard(0xf36) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(cm.tg2filter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	local b=0
+	for _,v in ipairs(cm[0]) do
+		if v==e then
+			b=1
+			break
+		end
+	end
+	local b1=true
+	local b2=(Duel.GetLP(tp)>2000 and e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsExistingMatchingCard(cm.tg2filter,tp,LOCATION_DECK,0,1,nil))
+	if chk==0 then return (b1 or b2) and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil) end
+	if b==0 then
+		e:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+		e:SetLabel(1)
+		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+	end
+	if b==1 then
+		e:SetCategory(CATEGORY_SEARCH+CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+		e:SetLabel(2)
+		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	end
 end
 function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -113,7 +148,6 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 		local ag=Duel.SelectMatchingCard(tp,cm.tg2filter,tp,LOCATION_DECK,0,1,1,nil)
 		if ag:GetCount()>0 then
 			Duel.SendtoHand(ag,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,ag)
 		end
 	end
 	local e1=Effect.CreateEffect(c)
@@ -144,4 +178,10 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetCode(EFFECT_NO_EFFECT_DAMAGE)
 	e4:SetCondition(cm.damcon)
 	Duel.RegisterEffect(e4,tp)
+end
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local b=e:GetLabel()
+	if b==1 then cm.activate(e,tp,eg,ep,ev,re,r,rp) end
+	if b==2 then cm.activate2(e,tp,eg,ep,ev,re,r,rp) end
 end

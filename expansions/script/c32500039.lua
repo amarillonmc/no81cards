@@ -43,20 +43,18 @@ end
 function s.ownfilter1(c)
 	return c:IsFaceup()
 		and s.monfilter(c)
-		and c:IsDestructable()
+		and c:IsCanBeEffectTarget()
 end
 
 --①：对方场上1张表侧表示的卡
---若允许选择里侧卡，则“效果无效”无法正常处理，因此这里限定表侧表示
+--限定表侧表示，否则“效果无效”无法正常处理
 function s.oppfilter1(c)
 	return c:IsFaceup()
-		and c:IsDestructable()
+		and c:IsCanBeEffectTarget()
 end
 
 function s.destg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then
-		return false
-	end
+	if chkc then return false end
 	if chk==0 then
 		return Duel.IsExistingTarget(s.ownfilter1,tp,LOCATION_MZONE,0,1,nil)
 			and Duel.IsExistingTarget(s.oppfilter1,tp,0,LOCATION_ONFIELD,1,nil)
@@ -73,28 +71,45 @@ function s.destg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,#g1,0,0)
 end
 
+--无效表侧表示卡的效果
+function s.negate_card(tc,e)
+	if not (tc and tc:IsFaceup()) then return end
+
+	Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_DISABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e1)
+
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_DISABLE_EFFECT)
+	tc:RegisterEffect(e2)
+
+	--陷阱怪兽兼容
+	if tc:IsType(TYPE_TRAPMONSTER) then
+		local e3=e1:Clone()
+		e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+		tc:RegisterEffect(e3)
+	end
+end
+
 function s.desop1(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetTargetCards(e)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	if not g then return end
+
 	local dg=Group.CreateGroup()
-
 	for tc in aux.Next(g) do
-		if tc:IsRelateToEffect(e) and tc:IsFaceup() then
-			--那些卡的效果无效
-			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-
-			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
-
-			dg:AddCard(tc)
+		if tc:IsRelateToEffect(e) then
+			--表侧表示则先无效
+			if tc:IsFaceup() then
+				s.negate_card(tc,e)
+			end
+			--无效后重新判断是否可破坏
+			if tc:IsDestructable() then
+				dg:AddCard(tc)
+			end
 		end
 	end
 
@@ -143,5 +158,5 @@ end
 --自肃：不是光・暗属性的战士族・魔法师族怪兽不能特殊召唤
 function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not (c:IsAttribute(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)
-		and (c:IsRace(RACE_WARRIOR) or c:IsRace(RACE_SPELLCASTER)))
+		and (c:IsRace(RACE_WARRIOR) or c:IsRace(SPELLCASTER)))
 end

@@ -47,7 +47,7 @@ function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or Duel.IsEnvironment(89490061) and c:IsCanOverlay() and Duel.IsExistingMatchingCard(s.xfilter,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or Duel.IsEnvironment(89490061) and c:IsCanOverlay() and Duel.IsExistingMatchingCard(s.xfilter,tp,LOCATION_MZONE,0,1,nil) and c:CheckUniqueOnField(tp) end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,c,1,0,0)
 end
 function s.xfilter(c)

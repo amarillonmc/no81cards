@@ -45,6 +45,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 					tc:RegisterEffect(e1)
 					local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.thfilter2),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,g:GetFirst())
 					if g2:GetClassCount(Card.GetCode)>=2 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+						Duel.BreakEffect()
 						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 						local sg=g2:SelectSubGroup(tp,aux.dncheck,false,2,2)
 						if sg:GetCount()>0 then

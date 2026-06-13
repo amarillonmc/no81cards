@@ -37,7 +37,7 @@ function cm.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,500)
 end
 function cm.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,15000629,nil,0x4011,1000,1200,4,RACE_PSYCHO,ATTRIBUTE_LIGHT,POS_FACEUP) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,tp,0)
@@ -65,6 +65,7 @@ function cm.tkop(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetRange(LOCATION_MZONE)
 			e3:SetTargetRange(LOCATION_MZONE,0)
 			e3:SetTarget(cm.eftg)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e3:SetLabelObject(e2)
 			token:RegisterEffect(e3)
 			local e4=Effect.CreateEffect(c)

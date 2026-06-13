@@ -32,10 +32,23 @@ function s.monfilter(c)
 		and (c:IsRace(RACE_WARRIOR) or c:IsRace(RACE_SPELLCASTER))
 end
 
---获取连锁发动位置
+--获取连锁发动信息
 function s.chainloc(ev)
-	local te,tp,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
+	local te,tp,loc=Duel.GetChainInfo(
+		ev,
+		CHAININFO_TRIGGERING_EFFECT,
+		CHAININFO_TRIGGERING_PLAYER,
+		CHAININFO_TRIGGERING_LOCATION
+	)
 	return te,tp,loc
+end
+
+--判断这个连锁是否为从手卡发动
+function s.fromhand(re,loc)
+	local rc=re:GetHandler()
+	return (loc and (loc&LOCATION_HAND)~=0)
+		or rc:IsLocation(LOCATION_HAND)
+		or rc:IsPreviousLocation(LOCATION_HAND)
 end
 
 --对方从手卡发动陷阱卡的场合，这张卡也能从手卡发动
@@ -46,13 +59,12 @@ function s.handcon(e)
 
 	local te,p,loc=s.chainloc(ct)
 	if not te then return false end
-	local tc=te:GetHandler()
 
+	local tc=te:GetHandler()
 	return p==1-tp
-		and loc
-		and (loc&LOCATION_HAND)~=0
 		and te:IsActiveType(TYPE_TRAP)
 		and tc:IsType(TYPE_TRAP)
+		and s.fromhand(te,loc)
 end
 
 --①：自己场上有对应怪兽存在，对方从手卡把卡或卡的效果发动时
@@ -62,9 +74,9 @@ function s.negcon1(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(s.monfilter,tp,LOCATION_MZONE,0,1,nil) then return false end
 
 	local te,p,loc=s.chainloc(ev)
-	if not te or p~=1-tp or not loc then return false end
+	if not te or p~=1-tp then return false end
 
-	return (loc&LOCATION_HAND)~=0
+	return s.fromhand(te,loc)
 end
 
 function s.negtg1(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -74,17 +86,17 @@ end
 
 function s.negop1(e,tp,eg,ep,ev,re,r,rp)
 	--那个发动无效
-	Duel.NegateActivation(ev)
-
-	--这个效果发动后，直到回合结束时自己不是光・暗属性的战士族・魔法师族怪兽不能特殊召唤
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(s.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+	if Duel.NegateActivation(ev) then
+		--这个效果发动后，直到回合结束时自己不是光・暗属性的战士族・魔法师族怪兽不能特殊召唤
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+		e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+		e1:SetTargetRange(1,0)
+		e1:SetTarget(s.splimit)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+	end
 end
 
 --自肃：不是光・暗属性的战士族・魔法师族怪兽不能特殊召唤
