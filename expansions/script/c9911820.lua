@@ -22,7 +22,8 @@ function c9911820.initial_effect(c)
 end
 function c9911820.spfilter(c)
 	local b1=c:IsSetCard(0xa957)
-	local b2=c:GetOriginalType()&TYPE_MONSTER~=0 and c:GetOriginalAttribute()&ATTRIBUTE_FIRE~=0
+	local b2=bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0
+		and (c:IsAttribute(ATTRIBUTE_FIRE) or (c:IsLocation(LOCATION_SZONE) and c:GetOriginalAttribute()&ATTRIBUTE_FIRE~=0))
 	return c:IsFaceup() and (b1 or b2)
 end
 function c9911820.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

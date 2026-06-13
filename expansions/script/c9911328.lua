@@ -75,7 +75,8 @@ function c9911328.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9911328.costfilter(c)
-	return c:IsFaceupEx() and c:GetOriginalRace()&RACE_FIEND>0 and c:GetOriginalType()&TYPE_MONSTER>0 and c:IsAbleToRemoveAsCost()
+	return c:IsFaceupEx() and c:IsAbleToRemoveAsCost() and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0
+		and c:IsRace(RACE_FIEND) or (c:IsLocation(LOCATION_SZONE) and bit.band(c:GetOriginalRace(),RACE_FIEND)~=0)
 end
 function c9911328.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

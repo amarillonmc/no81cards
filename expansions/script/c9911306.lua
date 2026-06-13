@@ -77,7 +77,8 @@ function c9911306.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 end
 function c9911306.filter(c)
-	return c:GetOriginalRace()&RACE_FIEND>0 and c:GetOriginalType()&TYPE_MONSTER>0 and (not c:IsOnField() or c:IsFaceup())
+	return c:IsFaceupEx() and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0
+		and c:IsRace(RACE_FIEND) or (c:IsLocation(LOCATION_SZONE) and bit.band(c:GetOriginalRace(),RACE_FIEND)~=0)
 end
 function c9911306.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9911306.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)

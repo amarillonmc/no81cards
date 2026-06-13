@@ -38,7 +38,8 @@ function c9911326.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c9911326.rvfilter(c)
-	return c:IsFaceup() and c:GetOriginalRace()&RACE_FIEND>0 and c:GetOriginalType()&TYPE_MONSTER>0
+	return c:IsFaceup() and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0
+		and c:IsRace(RACE_FIEND) or (c:IsLocation(LOCATION_SZONE) and bit.band(c:GetOriginalRace(),RACE_FIEND)~=0)
 end
 function c9911326.rvcon(e)
 	return Duel.IsExistingMatchingCard(c9911326.rvfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)

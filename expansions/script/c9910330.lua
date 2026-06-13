@@ -80,7 +80,8 @@ function c9910330.eqlimit(e,c)
 	return c==e:GetLabelObject()
 end
 function c9910330.filter(c)
-	return c:IsFaceup() and c:IsRace(RACE_PLANT) and c:GetOriginalType()&TYPE_MONSTER~=0
+	return c:IsFaceup() and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0
+		and c:IsRace(RACE_PLANT) or (c:IsLocation(LOCATION_SZONE) and bit.band(c:GetOriginalRace(),RACE_PLANT)~=0)
 end
 function c9910330.value1(e,c)
 	return Duel.GetMatchingGroupCount(c9910330.filter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)*100

@@ -55,7 +55,7 @@ function c9910315.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910315.cfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_PLANT) and c:GetOriginalType()&TYPE_MONSTER~=0
+	return c:IsFaceup() and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0 and bit.band(c:GetOriginalRace(),RACE_PLANT)~=0
 end
 function c9910315.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

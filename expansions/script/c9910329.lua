@@ -39,7 +39,7 @@ function c9910329.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c9910329.cfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_PLANT) and c:GetOriginalType()&TYPE_MONSTER~=0
+	return c:IsFaceup() and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0 and bit.band(c:GetOriginalRace(),RACE_PLANT)~=0
 end
 function c9910329.rmcon(e)
 	local c=e:GetHandler()
