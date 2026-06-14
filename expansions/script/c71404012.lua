@@ -51,7 +51,6 @@ function s.initial_effect(c)
 	e3:SetTarget(s.tg3)
 	e3:SetOperation(s.op3)
 	c:RegisterEffect(e3)
-	yume.stellar_memories.GlobalCheck(c)
 	if not s.global_check then
 		s.global_check=true
 		local ge1=Effect.CreateEffect(c)

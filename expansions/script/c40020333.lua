@@ -11,7 +11,7 @@ end
 local OME_ID=40020321
 
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020321)
 	c:EnableReviveLimit()
 	aux.AddFusionProcMixRep(c,true,true,s.mfilter,2,2)
 

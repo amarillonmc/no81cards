@@ -62,7 +62,6 @@ function c71404004.initial_effect(c)
 	e3:SetOperation(yume.stellar_memories.RitualUltimateOperation("Greater",LOCATION_DECK,LOCATION_HAND+LOCATION_ONFIELD,nil))
 	c:RegisterEffect(e3)
 	--]]
-	yume.stellar_memories.GlobalCheck(c)
 end
 function c71404004.lcheck(g)
 	return g:IsExists(Card.IsLinkType,1,nil,TYPE_RITUAL)
@@ -182,7 +181,7 @@ function c71404004.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(c,nil,SEQ_DECKTOP,REASON_COST)
 end
 function c71404004.filter3(c,tp)
-	return c:IsRace(RACE_SPELLCASTER) and c:IsAbleToRemove(tp)
+	return c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_RITUAL) and c:IsAbleToRemove(tp)
 end
 function c71404004.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71404004.filter3,tp,LOCATION_DECK,0,1,nil,tp) end

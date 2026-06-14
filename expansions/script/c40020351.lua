@@ -12,7 +12,7 @@ end
 local OME_ID=40020321
 
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020321)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)

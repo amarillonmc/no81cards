@@ -8,7 +8,7 @@ end
 s.RAHERAKHTY_CODE = 40020713
 s.OMEGA_CODE = 40020839
 function s.initial_effect(c)
-	
+		aux.AddCodeList(c,40020713)
 	c:EnableReviveLimit()
 	
 	local e0 = Effect.CreateEffect(c)

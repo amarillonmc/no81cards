@@ -10,7 +10,7 @@ function s.initial_effect(c)
 
 	c:EnableReviveLimit()
 	aux.AddFusionProcCodeFun(c,40020509,aux.FilterBoolFunction(s.matfilter),1,true,true)
-	
+		aux.AddCodeList(c,40020509)
 	--special summon condition
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE)

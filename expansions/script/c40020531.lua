@@ -9,7 +9,7 @@ function s.HighEvo(c)
 end
 
 function s.initial_effect(c)
-	-- ①：手卡特召
+	aux.AddCodeList(c,40020509)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

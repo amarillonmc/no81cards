@@ -7,7 +7,7 @@ function s.RoaringAzure(c)
 end
 s.HULAKAN_CODE=40020569
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020569)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_EQUIP)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)

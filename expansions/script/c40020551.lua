@@ -6,7 +6,7 @@ function s.InfernalLord(c)
 	return m and m.named_with_InfernalLord
 end
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020547)
 	aux.EnablePendulumAttribute(c)
 
 	local e1 = Effect.CreateEffect(c)

@@ -7,7 +7,7 @@ function s.RoaringAzure(c)
 end
 
 function s.initial_effect(c)
-	
+		aux.AddCodeList(c,40020569)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)

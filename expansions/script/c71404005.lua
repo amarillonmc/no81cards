@@ -42,7 +42,6 @@ function s.initial_effect(c)
 	e3:SetCondition(s.con3)
 	e3:SetOperation(s.op3)
 	c:RegisterEffect(e3)
-	yume.stellar_memories.GlobalCheck(c)
 	--Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,aux.FALSE)
 end
 function s.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -51,7 +50,7 @@ function s.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(c,POS_FACEUP,REASON_COST)
 end
 function s.filter1(c,tp)
-	return c:IsRace(RACE_SPELLCASTER) and c:IsAbleToRemove(tp)
+	return c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_LINK) and c:IsAbleToRemove(tp)
 end
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_EXTRA,0,1,nil,tp) end

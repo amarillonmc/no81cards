@@ -6,10 +6,14 @@ function s.DarkSnake(c)
 	if c:GetCode() == s.KUKULKAN_CODE and c:IsLocation(LOCATION_PZONE) then return true end 
 	return false
 end
+function s.Grandwalker(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Grandwalker
+end
 s.named_with_DarkSnake=1
 s.KUKULKAN_CODE=40020764
 function s.initial_effect(c)
-
+		aux.AddCodeList(c,40020764)
 	aux.AddXyzProcedure(c,nil,7,3)
 	c:EnableReviveLimit()
 
@@ -50,7 +54,7 @@ function s.kukulkanfilter(c)
 end
 
 function s.rmfilter(c)
-	if not (c:IsCode(s.KUKULKAN_CODE) and c:IsAbleToRemoveAsCost()) then return false end
+	if not (s.Grandwalker(c) and c:IsAbleToRemoveAsCost()) then return false end
 	if c:IsLocation(LOCATION_PZONE) then return true end
 	return c:IsLocation(LOCATION_HAND+LOCATION_GRAVE)
 end

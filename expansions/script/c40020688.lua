@@ -1,13 +1,13 @@
 --宙斯的仪式神殿
 local s, id = GetID()
-
+s.named_with_EmperorBeast = 1
 function s.EmperorBeast(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_EmperorBeast
 end
 s.ZEUS_CODE = 40020683
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020683)
 	local e1 = Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -15,10 +15,14 @@ function s.initial_effect(c)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
 	
-
-	local e2=aux.AddRitualProcGreater2(c,s.ritfilter,LOCATION_HAND,nil,nil,true)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,0))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_RELEASE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_FZONE)
+	e2:SetCountLimit(1,id+20)
+	e2:SetTarget(s.rittg)
+	e2:SetOperation(s.ritop)
 	c:RegisterEffect(e2)
 	
 	local e3 = Effect.CreateEffect(c)
@@ -54,6 +58,54 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+
+function s.matfilter(c)
+	return c:IsReleasable() and c:GetLevel()>0
+end
+
+function s.ritfilter(c,e,tp,mg)
+	if not (s.EmperorBeast(c) and c:IsType(TYPE_RITUAL)) then return false end
+	if not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
+	local lv=c:GetLevel()
+	return mg:CheckSubGroup(s.fselect,1,#mg,lv,tp)
+end
+
+function s.fselect(g,lv,tp)
+	if g:GetSum(Card.GetLevel)~=lv then return false end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then
+		return g:IsExists(Card.IsLocation,1,nil,LOCATION_MZONE)
+	end
+	return true
+end
+
+function s.rittg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		local mg=Duel.GetMatchingGroup(s.matfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+		return Duel.IsExistingMatchingCard(s.ritfilter,tp,LOCATION_DECK,0,1,nil,e,tp,mg)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
+end
+
+function s.ritop(e,tp,eg,ep,ev,re,r,rp)
+	local mg=Duel.GetMatchingGroup(s.matfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local tg=Duel.SelectMatchingCard(tp,s.ritfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,mg)
+	local tc=tg:GetFirst()
+	if tc then
+		local lv=tc:GetLevel()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		local mat=mg:SelectSubGroup(tp,s.fselect,false,1,#mg,lv,tp)
+		if not mat or #mat==0 then return end
+		tc:SetMaterial(mat)
+		Duel.Release(mat,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
+		Duel.BreakEffect()
+		if Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)~=0 then
+			tc:CompleteProcedure()
+		end
+	end
+end
+
 function s.recfilter(c)
 	return s.EmperorBeast(c) or c:IsCode(40020683)
 end

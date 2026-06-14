@@ -3,7 +3,6 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCondition(cm.condition)
@@ -89,9 +88,9 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 		Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	end
+	local cat=0
 	if lab&0x1>0 then Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0) end
 	if lab&0x2>0 then Duel.SetOperationInfo(0,CATEGORY_DISABLE,sg,1,0,0) end
-	if lab&0x4>0 then Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg2,1,0,0) end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -136,12 +135,16 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if lab0&0x4>0 then
 		local sg=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local tg=sg:Select(tp,1,1,nil)
 		if #tg>0 then
 			if res~=0 then Duel.BreakEffect() end
 			Duel.HintSelection(tg)
-			Duel.Destroy(tg,REASON_EFFECT)
+			if tg:GetFirst():IsAbleToRemove() and Duel.SelectYesNo(tp,aux.Stringid(m,8)) then
+				Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)
+			else
+				Duel.Destroy(tg,REASON_EFFECT)
+			end
 		end
 	end
 	if lab>0 then
@@ -175,7 +178,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetDescription(aux.Stringid(m,lab))
 			if lab&0x1>0 then e1:SetCategory(e1:GetCategory()|CATEGORY_NEGATE) end
 			if lab&0x2>0 then e1:SetCategory(e1:GetCategory()|CATEGORY_DISABLE) end
-			if lab&0x4>0 then e1:SetCategory(e1:GetCategory()|CATEGORY_DESTROY) end
+			if lab&0x4>0 then e1:SetCategory(e1:GetCategory()|CATEGORY_DESTROY|CATEGORY_REMOVE) end
 			e1:SetCode(EVENT_CHAINING)
 			e1:SetProperty(0)
 			e1:SetLabel(lab)

@@ -1,7 +1,13 @@
 --虚诞衍律『宫』
 local cm,m=GetID()
 function cm.initial_effect(c)
-	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
+	--check
+	local e00=aux.AddThisCardInGraveAlreadyCheck(c)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_REMOVE)
+	e0:SetCondition(aux.ThisCardInGraveAlreadyCheckReg)
+	c:RegisterEffect(e0)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -17,8 +23,30 @@ function cm.initial_effect(c)
 	local e4=e1:Clone()
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
-	--ritual
-	local e2=Effect.CreateEffect(c)
+	--spsummon
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,1))
+	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e4:SetCode(EVENT_CUSTOM+m)
+	e4:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e4:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	e4:SetLabelObject(e0)
+	e4:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+		return eg:IsExists(cm.filter,1,nil,tp,e0,e00)
+	end)
+	e4:SetTarget(cm.adtg2)
+	e4:SetOperation(cm.adop2)
+	c:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetCode(EVENT_MOVE)
+	e5:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+		local bool,ceg=Duel.CheckEvent(EVENT_CUSTOM+m,true)
+		return eg:IsContains(c) and bool and ceg:IsExists(cm.filter,1,nil) and (re==nil or not re:IsActivated())
+	end)
+	c:RegisterEffect(e5)
+	aux.RegisterMergedDelayedEvent(c,m,EVENT_CUSTOM+m-1)
+	--[[local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
@@ -33,7 +61,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	local e5=e2:Clone()
 	e5:SetCode(EVENT_CHAIN_NEGATED)
-	c:RegisterEffect(e5)
+	c:RegisterEffect(e5)--]]
 	if not cm.global_check then
 		cm.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -44,12 +72,14 @@ function cm.initial_effect(c)
 	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if eg:IsExists(cm.filter,1,nil,tp) and Duel.GetCurrentChain()>0 then
+	if eg:IsExists(cm.filter,1,nil,tp) then --and Duel.GetCurrentChain()>0 then
 		Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
+		Duel.RaiseEvent(eg,EVENT_CUSTOM+m-1,re,r,rp,ep,ev)
 	end
 end
-function cm.filter(c,tp,se)
-	--if not (se==nil or c:GetReasonEffect()~=se) then return false end
+function cm.filter(c,tp,se,se2)
+	if not (se==nil or c:GetReasonEffect()~=se) then return false end
+	if not (se2==nil or c:GetReasonEffect()~=se2) then return false end
 	return c:IsPreviousPosition(POS_FACEDOWN)
 end
 function cm.adcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -108,7 +138,7 @@ function cm.adop2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 		if sg:GetCount()>0 then
-			Duel.BreakEffect()
+			--Duel.BreakEffect()
 			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end

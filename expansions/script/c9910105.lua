@@ -7,7 +7,7 @@ function c9910105.initial_effect(c)
 	--destroy & spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910105,1))
-	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
@@ -30,11 +30,10 @@ function c9910105.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=0
 	if e:GetHandler():GetSequence()>4 then ct=1 end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>0
-		and (Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
+		and (Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 		or (Duel.GetLocationCount(tp,LOCATION_MZONE)>ct
 		and Duel.IsExistingMatchingCard(c9910105.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp))) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c9910105.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -47,7 +46,7 @@ function c9910105.operation(e,tp,eg,ep,ev,re,r,rp)
 	local off=1
 	local ops={}
 	local opval={}
-	local g1=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
+	local g1=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
 	local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910105.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
 	if g1:GetCount()>0 then
 		ops[off]=aux.Stringid(9910105,2)

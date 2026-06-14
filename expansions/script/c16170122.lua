@@ -11,10 +11,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--todeck, search or sset
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION+CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetCountLimit(1,m)
 	e2:SetRange(LOCATION_GRAVE)
+    e2:SetCost(cm.cost)
 	e2:SetTarget(cm.tg)
 	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
@@ -66,15 +67,16 @@ end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,1,REASON_EFFECT)
 end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
+	Duel.SendtoDeck(e:GetHandler(),tp,SEQ_DECKSHUFFLE,REASON_COST)
+end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToDeck() end
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	if Duel.SendtoDeck(c,nil,2,REASON_EFFECT)==0 then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)

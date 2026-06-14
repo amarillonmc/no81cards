@@ -55,19 +55,29 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.scfilter(c)
-	return c:IsSpecialSummonable()
+	for _,sumtype in pairs({0,SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ,SUMMON_TYPE_LINK,SUMMON_TYPE_SPECIAL,SUMMON_VALUE_SELF}) do
+		if c:IsSpecialSummonable(sumtype) then return true end
+	end
+	return false
 end
 function s.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(s.scfilter,tp,LOCATION_EXTRA,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.scfilter),tp,0xff,0,nil,e,tp)
+	if chk==0 then return #sg>0 end
 end
 function s.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(s.scfilter,tp,LOCATION_EXTRA,0,nil,c)
-	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sc=g:Select(tp,1,1,nil):GetFirst()
-		Duel.SpecialSummonRule(tp,sc)
-	end
+	local sg=Duel.GetMatchingGroup(s.scfilter,tp,0xff,0,nil)
+    if #sg>0 then
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+        local tc=sg:Select(tp,1,1,nil):GetFirst()
+        if tc then
+            for _,sumtype in pairs({0,SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ,SUMMON_TYPE_LINK,SUMMON_TYPE_SPECIAL,SUMMON_VALUE_SELF}) do
+                if tc:IsSpecialSummonable(sumtype) then
+                    Duel.SpecialSummonRule(tp,tc,sumtype)
+                    break
+                end
+            end
+        end
+    end
 end

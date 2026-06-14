@@ -17,7 +17,7 @@ function s.initial_effect(c)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
-	
+		aux.AddCodeList(c,40020509)
 	local e2=Effect.CreateEffect(c)
 
 

@@ -1,92 +1,122 @@
---穿越梦想的一执念
-local m=33701048
-local cm=_G["c"..m]
-function cm.initial_effect(c)
-	--special summon proc
-	local e0=Effect.CreateEffect(c)
-	e0:SetDescription(aux.Stringid(m,0))
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetType(EFFECT_TYPE_FIELD)
-	e0:SetCode(EFFECT_SPSUMMON_PROC)
-	e0:SetRange(LOCATION_HAND+LOCATION_GRAVE)
-	e0:SetCondition(cm.sumcon)
-	e0:SetCountLimit(1,m)
-	e0:SetOperation(cm.sumop)
-	e0:SetValue(1)
-	c:RegisterEffect(e0)
-	--special summon
+--Wish -Transcending Dream-
+local s,id,o=GetID()
+function s.initial_effect(c)
+	--Effect 1: Send 1 card from Extra Deck to GY; SS from hand/GY, gain 1200 LP
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_LEAVE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,m+666)
-	e1:SetCost(cm.spcost)
-	e1:SetTarget(cm.sptg)
-	e1:SetOperation(cm.spop)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_RECOVER)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetCountLimit(1,id)
+	e1:SetCost(s.spcost)
+	e1:SetTarget(s.sptg)
+	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-	--damage
+	--Effect 2: When this card leaves the field, send 1 card on field to GY; SS from GY face-down defense
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,id+100)
+	e2:SetCondition(s.lfcon)
+	e2:SetCost(s.lfcost)
+	e2:SetTarget(s.lftg)
+	e2:SetOperation(s.lfop)
+	c:RegisterEffect(e2)
+	--Effect 3: Quick Effect, send 1 ED card to GY; inflict 800 damage
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,2))
+	e3:SetDescription(aux.Stringid(id,2))
 	e3:SetCategory(CATEGORY_DAMAGE)
-	e3:SetCountLimit(1,m+999)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCost(cm.cost)
-	e3:SetTarget(cm.target)
-	e3:SetOperation(cm.operation)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCountLimit(1,id+200)
+	e3:SetCost(s.damcost)
+	e3:SetTarget(s.damtg)
+	e3:SetOperation(s.damop)
 	c:RegisterEffect(e3)
 end
-function cm.refil(c)
+--Effect 1: cost - send 1 card from Extra Deck to GY
+function s.costfilter(c)
 	return c:IsAbleToGraveAsCost()
 end
-function cm.sumcon(e,c)
-	local tp=e:GetHandler():GetControler()
-	return Duel.IsExistingMatchingCard(cm.refil,tp,LOCATION_EXTRA,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-end
-function cm.sumop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.SelectMatchingCard(tp,cm.refil,tp,LOCATION_EXTRA,0,1,1,nil)
+function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_EXTRA,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_EXTRA,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
+end
+--Effect 1: target
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then
+		if c:IsLocation(LOCATION_GRAVE) then
+			return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+				and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		else
+			return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+				and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		end
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+end
+--Effect 1: operation
+function s.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToChain() then return end
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
 		Duel.BreakEffect()
 		Duel.Recover(tp,1200,REASON_EFFECT)
-end
----to grave
-function cm.cfilter(c,ec)
-	return c:IsAbleToGraveAsCost() 
-end
-function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
-	Duel.SendtoGrave(g,REASON_COST)
-end
-function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-end
-function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 	end
 end
---effect Damage
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+--Effect 2: condition (was face-up when left field)
+function s.lfcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_EXTRA,0,1,nil) end
+	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_MZONE)
+end
+--Effect 2: cost - send 1 card on field to GY
+function s.lffilter(c)
+	return c:IsAbleToGraveAsCost() and c:IsOnField()
+end
+function s.lfcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.lffilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.refil,tp,LOCATION_EXTRA,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.lffilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+--Effect 2: target
+function s.lftg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+end
+--Effect 2: operation
+function s.lfop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToChain() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+	end
+end
+--Effect 3: cost - send 1 card from Extra Deck to GY
+function s.damcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_EXTRA,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_EXTRA,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
+end
+--Effect 3: target
+function s.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(800)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,800)
 end
-function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+--Effect 3: operation
+function s.damop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
 end

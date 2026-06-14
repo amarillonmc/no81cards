@@ -6,7 +6,7 @@ function s.InfernalLord(c)
 	return m and m.named_with_InfernalLord
 end
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020547)
 	local e1 = Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND + CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)

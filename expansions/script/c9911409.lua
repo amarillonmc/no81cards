@@ -1,7 +1,7 @@
 --破阵前驱 T-90M
 function c9911409.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,8,2,c9911409.ovfilter,aux.Stringid(9911409,0),2,c9911409.xyzop)
+	aux.AddXyzProcedure(c,nil,8,2,c9911409.ovfilter,aux.Stringid(9911409,0))
 	c:EnableReviveLimit()
 	--xyzlimit
 	local e1=Effect.CreateEffect(c)
@@ -40,16 +40,13 @@ function c9911409.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c9911409.filter(c)
-	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:GetOriginalType()&TYPE_MONSTER>0
+	return c:IsFaceup() and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0
+		and c:IsRace(RACE_MACHINE) or (c:IsLocation(LOCATION_SZONE) and bit.band(c:GetOriginalRace(),RACE_MACHINE)~=0)
 end
 function c9911409.ovfilter(c)
 	local g=c:GetColumnGroup()
 	g:AddCard(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ) and g:IsExists(c9911409.filter,3,nil)
-end
-function c9911409.xyzop(e,tp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9911409.costfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHandAsCost()

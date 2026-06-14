@@ -7,7 +7,7 @@ function s.WeaponInsect(c)
 end
 s.RAHERAKHTY_CODE = 40020713
 function s.initial_effect(c)
-
+		aux.AddCodeList(c,40020713)
 	local e1 = Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id, 3))
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -21,6 +21,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1, id + 1)
+	e2:SetCost(s.setcost)
 	e2:SetTarget(s.settg)
 	e2:SetOperation(s.setop)
 	c:RegisterEffect(e2)
@@ -52,6 +53,13 @@ function s.activate(e, tp, eg, ep, ev, re, r, rp)
 			Duel.MoveToField(g:GetFirst(), tp, tp, LOCATION_PZONE, POS_FACEUP, true)
 		end
 	end
+end
+function s.cfilter2(c)
+	return  s.WeaponInsect(c) and c:IsDiscardable()
+end
+function s.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	Duel.DiscardHand(tp,s.cfilter2,1,1,REASON_COST+REASON_DISCARD,e:GetHandler())
 end
 function s.settg(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then

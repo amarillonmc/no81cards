@@ -45,7 +45,6 @@ function c71404003.initial_effect(c)
 	e3:SetValue(aux.tgoval)
 	e3:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 	c:RegisterEffect(e3)
-	yume.stellar_memories.GlobalCheck(c)
 end
 function c71404003.filter1con(c)
 	return c:IsLocation(LOCATION_ONFIELD) and not c:IsPreviousLocation(LOCATION_ONFIELD)
@@ -59,7 +58,7 @@ function c71404003.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(c,POS_FACEUP,REASON_COST)
 end
 function c71404003.filter1(c,tp)
-	return c:IsRace(RACE_SPELLCASTER) and c:IsAbleToRemove(tp)
+	return c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_LINK) and c:IsAbleToRemove(tp)
 end
 function c71404003.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71404003.filter1,tp,LOCATION_EXTRA,0,1,nil,tp) end

@@ -17,7 +17,7 @@ s.RAHERAKHTY_CODE = 40020713
 function s.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddXyzProcedure(c,nil,9,2)
-	
+			aux.AddCodeList(c,40020713)
 if not s.global_check then
 	s.global_check = true
 	local ge1 = Effect.CreateEffect(c)

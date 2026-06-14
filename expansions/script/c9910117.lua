@@ -10,14 +10,33 @@ function c9910117.initial_effect(c)
 	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(2)
+	e1:SetCountLimit(2,EFFECT_COUNT_CODE_SINGLE)
+	e1:SetCondition(c9910117.condition1)
 	e1:SetCost(c9910117.cost)
 	e1:SetTarget(c9910117.target)
 	e1:SetOperation(c9910117.operation)
 	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetCondition(c9910117.condition2)
+	c:RegisterEffect(e2)
 end
 function c9910117.xyzfilter(c)
 	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
+end
+function c9910117.filter(c)
+	return c:IsFaceup() and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0
+		and c:IsRace(RACE_MACHINE) or (c:IsLocation(LOCATION_SZONE) and bit.band(c:GetOriginalRace(),RACE_MACHINE)~=0)
+end
+function c9910117.condition1(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetHandler():GetColumnGroup()
+	return not (g and g:IsExists(c9910117.filter,1,nil))
+end
+function c9910117.condition2(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetHandler():GetColumnGroup()
+	return g and g:IsExists(c9910117.filter,1,nil)
 end
 function c9910117.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

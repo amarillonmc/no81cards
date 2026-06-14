@@ -263,14 +263,14 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local e1=Effect.CreateEffect(e:GetHandler())
+	--[[local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	e1:SetOperation(cm.draw)
 	Duel.RegisterEffect(e1,tp)
-	--[[local ct=Duel.GetDrawCount(tp)
+	local ct=Duel.GetDrawCount(tp)
 	if Duel.GetTurnCount()==1 then
 		ct=1
 		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_DRAW_COUNT)}
@@ -287,13 +287,13 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	else
 		e2:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
 	end
-	Duel.RegisterEffect(e2,tp)
+	Duel.RegisterEffect(e2,tp)--]]
 	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
 	if #g>0 then
 		local tc=g:GetMinGroup(Card.GetSequence):GetFirst()
 		Duel.DisableShuffleCheck()
 		Duel.SendtoHand(tc,tp,REASON_EFFECT)
-	end--]]
+	end
 	if c:IsRelateToEffect(e) then
 		local res=Duel.TossCoin(tp,1)
 		--if PNFL_PROPHECY_FLIGHT_DEBUG then res=1 end

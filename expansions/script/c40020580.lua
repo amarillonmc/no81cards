@@ -7,7 +7,7 @@ function s.RoaringAzure(c)
 end
 
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020569)
 	aux.EnablePendulumAttribute(c)
 	
 	local e1=Effect.CreateEffect(c)

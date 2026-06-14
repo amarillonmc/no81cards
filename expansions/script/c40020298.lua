@@ -12,109 +12,122 @@ function s.initial_effect(c)
 	aux.AddXyzProcedure(c,s.matfilter,3,2)
 
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOEXTRA)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,id)   
-	e1:SetCost(s.spcost1)
-	e1:SetTarget(s.sptg1)
-	e1:SetOperation(s.spop1)
+	e1:SetValue(s.atkval)
 	c:RegisterEffect(e1)
+	local e1a=e1:Clone()
+	e1a:SetCode(EFFECT_UPDATE_DEFENSE)
+	c:RegisterEffect(e1a)
 
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOEXTRA)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_DESTROYED)
-	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET)
-	e2:SetCondition(s.spcon2)
-	e2:SetTarget(s.sptg2)
-	e2:SetOperation(s.spop2)
+	e2:SetDescription(aux.Stringid(id,0))
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,id)
+	e2:SetCost(s.thcost)
+	e2:SetTarget(s.thtg)
+	e2:SetOperation(s.thop)
 	c:RegisterEffect(e2)
+
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(id,1))
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_LEAVE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCountLimit(1,id+1)
+	e3:SetCondition(s.spcon)
+	e3:SetTarget(s.sptg)
+	e3:SetOperation(s.spop)
+	c:RegisterEffect(e3)
 end
 
 function s.matfilter(c)
 	return s.AwakenedDragon(c) 
 end
+function s.atkfilter(c)
+	return c:IsFaceup() and s.AwakenedDragon(c)
+end
+
+function s.atkval(e,c)
+	return Duel.GetMatchingGroupCount(s.atkfilter,c:GetControler(),LOCATION_REMOVED,0,nil)*200
+end
+
+function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+end
+function s.thfilter(c)
+	return s.AwakenedDragon(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
+end
+
+function s.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp) 
+		and (c:IsReason(REASON_BATTLE) or (c:IsReason(REASON_EFFECT) and rp==1-tp))
+end
+
 function s.spfilter(c,e,tp)
-	if not (s.AwakenedDragon(c) and c:IsType(TYPE_MONSTER)) then
-		return false
-	end
-	local can_ss	= c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-	local can_extra = c:IsType(TYPE_PENDULUM) and c:IsAbleToExtra()
-	return can_ss or can_extra
+	return c:IsFaceup() and s.AwakenedDragon(c) and c:IsType(TYPE_MONSTER)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function s.sp_or_extra_from_gy(e,tp,tc)
-	if not tc or not tc:IsRelateToEffect(e) then return end
-	local ft = Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local can_ss	= ft>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
-	local can_extra = tc:IsType(TYPE_PENDULUM) and tc:IsAbleToExtra()
-	if not (can_ss or can_extra) then return end
 
-	local op
-	if can_ss and can_extra then
-		op = Duel.SelectOption(tp,aux.Stringid(id,2),aux.Stringid(id,3))
-	elseif can_ss then
-		op = 0
-	else
-		op = 1
-	end
+function s.spcheck(g,tp)
+	if Duel.IsPlayerAffectedByEffect(tp,CARD_BLUEEYES_SPIRIT) then return false end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE) < #g then return false end
+	return g:GetClassCount(Card.GetCode)==#g
+end
 
-	if op==0 then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-	else
-		Duel.SendtoExtraP(tc,tp,REASON_EFFECT)
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then 
+		local g=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_REMOVED,0,nil,e,tp)
+		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #g>0 
 	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_REMOVED)
 end
-function s.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
+
+function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if chk==0 then
-		return c:CheckRemoveOverlayCard(tp,1,REASON_COST)
+	local max_ct=math.min(3,Duel.GetLocationCount(tp,LOCATION_MZONE))
+	if max_ct<=0 then return end
+	if Duel.IsPlayerAffectedByEffect(tp,CARD_BLUEEYES_SPIRIT) then max_ct=1 end
+
+	local g=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_REMOVED,0,nil,e,tp)
+	if #g==0 then return end
+	
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sg=g:SelectSubGroup(tp,s.spcheck,false,1,max_ct,tp)
+	if sg and #sg>0 then
+		for tc in aux.Next(sg) do
+			if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_DISABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1)
+				local e2=Effect.CreateEffect(c)
+				e2:SetType(EFFECT_TYPE_SINGLE)
+				e2:SetCode(EFFECT_DISABLE_EFFECT)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e2)
+			end
+		end
+		Duel.SpecialSummonComplete()
 	end
-	c:RemoveOverlayCard(tp,1,1,REASON_COST)
-end
-function s.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then
-		return chkc:IsControler(tp)
-			and chkc:IsLocation(LOCATION_GRAVE)
-			and s.spfilter(chkc,e,tp)
-	end
-	if chk==0 then
-		return Duel.IsExistingTarget(s.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)
-	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,s.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
-end
-function s.spop1(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	s.sp_or_extra_from_gy(e,tp,tc)
-end
-function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not (c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP)) then
-		return false
-	end
-	if rp~=1-tp or bit.band(r,REASON_BATTLE+REASON_EFFECT)==0 then
-		return false
-	end
-	return c:GetOverlayCount()>0
-end
-function s.sptg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then
-		return chkc:IsControler(tp)
-			and chkc:IsLocation(LOCATION_GRAVE)
-			and s.spfilter(chkc,e,tp)
-	end
-	if chk==0 then
-		return Duel.IsExistingTarget(s.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)
-	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,s.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
-end
-function s.spop2(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	s.sp_or_extra_from_gy(e,tp,tc)
 end

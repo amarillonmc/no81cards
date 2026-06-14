@@ -10,7 +10,7 @@ end
 local OME_ID=40020321
 
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020321)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

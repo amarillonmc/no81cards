@@ -50,7 +50,6 @@ function s.initial_effect(c)
 	e3:SetTarget(s.tg3)
 	e3:SetOperation(s.op3)
 	c:RegisterEffect(e3)
-	yume.stellar_memories.GlobalCheck(c)
 end
 function s.lcheck(g)
 	return g:IsExists(Card.IsLinkType,1,nil,TYPE_RITUAL)
@@ -136,7 +135,7 @@ function s.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(c,nil,SEQ_DECKTOP,REASON_COST)
 end
 function s.filter3(c,tp)
-	return c:IsRace(RACE_SPELLCASTER) and c:IsAbleToRemove(tp)
+	return c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_RITUAL) and c:IsAbleToRemove(tp)
 end
 function s.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter3,tp,LOCATION_DECK,0,1,nil,tp) end

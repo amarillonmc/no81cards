@@ -11,7 +11,7 @@ s.RAHERAKHTY_CODE = 40020713
 s.WEAPON_INSECT_PLACE_EVENT = EVENT_CUSTOM + 40020713
 
 function s.initial_effect(c)
-
+		aux.AddCodeList(c,40020713)
 	local e1 = Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id, 0))
 	e1:SetType(EFFECT_TYPE_QUICK_O)

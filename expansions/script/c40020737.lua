@@ -11,7 +11,7 @@ s.ZEUS_CODE = 40020683
 
 function s.initial_effect(c)
 	c:EnableReviveLimit()
-	
+		aux.AddCodeList(c,40020683)
 	local e1 = Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id, 0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON + CATEGORY_DISABLE)
@@ -64,41 +64,82 @@ end
 function s.costfilter(c)
 	return c:IsCode(s.ZEUS_CODE) and c:IsReleasable()
 end
+
+function s.repfilter(c)
+	if not c:IsCode(s.ZEUS_CODE) then return false end
+	if not c:IsAbleToGraveAsCost() then return false end
+	local loc = c:GetLocation()
+	if loc == LOCATION_HAND or loc == LOCATION_DECK or loc == LOCATION_REMOVED then return true end
+	if loc == LOCATION_EXTRA then return c:IsFaceup() end
+	return false
+end
+
 function s.spcost(e, tp, eg, ep, ev, re, r, rp, chk)
-	if chk == 0 then return Duel.IsExistingMatchingCard(s.costfilter, tp, LOCATION_PZONE, 0, 1, nil) end
-	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_RELEASE)
-	local g = Duel.SelectMatchingCard(tp, s.costfilter, tp, LOCATION_PZONE, 0, 1, 1, nil)
-	Duel.Release(g, REASON_COST)
+	local b1 = Duel.IsExistingMatchingCard(s.costfilter, tp, LOCATION_PZONE, 0, 1, nil)
+	local b2 = Duel.IsPlayerAffectedByEffect(tp, s.ZEUS_CODE)
+		and Duel.GetFlagEffect(tp, s.ZEUS_CODE) == 0
+		and Duel.IsExistingMatchingCard(s.repfilter, tp, LOCATION_HAND + LOCATION_DECK + LOCATION_EXTRA + LOCATION_REMOVED, 0, 1, nil)
+	if chk == 0 then
+		return b1 or b2
+	end
+	
+	if b2 and (not b1 or Duel.SelectYesNo(tp, aux.Stringid(s.ZEUS_CODE, 0))) then
+		Duel.RegisterFlagEffect(tp, s.ZEUS_CODE, RESET_PHASE + PHASE_END, 0, 1)
+		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOGRAVE)
+		local g = Duel.SelectMatchingCard(tp, s.repfilter, tp, LOCATION_HAND + LOCATION_DECK + LOCATION_EXTRA + LOCATION_REMOVED, 0, 1, 1, nil)
+		Duel.SendtoGrave(g, REASON_COST)
+	else
+		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_RELEASE)
+		local g = Duel.SelectMatchingCard(tp, s.costfilter, tp, LOCATION_PZONE, 0, 1, 1, nil)
+		Duel.Release(g, REASON_COST)
+	end
 end
+
 function s.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
-	if chk == 0 then return Duel.GetLocationCount(tp, LOCATION_MZONE) > 0
-		and e:GetHandler():IsCanBeSpecialSummoned(e, SUMMON_TYPE_RITUAL, tp, false, true) end
-	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, e:GetHandler(), 1, 0, 0)
+	local c = e:GetHandler()
+	if chk == 0 then
+		return Duel.GetLocationCount(tp, LOCATION_MZONE) > 0
+			and c:IsCanBeSpecialSummoned(e, SUMMON_TYPE_RITUAL, tp, false, true)
+	end
+	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, c, 1, 0, 0)
 end
+
 function s.spop(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
+	
 	c:SetMaterial(nil)
-	if Duel.SpecialSummon(c, SUMMON_TYPE_RITUAL, tp, tp, false, true, POS_FACEUP) ~= 0 then
+	if Duel.SpecialSummon(c, SUMMON_TYPE_RITUAL, tp, tp, false, true, POS_FACEUP) > 0 then
 		c:CompleteProcedure()
+	   
 		local g = Duel.GetMatchingGroup(Card.IsFaceup, tp, 0, LOCATION_ONFIELD, nil)
 		if #g > 0 and Duel.SelectYesNo(tp, aux.Stringid(id, 3)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_DISABLE)
 			local sg = g:Select(tp, 1, 1, nil)
 			local tc = sg:GetFirst()
-			Duel.NegateRelatedChain(tc, RESET_TURN_SET)
-			local e1 = Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT + RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-			local e2 = Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			e2:SetValue(RESET_TURN_SET)
-			e2:SetReset(RESET_EVENT + RESETS_STANDARD)
-			tc:RegisterEffect(e2)
+			
+			if tc and not tc:IsDisabled() then
+				Duel.NegateRelatedChain(tc, RESET_TURN_SET)
+				local e1 = Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_DISABLE)
+				e1:SetReset(RESET_EVENT + RESETS_STANDARD)
+				tc:RegisterEffect(e1)
+				local e2 = Effect.CreateEffect(c)
+				e2:SetType(EFFECT_TYPE_SINGLE)
+				e2:SetCode(EFFECT_DISABLE_EFFECT)
+				e2:SetValue(RESET_TURN_SET)
+				e2:SetReset(RESET_EVENT + RESETS_STANDARD)
+				tc:RegisterEffect(e2)
+				if tc:IsType(TYPE_TRAPMONSTER) then
+					local e3 = Effect.CreateEffect(c)
+					e3:SetType(EFFECT_TYPE_SINGLE)
+					e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+					e3:SetReset(RESET_EVENT + RESETS_STANDARD)
+					tc:RegisterEffect(e3)
+				end
+			end
 		end
 	end
 end

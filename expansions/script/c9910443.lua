@@ -1,7 +1,7 @@
 --踏沙铁车 艾布拉姆斯
 function c9910443.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,9,2,c9910443.ovfilter,aux.Stringid(9910443,0),2,c9910443.xyzop)
+	aux.AddXyzProcedure(c,nil,9,2,c9910443.ovfilter,aux.Stringid(9910443,0))
 	c:EnableReviveLimit()
 	--xyzlimit
 	local e1=Effect.CreateEffect(c)
@@ -21,12 +21,10 @@ function c9910443.initial_effect(c)
 	c:RegisterEffect(e2)
 	--destroy
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_NEGATE)
+	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(2)
 	e3:SetCondition(c9910443.descon)
 	e3:SetCost(c9910443.descost)
 	e3:SetTarget(c9910443.destg)
@@ -34,40 +32,42 @@ function c9910443.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c9910443.filter(c)
-	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:GetOriginalType()&TYPE_MONSTER>0
+	return c:IsFaceup() and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0
+		and c:IsRace(RACE_MACHINE) or (c:IsLocation(LOCATION_SZONE) and bit.band(c:GetOriginalRace(),RACE_MACHINE)~=0)
 end
 function c9910443.ovfilter(c)
 	local g=c:GetColumnGroup()
 	g:AddCard(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ) and g:IsExists(c9910443.filter,3,nil)
 end
-function c9910443.xyzop(e,tp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
-end
 function c9910443.atkcon(e)
 	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
 end
 function c9910443.descon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER)
+	return rp==1-tp and re:GetHandler():IsRelateToEffect(re) and re:IsActiveType(TYPE_MONSTER)
 end
-function c9910443.cfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsAbleToRemoveAsCost()
+function c9910443.rmfilter(c)
+	return c:IsFaceupEx() and c:IsAbleToRemoveAsCost() and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0
+		and c:IsRace(RACE_MACHINE) or (c:IsLocation(LOCATION_SZONE) and bit.band(c:GetOriginalRace(),RACE_MACHINE)~=0)
 end
 function c9910443.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Group.CreateGroup()
-	local g1=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)
-	local g2=e:GetHandler():GetOverlayGroup()
-	if g1:GetCount()>0 then g:Merge(g1) end
-	if g2:GetCount()>0 then g:Merge(g2) end
-	if chk==0 then return g:IsExists(c9910443.cfilter,2,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local sg=g:FilterSelect(tp,c9910443.cfilter,2,2,nil)
-	Duel.Remove(sg,POS_FACEUP,REASON_COST)
+	local opt1=e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST)
+	local opt2=Duel.IsExistingMatchingCard(c9910443.rmfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,2,re:GetHandler())
+	if chk==0 then return opt1 or opt2 end
+	local result=0
+	if opt1 and not opt2 then result=0 end
+	if opt2 and not opt1 then result=1 end
+	if opt1 and opt2 then result=Duel.SelectOption(tp,aux.Stringid(9910443,1),aux.Stringid(9910443,2)) end
+	if result==0 then
+		e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local g=Duel.SelectMatchingCard(tp,c9910443.rmfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,2,2,re:GetHandler())
+		Duel.Remove(g,POS_FACEUP,REASON_COST)
+	end
 end
 function c9910443.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local rc=re:GetHandler()
-	if chk==0 then return rc:IsRelateToEffect(re) and rc:IsDestructable() end
+	if chk==0 then return re:GetHandler():IsDestructable() end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 end
 function c9910443.desop(e,tp,eg,ep,ev,re,r,rp)

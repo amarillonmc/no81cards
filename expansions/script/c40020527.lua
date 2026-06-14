@@ -8,7 +8,7 @@ function s.HighEvo(c)
 end
 
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020509)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)

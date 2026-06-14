@@ -99,7 +99,7 @@ function c71400057.op1(e,tp,eg,ep,ev,re,r,rp)
 		sc:CompleteProcedure()
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+		local sg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,3,nil)
 		if sg:GetCount()>0 then
 			Duel.HintSelection(sg)
 			Duel.SendtoGrave(sg,REASON_EFFECT)
@@ -107,14 +107,17 @@ function c71400057.op1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71400057.filter2a(c)
-	local g=Duel.GetMatchingGroup(c71400057.filter2b,tp,LOCATION_MZONE,LOCATION_MZONE,c)
-	return c:IsSetCard(0x714) and c:IsType(TYPE_XYZ) and c:IsFaceup() and g:GetCount()>=2 and g:IsExists(c71400057.filter2c,1,nil)
+	local g=Duel.GetMatchingGroup(c71400057.filter2b,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,c)
+	return c:IsSetCard(0x714) and c:IsType(TYPE_XYZ) and c:IsFaceup() and g:GetCount()>2 and g:IsExists(c71400057.filter2c,1,nil)
 end
 function c71400057.filter2b(c)
 	return c:IsFaceup() and c:IsType(TYPE_EFFECT) and c:IsCanOverlay()
 end
 function c71400057.filter2c(c)
 	return c:IsSetCard(0x714) and c:IsType(TYPE_XYZ)
+end
+function c71400057.fselect(g)
+	return g:IsExists(c71400057.filter2c,1,nil)
 end
 function c71400057.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c71400057.filter2a(chkc) end
@@ -128,22 +131,13 @@ end
 function c71400057.op2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not (tc:IsFaceup() and tc:IsRelateToEffect(e)) or tc:IsImmuneToEffect(e) then return end
-	local g=Duel.GetMatchingGroup(c71400057.filter2b,tp,LOCATION_MZONE,LOCATION_MZONE,tc)
-	if g:GetCount()<2 or not g:IsExists(c71400057.filter2c,1,nil) then return end
+	local g=Duel.GetMatchingGroup(c71400057.filter2b,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,tc)
+	if g:GetCount()<3 or not g:IsExists(c71400057.filter2c,1,nil) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g1=g:Select(tp,1,1,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local sc1=g1:GetFirst()
-	if c71400057.filter2c(sc1) then
-		local g2=g:Select(tp,1,1,sc1)
-		g1:Merge(g2)
-	else
-		local g2=g:FilterSelect(tp,c71400057.filter2c,1,1,sc1)
-		g1:Merge(g2)
-	end
+	local g1=g:SelectSubGroup(tp,c71400057.fselect,false,3,3)
 	local og=g1:Filter(Card.IsImmuneToEffect,nil,e)
 	Duel.Overlay(tc,g1)
-	if og:GetCount()<2 then return end
+	if og:GetCount()<3 then return end
 	local atk=og:GetSum(c71400057.filter2d,Card.GetAttack)
 	local def=og:GetSum(c71400057.filter2d,Card.GetDefense)
 	local c=e:GetHandler()

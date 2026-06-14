@@ -222,7 +222,7 @@ function cm.initial_effect(c)
 	if not cm.global_check then
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_TOSS_COIN)
+		ge1:SetCode(EVENT_TOSS_COIN_NEGATE)
 		ge1:SetOperation(cm.effop)
 		Duel.RegisterEffect(ge1,0)
 	end
@@ -232,6 +232,8 @@ function cm.effop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=0
 	local res={Duel.GetCoinResult()}
 	for i=1,ev do
+		--Debug.Message(res[i])
+		--Debug.Message(re:GetHandler():GetCode())
 		if res[i]==0 then
 			ct=ct+1
 		end
@@ -247,9 +249,9 @@ function cm.tgfilter(c,e)
 	return c:IsCanBeEffectTarget(e)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(0x3c) and cm.tgfilter(chkc,e) end
+	if chkc then return chkc:IsLocation(0x3c) and cm.tgfilter(chkc,e) and chkc~=e:GetHandler() end
 	local dg=Duel.GetMatchingGroup(cm.deck_filter,tp,LOCATION_DECK,0,nil)
-	local tg=Duel.GetMatchingGroup(cm.tgfilter,tp,0x3c,0x3c,nil,e)
+	local tg=Duel.GetMatchingGroup(cm.tgfilter,tp,0x3c,0x3c,e:GetHandler(),e)
 	if chk==0 then return #dg>0 and #tg>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local sg=dg:SelectSubGroup(tp,aux.dncheck,false,1,math.min(#dg,#tg))
@@ -258,7 +260,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		sc:ReverseInDeck()
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,cm.tgfilter,tp,0x3c,0x3c,#sg,#sg,nil,e)
+	Duel.SelectTarget(tp,cm.tgfilter,tp,0x3c,0x3c,#sg,#sg,e:GetHandler(),e)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

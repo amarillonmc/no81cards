@@ -1,10 +1,15 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_REMOVE)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetCountLimit(1,id)
-	e1:SetOperation(s.sumop)
+	e1:SetCost(s.spcost)
+	e1:SetTarget(s.sptg)
+	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
 	local e1_sp=e1:Clone()
 	e1_sp:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -18,38 +23,19 @@ function s.initial_effect(c)
 	e2:SetOperation(s.effop)
 	c:RegisterEffect(e2)
 end
-function s.sumop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
-	if #tg==0 then return end
-	local g=Group.CreateGroup()
-	g:Merge(tg)
-	for tc in aux.Next(tg) do
-		local col_g=tc:GetColumnGroup():Filter(Card.IsControler,nil,1-tp):Filter(Card.IsType,nil,TYPE_MONSTER)
-		g:Merge(col_g)
-	end
-	local rg=g:Filter(Card.IsAbleToRemove,nil)
-	if #rg==0 then return end
-	if Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
-		Duel.Hint(HINT_CARD,0,id)
-		if Duel.Remove(rg,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)==0 then return end
-		local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
-		local c=e:GetHandler()
-		local fid=c:GetFieldID()
-		for tc in aux.Next(og) do
-			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
+function s.get_col(c)
+	local seq=c:GetSequence()
+	if c:IsLocation(LOCATION_MZONE) then
+		if seq>4 then
+			if seq==5 then return 1 end
+			if seq==6 then return 3 end
 		end
-		og:KeepAlive()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabel(fid)
-		e1:SetLabelObject(og)
-		e1:SetCountLimit(1)
-		e1:SetCondition(s.retcon)
-		e1:SetOperation(s.retop)
-		Duel.RegisterEffect(e1,tp)
+	elseif c:IsLocation(LOCATION_SZONE) then
+		if seq>4 then
+			return -1
+		end
 	end
+	return seq
 end
 function s.retfilter(c,fid)
 	return c:GetFlagEffectLabel(id)==fid
@@ -81,6 +67,87 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	e:GetLabelObject():DeleteGroup()
+end
+function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
+	if chk==0 then return tg:GetCount()>0 and tg:FilterCount(Card.IsAbleToRemoveAsCost,nil)==tg:GetCount() end
+	local mask=0
+	for tc in aux.Next(tg) do
+		local col=s.get_col(tc)
+		if col>=0 then
+			mask = mask | (1 << col)
+		end
+	end
+	e:SetLabel(mask)
+	if Duel.Remove(tg,POS_FACEUP,REASON_COST+REASON_TEMPORARY)>0 then
+		local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
+		local fid=e:GetHandler():GetFieldID()
+		for tc in aux.Next(og) do
+			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
+		end
+		og:KeepAlive()
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(id,2))
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		e1:SetLabel(fid)
+		e1:SetLabelObject(og)
+		e1:SetCountLimit(1)
+		e1:SetCondition(s.retcon)
+		e1:SetOperation(s.retop)
+		Duel.RegisterEffect(e1,tp)
+	end
+end
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_ONFIELD)
+end
+function s.colfilter(c,col)
+	return s.get_col(c)==col
+end
+function s.descon2(e,tp,eg,ep,ev,re,r,rp)
+	local val=e:GetLabel()
+	local turn=math.floor(val/1000)
+	return Duel.GetTurnPlayer()==tp and Duel.GetTurnCount()==turn
+end
+function s.desop2(e,tp,eg,ep,ev,re,r,rp)
+	e:Reset()
+	local val=e:GetLabel()
+	local mask=val%1000
+	local g=Group.CreateGroup()
+	for col=0,4 do
+		if (mask & (1<<col))~=0 then
+			local col_g=Duel.GetMatchingGroup(s.colfilter,tp,0,LOCATION_ONFIELD,nil,col)
+			g:Merge(col_g)
+		end
+	end
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_CARD,0,id)
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	end
+end
+function s.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local mask=e:GetLabel()
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,3))
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	local turn=Duel.GetTurnCount()
+	if Duel.GetTurnPlayer()==tp then
+		if Duel.GetCurrentPhase()==PHASE_END then
+			turn=turn+2
+		end
+	else
+		turn=turn+1
+	end
+	local val=turn*1000+mask
+	e1:SetLabel(val)
+	e1:SetCondition(s.descon2)
+	e1:SetOperation(s.desop2)
+	Duel.RegisterEffect(e1,tp)
 end
 function s.effcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

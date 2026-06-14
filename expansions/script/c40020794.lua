@@ -8,7 +8,7 @@ function s.DarkSnake(c)
 end
 s.named_with_DarkSnake=1
 function s.initial_effect(c)
-
+		aux.AddCodeList(c,40020764)
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(id,2))
 	e0:SetType(EFFECT_TYPE_SINGLE)

@@ -10,7 +10,7 @@ function s.initial_effect(c)
 
 	aux.AddSynchroProcedure(c,s.sfilter,aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
-
+	aux.AddCodeList(c,40020569)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_DESTROY)

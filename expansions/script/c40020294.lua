@@ -1,144 +1,124 @@
 --天觉龙 托
+
 local s,id=GetID()
 s.named_with_AwakenedDragon=1
+
 function s.AwakenedDragon(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_AwakenedDragon
 end
+
 function s.initial_effect(c)
-	--pendulum summon
-	aux.EnablePendulumAttribute(c)
-	--spsummon
-	local e0=Effect.CreateEffect(c)
-	e0:SetDescription(aux.Stringid(id,2))
-	e0:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e0:SetType(EFFECT_TYPE_IGNITION)
-	e0:SetRange(LOCATION_PZONE)
-	e0:SetCountLimit(1,id+3)
-	e0:SetCondition(s.spcon)
-	e0:SetTarget(s.sptg)
-	e0:SetOperation(s.spop)
-	c:RegisterEffect(e0)
 
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_DRAW)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_DESTROYED)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(s.drwcon1)
-	e1:SetTarget(s.drwtg)
-	e1:SetOperation(s.drwop)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.spcon)
+	e1:SetTarget(s.sptg)
+	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_REMOVE)
-	e2:SetCondition(s.drwcon2)
-	c:RegisterEffect(e2)
-	local e3=e1:Clone()
-	e3:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetRange(LOCATION_MZONE)
-	c:RegisterEffect(e3)
-	local e4=e2:Clone()
-	e4:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetRange(LOCATION_MZONE)
-	c:RegisterEffect(e4)
 
-	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(id,1))
-	e5:SetCategory(CATEGORY_TOEXTRA)
-	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e5:SetCode(EVENT_TO_GRAVE)
-	e5:SetProperty(EFFECT_FLAG_DELAY)
-	e5:SetCountLimit(1,id)
-	e5:SetTarget(s.extg)
-	e5:SetOperation(s.exop)
-	c:RegisterEffect(e5)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_TOHAND)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e2:SetRange(LOCATION_REMOVED)
+	e2:SetCountLimit(1,id+1)
+	e2:SetCondition(s.thcon1)
+	e2:SetTarget(s.thtg1)
+	e2:SetOperation(s.thop1)
+	c:RegisterEffect(e2)
+
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(id,2))
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_MOVE)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCountLimit(1,id+200)
+	e3:SetCondition(s.thcon2)
+	e3:SetTarget(s.thtg2)
+	e3:SetOperation(s.thop2)
+	c:RegisterEffect(e3)
 end
+
+function s.cfilter(c)
+	return c:IsFaceup() and s.AwakenedDragon(c)
+end
+
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
+
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,tp,LOCATION_GRAVE)
 end
+
+function s.rmfilter(c)
+	return s.AwakenedDragon(c) and c:IsAbleToRemove()
+end
+
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if not c:IsRelateToEffect(e) then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.rmfilter),tp,LOCATION_GRAVE,0,nil)
+		if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+			local sg=g:Select(tp,1,2,nil)
+			if #sg>0 then
+				Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+			end
+		end
 	end
 end
 
-local function destroyed_juelong(c,tp)
-	return c:IsPreviousLocation(LOCATION_MZONE)
-		and c:IsPreviousControler(tp)
-		and s.AwakenedDragon(c)
-		and c:IsType(TYPE_MONSTER)
-		and bit.band(c:GetReason(),REASON_BATTLE+REASON_EFFECT)~=0
+function s.thcon1(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
 end
-local function removed_juelong(c,tp)
-	return c:IsPreviousLocation(LOCATION_MZONE)
-		and c:IsPreviousControler(tp)
-		and s.AwakenedDragon(c)
-		and c:IsType(TYPE_MONSTER)
+
+function s.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToHand() end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
-function s.drwcon1(e,tp,eg,ep,ev,re,r,rp)
-	local tp2=e:GetHandlerPlayer()
-	if e:IsHasType(EFFECT_TYPE_XMATERIAL) then
-		local c=e:GetHandler()
-		local rc=c:GetOverlayTarget()
-		if not rc or not s.AwakenedDragon(rc) or not rc:IsType(TYPE_XYZ) then
-			return false
-		end
-	end
-	return eg:IsExists(destroyed_juelong,1,nil,tp2)
-end
-function s.drwcon2(e,tp,eg,ep,ev,re,r,rp)
-	local tp2=e:GetHandlerPlayer()
-	if e:IsHasType(EFFECT_TYPE_XMATERIAL) then
-		local c=e:GetHandler()
-		local rc=c:GetOverlayTarget()
-		if not rc or not s.AwakenedDragon(rc) or not rc:IsType(TYPE_XYZ) then
-			return false
-		end
-	end
-	return eg:IsExists(removed_juelong,1,nil,tp2)
-end
-function s.drwtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-end
-function s.drwop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Draw(tp,1,REASON_EFFECT)
-end
-function s.extg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then
-		return 
-			not c:IsForbidden()
-			
-	end
-	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,c,1,0,0)
-end
--- 把单卡 c 当作灵摆卡使用加入额外
-function s.SendToExtraAsPendulum(c,tp,reason,e)
-	if not c then return end
-	local handler = e and e:GetHandler() or nil
-	if not c:IsType(TYPE_PENDULUM) then
-		local e1=Effect.CreateEffect(handler)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_ADD_TYPE)
-		e1:SetValue(TYPE_PENDULUM)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e1,true)
-	end
-	Duel.SendtoExtraP(c,tp,reason)
-end
-function s.exop(e,tp,eg,ep,ev,re,r,rp)
+
+function s.thop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		s.SendToExtraAsPendulum(c,tp,REASON_EFFECT,e)
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
+	end
+end
+
+function s.thcon2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsReason(REASON_COST) and re:IsActivated() and re:IsActiveType(TYPE_XYZ)
+		and c:IsPreviousLocation(LOCATION_OVERLAY)
+end
+
+function s.thfilter(c)
+	return s.AwakenedDragon(c) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+end
+
+function s.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+
+function s.thop2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if #g>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end

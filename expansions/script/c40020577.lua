@@ -8,7 +8,7 @@ end
 
 function s.initial_effect(c)
 	c:EnableReviveLimit()
-	--cannot special summon
+	aux.AddCodeList(c,40020569)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)

@@ -8,7 +8,7 @@ function s.DarkSnake(c)
 end
 s.named_with_DarkSnake=1
 function s.initial_effect(c)
-
+		aux.AddCodeList(c,40020764)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,s.matfilter,2,2)
 

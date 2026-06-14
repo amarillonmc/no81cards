@@ -19,7 +19,7 @@ function s.initial_effect(c)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
 	c:RegisterEffect(e0)
-
+	aux.AddCodeList(c,40020321)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
@@ -73,7 +73,7 @@ function s.desfilter_ome(c)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		return Duel.IsExistingMatchingCard(s.desfilter_ome,tp,LOCATION_PZONE,0,1,nil)			
+		return Duel.IsExistingMatchingCard(s.desfilter_ome,tp,LOCATION_PZONE,0,1,nil)		   
 			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_PZONE)

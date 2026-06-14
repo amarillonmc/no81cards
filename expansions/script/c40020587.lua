@@ -9,7 +9,7 @@ end
 
 
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020585)
 	aux.EnablePendulumAttribute(c)
 
 	local e1 = Effect.CreateEffect(c)

@@ -6,7 +6,7 @@ function s.ForceFighter(c)
 	return m and m.named_with_ForceFighter
 end
 function s.initial_effect(c)
-	
+		aux.AddCodeList(c,40020585)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_SPECIAL_SUMMON)

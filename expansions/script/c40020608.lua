@@ -7,7 +7,7 @@ function s.ForceFighter(c)
 end
 
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020585)
 	c:EnableReviveLimit()
 	
 

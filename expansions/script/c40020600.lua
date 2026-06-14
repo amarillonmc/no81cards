@@ -7,7 +7,7 @@ function s.ForceFighter(c)
 end
 
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020585)
 	local e1 = Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND + CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)

@@ -6,7 +6,7 @@ function s.ForceFighter(c)
 	return m and m.named_with_ForceFighter
 end
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020585)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_MACHINE),2,2)	
 
