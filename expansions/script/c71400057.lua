@@ -44,8 +44,10 @@ function c71400057.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SelectTarget(tp,c71400057.filter1a,tp,LOCATION_MZONE,0,1,1,nil)
 end
 function c71400057.filter1c(c,e,tp,mc)
-	return c:IsSetCard(0x714) and c:IsType(TYPE_XYZ) and not c:IsCode(mc:GetCode()) and mc:IsCanBeXyzMaterial(c)
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
+	--旧效果判断
+	--and mc:IsCanBeXyzMaterial(c) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
+	return c:IsSetCard(0x714) and c:IsType(TYPE_XYZ) and not c:IsCode(mc:GetCode())
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c71400057.filter1d(c)
 	if c:IsType(TYPE_LINK) then return false end
@@ -79,15 +81,17 @@ function c71400057.op1(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()<1 then return end
 	Duel.Overlay(tc,g)
 	if not (tc:IsFaceup() and tc:IsControler(tp) and tc:IsRelateToEffect(e)
-		and aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL)
+		and aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_XMATERIAL)
 		and Duel.IsExistingMatchingCard(c71400057.filter1d,0,LOCATION_MZONE,LOCATION_MZONE,1,nil))
 		or tc:IsImmuneToEffect(e) then
 		return
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local xyzg=Duel.SelectMatchingCard(tp,c71400057.filter1c,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc)
+	--旧效果判断
 	if xyzg:GetCount()>0 then
 		local sc=xyzg:GetFirst()
+		--[[
 		local mg=tc:GetOverlayGroup()
 		if mg:GetCount()~=0 then
 			Duel.Overlay(sc,mg)
@@ -95,6 +99,7 @@ function c71400057.op1(e,tp,eg,ep,ev,re,r,rp)
 		local tg=Group.FromCards(tc)
 		sc:SetMaterial(tg)
 		Duel.Overlay(sc,tg)
+		]]
 		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
 		sc:CompleteProcedure()
 		Duel.BreakEffect()

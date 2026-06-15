@@ -120,12 +120,32 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()~=PHASE_MAIN1 and Duel.GetCurrentPhase()~=PHASE_MAIN2 or Duel.GetTurnPlayer()~=tp
 end
 function cm.nfilter(c)
-	return c~=Duel.GetAttacker() and c~=Duel.GetAttackTarget()
+	return (c~=Duel.GetAttacker() and c~=Duel.GetAttackTarget()) or not Duel.GetAttackTarget()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	local check1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
-	local check2=Duel.GetCurrentPhase()==PHASE_BATTLE_STEP and Duel.GetAttackTarget() and Duel.GetFlagEffect(tp,m)==0 and #g>0 and Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE)
+	local at=Duel.GetCurrentPhase()==PHASE_BATTLE_STEP and Duel.GetAttackTarget() and Duel.GetFlagEffect(tp,m)==0 and #g>0 and Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE)
+	local ct=Duel.GetCurrentChain()
+	local ng,dg=Group.CreateGroup(),Group.CreateGroup()
+	local ng2,dg2=Group.CreateGroup(),Group.CreateGroup()
+	if ct>=2 then
+		for i=1,ct do
+			local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+			if tgp~=tp and te:IsActiveType(TYPE_MONSTER) then
+				local tc=te:GetHandler()
+				ng:AddCard(tc)
+				if tc:IsRelateToEffect(te) then ng2:AddCard(tc) end
+			elseif tgp~=1-tp and te:IsActiveType(TYPE_MONSTER) then
+				local tc=te:GetHandler()
+				dg:AddCard(tc)
+				if tc:IsRelateToEffect(te) then dg2:AddCard(tc) end
+			end
+		end
+	end
+	if Duel.GetFlagEffect(tp,m)==0 and #ng>0 and #dg>0 then at=true end
+	g=g-ng2-dg2
+	local check2=#g>0 and at
 	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) and (check1 or check2) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
@@ -151,11 +171,11 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	if #ng>0 and #dg>0 then at=true end
+	if Duel.GetFlagEffect(tp,m)==0 and #ng>0 and #dg>0 then at=true end
 	g=g-ng2-dg2
 	local check2=#g>0 and at
 	if check2 and (not check1 or Duel.SelectYesNo(tp,aux.Stringid(m,0))) then
-		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_BATTLE_STEP,0,1)
+		Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local tg=g:Select(tp,1,1,nil)
 		Duel.HintSelection(tg)

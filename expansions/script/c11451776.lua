@@ -153,42 +153,42 @@ function cm.rffilter(c)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)>0 then
-		local at=Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE)
-		local ct=Duel.GetCurrentChain()
-		if ct>=2 then
-			local te=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT)
-			if te:IsActiveType(TYPE_MONSTER) then at=true end
-		end
-		if not at then return end
-		local g=Group.CreateGroup()
-		local i=1
-		while type(cm[i])=="table" do
-			local te,tf,cid=table.unpack(cm[i])
-			local tc=te:GetHandler()
-			if ((i<=Duel.GetCurrentChain() and tc:IsRelateToEffect(te)) or (i>Duel.GetCurrentChain() and tf and tc:GetFlagEffect(m+1)>0)) and tc:IsAbleToRemove() and not tc:IsLocation(LOCATION_REMOVED) then g:AddCard(tc) end
-			i=i+1
-		end
-		g:RemoveCard(c)
-		if g:IsExists(Card.IsControler,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local rg=g:SelectSubGroup(tp,function(g) return g:IsExists(Card.IsControler,1,nil,tp) end,false,1,#g)
-			if #rg>0 and Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)>0 then
-				local og=Duel.GetOperatedGroup():Filter(cm.rffilter,nil)
-				og:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
-				og:KeepAlive()
-				local e1=Effect.CreateEffect(e:GetHandler())
-				e1:SetDescription(aux.Stringid(11451771,3))
-				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-				e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-				e1:SetCode(EVENT_BATTLED)
-				e1:SetCountLimit(1)
-				e1:SetCondition(cm.retcon2)
-				e1:SetOperation(cm.retop2)
-				e1:SetLabelObject(og)
-				Duel.RegisterEffect(e1,tp)
-			end
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+	end
+	local at=Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE)
+	local ct=Duel.GetCurrentChain()
+	if ct>=2 then
+		local te=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT)
+		if te:IsActiveType(TYPE_MONSTER) then at=true end
+	end
+	if not at then return end
+	local g=Group.CreateGroup()
+	local i=1
+	while type(cm[i])=="table" do
+		local te,tf,cid=table.unpack(cm[i])
+		local tc=te:GetHandler()
+		if ((i<=Duel.GetCurrentChain() and tc:IsRelateToEffect(te)) or (i>Duel.GetCurrentChain() and tf and tc:GetFlagEffect(m+1)>0)) and tc:IsAbleToRemove() and not tc:IsLocation(LOCATION_REMOVED) then g:AddCard(tc) end
+		i=i+1
+	end
+	if c:IsRelateToEffect(e) then g:RemoveCard(c) end
+	if g:IsExists(Card.IsControler,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local rg=g:SelectSubGroup(tp,function(g) return g:IsExists(Card.IsControler,1,nil,tp) end,false,1,#g)
+		if #rg>0 and Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)>0 then
+			local og=Duel.GetOperatedGroup():Filter(cm.rffilter,nil)
+			og:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+			og:KeepAlive()
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetDescription(aux.Stringid(11451771,3))
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+			e1:SetCode(EVENT_BATTLED)
+			e1:SetCountLimit(1)
+			e1:SetCondition(cm.retcon2)
+			e1:SetOperation(cm.retop2)
+			e1:SetLabelObject(og)
+			Duel.RegisterEffect(e1,tp)
 		end
 	end
 end
