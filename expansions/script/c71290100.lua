@@ -118,7 +118,7 @@ if not Htcheck then
 
 	Heita.SelectMatchingCard=Duel.SelectTarget
 	Duel.SelectTarget=function(sel_player,f,player,s,o,min,max,ex,...)
-		local sg=Heita.GetMatchingGroup(f,player,s,o,ex,...):Filter(Heita.Planeswalker,nil):Select(player,min,max,ex,...)
+		local sg=Heita.GetMatchingGroup(f,player,s,o,ex,...):Filter(Heita.Planeswalker,nil):Select(sel_player,min,max,ex,...)
 		Duel.SetTargetCard(sg)
 		return sg
 	end
@@ -138,7 +138,7 @@ if not Htcheck then
 
 	Heita.IsExistingTarget=Duel.IsExistingTarget
 	Duel.IsExistingTarget=function(f,player,s,o,count,ex,...)
-		return Heita.IsExistingTarget(Heita.PlaneswalkerS,player,s,o,count,ex,f,...)
+		return Heita.IsExistingTarget(Heita.PlaneswalkerS2,player,s,o,count,ex,f,...)
 	end
 
 end
