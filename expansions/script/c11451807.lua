@@ -31,7 +31,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function cm.immval(e,te)
-	if not (te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS))) then return false end
+	if not (te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) and (Duel.IsChainSolving() or not te:IsActivated())) then return false end
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+11451807)}

@@ -221,7 +221,7 @@ function cm.econ(e)
 	return e:GetLabel()==0
 end
 function cm.eval(e,te)
-	local res=te:IsActivated()
+	local res=te:IsActivated() and Duel.IsChainSolving()
 	if res then 
 		e:SetLabelObject(te)
 		e:SetLabel(Duel.GetCurrentChain())

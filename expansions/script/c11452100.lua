@@ -107,7 +107,7 @@ function cm.econ(e)
 end
 function cm.eval(e,te)
 	local c=e:GetHandler()
-	local res=te:IsActivated() and e:GetOwnerPlayer()~=te:GetOwnerPlayer() and e:GetLabel()&te:GetActiveType()>0
+	local res=te:IsActivated() and Duel.IsChainSolving() and e:GetOwnerPlayer()~=te:GetOwnerPlayer() and e:GetLabel()&te:GetActiveType()>0
 	if res then 
 		e:SetLabelObject(te)
 		e:SetLabel(Duel.GetCurrentChain())

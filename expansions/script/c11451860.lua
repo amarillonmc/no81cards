@@ -335,7 +335,7 @@ function cm.shfilter(c)
 	return c:GetFlagEffect(m)>0
 end
 function cm.chkval(e,te)
-	if e:GetHandler():GetFlagEffect(m-10)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) then
+	if e:GetHandler():GetFlagEffect(m-10)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) and (Duel.IsChainSolving() or not te:IsActivated()) then
 		local tp=e:GetOwnerPlayer()
 		local g=e:GetLabelObject()
 		g:ForEach(Card.ResetFlagEffect,m-10)

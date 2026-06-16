@@ -197,7 +197,7 @@ function cm.shfilter(c)
 	return c:GetFlagEffect(m)>0
 end
 function cm.chkval(e,te)
-	if e:GetHandler():GetFlagEffect(m+0xffffff)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) then
+	if e:GetHandler():GetFlagEffect(m+0xffffff)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) and (Duel.IsChainSolving() or not te:IsActivated()) then
 		local tp=te:GetOwnerPlayer()
 		local e3=Effect.CreateEffect(e:GetOwner())
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

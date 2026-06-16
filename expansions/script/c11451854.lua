@@ -278,7 +278,7 @@ function cm.initial_effect(c)
 end
 cm.toss_coin=true
 function cm.chkval0(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
+	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) and (Duel.IsChainSolving() or not te:IsActivated()) then
 		if e:GetHandler():GetFlagEffect(11451854)==0 then
 			local prop=EFFECT_FLAG_SET_AVAILABLE
 			if PNFL_INFLUENCED_HINT or PNFL_DEBUG then prop=prop|EFFECT_FLAG_CLIENT_HINT end

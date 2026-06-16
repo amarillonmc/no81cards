@@ -140,7 +140,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e7,tp)
 end
 function cm.chkval(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
+	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) and (Duel.IsChainSolving() or not te:IsActivated()) then
 		local dg=e:GetLabelObject()
 		if dg:IsContains(te:GetHandler()) and te:GetHandler():IsLocation(LOCATION_DECK) and te:GetHandler():GetFlagEffect(m)>0 then
 			te:GetHandler():ResetFlagEffect(m)

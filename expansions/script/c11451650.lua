@@ -69,7 +69,7 @@ function cm.immcon(e)
 	return (not flag or flag<3)
 end
 function cm.eval(e,te)
-	local res=te:IsActivated()
+	local res=te:IsActivated() and Duel.IsChainSolving()
 	if res then 
 		e:SetLabelObject(te)
 		e:SetLabel(Duel.GetCurrentChain())
@@ -117,7 +117,6 @@ function cm.immval(e,te_or_c)
 				end
 			end
 		end
-		
 	end
 	return res
 end

@@ -83,7 +83,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				end)
 	e1:SetValue(function(e,te)
 					local eid=e:GetLabel()
-					local res=te:IsActivated() and e:GetOwnerPlayer()~=te:GetOwnerPlayer()
+					local res=te:IsActivated() and e:GetOwnerPlayer()~=te:GetOwnerPlayer() and Duel.IsChainSolving()
 					local sg=Duel.GetMatchingGroup(cm.cfilter2,0,LOCATION_MZONE,LOCATION_MZONE,nil,eid)
 					if res then
 						Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)

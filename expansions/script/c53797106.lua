@@ -185,7 +185,7 @@ function s.tgfilter(c)
 end
 function s.immval(e,te)
 	local c=e:GetHandler()
-	if not c:IsLocation(LOCATION_MZONE) or not te:IsActivated() or not s.chain_solving or te:GetOwner()==c then return false end
+	if not c:IsLocation(LOCATION_MZONE) or not te:IsActivated() or not Duel.IsChainSolving() or te:GetOwner()==c then return false end
 	if c:GetFlagEffect(id+1000)>0 then return true end
 	local tp=c:GetControler()
 	local res=Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil)

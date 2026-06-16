@@ -80,9 +80,9 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 		-- 提示词需在 strings.conf 中注册，对应 id, 2~9
 		local marker_list = {
 			{LINK_MARKER_TOP_LEFT,   aux.Stringid(id, 2)},  -- 左上
-			{LINK_MARKER_TOP,		aux.Stringid(id, 3)},  -- 正上
+			{LINK_MARKER_TOP,	   aux.Stringid(id, 3)},  -- 正上
 			{LINK_MARKER_TOP_RIGHT, aux.Stringid(id, 4)},  -- 右上
-			{LINK_MARKER_LEFT,	 aux.Stringid(id, 5)},  -- 正左
+			{LINK_MARKER_LEFT,   aux.Stringid(id, 5)},  -- 正左
 			{LINK_MARKER_RIGHT,  aux.Stringid(id, 6)},  -- 正右
 			{LINK_MARKER_BOTTOM_LEFT,  aux.Stringid(id, 7)},  -- 左下
 			{LINK_MARKER_BOTTOM,	   aux.Stringid(id, 8)},  -- 正下
@@ -207,12 +207,12 @@ end
 function s.immuneval(e,te,c)
 	local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+m)}
 	local ctns=false
-	if te:IsActivated() then
+	if te:IsActivated() and Duel.IsChainSolving() then
 		for _,se in pairs(eset) do
 			if se:GetLabelObject()==te and se:GetLabel()==Duel.GetCurrentChain() then ctns=true end
 		end
 	end
-	local res=ctns or (te:IsActivated() and te:GetOwner()~=c:GetControler())
+	local res=ctns or (te:IsActivated() and te:GetOwner()~=c:GetControler() and Duel.IsChainSolving())
 	if res and not ctns then
 		Duel.Hint(HINT_CARD,0,m)
 		local ge2=c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)

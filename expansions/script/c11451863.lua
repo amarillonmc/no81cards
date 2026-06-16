@@ -272,7 +272,7 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.chkval(e,te)
-	if e:GetHandler():GetFlagEffect(m-10)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) then
+	if e:GetHandler():GetFlagEffect(m-10)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) and (Duel.IsChainSolving() or not te:IsActivated()) then
 		local g=e:GetLabelObject()
 		g:ForEach(Card.ResetFlagEffect,m-10)
 		if Duel.GetFlagEffect(tp,0xffff+m)==0 then

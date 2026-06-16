@@ -91,7 +91,7 @@ function cm.filter1(c)
 	return false
 end
 function cm.imop(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
+	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) and (Duel.IsChainSolving() or not te:IsActivated()) then
 		if te:GetHandler():IsLocation(LOCATION_DECK) and not cm.filter1(te:GetHandler()) then
 			local se=Effect.CreateEffect(e:GetHandler())
 			se:SetType(EFFECT_TYPE_SINGLE)
