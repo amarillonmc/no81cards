@@ -11,7 +11,6 @@ function s.initial_effect(c)
     e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_FZONE)
-	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(s.eftg)
 	e1:SetOperation(s.efop)
 	c:RegisterEffect(e1)
@@ -60,17 +59,17 @@ function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
     e:SetLabel(op)    
     if op==1 then
     	if e:IsCostChecked() then
-        	e:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DRAW)
-			Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
-    		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+        	e:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DRAW)			
             Duel.RegisterFlagEffect(tp,id+o*2,RESET_PHASE+PHASE_END,0,1)
         end    
+        Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
+    	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
     elseif op==2 then    
     	if e:IsCostChecked() then
-        	e:SetCategory(CATEGORY_SPECIAL_SUMMON)
-    		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+        	e:SetCategory(CATEGORY_SPECIAL_SUMMON)   		
             Duel.RegisterFlagEffect(tp,id+o,RESET_PHASE+PHASE_END,0,1)
-        end    
+        end
+        Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)    
     end    
 end
 function s.efop(e,tp,eg,ep,ev,re,r,rp)

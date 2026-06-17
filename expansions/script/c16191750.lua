@@ -49,7 +49,6 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
 	e1:SetCountLimit(1)
-    e1:SetLabel(Duel.GetTurnCount())
 	e1:SetCondition(s.spcon)
 	e1:SetOperation(s.spop)
 	if Duel.GetCurrentPhase()==PHASE_BATTLE_START then		
@@ -63,7 +62,7 @@ function s.spfilter(c,e,tp)
 	return c:IsSetCard(0x33b0) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end    
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()~=e:GetLabel() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)

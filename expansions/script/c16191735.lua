@@ -77,16 +77,16 @@ function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
     e:SetLabel(op)     
     if op==1 then
     	if e:IsCostChecked() then
-        	e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-			Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+        	e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)			
             Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
         end    
+        Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
     elseif op==2 then    
     	if e:IsCostChecked() then
-        	e:SetCategory(CATEGORY_SPECIAL_SUMMON)
-    		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+        	e:SetCategory(CATEGORY_SPECIAL_SUMMON)    		
             Duel.RegisterFlagEffect(tp,id+o,RESET_PHASE+PHASE_END,0,1)
-        end    
+        end
+        Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)    
     end    
     Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
