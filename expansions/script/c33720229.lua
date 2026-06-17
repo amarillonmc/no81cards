@@ -34,8 +34,8 @@ if not s.STRING_INVALID_AND_RETRY then
 end
 
 local STRING_INVALID_AND_ESCAPE = aux.Stringid(id,11)
-local STRING_ASK_OPPONENT 		= aux.Stringid(id,12)
-local STRING_SHOW_X 			= aux.Stringid(id,13)
+local STRING_ASK_OPPONENT	   = aux.Stringid(id,12)
+local STRING_SHOW_X			 = aux.Stringid(id,13)
 
 local FLAG_TOTAL_DECLARED_LEVEL = id
 
@@ -171,7 +171,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		local togycheck=false
 		if #g>0 then
 			local tg=g:Filter(Card.IsAbleToGrave,nil)
-			if #tg>0 and Duel.SendtoGrave(tg,REASON_EFFECT,1-tp)>0 and Duel.GetOperatedGroup():IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) then
+			if #tg>0 and Duel.SendtoGrave(tg,REASON_EFFECT)>0 and Duel.GetOperatedGroup():IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) then
 				togycheck=true
 				Duel.Damage(1-tp,3300,REASON_EFFECT)
 			end

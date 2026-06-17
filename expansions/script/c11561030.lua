@@ -21,16 +21,13 @@ function c11561030.initial_effect(c)
 	e2:SetOperation(c11561030.effop)
 	c:RegisterEffect(e2)
 end
-function c11561030.lcheck(g,lc)
-	return g:GetClassCount(Card.GetLinkRace)==g:GetCount()
-end 
 function c11561030.effcon(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_XYZ+REASON_SYNCHRO+REASON_FUSION+REASON_RITUAL)
 end
 function c11561030.effop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=c:GetReasonCard()
-	local e1=Effect.CreateEffect(c) 
+	local e1=Effect.CreateEffect(rc) 
 	e1:SetDescription(aux.Stringid(11561030,0))
 	e1:SetType(EFFECT_TYPE_SINGLE) 
 	e1:SetCode(EFFECT_IMMUNE_EFFECT) 
@@ -40,4 +37,12 @@ function c11561030.effop(e,tp,eg,ep,ev,re,r,rp)
 	return te:GetOwnerPlayer()~=e:GetOwnerPlayer() and te:IsActiveType(TYPE_SPELL) end) 
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1)   
+	if not rc:IsType(TYPE_EFFECT) then
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_ADD_TYPE)
+		e2:SetValue(TYPE_EFFECT)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		rc:RegisterEffect(e2,true)
+	end
 end
