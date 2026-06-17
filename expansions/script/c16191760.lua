@@ -46,6 +46,7 @@ function s.confilter(c,tp)
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
+    if tg:FilterCount(Card.IsControler,nil,tp)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local sg=tg:SelectSubGroup(tp,s.fselect,false,1,2,tp)
     if sg:GetCount()<=0 then return end
@@ -67,7 +68,7 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_DISABLE)
 			e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 			e1:SetTarget(s.distg1)
-			e1:SetLabel(tc:GetCode())
+			e1:SetLabelObject(tc)
 			e1:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e1,tp)
 			local e2=Effect.CreateEffect(c)
@@ -75,7 +76,7 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetCode(EVENT_CHAIN_SOLVING)
 			e2:SetCondition(s.discon)
 			e2:SetOperation(s.disop)
-			e2:SetLabel(tc:GetCode())
+			e2:SetLabelObject(tc)
 			e2:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e2,tp)
 			local e3=Effect.CreateEffect(c)
@@ -83,27 +84,27 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
 			e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 			e3:SetTarget(s.distg2)
-			e3:SetLabel(tc:GetCode())
+			e3:SetLabelObject(tc)
 			e3:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e3,tp)       
         end
     end
 end
 function s.distg1(e,c)
-	local code=e:GetLabel()
+	local tc=e:GetLabelObject()
 	if c:IsType(TYPE_SPELL+TYPE_TRAP) then
-		return c:IsCode(code)
+		return c:IsOriginalCodeRule(tc:GetOriginalCodeRule())
 	else
-		return c:IsCode(code) and (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0)
+		return c:IsOriginalCodeRule(tc:GetOriginalCodeRule()) and (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0)
 	end
 end
 function s.distg2(e,c)
-	local code=e:GetLabel()
-	return c:IsCode(code)
+	local tc=e:GetLabelObject()
+	return c:IsOriginalCodeRule(tc:GetOriginalCodeRule()) 
 end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
-	local code=e:GetLabel()
-	return re:GetHandler():IsCode(code)
+	local tc=e:GetLabelObject()
+	return re:GetHandler():IsOriginalCodeRule(tc:GetOriginalCodeRule()) 
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)

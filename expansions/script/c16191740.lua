@@ -59,6 +59,7 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)	
     local tg=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+    if tg:FilterCount(Card.IsControler,nil,tp)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local sg=tg:SelectSubGroup(tp,s.fselect,false,1,2,tp)
     if sg:GetCount()<=0 then return end
