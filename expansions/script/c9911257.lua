@@ -44,7 +44,7 @@ function c9911257.checkop(e,tp,eg,ep,ev,re,r,rp)
 	while tc do
 		if tc:IsLocation(LOCATION_MZONE) and tc:IsPreviousLocation(LOCATION_MZONE)
 			and (tc:GetPreviousSequence()~=tc:GetSequence() or tc:GetPreviousControler()~=tc:GetControler()) then
-			tc:RegisterFlagEffect(9911257,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+			tc:RegisterFlagEffect(9911257,RESET_EVENT+RESETS_STANDARD,0,1)
 		end
 		tc=eg:GetNext()
 	end
