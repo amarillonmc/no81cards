@@ -42,6 +42,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		if not Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c) then return end
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,c)
+		Duel.HintSelection(g)
 		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end

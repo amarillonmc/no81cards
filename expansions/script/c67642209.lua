@@ -68,7 +68,7 @@ function c67642209.pcop(e,tp,eg,ep,ev,re,r,rp)
 end
 --special summon
 function c67642209.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==1
+	return Duel.GetMatchingGroupCount(nil,tp,LOCATION_MZONE,0,e:GetHandler())==0
 end
 function c67642209.costfilter(c,e,tp)
 	return c:IsSetCard(0x13f) and c:IsDiscardable()

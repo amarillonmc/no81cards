@@ -74,6 +74,7 @@ function s.tfop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c) then return end
 	local tc=Duel.GetMatchingGroupCount(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,c)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,tc,math.min(tc,2),c)
+	Duel.HintSelection(g)
 	Duel.SendtoGrave(g,REASON_EFFECT)
 end
 

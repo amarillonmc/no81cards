@@ -97,41 +97,49 @@ end
 
 -- 目标选择
 
+-- 效果发动操作（不取对象版本）
 function c10111191.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	-- 根据 Label 检查对应的位置是否存在可操作的卡
 	if chk==0 then 
-		return (Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,nil) and e:GetLabel()==0) or (Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,nil) and e:GetLabel()==1)
-	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Group.CreateGroup()
-	if e:GetLabel()==1 then
-		g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,1,nil)
-	else
-		g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,1,nil)
-	end
-	if #g>0 then
-		e:SetLabelObject(g:GetFirst())
 		if e:GetLabel()==1 then
-			e:SetCategory(CATEGORY_TOHAND)
-			Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+			return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,nil)
 		else
-			e:SetCategory(CATEGORY_REMOVE)
-			Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+			return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,nil)
 		end
+	end
+	
+	-- 在发动时声明对应的效果分类
+	if e:GetLabel()==1 then
+		e:SetCategory(CATEGORY_TOHAND)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,1-tp,LOCATION_SZONE+LOCATION_GRAVE)
+	else
+		e:SetCategory(CATEGORY_REMOVE)
+		Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_SZONE+LOCATION_GRAVE)
 	end
 end
 
--- 效果处理
+-- 效果处理（在处理时才选择卡片）
 function c10111191.op(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if not tc or not tc:IsLocation(LOCATION_SZONE+LOCATION_GRAVE) then return end
-	
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Group.CreateGroup()
 	local replace=(e:GetLabel()==1)
 	
+	-- 在效果处理时筛选并让玩家选择卡片
 	if replace then
-		if Duel.SendtoHand(tc,tp,REASON_EFFECT)~=0 then
-			Duel.ConfirmCards(1-tp,tc)
-		end
+		g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToHand),tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,1,nil)
 	else
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToRemove),tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,1,nil)
+	end
+	
+	-- 如果此时依然选出了卡片，则执行后续处理
+	if #g>0 then
+		local tc=g:GetFirst()
+		if replace then
+			if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 then -- 注意：不取对象回手牌，原代码的 tp 建议换成 nil（回到持有者手牌）
+				Duel.ConfirmCards(1-tp,tc)
+			end
+		else
+			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		end
 	end
 end

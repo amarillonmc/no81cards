@@ -116,7 +116,7 @@ function c71400057.filter2a(c)
 	return c:IsSetCard(0x714) and c:IsType(TYPE_XYZ) and c:IsFaceup() and g:GetCount()>2 and g:IsExists(c71400057.filter2c,1,nil)
 end
 function c71400057.filter2b(c)
-	return c:IsFaceup() and c:IsType(TYPE_EFFECT) and c:IsCanOverlay()
+	return c:IsFaceupEx() and c:IsType(TYPE_EFFECT) and (c:IsOnField() or c:IsForbidden())
 end
 function c71400057.filter2c(c)
 	return c:IsSetCard(0x714) and c:IsType(TYPE_XYZ)
