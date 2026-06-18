@@ -37,12 +37,13 @@ function c9910105.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910105.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or c:IsControler(1-tp) or c:IsImmuneToEffect(e) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	if not c:IsRelateToEffect(e) or c:IsImmuneToEffect(e) or not c:IsControler(tp)
+		or Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-	local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
-	local nseq=math.log(s,2)
-	Duel.MoveSequence(c,nseq)
-	Duel.BreakEffect()
+	local fd=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
+	Duel.Hint(HINT_ZONE,tp,fd)
+	local seq=math.log(fd,2)
+	Duel.MoveSequence(c,seq)
 	local off=1
 	local ops={}
 	local opval={}
@@ -61,6 +62,7 @@ function c9910105.operation(e,tp,eg,ep,ev,re,r,rp)
 	if off==1 then return end
 	local op=Duel.SelectOption(tp,table.unpack(ops))
 	if opval[op]==1 then
+		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local sg1=g1:Select(tp,1,1,nil)
 		if sg1:GetCount()>0 then
@@ -68,6 +70,7 @@ function c9910105.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Destroy(sg1,REASON_EFFECT)
 		end
 	elseif opval[op]==2 then
+		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg2=g2:Select(tp,1,1,nil)
 		if sg2:GetCount()>0 then
