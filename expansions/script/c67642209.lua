@@ -44,7 +44,7 @@ end
 function c67642209.sdfilter(c)
 	return c:IsFacedown() or not c:IsSetCard(0x13f)
 end
-function c67642209.spcon1(e)
+function c67642209.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(c67642209.sdfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c67642209.pcfilter(c,tp)

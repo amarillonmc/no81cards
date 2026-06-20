@@ -36,7 +36,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(Duel.GetOperatedGroup():GetFirst():GetCode())
 end
 function cm.filter(c,e,tp,code)
-	return c:IsType(TYPE_FLIP) and c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_FLIP) and c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

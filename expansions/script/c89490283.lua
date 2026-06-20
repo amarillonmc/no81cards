@@ -64,6 +64,10 @@ function s.ovop(e,tp,eg,ep,ev,re,r,rp)
 		local oc=g:GetFirst()
 		if oc then
 			oc:CancelToGrave()
+			local og=oc:GetOverlayGroup()
+			if og:GetCount()>0 then
+				Duel.SendtoGrave(og,REASON_RULE)
+			end
 			Duel.Overlay(tc,oc)
 		end
 	end

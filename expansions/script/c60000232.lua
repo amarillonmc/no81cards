@@ -38,7 +38,7 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e11)
 	end
 	--Duel.BreakEffect()
-	if #g:Filter(Card.IsCanBeSpecialSummoned,nil,e,0,tp,false,false)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+	if #g:Filter(Card.IsCanBeSpecialSummoned,nil,e,0,tp,false,false,POS_FACEDOWN_DEFENSE)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=g:Filter(Card.IsCanBeSpecialSummoned,nil,e,0,tp,false,false):Select(tp,1,1,nil)
 		if sg and Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)~=0 then Duel.Draw(tp,1,REASON_EFFECT) end

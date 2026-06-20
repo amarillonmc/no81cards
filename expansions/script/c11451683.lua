@@ -172,7 +172,7 @@ function cm.shfilter(c)
 	return c:GetFlagEffect(11451541)>0
 end
 function cm.tgfilter(c,e)
-	return c:IsCanBeEffectTarget(e) and c:GetFlagEffect(11451541)==0
+	return c:IsCanBeEffectTarget(e) and c:GetFlagEffect(11451541)==0 and c:GetFlagEffect(11451682)==0
 end
 function cm.hand(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
