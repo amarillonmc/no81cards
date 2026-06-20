@@ -165,7 +165,7 @@ function c20248755.rmop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.HintSelection(sg)
-		Duel.GetControl(sg,nil,REASON_EFFECT)
+		Duel.GetControl(sg,tp)
 	end
 	if c:IsRelateToEffect(e) then
 		Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true) end
