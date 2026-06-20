@@ -70,8 +70,8 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 				local prop1,prop2=table.unpack(vp)
 				ke:SetProperty(prop1|EFFECT_FLAG_UNCOPYABLE,prop2)
 			end
-			--[[c:EnableReviveLimit()
-			aux.AddLinkProcedure(c,cm.matfilter,2,2)--]]
+			c:EnableReviveLimit()
+			--aux.AddLinkProcedure(c,cm.matfilter,2,2)
 			local loc=c:GetLocation()
 			Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,c)

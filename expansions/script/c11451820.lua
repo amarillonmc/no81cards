@@ -52,9 +52,9 @@ function cm.immval(e,re)
 	return re:GetOwnerPlayer()~=e:GetHandlerPlayer()
 end
 function cm.atttg(e,c)
-	return c:IsOriginalSetCard(0x13f) and c:IsType(TYPE_MONSTER)
+	return cm.is_calculating_att and c:IsOriginalSetCard(0x13f) and c:IsType(TYPE_MONSTER) 
 end
-function cm.attval(e,re)
+--[[function cm.attval(e,re)
 	local tp=e:GetHandlerPlayer()
 	local wg=Duel.GetMatchingGroup(function(c) return c:IsType(TYPE_MONSTER) and c:IsFaceupEx() end,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
 	local wbc=wg:GetFirst()
@@ -75,6 +75,39 @@ function cm.chtg(e,c)
 		wbc=wg:GetNext()
 	end
 	return c:IsAttribute(att)
+end--]]
+-- 【修改点1】属性获取Value函数：移除动态Group创建，改为直接读取缓存
+function cm.attval(e,re)
+	local tp=e:GetHandlerPlayer()
+	if not cm.field_grave_att or not cm.field_grave_att[tp] then return 0 end
+	return cm.field_grave_att[tp]
+end
+-- 【修改点2】字段添加Target函数：移除内嵌的Group创建与GetAttribute循环，改为直接比对缓存属性
+function cm.chtg(e,c)
+	local tp=e:GetHandlerPlayer()
+	if not cm.field_att or not cm.field_att[tp] then return false end
+	return c:IsAttribute(cm.field_att[tp])
+end
+-- 【修改点3】新增函数：在每个全局ADJUST时点仅执行一次的轻量化属性缓存器
+function cm.cacheop(e,tp,eg,ep,ev,re,r,rp)
+	cm.is_calculating_att=true
+	if not cm.field_grave_att then cm.field_grave_att={} end
+	if not cm.field_att then cm.field_att={} end
+	-- 计算自身场上+墓地的怪兽总属性组合
+	local wg1=Duel.GetMatchingGroup(function(c) return c:IsType(TYPE_MONSTER) and c:IsFaceupEx() end,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
+	local att1=0
+	for tc in aux.Next(wg1) do
+		att1=att1|tc:GetAttribute()
+	end
+	cm.field_grave_att[tp]=att1
+	cm.is_calculating_att=false
+	-- 计算自身场上的怪兽总属性组合
+	local wg2=Duel.GetMatchingGroup(function(c) return c:IsType(TYPE_MONSTER) and c:IsFaceupEx() end,tp,LOCATION_MZONE,0,nil)
+	local att2=0
+	for tc in aux.Next(wg2) do
+		att2=att2|tc:GetAttribute()
+	end
+	cm.field_att[tp]=att2
 end
 function cm.costfilter1(c)
 	return c:IsSetCard(0x13f) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
@@ -83,6 +116,12 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	if not cm[tp] then
 		cm[tp]=true
 		local c=e:GetHandler()
+		-- 【修改点4】在决斗开始时，注册一个持久的全局调整效果，用于实时刷新属性缓存
+		local e_cache=Effect.CreateEffect(c)
+		e_cache:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e_cache:SetCode(EVENT_ADJUST)
+		e_cache:SetOperation(cm.cacheop)
+		Duel.RegisterEffect(e_cache,tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local g=Duel.SelectMatchingCard(tp,cm.costfilter1,tp,LOCATION_HAND,0,1,1,nil)
 		if #g==0 then e:Reset() return end
@@ -135,7 +174,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			if effect:IsActivated() and effect:GetRange()&(LOCATION_ONFIELD+LOCATION_HAND+LOCATION_PZONE+LOCATION_FZONE)==effect:GetRange() and not ((effect:GetCode()==EVENT_TO_GRAVE or effect:GetCode()==EVENT_LEAVE_FIELD) and effect:IsHasType(EFFECT_TYPE_SINGLE)) then
 				--if cm.cloneeffects[effect] then return end
 				local eff=effect --:Clone()
-				if eff:IsHasType(EFFECT_TYPE_QUICK_O) and eff:GetCode()==EVENT_FREE_CHAIN then
+				if eff:IsHasType(EFFECT_TYPE_QUICK_O) and eff:GetCode()==EVENT_FREE_CHAIN and eff:GetDescription()~=aux.Stringid(20248755,1) then
 					if eff:GetRange()&LOCATION_MZONE>0 and card:GetOriginalCode()~=20248755 and card:GetOriginalCode()~=99953655 and card:GetOriginalCode()~=15000111 then eff:SetDescription(aux.Stringid(m,8)) end
 					if eff:GetRange()&LOCATION_SZONE>0 and card:GetOriginalCode()~=17016131 then eff:SetDescription(aux.Stringid(m,1)) end
 					eff:SetRange(LOCATION_ONFIELD+LOCATION_HAND)
@@ -217,8 +256,10 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 				end
 				return ce
 			end
+			local rl=tc:IsHasEffect(EFFECT_REVIVE_LIMIT)
 			tc:ReplaceEffect(tc:GetOriginalCode(),0)
 			tc:SetStatus(STATUS_EFFECT_REPLACED,false)
+			if rl then tc:EnableReviveLimit() end
 			Effect.SetProperty=_SetProperty
 			Effect.Clone=_Clone
 			for ke,vp in pairs(cm.proeffects) do

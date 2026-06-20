@@ -64,10 +64,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	
 	-- 选择强化选项
 	local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(m,1)},  -- 不进行灵光一闪
-		{b2,aux.Stringid(m,2)},  -- 灵光一闪I
-		{b3,aux.Stringid(m,3)},  -- 灵光一闪II
-		{b4,aux.Stringid(m,4)})  -- 灵光一闪III/IV
+		{b1,aux.Stringid(m,0)},  -- 不进行灵光一闪
+		{b2,aux.Stringid(m,1)},  -- 灵光一闪I
+		{b3,aux.Stringid(m,2)},  -- 灵光一闪II
+		{b4,aux.Stringid(m,3)},  -- 灵光一闪III
+		{b4,aux.Stringid(m,3)})  -- 灵光一闪III/IV
 	
 	-- 灵光一闪选项需要破坏衍生物
 	if op>=2 then
@@ -108,7 +109,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
 		end
-		
+	elseif op==5 then
+		Duel.Draw(tp,2,REASON_EFFECT)
 		-- 灵光一闪IV：左侧灵摆区刻度+2
 		local lc=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
 		if lc then
