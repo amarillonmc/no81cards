@@ -1,5 +1,6 @@
 --超原始太阳 赫利俄斯
 function c98920193.initial_effect(c)
+	aux.AddCodeList(c,30241314)
 	 --code
 	aux.EnableChangeCode(c,54493213,LOCATION_MZONE+LOCATION_HAND)
 	 --place

@@ -115,11 +115,11 @@ function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 			tg=mg:SelectSubGroup(tp,cm.xyzff,false,0,#mg,tc,c)
 		end
-		if #tg>0 then 
+		if #tg>0 then
 			tg:AddCard(c)
 			tc:SetMaterial(tg)
 			Duel.Overlay(tc,tg)
-			Duel.SpecialSummon(tc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
+			Duel.SpecialSummon(tc,SUMMON_TYPE_XYZ,tp,tp,true,true,POS_FACEUP)
 			tc:CompleteProcedure()
 			if tc_f then
 				cm[0]=Card.RegisterEffect

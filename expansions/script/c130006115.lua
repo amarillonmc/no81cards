@@ -138,6 +138,7 @@ function s.ttop(e,tp,eg,ep,ev,re,r,rp,c)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local tg=mg:Select(tp,1,1,nil)
 		g1:Merge(tg)
+		if tg:GetFirst():IsType(TYPE_FIELD) then g1=g1:Filter(aux.NOT(Card.IsType,TYPE_FIELD),1,nil) end
 		mg:Sub(tg)
 		ct=ct-1
 	end
@@ -148,8 +149,24 @@ function s.ttop(e,tp,eg,ep,ev,re,r,rp,c)
 	g:Merge(g1)
 	g:Merge(g2)
 	c:SetMaterial(g)
-	if #g1>0 then 
-		Duel.SSet(tp,g1)
+	for tc in aux.Next(g1) do 
+		local loc=LOCATION_SZONE
+		if tc:IsType(TYPE_FIELD) then
+			loc=LOCATION_FZONE
+			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+			if fc then
+				Duel.SendtoGrave(fc,REASON_RULE)
+				Duel.BreakEffect()
+			end
+		end
+		res = Duel.MoveToField(tc,tp,tp,loc,POS_FACEDOWN,false)
+		if res then
+			tc:SetStatus(STATUS_SET_TURN,true)
+		end
+	end
+	if g1:FilterCount(Card.IsOnField,nil)>0 then
+		Duel.ConfirmCards(1-tp,g1)
+		Duel.RaiseEvent(g1,EVENT_SSET,e,REASON_SUMMON,tp,tp,0)
 	end
 	if #g2>0 then
 		Duel.Release(g2,REASON_SUMMON+REASON_MATERIAL)
