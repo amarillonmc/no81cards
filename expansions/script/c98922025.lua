@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunFun(c,aux.FilterBoolFunction(s.matfilter1),aux.FilterBoolFunction(Card.IsFusionSetCard,0x1019),3,true)
-	aux.AddContactFusionProcedure(c,s.cfilterxxs,LOCATION_MZONE+LOCATION_GRAVE,0,aux.ContactFusionSendToDeck(c)):SetValue(SUMMON_VALUE_SELF)
+	aux.AddContactFusionProcedure(c,Card.IsAbleToDeckOrExtraAsCost,LOCATION_ONFIELD+LOCATION_GRAVE,0,Duel.SendtoDeck,nil,2,REASON_COST)
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -38,9 +38,6 @@ function s.initial_effect(c)
 	e3:SetTarget(s.cbtg)
 	e3:SetOperation(s.cbop)
 	c:RegisterEffect(e3)
-end
-function s.cfilterxxs(c)
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToDeckOrExtraAsCost()
 end
 function s.matfilter1(c)
 	return c:IsFusionSetCard(0x1019) and c:IsLevelAbove(7)

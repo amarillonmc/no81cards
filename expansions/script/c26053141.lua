@@ -14,9 +14,10 @@ c:SetUniqueOnField(1,0,m)
     -- ② 对方从卡组·额外特殊召唤怪兽时，选择1个效果发动
     local e2=Effect.CreateEffect(c)
     e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-    e2:SetCategory(CATEGORY_GRAVE_ACTION+CATEGORY_TODECK+CATEGORY_TOHAND)
+    e2:SetCategory(CATEGORY_GRAVE_ACTION+CATEGORY_TOHAND)
     e2:SetCode(EVENT_SPSUMMON_SUCCESS)
     e2:SetRange(LOCATION_SZONE)
+		e2:SetProperty(EFFECT_FLAG_DELAY)
     e2:SetCondition(cm.condition2)
     e2:SetTarget(cm.sptg)
     e2:SetOperation(cm.spop)
@@ -49,10 +50,10 @@ function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter,1,nil,1-tp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-   local b1=Duel.IsExistingMatchingCard(cm.nofilter2,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,1,nil)
+   local b1=Duel.IsExistingMatchingCard(cm.nofilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
 		and (not e:IsCostChecked() or Duel.GetFlagEffect(tp,m+1)==0)
-	local b2=Duel.IsExistingMatchingCard(cm.nofilter1,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,1,nil)
-		and (not e:IsCostChecked() or Duel.GetFlagEffect(tp,m+2)<3)
+	local b2=Duel.IsExistingMatchingCard(cm.nofilter1,tp,LOCATION_ONFIELD,0,1,nil)
+		and (not e:IsCostChecked() or Duel.GetFlagEffect(tp,m+2)==0)
 	if chk==0 then return b1 or b2 end
 	local op=0
 	if b1 or b2 then
@@ -66,29 +67,30 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			e:SetCategory(CATEGORY_TOHAND)
 			Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1)
 		end
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_ONFIELD+LOCATION_GRAVE)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 	elseif op==2 then
 		if e:IsCostChecked() then
 			e:SetCategory(CATEGORY_TODECK)
 			Duel.RegisterFlagEffect(tp,m+2,RESET_PHASE+PHASE_END,0,1)
 		end
-		Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_ONFIELD+LOCATION_GRAVE)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_ONFIELD)
 	end
 end
 -- 操作：选择并执行一个效果
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
     if e:GetLabel()==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.nofilter2),tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.nofilter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 		if g:GetCount()>0 then
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
 		end
 	elseif e:GetLabel()==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.nofilter1),tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.nofilter1),tp,LOCATION_ONFIELD,0,1,1,nil)
 		if g:GetCount()>0 then
-			 Duel.SendtoDeck(g,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
+			 Duel.SendtoHand(g,nil,REASON_EFFECT)
+			 Duel.ConfirmCards(1-tp,g)
 		end
 	end
 end

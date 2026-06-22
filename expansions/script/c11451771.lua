@@ -150,7 +150,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetCurrentChain()
 	if ct>=2 then
 		local te=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT)
-		if te:IsActiveType(TYPE_MONSTER) and not Duel.IsMainPhase() then at=true end
+		if te:IsActiveType(TYPE_MONSTER) then at=true end --and not Duel.IsMainPhase()
 	end
 	if not at then return end
 	local tpact=false
@@ -169,11 +169,11 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,tg)
 	end
 end
-function cm.th2filter(c,att)
-	return c:IsFaceup() and c:IsAttribute(att)
+function cm.th2filter(c,code)
+	return c:IsFaceup() and c:IsCode(code)
 end
 function cm.thfilter(c)
-	return c:IsRace(RACE_WARRIOR) and c:IsAbleToHand() and not Duel.IsExistingMatchingCard(cm.th2filter,tp,LOCATION_MZONE,0,1,nil,c:GetAttribute())
+	return c:IsRace(RACE_WARRIOR) and c:IsAbleToHand() and not Duel.IsExistingMatchingCard(cm.th2filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,c:GetCode())
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())

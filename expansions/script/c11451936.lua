@@ -160,11 +160,11 @@ end
 function cm.mcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()==1
 end
-function cm.nfilter(c)
-	return c:GetType()==TYPE_TRAP and c:IsOriginalEffectProperty(cm.sp_filter) and c:CheckActivateEffect(false,false,false)~=nil
-end
 function cm.sp_filter(e)
 	return e:IsHasCategory(CATEGORY_EQUIP)
+end
+function cm.eqfilter(c)
+	return c:IsType(TYPE_MONSTER) and not c:IsForbidden() and c:IsOriginalEffectProperty(cm.sp_filter)
 end
 function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -173,63 +173,50 @@ function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
 	local b3=(seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))
 	local b4=(seq==1 and Duel.CheckLocation(tp,LOCATION_MZONE,5)) or (seq==3 and Duel.CheckLocation(tp,LOCATION_MZONE,6))
-	local q1=Duel.IsExistingMatchingCard(cm.nfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local q1=Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and #g>0
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 or q1 end
 end
 function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local bool=c:IsRelateToEffect(e) and c:IsControler(tp) and c:IsFaceup()
+	local bool=c:IsRelateToEffect(e) and c:IsFaceup()
 	local seq=c:GetSequence()
 	local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
 	local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
 	local b3=(seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))
 	local b4=(seq==1 and Duel.CheckLocation(tp,LOCATION_MZONE,5)) or (seq==3 and Duel.CheckLocation(tp,LOCATION_MZONE,6))
 	local q2=bool and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)+Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)>0
-	local q1=Duel.IsExistingMatchingCard(cm.nfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+	local qg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local q1=Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.eqfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and #qg>0
 	if not q1 and not q2 then return end
 	local opt=aux.SelectFromOptions(tp,{q1,aux.Stringid(m,1)},{q2,aux.Stringid(m,2)})
 	if opt==1 then
-		local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.eqfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local sg=g:Select(tp,1,1,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		local tg=qg:Select(tp,1,1,nil)
 		if #sg>0 then
 			local tc=sg:GetFirst()
-			local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(false,false,true)
-			local zones=0xff
-			if te:IsHasProperty(EFFECT_FLAG_LIMIT_ZONE) then
-				local val=te:GetValue()
-				zones=val(te,tp,ceg,cep,cev,cre,cr,crp)
-			end
-			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true,zones)
-			Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
-			te:UseCountLimit(tp,1,true)
-			local cost=te:GetCost()
-			local target=te:GetTarget()
-			local operation=te:GetOperation()
-			e:SetCategory(te:GetCategory())
-			e:SetProperty(te:GetProperty())
-			Duel.ClearTargetCard()
-			tc:CreateEffectRelation(te)
-			if cost then cost(te,tp,ceg,cep,cev,cre,cr,crp,1) end
-			if not tc:IsType(TYPE_EQUIP) and not tc:IsHasEffect(EFFECT_REMAIN_FIELD) then tc:CancelToGrave(false) end
-			if target then target(te,tp,ceg,cep,cev,cre,cr,crp,1) end
-			local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-			if g then
-				for fc in aux.Next(g) do
-					fc:CreateEffectRelation(te)
-				end
-			end
-			if operation then
-				operation(te,tp,ceg,cep,cev,cre,cr,crp)
-			end
-			tc:ReleaseEffectRelation(te)
-			if g then
-				for fc in aux.Next(g) do
-					fc:ReleaseEffectRelation(te)
-				end
+			if Duel.Equip(tp,tc,tg:GetFirst()) then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_EQUIP_LIMIT)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetValue(cm.eqlimit)
+				e1:SetLabelObject(tg:GetFirst())
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1)
+				local e2=Effect.CreateEffect(c)
+				e2:SetCode(EFFECT_CHANGE_TYPE)
+				e2:SetType(EFFECT_TYPE_SINGLE)
+				e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+				e2:SetValue(TYPE_EQUIP+TYPE_TRAP)
+				tc:RegisterEffect(e2)
 			end
 		end
-		local bool=c:IsRelateToEffect(e) and c:IsControler(tp) and c:IsFaceup()
+		local bool=c:IsRelateToEffect(e) and c:IsFaceup()
 		local seq=c:GetSequence()
 		local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
 		local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
@@ -246,10 +233,12 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 			local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0x600060)
 			local nseq=math.log(s&0xff,2)
-			if s<0xffff then
+			local mv=(s<=0xffff and c:IsControler(tp)) or (s>0xffff and c:IsControler(1-tp))
+			local zone=(s<=0xffff and s&0xff) or (s>0xffff and s>>16)
+			if mv then
 				Duel.MoveSequence(c,nseq)
 			else
-				Duel.GetControl(c,1-tp,0,0,s>>16)
+				Duel.GetControl(c,1-c:GetControler(),0,0,zone)
 				c:RegisterFlagEffect(m,RESET_CHAIN+RESET_EVENT+RESETS_STANDARD,0,1)
 				local e6=Effect.CreateEffect(c)
 				e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -284,10 +273,12 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0x600060)
 		local nseq=math.log(s&0xff,2)
-		if s<0xffff then
+		local mv=(s<=0xffff and c:IsControler(tp)) or (s>0xffff and c:IsControler(1-tp))
+		local zone=(s<=0xffff and s&0xff) or (s>0xffff and s>>16)
+		if mv then
 			Duel.MoveSequence(c,nseq)
 		else
-			Duel.GetControl(c,1-tp,0,0,s>>16)
+			Duel.GetControl(c,1-c:GetControler(),0,0,zone)
 			c:RegisterFlagEffect(m,RESET_CHAIN+RESET_EVENT+RESETS_STANDARD,0,1)
 			local e6=Effect.CreateEffect(c)
 			e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -312,46 +303,32 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 			e7:SetCode(EVENT_CHAIN_NEGATED)
 			Duel.RegisterEffect(e7,tp)
 		end
-		local q1=Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.nfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		local qg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		local q1=Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.eqfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and #qg>0
 		if q1 then
-			local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.nfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,nil)
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.eqfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,nil)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 			local sg=g:Select(tp,1,1,nil)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+			local tg=qg:Select(tp,1,1,nil)
 			if #sg>0 then
 				local tc=sg:GetFirst()
-				local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(false,false,true)
-				local zones=0xff
-				if te:IsHasProperty(EFFECT_FLAG_LIMIT_ZONE) then
-					local val=te:GetValue()
-					zones=val(te,tp,ceg,cep,cev,cre,cr,crp)
-				end
-				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true,zones)
-				Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
-				te:UseCountLimit(tp,1,true)
-				local cost=te:GetCost()
-				local target=te:GetTarget()
-				local operation=te:GetOperation()
-				e:SetCategory(te:GetCategory())
-				e:SetProperty(te:GetProperty())
-				Duel.ClearTargetCard()
-				if not tc:IsType(TYPE_EQUIP) then tc:CancelToGrave(false) end
-				tc:CreateEffectRelation(te)
-				if cost then cost(te,tp,ceg,cep,cev,cre,cr,crp,1) end
-				if target then target(te,tp,ceg,cep,cev,cre,cr,crp,1) end
-				local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-				if g then
-					for fc in aux.Next(g) do
-						fc:CreateEffectRelation(te)
-					end
-				end
-				if operation then
-					operation(te,tp,ceg,cep,cev,cre,cr,crp)
-				end
-				tc:ReleaseEffectRelation(te)
-				if g then
-					for fc in aux.Next(g) do
-						fc:ReleaseEffectRelation(te)
-					end
+				if Duel.Equip(tp,tg:GetFirst(),c) then
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_EQUIP_LIMIT)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e1:SetValue(cm.eqlimit)
+					e1:SetLabelObject(tg:GetFirst())
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc:RegisterEffect(e1)
+					local e2=Effect.CreateEffect(c)
+					e2:SetCode(EFFECT_CHANGE_TYPE)
+					e2:SetType(EFFECT_TYPE_SINGLE)
+					e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+					e2:SetValue(TYPE_EQUIP+TYPE_TRAP)
+					tc:RegisterEffect(e2)
 				end
 			end
 		end

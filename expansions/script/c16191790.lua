@@ -15,7 +15,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)    
 end
 function s.costfilter(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0x33b0)
+	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0x37b0)
 end
 function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -44,7 +44,7 @@ function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
 end    
 function s.tgfilter(c)
-	return c:IsSetCard(0x33b0) and (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsAbleToGrave()
+	return c:IsSetCard(0x37b0) and (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsAbleToGrave()
 end    
 function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

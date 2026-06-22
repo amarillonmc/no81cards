@@ -4,92 +4,60 @@ function c9910141.initial_effect(c)
 	--xyz summon
 	QutryZcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),5,3,c9910141.xyzfilter,99)
 	c:EnableReviveLimit()
-	--material
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910141,1))
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCost(c9910141.xmcost)
-	e1:SetTarget(c9910141.xmtarget)
-	e1:SetOperation(c9910141.xmoperation)
-	c:RegisterEffect(e1)
 	--immune
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetValue(c9910141.efilter)
+	c:RegisterEffect(e1)
+	--spsummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910141,2))
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(c9910141.imcon)
-	e2:SetCost(c9910141.imcost)
-	e2:SetTarget(c9910141.imtg)
-	e2:SetOperation(c9910141.imop)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCondition(c9910141.spcon)
+	e2:SetTarget(c9910141.sptg)
+	e2:SetOperation(c9910141.spop)
 	c:RegisterEffect(e2)
 end
 function c9910141.xyzfilter(c)
 	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
 		and c:IsRace(RACE_MACHINE)
 end
-function c9910141.cfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsAbleToRemoveAsCost()
+function c9910141.efilter(e,te)
+	return te:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
-function c9910141.xmcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910141.cfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9910141.cfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-end
-function c9910141.xmfilter(c,tp,e)
-	return not c:IsType(TYPE_TOKEN) and (c:IsControler(tp) or c:IsAbleToChangeControler())
-		and not (e and c:IsImmuneToEffect(e))
-end
-function c9910141.xmtarget(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9910141.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsType(TYPE_XYZ)
-		and Duel.IsExistingMatchingCard(c9910141.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,tp) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousControler(tp) and c:GetReasonPlayer()==1-tp
 end
-function c9910141.xmoperation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectMatchingCard(tp,c9910141.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,tp,e)
-	if g:GetCount()>0 then
-		Duel.HintSelection(g)
-		local tc=g:GetFirst()
-		local og=tc:GetOverlayGroup()
-		if og:GetCount()>0 then
-			Duel.SendtoGrave(og,REASON_RULE)
+function c9910141.spfilter(c,e,tp)
+	return c:IsSetCard(0x9958) and c:IsLevelAbove(1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c9910141.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9910141.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+end
+function c9910141.xyzfilter(c)
+	return c:IsXyzSummonable(nil) and not c:IsCode(9910141)
+end
+function c9910141.spop(e,tp,eg,ep,ev,re,r,rp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ft<=0 then return end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910141.spfilter),tp,LOCATION_GRAVE,0,1,ft,nil,e,tp)
+	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		local sg=Duel.GetMatchingGroup(c9910141.xyzfilter,tp,LOCATION_EXTRA,0,nil)
+		if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(9910141,0)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sc=sg:Select(tp,1,1,nil):GetFirst()
+			Duel.XyzSummon(tp,sc,nil)
 		end
-		tc:CancelToGrave()
-		Duel.Overlay(c,Group.FromCards(tc))
 	end
-end
-function c9910141.imcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp
-end
-function c9910141.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-end
-function c9910141.imtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-end
-function c9910141.imop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsFaceup() then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_IMMUNE_EFFECT)
-		e1:SetValue(c9910141.efilter)
-		e1:SetLabelObject(re)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
-		c:RegisterEffect(e1)
-	end
-end
-function c9910141.efilter(e,re)
-	return re==e:GetLabelObject()
 end

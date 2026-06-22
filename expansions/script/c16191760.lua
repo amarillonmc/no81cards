@@ -42,7 +42,7 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_ONFIELD)
 end
 function s.confilter(c,tp)
-	return c:IsLocation(LOCATION_GRAVE) and c:IsSetCard(0x33b0) and c:IsControler(tp)
+	return c:IsLocation(LOCATION_GRAVE) and c:IsSetCard(0x37b0) and c:IsControler(tp)
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
@@ -124,7 +124,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.handfilter(c)
-	return c:IsSetCard(0x33b0) and c:IsFaceup()
+	return c:IsSetCard(0x37b0) and c:IsFaceup()
 end
 function s.handcon(e)
 	return Duel.GetTurnPlayer()==1-e:GetHandlerPlayer() 

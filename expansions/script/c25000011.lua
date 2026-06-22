@@ -45,7 +45,7 @@ function s.initial_effect(c)
 end
 function s.ffilter(c,fc,sub,mg,sg)
 	return c:IsRace(RACE_DINOSAUR) and (not sg or sg:FilterCount(aux.TRUE,c)==0
-		or sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()))
+		or not sg:IsExists(Card.IsFusionCode,1,c,c:GetFusionCode()))
 end
 function s.splimit(e,se,sp,st)
 	return not (e:GetHandler():IsLocation(LOCATION_EXTRA) and e:GetHandler():IsFacedown())
@@ -132,6 +132,7 @@ function s.penop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
 		if #g==0 then return end
+		Duel.BreakEffect()
 		Duel.HintSelection(g)
 		Duel.Destroy(g,REASON_EFFECT)
 	end

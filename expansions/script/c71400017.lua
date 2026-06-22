@@ -42,14 +42,14 @@ function c71400017.op1(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg1=g:Select(tp,1,1,nil)
-		--[[
+		--拿2场地
 		g:Remove(Card.IsCode,nil,sg1:GetFirst():GetCode())
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,210) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg2=g:Select(tp,1,1,nil)
 			sg1:Merge(sg2)
 		end
-		--]]
+		
 	Duel.SendtoHand(sg1,nil,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,sg1)
 end

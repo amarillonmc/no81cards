@@ -123,7 +123,6 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 				Duel.ConfirmCards(tp,tc)
 			else
 				local te=tc:GetActivateEffect()
-				Duel.DisableShuffleCheck()
 				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 				te:UseCountLimit(tp,1,true)
 				local tep=tc:GetControler()
@@ -135,7 +134,6 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 				Duel.SendtoHand(tc,nil,REASON_EFFECT)
 				Duel.ConfirmCards(tp,tc)
 			else
-				Duel.DisableShuffleCheck()
 				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 				Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
 				local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(false,false,true)
@@ -148,8 +146,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 				Duel.ClearTargetCard()
 				tc:CreateEffectRelation(te)
 				if cost then cost(te,tp,ceg,cep,cev,cre,cr,crp,1) end
-				if not tc:IsHasEffect(EFFECT_REMAIN_FIELD) then tc:CancelToGrave(false) end
 				if target then target(te,tp,ceg,cep,cev,cre,cr,crp,1) end
+				if not (tc:IsType(TYPE_EQUIP+TYPE_FIELD+TYPE_CONTINUOUS+TYPE_PENDULUM) or tc:IsHasEffect(EFFECT_REMAIN_FIELD)) then tc:CancelToGrave(false) end
 				local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 				if g then
 					for fc in aux.Next(g) do

@@ -2,7 +2,7 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_RECOVER+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE)
@@ -23,19 +23,23 @@ function s.initial_effect(c)
 	e2:SetOperation(s.effop)
 	c:RegisterEffect(e2)
 end
-function s.get_col(c)
+function s.get_board_col(c,tp)
 	local seq=c:GetSequence()
-	if c:IsLocation(LOCATION_MZONE) then
-		if seq>4 then
-			if seq==5 then return 1 end
-			if seq==6 then return 3 end
+	local col=seq
+	if c:IsLocation(LOCATION_MZONE) and seq>4 then
+		if seq==5 then col=1
+		elseif seq==6 then col=3
 		end
-	elseif c:IsLocation(LOCATION_SZONE) then
-		if seq>4 then
-			return -1
-		end
+		return col
 	end
-	return seq
+	if c:IsLocation(LOCATION_SZONE) and seq>4 then
+		return -1
+	end
+	if c:GetControler()~=tp then
+		return 4-col
+	else
+		return col
+	end
 end
 function s.retfilter(c,fid)
 	return c:GetFlagEffectLabel(id)==fid
@@ -73,7 +77,7 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return tg:GetCount()>0 and tg:FilterCount(Card.IsAbleToRemoveAsCost,nil)==tg:GetCount() end
 	local mask=0
 	for tc in aux.Next(tg) do
-		local col=s.get_col(tc)
+		local col=s.get_board_col(tc,tp)
 		if col>=0 then
 			mask = mask | (1 << col)
 		end
@@ -101,10 +105,10 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1000)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_ONFIELD)
-end
-function s.colfilter(c,col)
-	return s.get_col(c)==col
 end
 function s.descon2(e,tp,eg,ep,ev,re,r,rp)
 	local val=e:GetLabel()
@@ -118,7 +122,7 @@ function s.desop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
 	for col=0,4 do
 		if (mask & (1<<col))~=0 then
-			local col_g=Duel.GetMatchingGroup(s.colfilter,tp,0,LOCATION_ONFIELD,nil,col)
+			local col_g=Duel.GetMatchingGroup(function(c) return s.get_board_col(c,tp)==col end,tp,0,LOCATION_ONFIELD,nil)
 			g:Merge(col_g)
 		end
 	end
@@ -128,26 +132,33 @@ function s.desop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local mask=e:GetLabel()
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,3))
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_PHASE+PHASE_END)
-	e1:SetCountLimit(1)
-	local turn=Duel.GetTurnCount()
-	if Duel.GetTurnPlayer()==tp then
-		if Duel.GetCurrentPhase()==PHASE_END then
-			turn=turn+2
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	if Duel.Recover(p,d,REASON_EFFECT)>0 then
+		if Duel.SelectYesNo(tp,aux.Stringid(id,4)) then
+			Duel.BreakEffect()
+			local c=e:GetHandler()
+			local mask=e:GetLabel()
+			local e1=Effect.CreateEffect(c)
+			e1:SetDescription(aux.Stringid(id,3))
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e1:SetCode(EVENT_PHASE+PHASE_END)
+			e1:SetCountLimit(1)
+			local turn=Duel.GetTurnCount()
+			local ph=Duel.GetCurrentPhase()
+			if Duel.GetTurnPlayer()==tp then
+				if ph==PHASE_END then
+					turn=turn+2
+				end
+			else
+				turn=turn+1
+			end
+			local val=turn*1000+mask
+			e1:SetLabel(val)
+			e1:SetCondition(s.descon2)
+			e1:SetOperation(s.desop2)
+			Duel.RegisterEffect(e1,tp)
 		end
-	else
-		turn=turn+1
 	end
-	local val=turn*1000+mask
-	e1:SetLabel(val)
-	e1:SetCondition(s.descon2)
-	e1:SetOperation(s.desop2)
-	Duel.RegisterEffect(e1,tp)
 end
 function s.effcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

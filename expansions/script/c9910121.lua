@@ -6,72 +6,50 @@ function c9910121.initial_effect(c)
 	c:EnableReviveLimit()
 	--to deck top
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910121,1))
+	e1:SetDescription(aux.Stringid(9910121,0))
+	e1:SetCategory(CATEGORY_DRAW+CATEGORY_DISABLE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
-	e1:SetCost(c9910121.ttcost)
-	e1:SetTarget(c9910121.tttg)
-	e1:SetOperation(c9910121.ttop)
+	e1:SetCountLimit(1)
+	e1:SetCost(c9910121.drcost)
+	e1:SetTarget(c9910121.drtg)
+	e1:SetOperation(c9910121.drop)
 	c:RegisterEffect(e1)
-	--draw & negate
-	local e2=e1:Clone()
-	e2:SetDescription(aux.Stringid(9910121,2))
-	e2:SetCategory(CATEGORY_DRAW+CATEGORY_NEGATE+CATEGORY_DESTROY)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e2:SetCondition(c9910121.drcon)
-	e2:SetTarget(c9910121.drtg)
-	e2:SetOperation(c9910121.drop)
-	c:RegisterEffect(e2)
 end
 function c9910121.xyzfilter(c)
 	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
 		and c:IsRace(RACE_MACHINE)
 end
-function c9910121.ttcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-end
-function c9910121.tttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK,0,1,nil,0x9958)
-		and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-end
-function c9910121.ttop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910121,3))
-	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,3,nil,0x9958)
-	if g:GetCount()>0 then
-		Duel.ConfirmCards(1-tp,g)
-		Duel.ShuffleDeck(tp)
-		local tc=g:GetFirst()
-		while tc do
-			Duel.MoveSequence(tc,SEQ_DECKTOP)
-			tc=g:GetNext()
-		end
-		Duel.SortDecktop(tp,tp,g:GetCount())
+function c9910121.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.IsPlayerCanDraw(tp,1) end
+	local ct=1
+	while c:CheckRemoveOverlayCard(tp,ct,REASON_COST) and Duel.IsPlayerCanDraw(tp,ct) do
+		ct=ct+1
 	end
-end
-function c9910121.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
+	e:SetLabel(c:RemoveOverlayCard(tp,1,ct,REASON_COST))
 end
 function c9910121.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
+	Duel.SetTargetParam(e:GetLabel())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,e:GetLabel())
+end
+function c9910121.cfilter(c)
+	return c:IsSetCard(0x9958) and c:IsLocation(LOCATION_HAND) and not c:IsPublic()
 end
 function c9910121.drop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	if Duel.Draw(p,d,REASON_EFFECT)==0 then return end
-	local tc=Duel.GetOperatedGroup():GetFirst()
-	Duel.ConfirmCards(1-p,tc)
-	if tc:IsSetCard(0x9958) then
+	local g=Duel.GetDecktopGroup(p,d)
+	if Duel.Draw(p,d,REASON_EFFECT)==d and g:IsExists(c9910121.cfilter,1,nil)
+		and Duel.IsChainDisablable(ev) and Duel.SelectYesNo(p,aux.Stringid(9910121,1)) then
 		Duel.BreakEffect()
-		if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-			Duel.Destroy(eg,REASON_EFFECT)
-		end
+		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_CONFIRM)
+		local tc=g:FilterSelect(p,c9910121.cfilter,1,1,nil):GetFirst()
+		Duel.ConfirmCards(1-p,tc)
+		Duel.ShuffleHand(p)
+		Duel.NegateEffect(ev)
 	end
-	Duel.ShuffleHand(p)
 end

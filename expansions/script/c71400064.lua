@@ -16,6 +16,7 @@ function c71400064.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCountLimit(1,71400064)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetCost(c71400064.cost1)
 	e1:SetTarget(c71400064.tg1)
 	e1:SetOperation(c71400064.op1)
@@ -29,12 +30,15 @@ function c71400064.initial_effect(c)
 	e2:SetTarget(c71400064.tg2)
 	e2:SetOperation(c71400064.op2)
 	c:RegisterEffect(e2)
+	--旧效果
+	--[[
 	local e2a=e2:Clone()
 	e2a:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
 	c:RegisterEffect(e2a)
 	local e2b=e2:Clone()
 	e2b:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2b)
+	]]
 	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(71400064,2))
@@ -54,14 +58,26 @@ function c71400064.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c71400064.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>1
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 	end
+	--Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c71400064.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if not c:IsRelateToChain() then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then return end
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	-- then special summon 1 "异梦" monster from hand or grave
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(function(mc,e,tp)
+		return mc:IsSetCard(0x714) and mc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	end),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.BreakEffect()
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 function c71400064.filter2(c)
@@ -76,7 +92,7 @@ function c71400064.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c71400064.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e):Filter(c71400064.filter2,nil)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToChain):Filter(c71400064.filter2,nil)
 	local tc=g:GetFirst()
 	while tc do
 		local e1=Effect.CreateEffect(c)
@@ -98,37 +114,37 @@ function c71400064.filterc3(c)
 	return c:IsSetCard(0xe714) and c:IsAbleToDeckAsCost()
 end
 function c71400064.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400064.filterc3,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c71400064.filterc3,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsAbleToDeckAsCost() end
+	Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c71400064.filter3(c,e,tp)
 	return c:IsSetCard(0xe714) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c71400064.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetMZoneCount(tp,c)>0 and c:IsAbleToDeck()
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c71400064.filter3,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c71400064.op3(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 then
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c71400064.filter3,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-		if g:GetCount()<1 then return end
-		local tc=g:GetFirst()
-		if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-			e1:SetValue(LOCATION_DECKBOT)
-			tc:RegisterEffect(e1)
-		end
-		Duel.SpecialSummonComplete()
+	-- cost already sent this card to deck
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c71400064.filter3,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	if g:GetCount()<1 then return end
+	local tc=g:GetFirst()
+	Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	--旧效果
+	--[[
+	if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+		local e1=Effect.CreateEffect(tc)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+		e1:SetValue(LOCATION_DECKBOT)
+		tc:RegisterEffect(e1)
 	end
+	Duel.SpecialSummonComplete()
+	]]
 end

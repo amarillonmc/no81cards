@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e1:SetHintTiming(0,TIMING_MAIN_END)
+	e1:SetHintTiming(TIMING_END_PHASE)
 	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.scon)
 	e1:SetTarget(cm.stg)
@@ -162,7 +162,7 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 		ge0:SetRange(LOCATION_MZONE)
 		ge0:SetTargetRange(1,1)
 		ge0:SetTarget(cm.actarget1)
-		ge0:SetOperation(cm.costop1)
+		ge0:SetCost(cm.costchk1)
 		ge0:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(ge0,true)
 	end
@@ -171,34 +171,14 @@ function cm.actarget1(e,te,tp)
 	e:SetLabelObject(te)
 	return te:GetHandler()==e:GetHandler()
 end
-function cm.costop1(e,tp,eg,ep,ev,re,r,rp)
+function cm.costchk1(e,te,tp)
 	local c=e:GetHandler()
-	local te=e:GetLabelObject()
+	if not te then te=e:GetLabelObject() end
 	local op=te:GetOperation()
-	local res=false
+	local res=true
 	local tab=getmetatable(te:GetHandler())
 	for _,f in pairs(tab) do
-		if f and f==op then res=true end
-	end
-	if res then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetTargetRange(1,1)
-		e1:SetValue(cm.aclimit)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e1,true)
-	end
-end
-function cm.aclimit(e,te,tp)
-	if te:GetHandler()~=e:GetHandler() then return false end
-	local op=te:GetOperation()
-	local res=false
-	local tab=getmetatable(te:GetHandler())
-	for _,f in pairs(tab) do
-		if f and f==op then res=true end
+		if f and f==op then res=Duel.GetCurrentChain()==0 end
 	end
 	return res
 end
@@ -249,7 +229,7 @@ function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local bool=c:IsRelateToEffect(e) and c:IsControler(tp) and c:IsFaceup()
+	local bool=c:IsRelateToEffect(e) and c:IsFaceup()
 	local seq=c:GetSequence()
 	local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
 	local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
@@ -275,7 +255,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 		if #g>0 then
 			Duel.SendtoGrave(g,REASON_EFFECT)
 		end
-		local bool=c:IsRelateToEffect(e) and c:IsControler(tp) and c:IsFaceup()
+		local bool=c:IsRelateToEffect(e) and c:IsFaceup()
 		local seq=c:GetSequence()
 		local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
 		local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
@@ -292,10 +272,12 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 			local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0x600060)
 			local nseq=math.log(s&0xff,2)
-			if s<0xffff then
+			local mv=(s<=0xffff and c:IsControler(tp)) or (s>0xffff and c:IsControler(1-tp))
+			local zone=(s<=0xffff and s&0xff) or (s>0xffff and s>>16)
+			if mv then
 				Duel.MoveSequence(c,nseq)
 			else
-				Duel.GetControl(c,1-tp,0,0,s>>16)
+				Duel.GetControl(c,1-c:GetControler(),0,0,zone)
 				c:RegisterFlagEffect(m,RESET_CHAIN+RESET_EVENT+RESETS_STANDARD,0,1)
 				local e6=Effect.CreateEffect(c)
 				e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -330,10 +312,12 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0x600060)
 		local nseq=math.log(s&0xff,2)
-		if s<0xffff then
+		local mv=(s<=0xffff and c:IsControler(tp)) or (s>0xffff and c:IsControler(1-tp))
+		local zone=(s<=0xffff and s&0xff) or (s>0xffff and s>>16)
+		if mv then
 			Duel.MoveSequence(c,nseq)
 		else
-			Duel.GetControl(c,1-tp,0,0,s>>16)
+			Duel.GetControl(c,1-c:GetControler(),0,0,zone)
 			c:RegisterFlagEffect(m,RESET_CHAIN+RESET_EVENT+RESETS_STANDARD,0,1)
 			local e6=Effect.CreateEffect(c)
 			e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

@@ -421,7 +421,7 @@ function cm.rthfilter(c)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_DECK,0,nil)
-	local g2=Duel.GetMatchingGroup(cm.rthfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local g2=Duel.GetMatchingGroup(cm.rthfilter,tp,0,LOCATION_ONFIELD,nil)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	if #g1>0 and (#g2==0 or Duel.SelectOption(tp,aux.Stringid(11451779,0),aux.Stringid(m,1))==0) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

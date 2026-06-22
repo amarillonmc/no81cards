@@ -8,6 +8,7 @@ local e1 = Effect.CreateEffect(c)
 	e1:SetCode(EVENT_CHAIN_DISABLED)  -- 连锁被无效时（对方效果被无效）
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,m) 
 	e1:SetCondition(cm.cond1)
 	e1:SetCost(cm.cost1)
 	e1:SetTarget(cm.target1)
@@ -18,6 +19,7 @@ local e1 = Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,m+1) 
 	e2:SetCondition(cm.cond2)
 	e2:SetTarget(cm.target2)
 	e2:SetOperation(cm.op2)
@@ -28,9 +30,6 @@ local e1 = Effect.CreateEffect(c)
 	e3:SetOperation(cm.reg_ret)
 	c:RegisterEffect(e3)
 end
-
--- ==================== ①效果 ====================
--- 条件：对方的卡的效果被无效的场合（并且这个无效的连锁是本回合刚发生的）
 function cm.cond1(e,tp,eg,ep,ev,re,r,rp)
 	-- 检查被无效的那次连锁的发起者是否是对方
 	local rc = re:GetHandler()

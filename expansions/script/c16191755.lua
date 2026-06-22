@@ -32,7 +32,7 @@ function s.initial_effect(c)
 	end
 end
 function s.checkfilter(c,tp)
-	return c:IsSetCard(0x33b0) and c:IsReason(REASON_EFFECT) and c:IsType(TYPE_MONSTER) and c:IsControler(tp)
+	return c:IsSetCard(0x37b0) and c:IsReason(REASON_EFFECT) and c:IsType(TYPE_MONSTER) and c:IsControler(tp)
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetHandler():GetOwner()
@@ -41,10 +41,10 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.tgfilter(c)
-	return c:IsSetCard(0x33b0) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	return c:IsSetCard(0x37b0) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x33b0) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x37b0) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end		
 function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) 

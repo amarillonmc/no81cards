@@ -195,7 +195,7 @@ function cm.spfilter2(c,e,tp)
 			if cm.islinkdir(lc,i,1,tp) and Duel.CheckLocation(tp,LOCATION_MZONE,i) then zone=zone|(1<<i) end
 		end
 	end
-	return c:IsRace(RACE_PYRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone) --c:IsRace(RACE_PYRO) and 
 end
 function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -211,7 +211,7 @@ function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local bool=c:IsRelateToEffect(e) and c:IsControler(tp) and c:IsFaceup()
+	local bool=c:IsRelateToEffect(e) and c:IsFaceup()
 	local seq=c:GetSequence()
 	local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
 	local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
@@ -235,7 +235,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 			end
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone)
 		end
-		local bool=c:IsRelateToEffect(e) and c:IsControler(tp) and c:IsFaceup()
+		local bool=c:IsRelateToEffect(e) and c:IsFaceup()
 		local seq=c:GetSequence()
 		local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
 		local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
@@ -251,11 +251,12 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 			if b4 then if seq==1 then flag=flag|0x20 else flag=flag|0x40 end end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 			local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0x600060)
-			local nseq=math.log(s&0xff,2)
-			if s<0xffff then
+			local mv=(s<=0xffff and c:IsControler(tp)) or (s>0xffff and c:IsControler(1-tp))
+			local zone=(s<=0xffff and s&0xff) or (s>0xffff and s>>16)
+			if mv then
 				Duel.MoveSequence(c,nseq)
 			else
-				Duel.GetControl(c,1-tp,0,0,s>>16)
+				Duel.GetControl(c,1-c:GetControler(),0,0,zone)
 				c:RegisterFlagEffect(m,RESET_CHAIN+RESET_EVENT+RESETS_STANDARD,0,1)
 				local e6=Effect.CreateEffect(c)
 				e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -290,10 +291,12 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0x600060)
 		local nseq=math.log(s&0xff,2)
-		if s<0xffff then
+		local mv=(s<=0xffff and c:IsControler(tp)) or (s>0xffff and c:IsControler(1-tp))
+		local zone=(s<=0xffff and s&0xff) or (s>0xffff and s>>16)
+		if mv then
 			Duel.MoveSequence(c,nseq)
 		else
-			Duel.GetControl(c,1-tp,0,0,s>>16)
+			Duel.GetControl(c,1-c:GetControler(),0,0,zone)
 			c:RegisterFlagEffect(m,RESET_CHAIN+RESET_EVENT+RESETS_STANDARD,0,1)
 			local e6=Effect.CreateEffect(c)
 			e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

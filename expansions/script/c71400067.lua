@@ -21,18 +21,19 @@ function c71400067.initial_effect(c)
 	e1:SetTarget(c71400067.tg1)
 	e1:SetOperation(c71400067.op1)
 	c:RegisterEffect(e1)
-	--spsummon
+	--spsummon (modified)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,71500067)
-	e2:SetCondition(c71400067.con2)
 	e2:SetCost(c71400067.cost2)
 	e2:SetTarget(c71400067.tg2)
 	e2:SetOperation(c71400067.op2)
 	c:RegisterEffect(e2)
+	--旧效果，检测这个回合是否超量召唤
+	--[[
 	if not c71400067.global_check then
 		c71400067.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -41,6 +42,7 @@ function c71400067.initial_effect(c)
 		ge1:SetOperation(c71400067.spcheckop)
 		Duel.RegisterEffect(ge1,0)
 	end
+	]]
 end
 function c71400067.spcheckop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
@@ -71,62 +73,53 @@ function c71400067.op1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
+--旧效果，检测这个回合是否超量召唤
+	--[[
 function c71400067.con2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(0,71400067)~=0
 end
+]]
 function c71400067.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
-function c71400067.filter2(c,e,tp,ec)
+function c71400067.filter2(c,e,tp)
 	return c:IsSetCard(0x714) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.GetLocationCountFromEx(tp,tp,ec,c)>0
 end
 function c71400067.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400067.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,e:GetHandler()) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>1
+		and Duel.IsExistingMatchingCard(c71400067.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c71400067.op2(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tc=Duel.SelectMatchingCard(tp,c71400067.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,e:GetHandler()):GetFirst()
-	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,true,false,POS_FACEUP) then
-		local c=e:GetHandler()
-		local e1=Effect.CreateEffect(c)
-		e1:SetDescription(aux.Stringid(71400067,2))
+	local tc=Duel.SelectMatchingCard(tp,c71400067.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp):GetFirst()
+	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+		-- disable its effects
+		local e1=Effect.CreateEffect(tc)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_DISABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
+		local e2=Effect.CreateEffect(tc)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_DISABLE_EFFECT)
 		e2:SetValue(RESET_TURN_SET)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e2)
-		--cannot be battle target
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_FIELD)
-		e3:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
-		e3:SetRange(LOCATION_MZONE)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-		e3:SetTarget(c71400067.tgtg)
-		e3:SetValue(aux.imval1)
-		tc:RegisterEffect(e3)
-		--cannot be effect target
-		local e4=Effect.CreateEffect(c)
-		e4:SetType(EFFECT_TYPE_FIELD)
-		e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-		e4:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e4:SetRange(LOCATION_MZONE)
-		e4:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e4:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-		e4:SetTarget(c71400067.tgtg)
-		e4:SetValue(1)
-		tc:RegisterEffect(e4)
+		Duel.SpecialSummonComplete()
+		-- then special summon 1 DARK "异梦" monster from deck
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(function(mc,e,tp)
+			return mc:IsSetCard(0x714) and mc:IsAttribute(ATTRIBUTE_DARK) and mc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		end),tp,LOCATION_DECK,0,1,1,nil,e,tp)
+		if g:GetCount()>0 then
+			Duel.BreakEffect()
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		end
 	end
-	Duel.SpecialSummonComplete()
-end
-function c71400067.tgtg(e,c)
-	return c~=e:GetHandler()
 end

@@ -3,10 +3,8 @@ local m=26053126
 local cm=_G["c"..m]
 function cm.initial_effect(c)
  aux.AddCodeList(c,26053131)
- aux.EnableSpiritReturn(c,EVENT_SUMMON_SUCCESS,EVENT_FLIP)
  local e3=Effect.CreateEffect(c)
-    e3:SetDescription(aux.Stringid(m,0))
-    e3:SetCategory(CATEGORY_SUMMON+CATEGORY_TOHAND)
+    e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
     e3:SetType(EFFECT_TYPE_IGNITION)
     e3:SetRange(LOCATION_HAND)
     e3:SetCountLimit(1,m) 
@@ -23,38 +21,35 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.tg2)
 	e2:SetOperation(cm.op2)
 	c:RegisterEffect(e2)
-	--cannot special summon
-	local e5=Effect.CreateEffect(c)
-	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e5:SetValue(aux.FALSE)
-	c:RegisterEffect(e5)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e3)
 end
 function cm.thfilter5(c)
-	return c:IsAbleToGraveAsCost()
+	return (c:IsAbleToGraveAsCost() and c:IsLocation(LOCATION_MZONE)) or
+	       (c:IsType(TYPE_MONSTER) and c:IsSetCard(0xeae9) and c:IsAbleToGraveAsCost())
 end
--- ①cost：选自己场上1只怪兽回手
+-- ①cost：选自己场上1只怪兽回手n=
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-   if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter5,tp,LOCATION_MZONE,0,1,nil) end
+   if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter5,tp,LOCATION_MZONE+LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter5,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter5,tp,LOCATION_MZONE+LOCATION_HAND,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 -- ①发动条件：可以通常召唤且自己场上有空位
-function cm.sumfilter(c)
-	return c:IsCode(26053126) and c:IsSummonable(true,nil)
-end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.sumfilter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
+	local c=e:GetHandler()
+	if chk==0 then
+		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+			and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.sumfilter,tp,LOCATION_HAND,0,1,1,nil)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.Summon(tp,tc,true,nil)
+	local c=e:GetHandler()
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 	 local e1=Effect.CreateEffect(e:GetHandler())
     e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -73,7 +68,7 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function cm.thfilter1(c)
-	return c:IsCode(26053131) and c:IsAbleToHand()
+	return  c:IsAbleToHand() and c:IsCode(26053131)
 end
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter1,tp,LOCATION_DECK,0,1,nil) end

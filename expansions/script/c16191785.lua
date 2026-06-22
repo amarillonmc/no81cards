@@ -87,7 +87,7 @@ function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x33b0) and not c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x37b0) and not c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -121,37 +121,29 @@ function s.damcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetMatchingGroupCount(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)>0 
-        and c:IsAbleToGrave() end
+	if chk==0 then return c:IsAbleToGrave() end
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(1200)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1200)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,2,PLAYER_ALL,LOCATION_ONFIELD)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,c,1,0,0)
     Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function s.damop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-    if not c:IsRelateToEffect(e) then return end 
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-    local tg=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c):Select(tp,1,1,nil)
-    if tg:GetCount()<=0 then return end
-    tg:AddCard(c)
-    if Duel.SendtoGrave(tg,REASON_EFFECT)~=0 then
-    	local oc=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
-        if oc<=0 then return end
+    if c:IsRelateToEffect(e) and Duel.SendtoGrave(c,REASON_EFFECT)~=0 and c:IsLocation(LOCATION_GRAVE) then
 		local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 		Duel.Damage(p,d,REASON_EFFECT)
 	end
 end
 function s.eftg(e,c)
-	return not c:IsType(TYPE_LINK) and c:IsSetCard(0x33b0)
+	return not c:IsType(TYPE_LINK) and c:IsSetCard(0x37b0)
 end
 --连接召唤
 function s.glcheck(g,c,tp)
 	local ct=6-Duel.GetFlagEffect(tp,16191755)
     if ct<1 then ct=1 end
 	return ((Duel.IsPlayerAffectedByEffect(tp,16191755) and g:GetCount()>=ct) or g:GetCount()==6)
-    	and g:IsExists(Card.IsLinkSetCard,1,nil,0x33b0)
+    	and g:IsExists(Card.IsLinkSetCard,1,nil,0x37b0)
 end
 function s.LConditionFilter(c,f,lc,e)
 	return (c:IsFaceup() or not c:IsOnField() or e:IsHasProperty(EFFECT_FLAG_SET_AVAILABLE))

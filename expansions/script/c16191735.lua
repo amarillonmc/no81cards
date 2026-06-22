@@ -53,10 +53,10 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x33b0) and c:IsAbleToHand()
+	return c:IsSetCard(0x37b0) and c:IsAbleToHand()
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x33b0) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x37b0) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 		and not Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,c,c:GetAttribute())
 end
 function s.cfilter(c,atr)
@@ -104,7 +104,7 @@ function s.efop(e,tp,eg,ep,ev,re,r,rp)
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
-        	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+        	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
         end        	
     end   
 end

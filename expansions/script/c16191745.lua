@@ -29,7 +29,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)        
 end
 function s.spfilter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x33b0)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) and c:IsSetCard(0x37b0)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -40,7 +40,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil,e,tp)
-	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then
+	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)~=0 then
     	local tg=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
         if tg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
         	Duel.BreakEffect()
@@ -60,21 +60,13 @@ function s.gsptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function s.kspfilter(c,mg)
 	return c:IsLinkSummonable(mg,nil,1,mg:GetCount())
 end
 function s.gspop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-    	local mg=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,0,nil)
-        local lg=Duel.GetMatchingGroup(s.kspfilter,tp,LOCATION_EXTRA,0,nil,mg)
-		if lg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-        	Duel.BreakEffect()
-        	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg=lg:Select(tp,1,1,nil)
-			Duel.LinkSummon(tp,sg:GetFirst(),mg,nil,nil,1,mg:GetCount())
-        end    	
+	if c:IsRelateToEffect(e) then 
+    	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)     
 	end
 end

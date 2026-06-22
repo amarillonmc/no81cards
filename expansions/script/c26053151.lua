@@ -36,7 +36,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.matfilter(c)
-	return c:IsRace(RACE_THUNDER) and c:IsLocation(LOCATION_GRAVE) and c:IsAbleToRemove()
+	return c:IsRace(RACE_THUNDER) and c:IsLocation(LOCATION_GRAVE) and c:IsAbleToDeck()
 end
 function cm.rfilter(c)
   return  c:IsSetCard(0xeae9) 
@@ -48,7 +48,7 @@ function cm.ritualtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		return Duel.IsExistingMatchingCard(Auxiliary.RitualUltimateFilter,tp,LOCATION_DECK,0,1,nil,cm.rfilter,e,tp,mg,exg,Card.GetLevel,"Equal",true)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,tp,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,LOCATION_GRAVE)
 end
 function cm.ritualop(e,tp,eg,ep,ev,re,r,rp)
 	::RitualUltimateSelectStart::
@@ -68,14 +68,14 @@ function cm.ritualop(e,tp,eg,ep,ev,re,r,rp)
 		else
 			mg:RemoveCard(tc)
 		end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local lv=Card.GetLevel(tc)
 		Auxiliary.GCheckAdditional=Auxiliary.RitualCheckAdditional(tc,lv,"Equal")
 		mat=mg:SelectSubGroup(tp,Auxiliary.RitualCheck,true,1,lv,tp,tc,lv,"Equal")
 		Auxiliary.GCheckAdditional=nil
 		if not mat then goto RitualUltimateSelectStart end
 		tc:SetMaterial(mat)
-		Duel.Remove(mat,POS_FACEUP,REASON_RITUAL+REASON_EFFECT+REASON_MATERIAL)
+		Duel.SendtoDeck(mat,nil,SEQ_DECKBOTTOM,REASON_RITUAL+REASON_EFFECT+REASON_MATERIAL)
 		--Duel.ReleaseRitualMaterial(mat)
 		Duel.BreakEffect()
 		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)

@@ -49,7 +49,7 @@ function s.tdcon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsReason(REASON_EFFECT)
 end
 function s.tdfilter(c,tp)
-	return c:IsControler(tp) and c:IsSetCard(0x33b0) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
+	return c:IsControler(tp) and c:IsSetCard(0x37b0) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
 end
 function s.fselect(g,tp)
 	return g:IsExists(s.tdfilter,1,nil,tp)

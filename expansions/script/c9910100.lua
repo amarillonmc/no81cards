@@ -138,15 +138,16 @@ end
 function QutryZcd.MFilter2(c,xyzc,tp)
 	return Duel.GetLocationCountFromEx(tp,tp,c,xyzc)>0
 end
-function QutryZcd.SelfSpsummonEffect(c,extag,exchk1,exchk2,beftd1,beftd2,afttd1,afttd2)
+function QutryZcd.SelfSpsummonEffect(c,extag,exchk1,exchk2,beftd1,beftd2,afttd1,afttd2,ordsp)
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9910100,3))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+extag)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,c:GetOriginalCode())
 	e1:SetCost(QutryZcd.SpCost())
 	e1:SetTarget(QutryZcd.SpTg(exchk1,exchk2))
-	e1:SetOperation(QutryZcd.SpOp(beftd1,beftd2,afttd1,afttd2))
+	e1:SetOperation(QutryZcd.SpOp(beftd1,beftd2,afttd1,afttd2,ordsp))
 	c:RegisterEffect(e1)
 end
 function QutryZcd.SpCost()
@@ -169,7 +170,7 @@ function QutryZcd.SpTg(exchk1,exchk2)
 				Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 			end
 end
-function QutryZcd.SpOp(beftd1,beftd2,afttd1,afttd2)
+function QutryZcd.SpOp(beftd1,beftd2,afttd1,afttd2,ordsp)
 	return  function(e,tp,eg,ep,ev,re,r,rp)
 				local c=e:GetHandler()
 				if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return end
@@ -177,7 +178,8 @@ function QutryZcd.SpOp(beftd1,beftd2,afttd1,afttd2)
 				local g=Duel.GetDecktopGroup(tp,1)
 				local tc=g:GetFirst()
 				if tc:IsSetCard(0x9958) and tc:IsType(TYPE_MONSTER) then
-					if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
+					if ordsp~=nil then ordsp(e,tp,tc)
+					elseif c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
 						and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not tc:IsForbidden() then
 						Duel.DisableShuffleCheck()
 						Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)

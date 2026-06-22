@@ -1,5 +1,6 @@
 --创界神 乌拉诺斯
 local s,id=GetID()
+s.named_with_Primordial=1
 s.named_with_Grandwalker=1
 function s.Grandwalker(c)
 	local m=_G["c"..c:GetCode()]

@@ -111,7 +111,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.indtg(e,c)
-	return c:IsSetCard(0x33b0) and c~=e:GetHandler()
+	return c:IsSetCard(0x37b0) and c~=e:GetHandler()
 end
 function s.lkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -123,7 +123,7 @@ function s.lkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(c,nil,2,REASON_COST)
 end
 function s.lkfilter(c)
-	return c:IsLinkSummonable(nil) and c:IsSetCard(0x33b0)
+	return c:IsLinkSummonable(nil) and c:IsSetCard(0x37b0)
 end
 function s.lktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.lkfilter,tp,LOCATION_EXTRA,0,1,nil) end
@@ -150,7 +150,7 @@ function s.glcheck(g,c,tp)
 	local ct=3-Duel.GetFlagEffect(tp,16191755)
     if ct<1 then ct=1 end
 	return ((Duel.IsPlayerAffectedByEffect(tp,16191755) and g:GetCount()>=ct) or g:GetCount()==3)
-    	and g:IsExists(Card.IsLinkSetCard,1,nil,0x33b0)
+    	and g:IsExists(Card.IsLinkSetCard,1,nil,0x37b0)
 end
 function s.LConditionFilter(c,f,lc,e)
 	return (c:IsFaceup() or not c:IsOnField() or e:IsHasProperty(EFFECT_FLAG_SET_AVAILABLE))

@@ -297,6 +297,7 @@ function cm.chkval(e,te)
 		if KOISHI_CHECK then
 			Duel.DisableActionCheck(true)
 			pcall(Duel.SendtoHand,e:GetHandler(),nil,REASON_EFFECT)
+			--Debug.Message(e:GetHandler():GetLocation())
 			Duel.DisableActionCheck(false)
 		end
 		if e:GetHandler():IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and e:GetHandler():IsAbleToHand() then
@@ -348,6 +349,7 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	if pnfl_adjusting then return end
 	pnfl_adjusting=true
 	local g=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil,e:GetLabel())
+	--Debug.Message(#g)
 	g:ForEach(Card.ResetFlagEffect,m)
 	Duel.SendtoHand(g,nil,REASON_EFFECT)
 	pnfl_adjusting=false
