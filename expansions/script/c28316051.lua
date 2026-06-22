@@ -30,7 +30,7 @@ function c28316051.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28316051.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp or (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
+	return (Duel.GetTurnPlayer()==tp or Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) or (Duel.IsPlayerAffectedByEffect(tp,28361833)~=nil and e:GetHandler():IsOriginalSetCard(0x283))
 end
 function c28316051.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -42,7 +42,7 @@ function c28316051.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28316051.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
+	if c:IsRelateToChain() then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
 	if Duel.GetLP(tp)>3000 then Duel.Damage(tp,2000,REASON_EFFECT) end
 end
 function c28316051.chkfilter(c,tp)
@@ -105,7 +105,7 @@ function c28316051.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local p=c:GetPreviousControler()
 	local g=Duel.GetMatchingGroup(c28316051.ffilter,p,LOCATION_GRAVE,0,nil,p)
-	if c:IsReason(REASON_DESTROY) and #g>0 then
+	if (ANTICA_EFFECT_HINT or c:IsReason(REASON_DESTROY)) and #g>0 then
 		Duel.Hint(HINT_CARD,0,28316051)
 		local tc=g:GetFirst()
 		if #g>1 then
