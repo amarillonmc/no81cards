@@ -81,13 +81,10 @@ function c19209929.cfop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
 				sg=sg:Select(p,ft,ft,nil)
 			end
-			local og=Group.CreateGroup()
-			if Duel.SpecialSummon(sg,0,p,p,false,false,POS_FACEUP)>=2 then
-				og=Duel.GetOperatedGroup()
-				Duel.BreakEffect()
-				Duel.Draw(p,2,REASON_EFFECT)
-			end
-				for tc in aux.Next(og) do
+			local ct=Duel.SpecialSummon(sg,0,p,p,false,false,POS_FACEUP)
+			if ct==0 then Duel.ShuffleHand(1-tp) return end
+			local og=Duel.GetOperatedGroup()
+			for tc in aux.Next(og) do
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_DISABLE)
@@ -99,6 +96,10 @@ function c19209929.cfop(e,tp,eg,ep,ev,re,r,rp)
 				e2:SetValue(RESET_TURN_SET)
 				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc:RegisterEffect(e2,true)
+			end
+			if ct>=2 then
+				Duel.BreakEffect()
+				Duel.Draw(p,2,REASON_EFFECT)
 			end
 		end
 		Duel.ShuffleHand(1-tp)
