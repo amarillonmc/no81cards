@@ -7,8 +7,10 @@ function s.DarkSnake(c)
 	return false
 end
 s.named_with_DarkSnake=1
+
 function s.initial_effect(c)
-		aux.AddCodeList(c,40020764)
+	aux.AddCodeList(c,40020764)
+	
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -34,17 +36,16 @@ end
 function s.thfilter_pre(c, code)
 	return s.DarkSnake(c) and c:GetCode() ~= code and c:IsAbleToHand()
 end
-
 function s.tgfilter_check(c, tp)
-	if not (c:IsFaceup() and s.DarkSnake(c) and c:IsCanBeEffectTarget(c)) then return false end
+	if not (c:IsFaceup() and s.DarkSnake(c)) then return false end
 	local code = c:GetCode()
 	return Duel.IsExistingMatchingCard(s.thfilter_pre, tp, LOCATION_DECK, 0, 1, nil, code)
 end
 
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and s.DarkSnake(chkc) end
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and s.tgfilter_check(chkc, tp) end
 	if chk==0 then
-		return Duel.IsExistingMatchingCard(s.tgfilter_check, tp, LOCATION_ONFIELD, 0, 1, nil, tp)
+		return Duel.IsExistingTarget(s.tgfilter_check, tp, LOCATION_ONFIELD, 0, 1, nil, tp)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp, s.tgfilter_check, tp, LOCATION_ONFIELD, 0, 1, 1, nil, tp)
@@ -72,6 +73,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+
 function s.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.tg2filter(chkc,c) end
@@ -81,9 +83,11 @@ function s.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,tp,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,0)
 end
+
 function s.tg2filter(c,ec)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and s.DarkSnake(c) and c~=ec
 end
+
 function s.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()

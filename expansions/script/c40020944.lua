@@ -116,7 +116,13 @@ end
 
 function s.ritfilter(c,e,tp)
 	if c:IsLocation(LOCATION_REMOVED) and not c:IsFaceup() then return false end
-	return s.Galaxian(c) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,false)
+	if not (s.Galaxian(c) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,false)) then return false end
+	local lv=c:GetLevel()
+	local mg1=Duel.GetMatchingGroup(s.relfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c,tp)
+	local mg2=Duel.GetMatchingGroup(s.rmmatfilter,tp,LOCATION_GRAVE,0,c)
+	local mg=mg1:Clone()
+	mg:Merge(mg2)
+	return mg:CheckSubGroup(s.lvcheck,1,#mg,c)
 end
 
 function s.relfilter(c,tp)
@@ -140,20 +146,7 @@ end
 
 function s.rittg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local rg=Duel.GetMatchingGroup(s.ritfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED,0,nil,e,tp)
-		if #rg==0 then return false end
-		local mg1=Duel.GetMatchingGroup(s.relfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,tp)
-		local mg2=Duel.GetMatchingGroup(s.rmmatfilter,tp,LOCATION_GRAVE,0,nil)
-		local mg=mg1:Clone()
-		mg:Merge(mg2)
-		local rc=rg:GetFirst()
-		while rc do
-			if mg:CheckSubGroup(s.lvcheck,1,#mg,rc) then
-				return true
-			end
-			rc=rg:GetNext()
-		end
-		return false
+		return Duel.IsExistingMatchingCard(s.ritfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED,0,1,nil,e,tp)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED)
 end
@@ -164,9 +157,8 @@ function s.ritop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local rc=rg:Select(tp,1,1,nil):GetFirst()
 	if not rc then return end
-	local lv=rc:GetLevel()
-	local mg1=Duel.GetMatchingGroup(s.relfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,tp)
-	local mg2=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.rmmatfilter),tp,LOCATION_GRAVE,0,nil)
+	local mg1=Duel.GetMatchingGroup(s.relfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,rc,tp)
+	local mg2=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.rmmatfilter),tp,LOCATION_GRAVE,0,rc)
 	local mg=mg1:Clone()
 	mg:Merge(mg2)
 	if #mg==0 then return end

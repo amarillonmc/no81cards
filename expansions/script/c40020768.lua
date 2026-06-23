@@ -95,29 +95,24 @@ end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
-	
 	local normalMg=Duel.GetMatchingGroup(s.normalxyzfilter,tp,LOCATION_MZONE,0,nil,c)
 	if #normalMg>=3 then
 		if not Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 			return false
 		end
 	end
-	
 	local rmg=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,nil)
 	local ovg=Duel.GetMatchingGroup(s.ovfilter,tp,LOCATION_ONFIELD+LOCATION_EXTRA,0,nil)
-	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local ov=ovg:Select(tp,1,1,nil)
 	local ovc=ov:GetFirst()
-	
 	rmg:RemoveCard(ovc)
+	if #rmg==0 then return false end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rm=rmg:Select(tp,1,1,nil)
 	local rmc=rm:GetFirst()
-	
 	ovc:RegisterFlagEffect(id+100,0,0,1)
 	rmc:RegisterFlagEffect(id+101,0,0,1)
-	
 	return true
 end
 
