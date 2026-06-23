@@ -43,12 +43,13 @@ function s.tgfilter_check(c, tp)
 end
 
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and s.tgfilter_check(chkc, tp) end
+	local c=e:GetHandler()
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and chkc~=c and s.tgfilter_check(chkc, tp) end
 	if chk==0 then
-		return Duel.IsExistingTarget(s.tgfilter_check, tp, LOCATION_ONFIELD, 0, 1, nil, tp)
+		return Duel.IsExistingTarget(s.tgfilter_check, tp, LOCATION_ONFIELD, 0, 1, c, tp)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp, s.tgfilter_check, tp, LOCATION_ONFIELD, 0, 1, 1, nil, tp)
+	local g=Duel.SelectTarget(tp, s.tgfilter_check, tp, LOCATION_ONFIELD, 0, 1, 1, c, tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 

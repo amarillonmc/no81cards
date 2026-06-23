@@ -114,15 +114,32 @@ function s.spop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
+function s.fselect(g,lv,tp)
+	local sum=g:GetSum(Card.GetLevel)
+	if sum<lv then return false end
+	
+	if sum-g:GetFirst():GetLevel()>=lv and #g>1 then
+		for tc in aux.Next(g) do
+			if sum-tc:GetLevel()>=lv then return false end
+		end
+	end
+	
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then
+		if not g:IsExists(Card.IsLocation,1,nil,LOCATION_MZONE) then return false end
+	end
+	return true
+end
+
 function s.ritfilter(c,e,tp)
 	if c:IsLocation(LOCATION_REMOVED) and not c:IsFaceup() then return false end
-	if not (s.Galaxian(c) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,false)) then return false end
+	if not (s.Galaxian(c) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)) then return false end
+	
 	local lv=c:GetLevel()
 	local mg1=Duel.GetMatchingGroup(s.relfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c,tp)
 	local mg2=Duel.GetMatchingGroup(s.rmmatfilter,tp,LOCATION_GRAVE,0,c)
 	local mg=mg1:Clone()
 	mg:Merge(mg2)
-	return mg:CheckSubGroup(s.lvcheck,1,#mg,c)
+	return mg:CheckSubGroup(s.fselect,1,#mg,lv,tp)
 end
 
 function s.relfilter(c,tp)
@@ -132,16 +149,6 @@ end
 
 function s.rmmatfilter(c)
 	return s.Galaxian(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
-end
-
-function s.lvcheck(g,rc)
-	local sum=0
-	local tc=g:GetFirst()
-	while tc do
-		sum=sum+tc:GetLevel()
-		tc=g:GetNext()
-	end
-	return sum>=rc:GetLevel()
 end
 
 function s.rittg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -157,22 +164,30 @@ function s.ritop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local rc=rg:Select(tp,1,1,nil):GetFirst()
 	if not rc then return end
+	
+	local lv=rc:GetLevel()
 	local mg1=Duel.GetMatchingGroup(s.relfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,rc,tp)
 	local mg2=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.rmmatfilter),tp,LOCATION_GRAVE,0,rc)
 	local mg=mg1:Clone()
 	mg:Merge(mg2)
 	if #mg==0 then return end
+	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local sg=mg:SelectSubGroup(tp,s.lvcheck,false,1,#mg,rc)
+	local sg=mg:SelectSubGroup(tp,s.fselect,false,1,#mg,lv,tp)
 	if not sg or #sg==0 then return end
+	
 	local relg=sg:Filter(Card.IsLocation,nil,LOCATION_HAND+LOCATION_MZONE)
 	local rmg=sg:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+	
 	if #relg>0 then
 		Duel.Release(relg,REASON_RITUAL)
 	end
 	if #rmg>0 then
 		Duel.Remove(rmg,POS_FACEUP,REASON_RITUAL)
 	end
-	Duel.SpecialSummon(rc,SUMMON_TYPE_RITUAL,tp,tp,false,false,POS_FACEUP)
-	rc:CompleteProcedure()
+	
+	if Duel.SpecialSummonStep(rc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP) then
+		rc:CompleteProcedure()
+	end
+	Duel.SpecialSummonComplete()
 end
