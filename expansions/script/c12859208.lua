@@ -4,7 +4,7 @@ function s.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddMaterialCodeList(c,12859201,12859204,12859205)
-	aux.AddFusionProcFun2(c,s.matfilter1,s.matfilter2,true)
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionCode,12859204),aux.FilterBoolFunction(Card.IsFusionCode,12859201|12859205),true)
 	--procedure
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)

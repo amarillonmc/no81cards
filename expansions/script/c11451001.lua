@@ -106,8 +106,10 @@ function cm.initial_effect(c)
 			sp=sp or 0
 			if Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
 				local og=Duel.GetOverlayGroup(sp,s,o)
-				Duel.Hint(HINT_CARD,0,m)
-				cm[sp]=cm[sp]+1
+				if #og>0 then
+					Duel.Hint(HINT_CARD,0,m)
+					cm[sp]=cm[sp]+1
+				end
 				og=Local_RandomSelect(og,sp,1)
 				local e=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
 				local dc=og:GetFirst()
@@ -124,8 +126,10 @@ function cm.initial_effect(c)
 			sp=sp or 0
 			if Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
 				local og=oc:GetOverlayGroup()
-				Duel.Hint(HINT_CARD,0,m)
-				cm[sp]=cm[sp]+1
+				if #og>0 then
+					Duel.Hint(HINT_CARD,0,m)
+					cm[sp]=cm[sp]+1
+				end
 				og=Local_RandomSelect(og,sp,1)
 				local e=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
 				local ct=Duel.SendtoGrave(og,r)
@@ -146,7 +150,7 @@ function cm.initial_effect(c)
 		end
 		function Group.Select(g,sp,min,max,nc)
 			sp=sp or 0
-			if Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
+			if #g>0 and Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
 				local ng=g:Clone()
 				if aux.GetValueType(nc)=="Card" then ng:RemoveCard(nc) end
 				if aux.GetValueType(nc)=="Group" then ng:Sub(nc) end
@@ -157,7 +161,7 @@ function cm.initial_effect(c)
 				local tg=ng:RandomSelect(sp,1)
 				if tg:GetFirst() and tg:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) then Duel.ConfirmCards(sp,tg) end
 				return tg
-			elseif Duel.GetFlagEffect(0,m)>0 and min<=0 and max==1 then
+			elseif #g>0 and Duel.GetFlagEffect(0,m)>0 and min<=0 and max==1 then
 				local ng=g:Clone()
 				if aux.GetValueType(nc)=="Card" then ng:RemoveCard(nc) end
 				if aux.GetValueType(nc)=="Group" then ng:Sub(nc) end	
@@ -176,7 +180,7 @@ function cm.initial_effect(c)
 		function Group.CancelableSelect(g,sp,min,max,nc)
 			sp=sp or 0
 			if Duel.DisableActionCheck then Duel.DisableActionCheck(true) end
-			if Duel.GetFlagEffect(0,m)>0 and min<=1 and max==1 then
+			if #g>0 and Duel.GetFlagEffect(0,m)>0 and min<=1 and max==1 then
 				local ng=g:Clone()
 				if aux.GetValueType(nc)=="Card" then ng:RemoveCard(nc) end
 				if aux.GetValueType(nc)=="Group" then ng:Sub(nc) end	
