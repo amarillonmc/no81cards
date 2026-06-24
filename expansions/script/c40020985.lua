@@ -8,7 +8,7 @@ function s.Soldier(c)
 end
 
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020965)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)

@@ -8,7 +8,7 @@ function s.Soldier(c)
 end
 
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,40020965)
 	c:EnableReviveLimit()
 	aux.AddXyzProcedure(c,nil,10,2)
 	
