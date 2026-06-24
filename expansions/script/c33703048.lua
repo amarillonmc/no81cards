@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 	e2:SetLabelObject(e0)
 end
 function cm.calcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp 
+	return Duel.GetTurnPlayer()==tp and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function cm.calop(e,tp,eg,ep,ev,re,r,rp)
 	local tc = eg:GetFirst()
