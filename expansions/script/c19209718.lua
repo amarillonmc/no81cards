@@ -24,7 +24,7 @@ function c19209718.initial_effect(c)
 	--draw
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(19209718,2))
-	e3:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
+	e3:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES_SELF)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetProperty(EFFECT_FLAG_DELAY)

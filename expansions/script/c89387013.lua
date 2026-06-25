@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_DECKDES)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
@@ -42,24 +42,24 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function cm.thfilter1(c)
+function cm.thfilter1(c,tp)
 	return c:IsSetCard(0x39) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsFaceup() and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil,c)
 end
 function cm.tgfilter(c,tc)
 	return c:IsSetCard(0x39) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave() and not c:IsCode(tc:GetCode())
 end
 function cm.thtg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_REMOVED+LOCATION_GRAVE) and cm.thfilter1(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.thfilter1,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,nil) end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_REMOVED+LOCATION_GRAVE) and cm.thfilter1(chkc,tp) end
+	if chk==0 then return Duel.IsExistingTarget(cm.thfilter1,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,cm.thfilter1,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,cm.thfilter1,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function cm.thop1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) then
-		local sg=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_DECK,0,nil,tc)
+		local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.tgfilter),tp,LOCATION_DECK,0,nil,tc)
 		if sg:GetCount()>0 then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
