@@ -95,7 +95,6 @@ function c9911504.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 			fe:UseCountLimit(tp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 			local dg=Duel.SelectMatchingCard(tp,c9911504.deckfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
-			Duel.Release(dg,REASON_COST)
 			Duel.SendtoGrave(dg,REASON_RELEASE+REASON_COST)
 		else
 			Duel.Release(rc,REASON_COST)

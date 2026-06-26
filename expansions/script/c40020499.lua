@@ -37,7 +37,7 @@ function s.initial_effect(c)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
 end
-
+s.has_text_type=TYPE_UNION
 
 function s.cfilter(c)
 	return s.CelestialBeing(c) and c:IsFaceup()

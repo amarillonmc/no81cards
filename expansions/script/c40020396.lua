@@ -62,7 +62,7 @@ function s.initial_effect(c)
 	e5:SetOperation(s.matop)
 	c:RegisterEffect(e5)
 end
-
+s.has_text_type=TYPE_UNION
 function s.cttg(e, tp, eg, ep, ev, re, r, rp, chk)
 	local val = Duel.GetFlagEffect(tp, 40020396)
 	if chk == 0 then return val > 0 and e:GetHandler():IsCanAddCounter(0x1f1e, val) end

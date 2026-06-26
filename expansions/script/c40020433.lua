@@ -43,7 +43,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 
-
+s.has_text_type=TYPE_UNION
 function s.thfilter(c, expand)
 	if c:IsCode(40020396) and c:IsAbleToHand() then return true end
 	if expand and aux.IsCodeListed(c, 40020396) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() then return true end

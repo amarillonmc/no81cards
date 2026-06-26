@@ -65,6 +65,7 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
+s.has_text_type=TYPE_UNION
 function s.lvtg(e,c)
 	return s.CelestialBeing(c) and c:IsType(TYPE_UNION) and c:IsLevelAbove(1)
 end

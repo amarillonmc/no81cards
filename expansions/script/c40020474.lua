@@ -59,6 +59,7 @@ function s.initial_effect(c)
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e5)
 end
+s.has_text_type=TYPE_UNION
 function s.cfilter(c)
 	return s.CelestialBeing(c) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
 end

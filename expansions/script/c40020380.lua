@@ -44,6 +44,7 @@ function s.initial_effect(c)
 	e3:SetOperation(s.actop)
 	c:RegisterEffect(e3)	
 end
+s.has_text_type=TYPE_UNION
 function s.spcfilter(c,e,tp)
 	return s.CelestialBeing(c) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_UNION) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

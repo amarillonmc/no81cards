@@ -58,6 +58,7 @@ end
 function c28327394.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetTargetsRelateToChain()
 	if Duel.Destroy(g,REASON_EFFECT)~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c28327394.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(28327394,0)) then
+		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,c28327394.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 		if g:GetCount()==1 then Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP) end
