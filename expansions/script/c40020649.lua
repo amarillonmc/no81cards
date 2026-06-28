@@ -5,6 +5,12 @@ function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
 end
+s.named_with_DrivenForce=1
+
+function s.DrivenForce(c)
+	local m = _G["c"..c:GetCode()]
+	return m and m.named_with_DrivenForce
+end
 function s.initial_effect(c)
 	aux.AddCodeList(c,40020585)
 	aux.EnablePendulumAttribute(c)
@@ -111,12 +117,12 @@ function s.sccon(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.mfilter(c)
-	return s.ForceFighter(c) and c:IsFaceup() and c:GetLevel()>0
+	return (s.ForceFighter(c) or s.DrivenForce(c)) and c:IsFaceup() and c:GetLevel()>0
 end
 
 function s.synchk_manual(sc,e,c,tc)
 
-	if not (s.ForceFighter(sc) and sc:IsType(TYPE_SYNCHRO)) then return false end
+	if not ((s.ForceFighter(sc) or s.DrivenForce(sc)) and sc:IsType(TYPE_SYNCHRO)) then return false end
 
 	if sc:GetLevel() ~= c:GetLevel() + tc:GetLevel() then return false end
 
@@ -167,7 +173,7 @@ function s.scop(e,tp,eg,ep,ev,re,r,rp)
 			local mg=Group.FromCards(c,tc)
 			
 			local sc_g=Duel.GetMatchingGroup(function(sc)
-				return s.ForceFighter(sc) and sc:IsSynchroSummonable(nil,mg)
+				return (s.ForceFighter(sc) or s.DrivenForce(sc)) and sc:IsSynchroSummonable(nil,mg)
 			end,tp,LOCATION_EXTRA,0,nil)
 			
 			if sc_g:GetCount()>0 then

@@ -89,7 +89,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	
 	if op==0 then
 
-		e:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES+CATEGORY_TODECK)
+		e:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES_SELF+CATEGORY_TODECK)
 		e:SetProperty(0)
 		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,3)
 	else

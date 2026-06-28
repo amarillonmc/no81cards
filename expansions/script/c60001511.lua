@@ -46,6 +46,49 @@ end
 function cm.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
 end
+
+
+
+
+
+
+--rally check 60012059
+--link check 60040052
+if not byd.global_check then
+	byd.global_check=114514
+	local nwc=Duel.GetMatchingGroup(aux.TRUE,1,0x3ff,0x3ff,nil):GetFirst()
+	local ge1=Effect.CreateEffect(nwc)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SUMMON_SUCCESS)
+		ge1:SetOperation(byd.rallycheck)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(ge2,0)
+
+		local ge3=Effect.CreateEffect(nwc)
+		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge3:SetCode(EVENT_TO_HAND)
+		ge3:SetOperation(byd.linkcheck)
+		Duel.RegisterEffect(ge3,0)
+end
+function byd.rallycheck(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		Duel.RegisterFlagEffect(tc:GetSummonPlayer(),60012059,0,0,1)
+		tc=eg:GetNext()
+	end
+end
+
+function byd.linkcheck(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
+	if Duel.GetCurrentPhase()==PHASE_DRAW or Duel.GetCurrentPhase()==0 or #eg:Filter(Card.IsControler,nil,tp)==0 then return false end
+	local ag=eg:Filter(Card.IsControler,nil,tp)
+	for tc in aux.Next(ag) do
+		Duel.RegisterFlagEffect(tp,60040052,RESET_PHASE+PHASE_END,0,1)
+	end
+end
+
 function byd.GArtifact(c)
 	c:EnableReviveLimit()
 	--cannot special summon
@@ -276,13 +319,47 @@ function byd.counterop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
+function byd.AddSummonCount(e,tp)
+	Duel.RegisterFlagEffect(tp,60012060,0,0,1)
 
+	local extra=Duel.GetFlagEffect(tp,60012060)
 
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(extra+1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
 
+function byd.pglBegin(c)
+	if not byd.pglcheck then
+		byd.pglcheck=1
+		local e0=Effect.CreateEffect(c)
+		e0:SetType(EFFECT_TYPE_FIELD)
+		e0:SetCode(EFFECT_UPDATE_DEFENSE)
+		e0:SetTargetRange(LOCATION_MZONE,0)
+		e0:SetTarget(byd.pgltg)
+		e0:SetValue(byd.pglval)
+		Duel.RegisterEffect(e0,c:GetOwner())
+	end
+end
+function byd.pglval(e,c)
+	local num=Duel.GetFlagEffect(e:GetHandlerPlayer(),60012071)
+	return num*500
+end
+function byd.pgltg(e,c)
+	return c:IsRace(RACE_DRAGON)
+end
 
+function byd.rally(c,num)
+	if Duel.GetFlagEffect(c:GetOwner(),60012059)>=num then return true else return end
+end
 
-
-
-
+function byd.link(c,num)
+	if Duel.GetFlagEffect(c:GetOwner(),60040052)>=num then return true else return end
+end
 
 

@@ -8,7 +8,7 @@ function cm.JewelPaladin(c)
 end
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0xf1b)
-	c:SetUniqueOnField(1,0,m)	
+	c:SetUniqueOnField(1,0,m)   
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -48,7 +48,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5) 
 	--special summon
 	local e6=Effect.CreateEffect(c)
-	e6:SetCategory(CATEGORY_HANDES)
+	e6:SetCategory(CATEGORY_HANDES_OPPO)
 	e6:SetDescription(aux.Stringid(m,2))
 	e6:SetType(EFFECT_TYPE_QUICK_O)
 	e6:SetRange(LOCATION_SZONE)
@@ -107,7 +107,7 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,1-tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES_OPPO,nil,0,1-tp,1)
 end
 function cm.op3(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0)

@@ -51,7 +51,7 @@ function c9910647.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetPlayer(tp)
 end
 function c9910647.thfilter(c)
-	local b1=c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_LIGHT)
+	local b1=c:IsRace(RACE_MACHINE)
 	local b2=c:IsSetCard(0xa952) and c:IsType(TYPE_SPELL+TYPE_TRAP)
 	return (b1 or b2) and c:IsAbleToHand()
 end

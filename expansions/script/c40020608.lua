@@ -1,6 +1,11 @@
 --天魔王 六魔神 -气之型-
 local s, id = GetID()
 s.named_with_ForceFighter=1
+function s.DrivenForce(c)
+	local m = _G["c"..c:GetCode()]
+	return m and m.named_with_DrivenForce
+end
+
 function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
@@ -9,23 +14,20 @@ end
 function s.initial_effect(c)
 	aux.AddCodeList(c,40020585)
 	c:EnableReviveLimit()
-	
+	aux.AddXyzProcedure(c,nil,6,2)
 
-	local e0 = Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_UNCOPYABLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(s.splimit)
-	c:RegisterEffect(e0)
-
-	local e1 = Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id, 0))
-	e1:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.pzcon)
+	e1:SetCost(s.pzcost)
 	e1:SetTarget(s.pztg)
 	e1:SetOperation(s.pzop)
 	c:RegisterEffect(e1)
+
 
 	local e2 = Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
@@ -44,32 +46,43 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
+function s.pzcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
+end
 
-function s.splimit(e, se, sp, st)
-	if (st & SUMMON_TYPE_XYZ) == SUMMON_TYPE_XYZ then return false end
-	if e:GetHandler():IsLocation(LOCATION_EXTRA) then
-		return se and s.ForceFighter(se:GetHandler())
+function s.pzcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+end
+
+function s.pzfilter(c,tp)
+	if c:IsCode(40020585) then return not c:IsForbidden() end
+	local has_yamato = Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_PZONE,0,1,nil,40020585)
+	if has_yamato then
+		return (s.DrivenForce(c) or s.ForceFighter(c)) 
+			and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 	end
-	return true
+	
+	return false
 end
 
-function s.pzfilter(c)
-	return c:IsCode(40020585) and (c:IsFaceup() or c:IsLocation(LOCATION_DECK)) and not c:IsForbidden()
-end
-
-function s.pztg(e, tp, eg, ep, ev, re, r, rp, chk)
-	if chk == 0 then return Duel.CheckLocation(tp, LOCATION_PZONE, 0) or Duel.CheckLocation(tp, LOCATION_PZONE, 1)
-		and Duel.IsExistingMatchingCard(s.pzfilter, tp, LOCATION_DECK + LOCATION_EXTRA, 0, 1, nil) end
-end
-
-function s.pzop(e, tp, eg, ep, ev, re, r, rp)
-	if not (Duel.CheckLocation(tp, LOCATION_PZONE, 0) or Duel.CheckLocation(tp, LOCATION_PZONE, 1)) then return end
-	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOFIELD)
-	local g = Duel.SelectMatchingCard(tp, s.pzfilter, tp, LOCATION_DECK + LOCATION_EXTRA, 0, 1, 1, nil)
-	if g:GetCount() > 0 then
-		Duel.MoveToField(g:GetFirst(), tp, tp, LOCATION_PZONE, POS_FACEUP, true)
+function s.pztg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local b1 = Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)
+	if chk==0 then return b1 
+		and Duel.IsExistingMatchingCard(s.pzfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,tp) 
 	end
 end
+
+function s.pzop(e,tp,eg,ep,ev,re,r,rp)
+	if not (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local g=Duel.SelectMatchingCard(tp,s.pzfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,tp)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+	end
+end
+
 
 function s.damcon(e, tp, eg, ep, ev, re, r, rp)
 	local g = Duel.GetMatchingGroup(Card.IsFaceup, tp, LOCATION_MZONE, 0, nil)

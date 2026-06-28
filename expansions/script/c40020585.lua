@@ -6,7 +6,10 @@ function s.Grandwalker(c)
 	return m and m.named_with_Grandwalker
 end
 
-s.named_with_ForceFighter=1
+function s.DrivenForce(c)
+	local m = _G["c"..c:GetCode()]
+	return m and m.named_with_DrivenForce
+end
 function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
@@ -29,7 +32,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_TO_DECK)
 	e2:SetRange(LOCATION_PZONE) 
-	e2:SetCountLimit(1,id)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetCondition(s.drcon)
 	e2:SetOperation(s.drop)
 	c:RegisterEffect(e2)
@@ -55,12 +58,12 @@ function s.initial_effect(c)
 end
 function s.indtg(e, c)
 	if c == e:GetHandler() then return true end
-	return c:IsFaceup() and c:IsType(TYPE_SPELL + TYPE_TRAP) and s.ForceFighter(c)
+	return c:IsFaceup() and c:IsType(TYPE_SPELL + TYPE_TRAP) and (s.ForceFighter(c) or s.DrivenForce(c))
 end
 
 function s.drcon(e, tp, eg, ep, ev, re, r, rp)
 	return (r & REASON_EFFECT) ~= 0
-		and re and s.ForceFighter(re:GetHandler())
+		and re and (s.ForceFighter(re:GetHandler()) or s.DrivenForce(re:GetHandler()))
 		and rp == tp 
 end
 

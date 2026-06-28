@@ -5,7 +5,10 @@ function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
 end
-
+function s.DrivenForce(c)
+	local m = _G["c"..c:GetCode()]
+	return m and m.named_with_DrivenForce
+end
 function s.initial_effect(c)
 		aux.AddCodeList(c,40020585)
 	local e1 = Effect.CreateEffect(c)
@@ -82,7 +85,7 @@ function s.actop(e, tp, eg, ep, ev, re, r, rp)
 end
 
 function s.badgyfilter(c)
-	return not (c:IsCode(40020585) or s.ForceFighter(c))
+	return not (c:IsCode(40020585) or s.ForceFighter(c) or s.DrivenForce(c))
 end
 
 function s.taxcon(e)

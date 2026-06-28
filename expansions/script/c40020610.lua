@@ -5,7 +5,10 @@ function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
 end
-
+function s.DrivenForce(c)
+	local m = _G["c"..c:GetCode()]
+	return m and m.named_with_DrivenForce
+end
 function s.initial_effect(c)
 
 	c:EnableReviveLimit()
@@ -75,7 +78,7 @@ end
 
 function s.actcon(e)
 	local a = Duel.GetAttacker()
-	return a and a:IsControler(e:GetHandlerPlayer()) and (s.ForceFighter(a) or s.MachForce(a))
+	return a and a:IsControler(e:GetHandlerPlayer()) and (s.ForceFighter(a) or s.DrivenForce(a))
 end
 
 function s.aclimit(e, re, tp)

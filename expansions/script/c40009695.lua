@@ -45,7 +45,7 @@ function cm.initial_effect(c)
 	--handes
 	local e7=Effect.CreateEffect(c)
 	e7:SetDescription(aux.Stringid(m,1))
-	e7:SetCategory(CATEGORY_HANDES)
+	e7:SetCategory(CATEGORY_HANDES_OPPO)
 	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e7:SetProperty(EFFECT_FLAG_DELAY)
 	e7:SetRange(LOCATION_FZONE)
@@ -90,7 +90,7 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES_OPPO,nil,0,tp,1)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)

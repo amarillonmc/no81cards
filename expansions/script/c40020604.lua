@@ -5,11 +5,14 @@ function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
 end
-
+function s.DrivenForce(c)
+	local m = _G["c"..c:GetCode()]
+	return m and m.named_with_DrivenForce
+end
 function s.initial_effect(c)
 
 	c:EnableReviveLimit()
-	aux.AddSynchroProcedure(c, nil, aux.NonTuner(s.matfilter), 1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 
 	local e1 = Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id, 0))
@@ -28,7 +31,6 @@ function s.initial_effect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_ATTACK_ANNOUNCE)
-	--e2:SetCountLimit(1, id + 100)
 	e2:SetTarget(s.sptg)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
@@ -43,7 +45,6 @@ function s.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_TO_GRAVE)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
-	--e4:SetCountLimit(1, id + 100)
 	e4:SetCondition(s.leavecon)
 	e4:SetTarget(s.sptg)
 	e4:SetOperation(s.spop)
@@ -103,7 +104,7 @@ function s.leavecon(e, tp, eg, ep, ev, re, r, rp)
 end
 
 function s.xyzfilter(c, e, tp)
-	return s.ForceFighter(c) and c:IsRank(8) and c:IsType(TYPE_XYZ)
+	return s.DrivenForce(c) and c:IsRank(8) and c:IsType(TYPE_XYZ)
 		and c:IsCanBeSpecialSummoned(e, 0, tp, true, false)
 end
 

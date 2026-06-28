@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	-- ② 战斗阶段破坏
 	local e2 = Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m, 0))
-	e2:SetCategory(CATEGORY_DESTROY + CATEGORY_HANDES + CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_DESTROY  + CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetHintTiming(0, TIMING_BATTLE_PHASE)

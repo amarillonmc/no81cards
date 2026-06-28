@@ -5,7 +5,10 @@ function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
 end
-
+function s.DrivenForce(c)
+	local m = _G["c"..c:GetCode()]
+	return m and m.named_with_DrivenForce
+end
 function s.initial_effect(c)
 	aux.AddCodeList(c,40020585)
 	local e1 = Effect.CreateEffect(c)
@@ -40,7 +43,7 @@ function s.yamatofilter(c)
 end
 
 function s.keepfilter(c)
-	return c:IsCode(40020585) or s.ForceFighter(c)
+	return c:IsCode(40020585) or s.ForceFighter(c) or s.DrivenForce(c)
 end
 
 function s.condition(e, tp, eg, ep, ev, re, r, rp)
@@ -94,7 +97,7 @@ function s.atkcon(e, tp, eg, ep, ev, re, r, rp)
 	if c:IsControler(1-tp) then c = tc end
 	
 	e:SetLabelObject(c)
-	return c:IsControler(tp) and s.ForceFighter(c) and c:IsRelateToBattle()
+	return c:IsControler(tp) and (s.ForceFighter(c) or s.DrivenForce(c)) and c:IsRelateToBattle()
 end
 
 function s.atkop(e, tp, eg, ep, ev, re, r, rp)

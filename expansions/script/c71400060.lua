@@ -27,12 +27,12 @@ function c71400060.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71400060,0))
 	e2:SetCountLimit(1,71400060)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_ATKCHANGE+CATEGORY_GRAVE_SPSUMMON)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
+	--e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(TIMING_DAMAGE_STEP)
+	e2:SetHintTiming(TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetCondition(c71400060.con2)
 	e2:SetCost(c71400060.cost2)
 	e2:SetTarget(c71400060.tg2)
@@ -54,7 +54,8 @@ end
 function c71400060.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.IsExistingMatchingCard(c71400060.filterc2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-	local g=Duel.SelectReleaseGroupEx(tp,c71400060.filterc2,1,1,nil,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectMatchingCard(tp,c71400060.filterc2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
 	Duel.Release(g,REASON_COST)
 end
 function c71400060.filter2(c,e,tp)
@@ -77,11 +78,8 @@ function c71400060.filter2a(c,mnum,e,tp,flag)
 	if c:IsType(TYPE_XYZ)~=flag then return false end
 	return (flag and c:IsRank(mnum) or not flag and c:IsLevel(mnum)) and c:IsSetCard(0x714) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c71400060.filter2b(c)
-	return c:IsFaceup() and c:IsSetCard(0x714)
-end
 function c71400060.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400060.filter2b,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
 end
 function c71400060.op2(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c71400060.filter2),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(71400060,1)) then
@@ -104,16 +102,5 @@ function c71400060.op2(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
-	local g=Duel.GetMatchingGroup(c71400060.filter2b,tp,LOCATION_MZONE,0,nil)
-	local tc=g:GetFirst()
-	while tc do
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetValue(600)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		tc=g:GetNext()
-	end
+	Duel.Draw(tp,1,REASON_EFFECT)
 end

@@ -47,7 +47,7 @@ function s.initial_effect(c)
 
 	local e2 = Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id, 2))
-	e2:SetCategory(CATEGORY_HANDES)
+	e2:SetCategory(CATEGORY_HANDES_OPPO)
 	e2:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_REMOVE_COUNTER)
 	e2:SetRange(LOCATION_MZONE)
@@ -160,7 +160,7 @@ end
 
 function s.e2tg(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then return true end 
-	Duel.SetOperationInfo(0, CATEGORY_HANDES, nil, 0, 1-tp, 1)
+	Duel.SetOperationInfo(0, CATEGORY_HANDES_OPPO, nil, 0, 1-tp, 1)
 end
 
 function s.e2op(e, tp, eg, ep, ev, re, r, rp)

@@ -20,7 +20,7 @@ function s.initial_effect(c)
 	aux.EnableUnionAttribute(c,s.filter)
 	local e1 = Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id, 0))
-	e1:SetCategory(CATEGORY_HANDES + CATEGORY_DRAW + CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_HANDES_SELF + CATEGORY_DRAW + CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -47,7 +47,7 @@ end
 function s.e1tg(e, tp, eg, ep, ev, re, r, rp, chk)
 
 	if chk == 0 then return Duel.GetFieldGroupCount(tp, LOCATION_HAND, 0) > 0 end
-	Duel.SetOperationInfo(0, CATEGORY_HANDES, nil, 0, tp, 1) 
+	Duel.SetOperationInfo(0, CATEGORY_HANDES_SELF, nil, 0, tp, 1) 
 	Duel.SetOperationInfo(0, CATEGORY_DRAW, nil, 0, tp, 1) 
 	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, nil, 1, tp, LOCATION_GRAVE + LOCATION_EXTRA)
 end

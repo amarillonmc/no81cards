@@ -5,8 +5,12 @@ function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
 end
+function s.DrivenForce(c)
+	local m = _G["c"..c:GetCode()]
+	return m and m.named_with_DrivenForce
+end
 function s.initial_effect(c)
-		aux.AddCodeList(c,40020585)
+	aux.AddCodeList(c,40020585)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_SPECIAL_SUMMON)
@@ -50,7 +54,7 @@ function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	if n<2 then return false end
 	local te,p=Duel.GetChainInfo(n-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
 	
-	return p==tp and s.ForceFighter(te:GetHandler())
+	return p==tp and (s.ForceFighter(te:GetHandler()) or s.DrivenForce(te:GetHandler()))
 end
 
 function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)

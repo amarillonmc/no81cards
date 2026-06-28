@@ -57,7 +57,7 @@ function c9910652.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoGrave(g,REASON_SPSUMMON+REASON_DISCARD)
 end
 function c9910652.spfilter1(c,e,tp)
-	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_LIGHT)
+	return c:IsFaceup() and c:IsRace(RACE_MACHINE)
 		and Duel.IsExistingMatchingCard(c9910652.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)
 		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 end

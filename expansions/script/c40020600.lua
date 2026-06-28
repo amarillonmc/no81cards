@@ -5,7 +5,10 @@ function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
 end
-
+function s.DrivenForce(c)
+	local m = _G["c"..c:GetCode()]
+	return m and m.named_with_DrivenForce
+end
 function s.initial_effect(c)
 	aux.AddCodeList(c,40020585)
 	local e1 = Effect.CreateEffect(c)
@@ -109,7 +112,7 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 	if rp~=tp then return end
 
 	if not re:IsHasCategory(CATEGORY_DRAW) then return end
-	if s.ForceFighter(re:GetHandler()) then
+	if (s.ForceFighter(re:GetHandler()) or s.DrivenForce(re:GetHandler())) then
 		Duel.SetChainLimit(s.chainlm)
 	end
 end

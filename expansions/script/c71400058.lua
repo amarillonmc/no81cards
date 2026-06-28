@@ -32,11 +32,11 @@ function c71400058.initial_effect(c)
 	--material
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71400058,1))
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_ACTION)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCountLimit(1)
-	--e2:SetCondition(c71400058.con2)
 	e2:SetTarget(c71400058.tg2)
 	e2:SetOperation(c71400058.op2)
 	c:RegisterEffect(e2)
@@ -44,14 +44,14 @@ function c71400058.initial_effect(c)
 	yume.AddYumeFieldGlobal(c,71400058,1)
 end
 function c71400058.filtercon1a(c,tp)
-	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER)
+	return (c:IsOnField() and c:IsFaceup() and c:IsLevel(4)) or (not c:IsOnField() and c:IsPreviousPosition(POS_FACEUP) and c:GetPreviousLevelOnField()==4)
 end
 function c71400058.con1(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c71400058.filtercon1,1,nil,tp)
 end
 function c71400058.con1b(e,tp,eg,ep,ev,re,r,rp)
-	local attr=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_ATTRIBUTE)
-	return re:IsActiveType(TYPE_MONSTER) and attr&ATTRIBUTE_WATER>0
+	local lv=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LEVEL)
+	return re:IsActiveType(TYPE_MONSTER) and lv==4
 end
 function c71400058.filterc1(c)
 	return c:IsSetCard(0xb714) and c:IsType(TYPE_FIELD) and c:IsAbleToGraveAsCost()
@@ -91,6 +91,8 @@ end
 function c71400058.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local lc=e:GetLabelObject()
+	--旧效果：当回合不能攻击，不能成为攻击效果对象，不能发动效果
+	--[[
 	local e1=Effect.CreateEffect(lc)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_CANNOT_ATTACK)
@@ -109,27 +111,54 @@ function c71400058.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e4=e3:Clone()
 	e4:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
 	c:RegisterEffect(e4)
+	]]
+	local e2=Effect.CreateEffect(lc)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e2:SetReset(RESET_EVENT+0xff0000)
+	c:RegisterEffect(e2)
+	local e4=e2:Clone()
+	e4:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
+	c:RegisterEffect(e4)
 	e:Reset()
-end
-function c71400058.con2(e,tp,eg,ep,ev,re,r,rp)
-	return tp==Duel.GetTurnPlayer()
 end
 function c71400058.filter2(c)
 	return c:IsFaceup() and c:IsSetCard(0x714) and c:IsType(TYPE_XYZ)
 end
 function c71400058.filter2a(c)
-	return c:IsSetCard(0xb714) and c:IsType(TYPE_FIELD) and c:IsCanOverlay()
+	return c:IsSetCard(0xb714) and c:IsType(TYPE_FIELD) and not c:IsForbidden()
+end
+function c71400058.filter2b(c,e,tp)
+	return c:IsSetCard(0x714) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c71400058.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400058.filter2,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(c71400058.filter2a,tp,LOCATION_GRAVE,0,1,nil) end
-	local g=Duel.GetMatchingGroup(c71400058.filter2a,tp,LOCATION_GRAVE,0,nil)
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,tp,LOCATION_GRAVE)
+	if chk==0 then
+		return true
+			--Duel.IsExistingMatchingCard(c71400058.filter2,tp,LOCATION_MZONE,0,1,nil)
+			--and Duel.IsExistingMatchingCard(c71400058.filter2a,tp,LOCATION_GRAVE,0,1,nil)
+			--and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+			--and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c71400058.filter2b),tp,LOCATION_GRAVE,0,1,nil,e,tp)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 end
 function c71400058.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local tc=Duel.SelectMatchingCard(tp,c71400058.filter2,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
+	if not tc then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local g=Duel.SelectMatchingCard(tp,c71400058.filter2a,tp,LOCATION_GRAVE,0,1,1,nil)
-	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
+	if g:GetCount()==0 then return end
+	if tc:IsImmuneToEffect(e) then
+		return
+	else
 		Duel.Overlay(tc,g)
+	end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sg=Duel.SelectMatchingCard(tp,c71400058.filter2b,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	if sg:GetCount()>0 then
+		Duel.BreakEffect()
+		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

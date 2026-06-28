@@ -1,12 +1,15 @@
 --鸟兽气兵武神 大和 -炮击态-
 
 local s, id = GetID()
-s.named_with_ForceFighter=1
+s.named_with_DrivenForce=1
 function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
 end
-
+function s.DrivenForce(c)
+	local m = _G["c"..c:GetCode()]
+	return m and m.named_with_DrivenForce
+end
 function s.initial_effect(c)
 	aux.AddCodeList(c,40020585)
 	c:EnableReviveLimit()
@@ -34,7 +37,7 @@ function s.initial_effect(c)
 	e2:SetCode(EFFECT_IMMUNE_EFFECT)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(LOCATION_MZONE, 0)
-	e2:SetTarget(aux.TargetBoolFunction(s.ForceFighter))
+	e2:SetTarget(aux.TargetBoolFunction(function(c) return s.ForceFighter(c) or s.DrivenForce(c) end))
 	e2:SetValue(s.efilter)
 	c:RegisterEffect(e2)
 end

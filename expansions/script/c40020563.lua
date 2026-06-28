@@ -35,7 +35,7 @@ function s.initial_effect(c)
 
 	local e4 = Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id, 1))
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON + CATEGORY_HANDES)
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON + CATEGORY_HANDES_SELF)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetCountLimit(1, id + 1)
@@ -80,7 +80,7 @@ function s.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
 		and e:GetHandler():IsCanBeSpecialSummoned(e, 0, tp, false, false)
 		and Duel.GetFieldGroupCount(tp, LOCATION_HAND, 0) > 0 end
 	
-	Duel.SetOperationInfo(0, CATEGORY_HANDES, nil, 1, tp, 1)
+	Duel.SetOperationInfo(0, CATEGORY_HANDES_SELF, nil, 1, tp, 1)
 	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, e:GetHandler(), 1, 0, 0)
 end
 

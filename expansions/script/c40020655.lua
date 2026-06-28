@@ -5,6 +5,12 @@ function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
 end
+s.named_with_DrivenForce=1
+
+function s.DrivenForce(c)
+	local m = _G["c"..c:GetCode()]
+	return m and m.named_with_DrivenForce
+end
 function s.initial_effect(c)
 	aux.AddCodeList(c,40020585)
 	c:EnableReviveLimit()
@@ -43,11 +49,15 @@ function s.initial_effect(c)
 end
 
 
+function s.bad_mat_filter(c)
+	return not (s.ForceFighter(c) or s.DrivenForce(c))
+end
+
 function s.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsSummonType(SUMMON_TYPE_LINK) then return false end
 	local mg=c:GetMaterial()
-	return mg:GetCount()>0 and not mg:IsExists(aux.NOT(s.ForceFighter),1,nil)
+	return #mg>0 and not mg:IsExists(s.bad_mat_filter,1,nil)
 end
 
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -57,7 +67,7 @@ function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function s.spfilter(c,e,tp)
-	return s.ForceFighter(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (s.ForceFighter(c) or s.DrivenForce(c)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
 function s.drop(e,tp,eg,ep,ev,re,r,rp)

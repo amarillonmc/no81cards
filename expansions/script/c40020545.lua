@@ -11,7 +11,7 @@ function s.initial_effect(c)
 
 	local e1 = Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id, 0))
-	e1:SetCategory(CATEGORY_HANDES + CATEGORY_DRAW + CATEGORY_TOGRAVE)
+	e1:SetCategory(CATEGORY_HANDES_SELF + CATEGORY_DRAW + CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -45,7 +45,7 @@ end
 
 function s.efftg(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then return Duel.GetFieldGroupCount(tp, LOCATION_HAND, 0) > 0 end
-	Duel.SetOperationInfo(0, CATEGORY_HANDES, nil, 1, tp, 1)
+	Duel.SetOperationInfo(0, CATEGORY_HANDES_SELF, nil, 1, tp, 1)
 	Duel.SetOperationInfo(0, CATEGORY_DRAW, nil, 0, tp, 4)
 	Duel.SetOperationInfo(0, CATEGORY_TOGRAVE, nil, 1, 0, LOCATION_ONFIELD)
 

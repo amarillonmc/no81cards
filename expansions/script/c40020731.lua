@@ -36,7 +36,7 @@ function s.initial_effect(c)
 
 	local e3 = Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id, 2))
-	e3:SetCategory(CATEGORY_HANDES + CATEGORY_DRAW)
+	e3:SetCategory(CATEGORY_HANDES_SELF + CATEGORY_DRAW)
 	e3:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_MOVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
@@ -174,7 +174,7 @@ function s.drtg(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then
 		return Duel.GetFieldGroupCount(tp, LOCATION_HAND, 0) > 0
 	end
-	Duel.SetOperationInfo(0, CATEGORY_HANDES, nil, 0, tp, 1)
+	Duel.SetOperationInfo(0, CATEGORY_HANDES_SELF, nil, 0, tp, 1)
 end
 
 function s.drop(e, tp, eg, ep, ev, re, r, rp)

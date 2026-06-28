@@ -47,7 +47,11 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT) then
 		Duel.ConfirmCards(1-tp,g)
 		local tc=Duel.GetOperatedGroup():GetFirst()
-		if aux.IsCodeListed(tc,60013025) and aux.IsCodeListed(tc,60013027) then Duel.Draw(tp,1,REASON_EFFECT) end
+		if aux.IsCodeListed(tc,60013025) and aux.IsCodeListed(tc,60013027) and Duel.Draw(tp,1,REASON_EFFECT)~=0 then
+			local tc=Duel.GetOperatedGroup():GetFirst()
+			Duel.ConfirmCards(1-tp,tc)
+			if not (aux.IsCodeListed(tc,60013025) or aux.IsCodeListed(tc,60013027)) then Duel.SendtoDeck(tc,tp,1,REASON_EFFECT) end
+	  end
 	end
 end
 function cm.cfilter(c,tp,rp)
