@@ -23,11 +23,11 @@ function c75081061.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x75c)
 end
 function c75081061.drepcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c75081061.cfilter,1,nil) and e:GetHandler():GetFlagEffect(75081061)==0
+	return eg:IsExists(c75081061.cfilter,1,nil) 
 end  
 function c75081061.dreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return e:GetHandler():IsAbleToRemove() end
+	if chk==0 then return e:GetHandler():IsAbleToRemove() and e:GetHandler():GetFlagEffect(75081061)==0 end
 	c:RegisterFlagEffect(75081061,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),1,0,0)
 end

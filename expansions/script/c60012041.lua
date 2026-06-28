@@ -95,5 +95,5 @@ end
 
 -- 墓地怪兽的过滤
 function cm.spfilter(c,e,tp)
-  return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+  return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsCanHaveCounter(0x624)
 end

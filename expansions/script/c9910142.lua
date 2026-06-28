@@ -22,11 +22,12 @@ function c9910142.initial_effect(c)
 	e2:SetOperation(c9910142.disop)
 	c:RegisterEffect(e2)
 end
-function c9910142.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
-end
 function c9910142.filter(c)
 	return c:IsFaceup() and c:IsSetCard(0x9958)
+end
+function c9910142.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910142.filter,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
 end
 function c9910142.disfilter(c,typ)
 	return aux.NegateAnyFilter(c) and c:IsType(typ)

@@ -151,28 +151,29 @@ function s.lkop(e,tp,eg,ep,ev,re,r,rp,c,og,lmat,min,max)
 	g:DeleteGroup()
 end
 
-function s.cfilter(c)
-	return c:IsSetCard(0x5a31) and c:IsSSetable() and c:IsType(TYPE_TRAP) and c:IsFaceupEx()
+function s.cfilter(c,chk)
+	return c:IsSetCard(0x5a31) and c:IsSSetable(chk) and c:IsType(TYPE_TRAP) and c:IsFaceupEx()
 end
-function s.filter1(c)
-	return c:IsSetCard(0x5a31) and c:IsAbleToHandAsCost()
+function s.filter1(c,ft)
+	return c:IsSetCard(0x5a31) and c:IsAbleToHandAsCost() and (ft>0 or c:IsLocation(LOCATION_SZONE) and ft>-1)
 end
-function s.filter2(c)
-	return c:IsSetCard(0x5a31) and c:IsAbleToDeckAsCost()
+function s.filter2(c,ft)
+	return c:IsSetCard(0x5a31) and c:IsAbleToDeckAsCost() and (ft>0 or c:IsLocation(LOCATION_SZONE) and ft>-1)
 end
-function s.filter3(c)
-	return c:IsSetCard(0x5a31) and c:IsAbleToGraveAsCost()
+function s.filter3(c,ft)
+	return c:IsSetCard(0x5a31) and c:IsAbleToGraveAsCost() and (ft>0 or c:IsLocation(LOCATION_SZONE) and ft>-1)
 end
-function s.filter4(c)
-	return c:IsSetCard(0x5a31) and c:IsAbleToRemoveAsCost()
+function s.filter4(c,ft)
+	return c:IsSetCard(0x5a31) and c:IsAbleToRemoveAsCost() and (ft>0 or c:IsLocation(LOCATION_SZONE) and ft>-1)
 end
 function s.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local b1=Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_ONFIELD,0,1,c) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_HAND,0,1,nil)
-	local b2=Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_ONFIELD,0,1,c) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_DECK,0,1,nil)
-	local b3=Duel.IsExistingMatchingCard(s.filter3,tp,LOCATION_ONFIELD,0,1,c) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_GRAVE,0,1,nil)
-	local b4=Duel.IsExistingMatchingCard(s.filter4,tp,LOCATION_ONFIELD,0,1,c) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_REMOVED,0,1,nil)
-	if chk==0 then return b1 or b2 end
+	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	local b1=Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_ONFIELD,0,1,c,ft) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_HAND,0,1,nil,true)
+	local b2=Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_ONFIELD,0,1,c,ft) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_DECK,0,1,nil,true)
+	local b3=Duel.IsExistingMatchingCard(s.filter3,tp,LOCATION_ONFIELD,0,1,c,ft) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_GRAVE,0,1,nil,true)
+	local b4=Duel.IsExistingMatchingCard(s.filter4,tp,LOCATION_ONFIELD,0,1,c,ft) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_REMOVED,0,1,nil,true)
+	if chk==0 then return b1 or b2 or b3 or b4 end
 	local op=aux.SelectFromOptions(tp,
 		{b1,aux.Stringid(id,0)},
 		{b2,aux.Stringid(id,1)},
@@ -181,22 +182,22 @@ function s.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(op)
 	if op==1 then 
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local g=Duel.SelectMatchingCard(tp,s.filter1,tp,LOCATION_ONFIELD,0,1,1,c)
+		local g=Duel.SelectMatchingCard(tp,s.filter1,tp,LOCATION_ONFIELD,0,1,1,c,ft)
 		Duel.ConfirmCards(1-tp,g)
 		Duel.SendtoHand(g,nil,REASON_COST)
 	elseif op==2 then 
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local g=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_ONFIELD,0,1,1,c)
+		local g=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_ONFIELD,0,1,1,c,ft)
 		Duel.ConfirmCards(1-tp,g)
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 	elseif op==3 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,s.filter3,tp,LOCATION_ONFIELD,0,1,1,c)
+		local g=Duel.SelectMatchingCard(tp,s.filter3,tp,LOCATION_ONFIELD,0,1,1,c,ft)
 		Duel.ConfirmCards(1-tp,g)
 		Duel.SendtoGrave(g,REASON_COST)
 	elseif op==4 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,s.filter4,tp,LOCATION_ONFIELD,0,1,1,c)
+		local g=Duel.SelectMatchingCard(tp,s.filter4,tp,LOCATION_ONFIELD,0,1,1,c,ft)
 		Duel.ConfirmCards(1-tp,g)
 		Duel.Remove(g,POS_FACEUP,REASON_COST)
 	else end
@@ -208,25 +209,25 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local sel=e:GetLabel()
 	if sel==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_HAND,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_HAND,0,1,1,nil,false)
 		if g:GetCount()>0 then
 			Duel.SSet(tp,g)
 		end
 	elseif sel==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_DECK,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_DECK,0,1,1,nil,false)
 		if g:GetCount()>0 then
 			Duel.SSet(tp,g)
 		end
 	elseif sel==3 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_GRAVE,0,1,1,nil,false)
 		if g:GetCount()>0 then
 			Duel.SSet(tp,g)
 		end
 	elseif sel==4 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_REMOVED,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_REMOVED,0,1,1,nil,false)
 		if g:GetCount()>0 then
 			Duel.SSet(tp,g)
 		end

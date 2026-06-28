@@ -59,7 +59,7 @@ function cm.incon(e)
 end
 function cm.spcon(e,c,tp)
 	if c==nil then return true end
-	return Duel.GetFlagEffect(tp,60002148)>=20
+	return Duel.GetFlagEffect(tp,60002148)>=6
 		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
