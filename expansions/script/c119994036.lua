@@ -152,7 +152,7 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return g:CheckSubGroup(s.fselect,2,2) end
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.tgfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.tgfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	local sg=g:SelectSubGroup(tp,s.fselect,false,2,2)
 	if #sg<2 then return end
 	Duel.HintSelection(sg)

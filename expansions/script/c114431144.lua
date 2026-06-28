@@ -81,7 +81,7 @@ function c114431144.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectMatchingCard(tp,c114431144.mtfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c114431144.mtfilter),tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.Overlay(c,g)
 	end
@@ -102,7 +102,7 @@ end
 function c114431144.grop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
+	if c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c) and not tc:IsImmuneToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
 		and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
 		local og=tc:GetOverlayGroup()
 		if og:GetCount()>0 then
@@ -134,11 +134,12 @@ function c114431144.pdfilter(c,e,tp,xyzc)
 	return aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) and c:IsCode(74641045) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsCanBeXyzMaterial(xyzc)
 end
 function c114431144.extg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
 		and Duel.IsExistingMatchingCard(c114431144.pdfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,c)
 		and Duel.IsPlayerCanSpecialSummonCount(tp,2)
-		and Duel.GetLocationCountFromEx(tp,tp,nil,e:GetHandler())>0
+		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
@@ -148,7 +149,7 @@ function c114431144.exop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if Duel.GetLocationCountFromEx(tp,tp,nil,c)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectMatchingCard(tp,c114431144.pdfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp,c)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c114431144.pdfilter),tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp,c)
 	local tc=g:GetFirst()
 	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		c:SetMaterial(Group.FromCards(tc))

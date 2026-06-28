@@ -3,7 +3,7 @@ function c114722253.initial_effect(c)
 	aux.AddCodeList(c,46986414)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SSET)
+	e1:SetCategory(CATEGORY_SSET+CATEGORY_HANDES_SELF)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetOperation(c114722253.activate)

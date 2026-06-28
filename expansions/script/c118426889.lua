@@ -106,7 +106,7 @@ function c118426889.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c118426889.srop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,0x97)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsSetCard),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,0x97)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)

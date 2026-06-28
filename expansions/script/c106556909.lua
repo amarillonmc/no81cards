@@ -80,7 +80,7 @@ function s.cpop(e,tp,eg,ep,ev,re,r,rp)
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	te:SetLabel(e:GetLabel())
 	te:SetLabelObject(e:GetLabelObject())
-	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	if c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.BreakEffect()
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
@@ -102,7 +102,7 @@ end
 function s.tdfilter(c)
 	return c:IsSetCard(0x3b) and c:IsAbleToDeck()
 end
-function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.tdfilter(chkc) end
 	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 and Duel.IsExistingTarget(s.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,0,1)
@@ -118,7 +118,7 @@ function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local flag=tc:IsCode(74677422)
 	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
-		local g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
+		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.setfilter),tp,LOCATION_GRAVE,0,nil,e,tp)
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

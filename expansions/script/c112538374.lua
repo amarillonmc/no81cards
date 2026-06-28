@@ -93,7 +93,7 @@ function c112538374.hsptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c112538374.hspop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
@@ -112,7 +112,7 @@ function c112538374.retop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c112538374.dffilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c112538374.dffilter),tp,LOCATION_GRAVE,0,1,1,nil)
 	if g:GetCount()>0 then
 		local tc=g:GetFirst()
 		local gg=Group.FromCards(c,tc)

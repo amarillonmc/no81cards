@@ -138,16 +138,16 @@ function s.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetTarget(s.splimit)
 	Duel.RegisterEffect(e1,tp)
 end
-function s.costfilter(c)
+function s.costfilter(c,tp)
 	return c:IsSetCard(0x9d) and c:IsReleasable() and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 end
 function s.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsOnField() end
-	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_EXTRA,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_EXTRA,0,1,nil,tp) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(id,1))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local sg=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_EXTRA,0,1,1,nil)
+	local sg=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_EXTRA,0,1,1,nil,tp)
 	aux.UseExtraReleaseCount(sg,tp)
 	Duel.Release(sg,REASON_COST)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
@@ -257,7 +257,7 @@ function s.thfilter(c)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.DiscardDeck(tp,5,REASON_EFFECT)<1 then return end
-	local sg=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+	local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
 	if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 		local g=sg:Select(tp,1,1,nil)

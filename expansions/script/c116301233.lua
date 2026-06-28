@@ -83,8 +83,9 @@ function c116301233.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c116301233.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.SpecialSummon(c,0,tp,1-tp,false,false,POS_FACEUP)
+	if c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c) then
+		Duel.SpecialSummon(c,0,tp,1-tp,false,false,POS_FACEUP)
+	end
 end
 
 function c116301233.filter(c)
@@ -123,12 +124,10 @@ function c116301233.tgop(e,tp,eg,ep,ev,re,r,rp)
 			c:RegisterFlagEffect(116301233,RESET_PHASE+PHASE_END,0,1)
 		end
 	elseif op==2 then
-		local g=Duel.GetMatchingGroup(c116301233.tdfilter,tp,0,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,nil)
+		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c116301233.tdfilter),tp,0,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,nil)
 		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 		Duel.ShuffleDeck(1-tp)
 		Duel.DiscardDeck(1-tp,3,REASON_EFFECT)
-	else
-		return
 	end
 end
 

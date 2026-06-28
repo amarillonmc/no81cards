@@ -85,7 +85,7 @@ function c118824150.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c118824150.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
@@ -126,7 +126,7 @@ end
 function c118824150.rvop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local tc=Duel.GetFirstTarget()
-	if aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL) and tc and tc:IsRelateToEffect(e) then
+	if aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL) and tc and tc:IsRelateToEffect(e) and aux.NecroValleyFilter()(tc) then
 		Duel.SpecialSummon(tc,SUMMON_TYPE_SYNCHRO,tp,tp,true,true,POS_FACEUP)
 		Duel.SpecialSummonComplete()
 	end
