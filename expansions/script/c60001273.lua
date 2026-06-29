@@ -1,7 +1,7 @@
 --魔眼的猎人·索恩
 local cm,m,o=GetID()
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x9620)
+	c:EnableCounterPermit(0x624)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -31,14 +31,14 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if e:GetHandler():IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x9620,1)
+		e:GetHandler():AddCounter(0x624,1)
 		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 	end
 	if Duel.GetFlagEffect(tp,m)>=6 then
 		local ag=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_MZONE,0,c,0xa622)
 		local ac=ag:GetFirst()
 		for i=1,#ag do
-			ac:AddCounter(0x9620,1)
+			ac:AddCounter(0x624,1)
 			Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 			ac=ag:GetNext()
 		end
