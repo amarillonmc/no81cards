@@ -18,20 +18,27 @@ function c33703020.initial_effect(c)
 	e2:SetCondition(c33703020.sprcon)
 	e2:SetOperation(c33703020.sprop)
 	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetCondition(c33703020.sumcon)
+	e3:SetOperation(c33703020.op)
+	c:RegisterEffect(e3)
 end
 function c33703020.filter(c)
 	return c:IsSetCard(0x442) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
 end
 function c33703020.sprcon(e,c)
 	if c==nil then return true end
-	--local tp=c:GetControler()
+	local tp=c:GetControler()
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 and Duel.IsExistingMatchingCard(c33703020.filter,tp,LOCATION_DECK,0,1,nil)
 end
 function c33703020.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c33703020.filter,tp,LOCATION_DECK,0,1,1,tp)
 	Duel.SendtoGrave(g,REASON_COST)
---因这张卡的效果特殊召唤的场合，这个回合结束。
+--[[因这张卡的效果特殊召唤的场合，这个回合结束。
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -47,18 +54,34 @@ function c33703020.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	e2:SetOperation(c33703020.op)
-	c:RegisterEffect(e2)
+	c:RegisterEffect(e2)]]
 end
 function c33703020.costfilter(c)
 	return c:IsSetCard(0x442) and c:IsDiscardable()-- and 
 end 
+function c33703020.sumcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetSpecialSummonInfo(SUMMON_INFO_REASON_EFFECT)==nil
+end
 function c33703020.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.IsExistingMatchingCard(c33703020.costfilter,tp,LOCATION_HAND,0,1)<=0 then return end 
+	local p=Duel.GetTurnPlayer()
+	Duel.SkipPhase(p,PHASE_DRAW,RESET_PHASE+PHASE_END,1)
+	Duel.SkipPhase(p,PHASE_STANDBY,RESET_PHASE+PHASE_END,1)
+	Duel.SkipPhase(p,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
+	Duel.SkipPhase(p,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
+	Duel.SkipPhase(p,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_BP)
+	e1:SetTargetRange(0,1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	if Duel.IsExistingMatchingCard(c33703020.costfilter,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(33703020,0)) then 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
 	local g=Duel.SelectMatchingCard(tp,c33703020.costfilter,tp,LOCATION_HAND,0,1,3,nil)
 	if g:GetCount()>0 then 
-		Duel.DiscardHand(tp,c33703020.costfilter,1,3,REASON_EFFECT,nil)
+		Duel.SendtoGrave(g,REASON_EFFECT+REASON_DISCARD)
 		local og=Duel.GetOperatedGroup()
 		if og:GetCount()>0 then
 --●1张以上：这张卡不会被战斗破坏。
@@ -87,7 +110,7 @@ function c33703020.op(e,tp,eg,ep,ev,re,r,rp)
 --●3张：这张卡成为效果·攻击对象时才能发动。从卡组把1张「动物朋友」卡送去墓地。
 		if og:GetCount()>2 then
 			local e3=Effect.CreateEffect(c)
-			e1:SetDescription(aux.Stringid(33703020,3))
+			e3:SetDescription(aux.Stringid(33703020,3))
 			e3:SetType(EFFECT_TYPE_QUICK_O)
 			e3:SetCode(EVENT_CHAINING)
 			e3:SetRange(LOCATION_MZONE)
@@ -100,6 +123,7 @@ function c33703020.op(e,tp,eg,ep,ev,re,r,rp)
 			e4:SetCondition(c33703020.totocon)
 			c:RegisterEffect(e4)
 		end
+	end
 	end
 end
 function c33703020.tofiler(c)

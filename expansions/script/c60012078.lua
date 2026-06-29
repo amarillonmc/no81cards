@@ -63,7 +63,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			local g=Duel.SelectMatchingCard(tp,s.dragonfilter,tp,LOCATION_HAND,0,1,1,nil)
 			local tc=g:GetFirst()
 			if tc then
-				Duel.Summon(tp,tc,true)
+				Duel.Summon(tp,tc,true,e)
 			end
 		end
 	end
