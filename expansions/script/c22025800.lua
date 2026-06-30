@@ -23,7 +23,7 @@ function c22025800.initial_effect(c)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(c22025800.indcon)
+	e3:SetCondition(c22025800.sscon)
 	e3:SetValue(c22025800.efilter)
 	c:RegisterEffect(e3)
 	--destroy
@@ -87,10 +87,12 @@ end
 function c22025800.filter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
-function c22025800.indcon(e)
+function c22025800.sscon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tp=c:GetControler()
 	return not Duel.IsExistingMatchingCard(c22025800.filter,tp,LOCATION_ONFIELD,0,1,nil)
 end
-function c22025800.efilter(e,te)
+function c22025800.efilter(e,te,tp)
 	return te:GetOwner()~=e:GetOwner()
 end
 function c22025800.aclimit(e,re,tp)
