@@ -23,14 +23,15 @@ end
 function c33700160.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c33700160.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
+		local rec=g:GetFirst():GetDefense()
+		if rec<0 then rec=0 end
 		local tg=g:GetMaxGroup(Card.GetDefense)
-		Duel.Destroy(tg,REASON_EFFECT)
-		local dg=Duel.GetOperatedGroup()
-		local rec=dg:GetSum(Card.GetDefense)
-		if rec>0 then
+		Duel.HintSelection(tg)
+		local count=Duel.Destroy(tg,REASON_EFFECT)
+		if count~=0 then
 			Duel.BreakEffect()
-			Duel.Recover(tp,rec,REASON_EFFECT)
-			Duel.Recover(1-tp,rec,REASON_EFFECT)
+			Duel.Recover(tp,rec*count,REASON_EFFECT)
+			Duel.Recover(1-tp,rec*count,REASON_EFFECT)
 		end
 	end
 end

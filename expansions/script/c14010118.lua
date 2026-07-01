@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_HANDES+CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_HANDES_SELF+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -22,7 +22,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,5) and Duel.IsExistingMatchingCard(cm.disfilter,tp,LOCATION_HAND,0,4,nil) end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(4)
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,4)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES_SELF,nil,0,tp,4)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,5)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
