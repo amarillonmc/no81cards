@@ -170,13 +170,22 @@ end
 function cm.tgfilter(c,e)
 	return c:IsAbleToDeck() and c:IsCanBeEffectTarget(e) and c:IsType(TYPE_MONSTER)
 end
-function cm.xyzfilter1(c,g,tp)
-	local all=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,0,nil)-g
-	--not fully implemented
-	return c:IsXyzSummonable(all)
-end
 function cm.fselect(g,tp)
-	return Duel.IsExistingMatchingCard(cm.xyzfilter1,tp,LOCATION_EXTRA,0,1,nil,g,tp)
+	local effs={}
+	for tc in aux.Next(g) do
+		local e1=Effect.CreateEffect(tc)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetValue(1)
+		tc:RegisterEffect(e1,true)
+		table.insert(effs,e1)
+	end
+	local res=Duel.IsExistingMatchingCard(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,nil,nil)
+	for _,e1 in ipairs(effs) do
+		e1:Reset()
+	end
+	return res
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

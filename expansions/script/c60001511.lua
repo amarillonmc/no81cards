@@ -274,7 +274,7 @@ function byd.CountdownSP(c,num)
 end
 function byd.CountdownSPcon(e)
 	local code,num=e:GetLabel()
-	return Duel.GetFlagEffect(e:GetHandlerPlayer(),code)>=num and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return Duel.GetFlagEffect(e:GetHandlerPlayer(),code)>=num and Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_MZONE)>0
 end
 function byd.CountdownSPtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToHand() and Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x625,1,REASON_EFFECT) end

@@ -285,7 +285,7 @@ function cm.syop(e,tp,eg,ep,ev,re,r,rp)
 								Duel.SendtoGrave=_SendToGrave
 								return #og
 							else
-								return _SendToGrave(tg,r)
+								return _SendToGrave(g,r)
 							end
 						end
 		Duel.SynchroSummon(tp,sg:GetFirst(),nil)
