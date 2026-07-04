@@ -44,6 +44,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(c,POS_FACEUP,REASON_COST)
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function cm.con(e,tp)
