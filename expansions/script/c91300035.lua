@@ -4,20 +4,26 @@ function s.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_TO_GRAVE)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCondition(s.spcon)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-	local e10=e1:Clone()
-	e10:SetType(EFFECT_TYPE_IGNITION)
-	e10:SetCountLimit(1,91301026)
-	e10:SetCondition(aux.TRUE)
-	e10:SetCost(s.spcost)
-	c:RegisterEffect(e10)
+	if not s.global_check then
+		s.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_TO_GRAVE)
+		ge1:SetOperation(s.checkop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_REMOVE)
+		Duel.RegisterEffect(ge2,0)
+	end
 	--sno0
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
@@ -39,6 +45,14 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 s.hackclad=2
+function s.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(1-tp,id,RESET_PHASE+PHASE_END,0,1)
+		tc=eg:GetNext()
+	end
+end
 function s.spfilter(c,e,tp)
 	return c.hackclad==1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
@@ -58,23 +72,7 @@ function s.drfilter2(c,code)
 	return c:IsCode(code) and c:IsAbleToHand()
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return #eg>=2
-end
-function s.cffilter(c)
-	return c:IsCode(91300039) and not c:IsPublic()
-end
-function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.cffilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local tc=Duel.SelectMatchingCard(tp,s.cffilter,tp,LOCATION_HAND,0,1,1,e:GetHandler()):GetFirst()
-	Duel.ConfirmCards(1-tp,tc)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetDescription(aux.Stringid(91300039,1))
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	e1:SetCode(EFFECT_PUBLIC)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
-	tc:RegisterEffect(e1)
+	return Duel.GetFlagEffect(tp,id)>=3
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)>0
@@ -140,16 +138,18 @@ function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,0xe,1,nil) end
-	Duel.SetTargetPlayer(1-tp)
-	local dam=Duel.GetFieldGroupCount(1-tp,0xe,0)*200
-	Duel.SetTargetParam(dam)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,dam)
+	if chk==0 then return true end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local dam=Duel.GetFieldGroupCount(1-tp,0xe,0)*200
-	Duel.Damage(p,dam,REASON_EFFECT)
+	local ct=Duel.DiscardHand(p,aux.TRUE,1,60,REASON_EFFECT+REASON_DISCARD)
+	if ct>0 then
+		Duel.BreakEffect()
+		Duel.Draw(p,ct+1,REASON_EFFECT)
+	end
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

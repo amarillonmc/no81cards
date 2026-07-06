@@ -1,7 +1,5 @@
 --狩猎游戏-突鸡
 function c12877040.initial_effect(c)
-	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x9a7b),10,2)
 	c:EnableReviveLimit()
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,false)

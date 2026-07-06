@@ -37,27 +37,27 @@ function s.prop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(p,Card.IsAbleToDeck,p,LOCATION_HAND,0,1,1,nil)
 	if g:GetCount()==0 then return end
-	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	Duel.ShuffleDeck(p)
-	if Duel.Draw(p,g:GetCount(),REASON_EFFECT)~=0 and Duel.GetMatchingGroupCount(s.filter01,tp,LOCATION_REMOVED,0,nil)>=1 and Duel.IsPlayerCanDraw(tp)
+	Duel.SendtoDeck(g,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
+	--Duel.ShuffleDeck(p)
+	if Duel.Draw(p,g:GetCount(),REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(s.filter01,tp,LOCATION_REMOVED,0,1,nil) and Duel.IsPlayerCanDraw(tp)
 		and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		Duel.BreakEffect()
 		
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
 		local g2=Duel.SelectMatchingCard(p,Card.IsAbleToDeck,p,LOCATION_HAND,0,1,1,nil)
 		if g2:GetCount()==0 then return end
-		Duel.SendtoDeck(g2,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		Duel.ShuffleDeck(p)
-		if Duel.Draw(p,g2:GetCount(),REASON_EFFECT)~=0 and Duel.GetMatchingGroupCount(s.filter01,tp,LOCATION_REMOVED,0,nil)>=3 and Duel.IsPlayerCanDraw(tp)
+		Duel.SendtoDeck(g2,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
+		--Duel.ShuffleDeck(p)
+		if Duel.Draw(p,g2:GetCount(),REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(s.filter01,tp,LOCATION_REMOVED,0,3,nil) and Duel.IsPlayerCanDraw(tp,2)
 		and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 			Duel.BreakEffect()
 		
 			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
 			local g3=Duel.SelectMatchingCard(p,Card.IsAbleToDeck,p,LOCATION_HAND,0,1,1,nil)
 			if g3:GetCount()==0 then return end
-			Duel.SendtoDeck(g3,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-			Duel.ShuffleDeck(p)
-			Duel.Draw(p,g3:GetCount(),REASON_EFFECT)
+			Duel.SendtoDeck(g3,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
+			--Duel.ShuffleDeck(p)
+			Duel.Draw(p,2,REASON_EFFECT)
 		end
 	end
 	

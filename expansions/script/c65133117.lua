@@ -43,12 +43,10 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 		local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
 		table.insert(codes,ac)
-		for i=1,#codes do
-			table.insert(afilter,codes[i])
-			table.insert(afilter,OPCODE_ISCODE)
-			table.insert(afilter,OPCODE_NOT)
-			table.insert(afilter,OPCODE_AND)
-		end
+		table.insert(afilter,ac)
+		table.insert(afilter,OPCODE_ISCODE)
+		table.insert(afilter,OPCODE_NOT)
+		table.insert(afilter,OPCODE_AND)
 		if not Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			break
 		end
@@ -61,7 +59,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local labs={e:GetLabel()}
 	local count=#labs   
-	if count and count>0 then	 
+	if count and count>0 then	
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
@@ -94,10 +92,9 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			for _,code in ipairs(codes) do
 				if ft<=0 then break end
 				local g=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_DECK,0,nil,e,tp,code)
-				local tc=g:GetFirst()
-				if g:GetCount()>1 then tc=g:Select(tp,1,1,nil):GetFirst() end
-				if tc then
-					Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
+				local tg=g:CancelableSelect(tp,1,1,nil)
+				if tg and #tg>0 then
+					Duel.SpecialSummonStep(tg:GetFirst(),0,tp,tp,false,false,POS_FACEUP)
 					ft=ft-1
 				end
 			end

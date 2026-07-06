@@ -3,13 +3,13 @@ local m=14000028
 local cm=_G["c"..m]
 cm.named_with_Marsch=1
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000021)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_HANDES)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_DRAW+CATEGORY_HANDES_SELF)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCost(cm.actcost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -19,33 +19,19 @@ function cm.initial_effect(c)
 	e2:SetCategory(CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCost(cm.tgcost)
+	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(cm.tgtg)
 	e2:SetOperation(cm.tgop)
 	c:RegisterEffect(e2)
-	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
 end
-function cm.counterfilter(c)
-	return c:GetSummonLocation()~=LOCATION_EXTRA
-end
-function cm.actcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-end
-function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return c:IsLocation(LOCATION_EXTRA)
+function cm.TM(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Marsch
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_REMOVED,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED)
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES_SELF,nil,0,tp,1)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -55,21 +41,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 			Duel.ShuffleHand(tp)
 			Duel.BreakEffect()
-			Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
+			local dg=Duel.SelectMatchingCard(tp,Card.IsDiscardable,tp,LOCATION_HAND,0,1,1,nil,REASON_EFFECT)
+			if dg and Duel.SendtoGrave(dg,REASON_DISCARD+REASON_EFFECT)~=0 and cm.TM(dg:GetFirst()) then
+				Duel.BreakEffect()
+				Duel.Draw(tp,1,REASON_EFFECT)
+			end
 		end
 	end
-end
-function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() and Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 end
-	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 end
 function cm.tgfilter(c)
 	return c:IsCode(14000021) and c:IsAbleToGrave()

@@ -56,7 +56,22 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local lvl=1
-	while Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,lvl) do
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+
+	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,lvl)
+		--if #g==0 then break end
+	local tc=g:GetFirst()
+	if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		if tc:IsCanAddCounter(0x624,1) and Duel.IsCanAddCounter(tp,0x624,1,tc) then
+			tc:AddCounter(0x624,1)
+			Duel.RegisterFlagEffect(tp,60002148,0,0,1)
+		end
+	end
+
+	lvl=lvl+1
+
+
+	while Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,lvl) and byd.rally(e:GetHandler(),20) do
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,lvl)
 		--if #g==0 then break end

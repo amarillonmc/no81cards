@@ -55,23 +55,20 @@ function c29004690.filter(c)
 end
 function c29004690.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local ct=1
 	local g=Duel.GetMatchingGroup(c29004690.filter,tp,LOCATION_MZONE,0,nil)
 	local g1=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-		if g:GetCount()>0 and g:GetClassCount(Card.GetCode)<3 and g1:GetCount()>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local g2=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
-				if #g2>0 then
-					Duel.HintSelection(g2)
-					Duel.Destroy(g2,REASON_EFFECT)
-				end
-		elseif g:GetClassCount(Card.GetCode)>=3 and g1:GetCount()>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local g2=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,g:GetCount(Card.GetCode),nil)
-				if #g2>0 then
-					Duel.HintSelection(g2)
-					Duel.Destroy(g2,REASON_EFFECT)
-				end
+	if g1:GetCount()>0 then
+		if g:GetClassCount(Card.GetCode)>2 then
+			ct=g:GetClassCount(Card.GetCode)
 		end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local g2=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,ct,nil)
+		if #g2>0 then
+			Duel.HintSelection(g2)
+			Duel.Destroy(g2,REASON_EFFECT)
+		end
+	end
 end
 function c29004690.cfilter(c)
 	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER)

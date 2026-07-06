@@ -28,6 +28,7 @@ function s.con(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
 end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -41,56 +42,41 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 		local tc=Duel.GetFieldCard(tp,LOCATION_DECK,Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)-1-i)
 		if not tc then break end
 		
-		Duel.ConfirmCards(tp,tc)
+		Duel.ConfirmCards(1-tp,tc)
 		g:AddCard(tc)
 		last_tc=tc
-		
-		--If it is a Talespace card
-		if tc:IsSetCard(0x838) then
-			--If not reached limit (i<4), ask to continue
-			if i<4 then
-				if not Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-					--User chose not to continue, stop here
-					break
-				end
-				--User chose Yes, loop continues
-			else
-				--Reached limit 5, must stop
+
+		-- 既然是“直到自己喜欢的卡”，不论是否是字段卡，只要还没达到5张上限，就必须询问玩家是否继续
+		if i<4 then
+			if not Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 				break
 			end
 		else
-			--If not Talespace card
-			--If reached limit 5, stop. Otherwise force continue (loop automatically)
-			if i==4 then break end
+			-- 达到5张上限，必须停止
+			break
 		end
 	end
 	
 	--Processing results
 	if last_tc and last_tc:IsSetCard(0x838) then
 		Duel.DisableShuffleCheck()
+		g:RemoveCard(last_tc)
 		--1. Add last card to hand
 		if Duel.SendtoHand(last_tc,nil,REASON_EFFECT)~=0 then
 			Duel.ConfirmCards(1-tp,last_tc)
-			g:RemoveCard(last_tc)
-			
-			--2. Other excavated Talespace cards sent to GY
-			local sg_gy=g:Filter(Card.IsSetCard,nil,0x838)
-			if #sg_gy>0 then
-				Duel.SendtoGrave(sg_gy,REASON_EFFECT)
-				g:Sub(sg_gy)
-			end
-			
-			--3. Remaining cards AND this card return to Deck
-			if c:IsRelateToEffect(e) then
-				g:AddCard(c)
-			end
-			if #g>0 then
-				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-			end
 		end
-	else
-		--Last card was not Talespace (or no cards found), just shuffle excavated cards back
-		--The Field Spell stays on field in this case per instruction "No processing" (specifically regarding the moving/bouncing logic)
+	end
+	--2. Other excavated Talespace cards sent to GY
+	local sg_gy=g:Filter(Card.IsSetCard,nil,0x838)
+	if #sg_gy>0 then
+		Duel.SendtoGrave(sg_gy,REASON_EFFECT+REASON_REVEAL)
+		g:Sub(sg_gy)
+	end
+	-- 3. 剩下的卡以及这张卡回到卡组
+	-- 剩下的卡本身就在卡组里不需要移动，只需把场地洗回。如果场地不在场上，直接洗切卡组即可。
+	if #g>0 and c:IsRelateToEffect(e) then
+		Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	elseif #g>0 then
 		Duel.ShuffleDeck(tp)
 	end
 end

@@ -20,17 +20,15 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.get_zone_bit(c,tp)
 	local seq=c:GetSequence()
-	if c:IsControler(1-tp) then nseq=nseq+16 end
+	if c:IsControler(1-tp) then seq=seq+16 end
 	if c:IsLocation(LOCATION_MZONE) then
 		return 1<<seq
 	elseif c:IsLocation(LOCATION_SZONE) then
 		if seq<5 then
 			return 1<<(seq+8)
-		else
-			return 1<<(seq+8)
+		elseif c:IsLocation(LOCATION_FZONE) then
+			return 1<<24
 		end
-	elseif c:IsLocation(LOCATION_FZONE) then
-		return 1<<24
 	end
 	return 0
 end
@@ -50,6 +48,9 @@ function s.filter(c,zone,tp)
 	local b=s.get_zone_bit(c,tp)
 	return bit.band(zone,b)~=0 and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED))
 end
+function s.rffilter(c)
+	return c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT)
+end
 function s.banop(e,tp,eg,ep,ev,re,r,rp)
 	if rp==tp then return end
 	local c=e:GetHandler()
@@ -58,7 +59,10 @@ function s.banop(e,tp,eg,ep,ev,re,r,rp)
 	--Check cards in the selected zones
 	local g=Duel.GetMatchingGroup(s.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,zone,tp)
 	if #g>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)~=0 then
-		local og=Duel.GetOperatedGroup()
+		local og=Duel.GetOperatedGroup():Filter(s.rffilter,nil)
+		for oc in aux.Next(og) do
+			oc:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END-RESET_TURN_SET,0,1,fid)
+		end
 		og:KeepAlive()
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -73,16 +77,25 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=e:GetLabelObject()
 	if #sg>0 then
 		for tc in aux.Next(sg) do
-			if tc:IsType(TYPE_MONSTER) then
-				Duel.ReturnToField(tc)
-			else
-				--For Spells/Traps/Field Spells, we use MoveToField
-				local loc=LOCATION_SZONE
-				if tc:IsType(TYPE_FIELD) then loc=LOCATION_FZONE end
-				--MoveToField(c, move_player, owner, dest, pos, enable)
-				Duel.MoveToField(tc,tp,tp,loc,tc:GetPreviousPosition(),true)
-			end
+			s.returntofield(tc)
 		end
 		sg:Clear()
+	end
+end
+function s.returntofield(tc)
+	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 or tc:GetFlagEffectLabel(m-1)>m then
+		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)
+	else
+		if tc:IsPreviousLocation(LOCATION_FZONE) then
+			local p=tc:GetPreviousControler()
+			local gc=Duel.GetFieldCard(p,LOCATION_FZONE,0)
+			if gc then
+				Duel.SendtoGrave(gc,REASON_RULE)
+				Duel.BreakEffect()
+			end
+			Duel.MoveToField(tc,p,p,LOCATION_FZONE,tc:GetPreviousPosition(),true)
+			return
+		end
+		Duel.ReturnToField(tc)
 	end
 end

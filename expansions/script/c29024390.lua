@@ -1,5 +1,4 @@
 --深海歌者·斯卡蒂
-c29024390.named_with_Arknight=1
 function c29024390.initial_effect(c)
 	aux.AddCodeList(c,22702055)
 	--activate

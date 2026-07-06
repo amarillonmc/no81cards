@@ -6,7 +6,7 @@ function c9910147.initial_effect(c)
 	c:EnableReviveLimit()
 	--remove
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910147,1))
+	e1:SetDescription(aux.Stringid(9910147,0))
 	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -22,7 +22,7 @@ function c9910147.xyzfilter(c)
 		and c:IsRace(RACE_MACHINE)
 end
 function c9910147.xmfilter(c,e)
-	return c:IsSetCard(0x9958) and c:IsCanOverlay() and not (c:IsOnField() and e and c:IsImmuneToEffect(e))
+	return c:IsFaceupEx() and c:IsSetCard(0x9958) and c:IsCanOverlay()
 end
 function c9910147.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -43,7 +43,7 @@ function c9910147.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	local loc=0
-	local xg=Duel.GetMatchingGroup(c9910147.xmfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,c,e)
+	local xg=Duel.GetMatchingGroup(c9910147.xmfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,c)
 	local rg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,nil)
 	if xg:IsExists(Card.IsLocation,1,nil,LOCATION_HAND) and rg:IsExists(Card.IsLocation,1,nil,LOCATION_HAND)
 		then loc=loc+LOCATION_HAND end
@@ -54,18 +54,12 @@ function c9910147.rmop(e,tp,eg,ep,ev,re,r,rp)
 	if loc==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local xc=xg:FilterSelect(tp,Card.IsLocation,1,1,nil,loc):GetFirst()
-	local rc=nil
 	if not xc then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	if xc:IsLocation(LOCATION_HAND) then
-		rc=rg:Filter(Card.IsLocation,nil,LOCATION_HAND):RandomSelect(tp,1):GetFirst()
-	elseif xc:IsLocation(LOCATION_ONFIELD) then
-		rc=rg:FilterSelect(tp,Card.IsLocation,1,1,nil,LOCATION_ONFIELD):GetFirst()
-	elseif xc:IsLocation(LOCATION_GRAVE) then
-		rc=rg:FilterSelect(tp,Card.IsLocation,1,1,nil,LOCATION_GRAVE):GetFirst()
-	end
-	if not rc then return end
+	if xc:IsLocation(LOCATION_HAND) then loc=LOCATION_HAND
+	elseif xc:IsLocation(LOCATION_ONFIELD) then loc=LOCATION_ONFIELD
+	elseif xc:IsLocation(LOCATION_GRAVE) then loc=LOCATION_GRAVE end
 	if xc:IsOnField() then
+		if xc:IsImmuneToEffect(e) then return end
 		xc:CancelToGrave()
 		local og=xc:GetOverlayGroup()
 		if og:GetCount()>0 then
@@ -73,5 +67,15 @@ function c9910147.rmop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	Duel.Overlay(c,xc)
-	Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)
+	local sg=Group.CreateGroup()
+	if loc==LOCATION_HAND then
+		sg=rg:Filter(Card.IsLocation,nil,LOCATION_HAND):RandomSelect(tp,1)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		sg=rg:FilterSelect(tp,Card.IsLocation,1,1,nil,loc)
+	end
+	if #sg>0 then
+		Duel.HintSelection(sg)
+		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+	end
 end

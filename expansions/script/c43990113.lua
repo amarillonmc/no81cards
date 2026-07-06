@@ -60,7 +60,7 @@ function c43990113.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsDefensePos() and flag and flag>0
 end
 function c43990113.checkcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:GetHandler():IsSetCard(0x6510) and e:GetHandler():IsReason(REASON_EFFECT)
+	return re and eg:IsExists(Card.IsReason,1,nil,REASON_EFFECT) and re:GetHandler():IsSetCard(0x6510) 
 end
 function c43990113.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=eg:Filter(Card.IsFaceup,nil)
@@ -75,7 +75,7 @@ function c43990113.checkop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.RegisterFlagEffect(tp,43990113,RESET_PHASE+PHASE_END,0,1,ac)
 			end
 		end
-		tc=eg:GetNext()
+		tc=tg:GetNext()
 	end
 end
 function c43990113.rmfilter(c)

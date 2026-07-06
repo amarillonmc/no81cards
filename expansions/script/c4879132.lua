@@ -36,40 +36,23 @@ function cm.thfilter(c,e,tp,lv)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.cfilter(c,e,tp)
-	return c:IsAbleToHand() and c:IsFaceup() and c:IsSetCard(0xae51) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp,c:GetLevel())
+	  return c:IsSetCard(0xae51) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-  
-		return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil,e,tp)
-	end
-   Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_ONFIELD)
+if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
-	if #g>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
-		local rc=e:SetLabelObject(g:GetFirst())
-	
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp,rc)
-	if sg:GetCount()>0 then
-		local ig=sg:GetFirst()
-		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
-		local fid=e:GetHandler():GetFieldID()
-		if Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) then
-		   local e2=Effect.CreateEffect(e:GetHandler())
-		   e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_IMMUNE_EFFECT)
-		e2:SetValue(cm.immval)
-		e2:SetLabel(fid)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		ig:RegisterEffect(e2,true)
-		end
-
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g1=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_MZONE,0,1,1,nil)
+	   Duel.SendtoHand(g1,nil,REASON_EFFECT)
 	end
-end
 end
 function cm.immval(e,te)
 	local tc=te:GetOwner()

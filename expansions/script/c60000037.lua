@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_DRAW+CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_DAMAGE)
-	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	--e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetCondition(cm.condition)
 	e1:SetTarget(cm.target)
@@ -79,7 +79,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			b3=false
 			if Duel.IsExistingMatchingCard(cm.pfil,tp,LOCATION_MZONE,0,1,nil) then 
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-				local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_MZONE,0,1,1,nil)
+				local g=Duel.SelectMatchingCard(tp,cm.pfil,tp,LOCATION_MZONE,0,1,1,nil)
 				Duel.ChangePosition(g,POS_FACEUP_DEFENSE)
 			end
 		end
@@ -90,7 +90,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		elseif op==3 then Duel.RegisterFlagEffect(tp,m+30000000,0,0,1) end
 	end
 end
-function cm.pfil(c,e,tp)
+function cm.pfil(c)
 	return not c:IsPosition(POS_FACEUP_DEFENSE)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)

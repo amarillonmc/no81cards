@@ -2,6 +2,7 @@
 local m=14000038
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000021)
 	--change name
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -13,7 +14,7 @@ function cm.initial_effect(c)
 	--set
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_HANDES)
+	e2:SetCategory(CATEGORY_SSET+CATEGORY_HANDES_SELF)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
@@ -24,7 +25,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetCategory(CATEGORY_DECKDES)
+	e3:SetCategory(CATEGORY_DECKDES+CATEGORY_SSET)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
@@ -52,6 +53,7 @@ end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(cm.disfilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,0)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES_SELF,nil,0,tp,1)
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetMatchingGroupCount(cm.setfilter,tp,LOCATION_GRAVE,0,nil)

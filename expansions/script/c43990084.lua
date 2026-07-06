@@ -64,7 +64,7 @@ function c43990084.desop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Draw(tp,1,REASON_EFFECT)
 			end
 		else
-			if Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_DECK) then
+			if Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
 				Duel.BreakEffect()
 				Duel.Draw(tp,1,REASON_EFFECT)
 			end

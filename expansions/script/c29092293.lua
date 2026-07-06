@@ -5,13 +5,13 @@ function cm.initial_effect(c)
 	--disable summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetRange(LOCATION_HAND)
+	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCode(EVENT_SPSUMMON)
 	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.condition)
-	e1:SetCost(cm.cost)
+	--e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)	
@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1,m+1)
-	e2:SetCost(cm.cost)
+	--e2:SetCost(cm.cost)
 	e2:SetTarget(cm.target2)
 	e2:SetOperation(cm.operation2)
 	c:RegisterEffect(e2)  
@@ -55,16 +55,18 @@ function cm.aclimit(e,re,tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_MZONE) end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	if c:IsLocation(LOCATION_HAND) then
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	end
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local dg=eg:Filter(Card.IsAttribute,nil,ATTRIBUTE_WATER)
 	Duel.NegateSummon(dg)
-	if Duel.Destroy(dg,REASON_EFFECT)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsRelateToEffect(e) then
+	if Duel.Remove(dg,POS_FACEUP,REASON_EFFECT)>0 and c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

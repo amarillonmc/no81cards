@@ -50,7 +50,7 @@ function cm.cfilter(c,code)
 end
 function cm.thfilter(c,tp)
 	return cm.Crooked_Cook(c) and c:IsType(TYPE_QUICKPLAY) and c:IsAbleToHand()
-		and not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil,c:GetCode())
+		--and not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil,c:GetCode())
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

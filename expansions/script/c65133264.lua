@@ -17,7 +17,7 @@ function s.initial_effect(c)
 	--Global check for tracking moves
 	if not s.global_check then
 		s.global_check=true
-		s.move_map={}	
+		s.move_map={}   
 		
 	end
 end
@@ -33,9 +33,6 @@ function s.resetop(e,tp,eg,ep,ev,re,r,rp)
 		s.move_map[chain_id].enter:KeepAlive()
 		s.move_map[chain_id].leave:KeepAlive()
 	end
-end
-function s.chcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsSetCard(0x838)
 end
 function s.chop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -83,9 +80,11 @@ function s.trackop(e,tp,eg,ep,ev,re,r,rp)
 		if tc:IsLocation(LOCATION_ONFIELD) and not tc:IsPreviousLocation(LOCATION_ONFIELD) then
 			--Debug.Message("e")
 			--Debug.Message(tc:GetCode())
+			leave_g:RemoveCard(tc)
 			enter_g:AddCard(tc)
 		end
 		if not tc:IsLocation(LOCATION_ONFIELD) and tc:IsPreviousLocation(LOCATION_ONFIELD) then
+			enter_g:RemoveCard(tc)
 			leave_g:AddCard(tc)
 			--Debug.Message("l")
 			--Debug.Message(tc:GetCode())
@@ -95,7 +94,7 @@ function s.trackop(e,tp,eg,ep,ev,re,r,rp)
 	local g=enter_g+leave_g
 	local og=ce:GetLabelObject()
 	if g and og then g=og+g end
-	g:KeepAlive()	
+	g:KeepAlive()   
 	ce:SetLabelObject(g)
 end
 function s.processop(e,tp,eg,ep,ev,re,r,rp)
@@ -163,8 +162,9 @@ function s.dscon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler()==e:GetHandler() and re:GetHandler():GetFlagEffect(id)>0 and re:GetHandler():GetFlagEffectLabel(id)==e:GetLabel()
 end
 function s.dsop(e,tp,eg,ep,ev,re,r,rp)
-	local op=re:GetOperation() or aux.TRUE
-	local op2=function(e,...) e:SetOperation(op)  op(e,...) op(e,...) end
+	local op=re:GetOperation()
+	local opt=op or aux.TRUE
+	local op2=function(e,...) e:SetOperation(op)  opt(e,...) opt(e,...) end
 	re:SetOperation(op2)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

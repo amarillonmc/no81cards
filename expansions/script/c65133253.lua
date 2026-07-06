@@ -15,12 +15,11 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	if not s.global_check then
 		s.global_check=true
+		local _GetLinkCount=aux.GetLinkCount
 		function aux.GetLinkCount(c)
 			if c:GetFlagEffect(id)>0 then
 				return 1+0x10000*2
-			elseif c:IsType(TYPE_LINK) and c:GetLink()>1 then
-				return 1+0x10000*c:GetLink()
-			else return 1 end
+			else return _GetLinkCount(c) end
 		end
 	end
 end

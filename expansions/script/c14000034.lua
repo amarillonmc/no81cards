@@ -2,9 +2,9 @@
 local m=14000034
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	aux.AddMaterialCodeList(c,14000021)
+	aux.AddCodeList(c,14000021,14000038)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.FilterBoolFunction(Card.IsCode,14000021),1,1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsCode,14000035),cm.matfilter,1,1)
 	c:EnableReviveLimit()
 	--change name
 	local e1=Effect.CreateEffect(c)
@@ -41,7 +41,7 @@ function cm.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_CHAIN_SOLVING)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(5)
+	--e4:SetCountLimit(5)
 	e4:SetCondition(cm.rmcon)
 	e4:SetTarget(cm.rmtg)
 	e4:SetOperation(cm.rmop)
@@ -49,6 +49,7 @@ function cm.initial_effect(c)
 	--set
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,2))
+	e5:SetCategory(CATEGORY_SSET)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e5:SetProperty(EFFECT_FLAG_DELAY)
 	e5:SetCode(EVENT_CHAIN_SOLVING)
@@ -62,27 +63,41 @@ function cm.TM(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Marsch
 end
-function cm.cfilter(c,tp)
-	return c:IsCode(14000021) and c:IsDiscardable() and Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_HAND,0,1,c)
+function cm.mfilter(c,tp)
+	return c:IsCode(14000021,14000038) and c:IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(cm.mfilter1,tp,LOCATION_HAND+LOCATION_DECK,0,1,c)
 end
-function cm.cfilter1(c)
-	return c:IsType(TYPE_TUNER) and c:IsDiscardable()
+function cm.mfilter1(c)
+	return c:IsCode(14000035) and c:IsAbleToGraveAsCost()
+end
+function cm.matfilter(c)
+	return c:IsCode(14000021,14000038)
+end
+function cm.cfilter(c)
+	return cm.TM(c) and c:IsDiscardable()
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
-		and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,c,tp) and Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==1
+		and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,c)
+		and Duel.IsExistingMatchingCard(cm.mfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,c,tp) and Duel.GetFlagEffect(tp,m)==0
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.DiscardHand(tp,cm.cfilter,1,1,REASON_COST+REASON_DISCARD)
-	Duel.DiscardHand(tp,cm.cfilter1,1,1,REASON_COST+REASON_DISCARD)
+	Duel.DiscardHand(tp,cm.cfilter,1,1,REASON_SPSUMMON+REASON_DISCARD)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
+	local g=Duel.SelectMatchingCard(tp,cm.mfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
+	local g1=Duel.SelectMatchingCard(tp,cm.mfilter1,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,g,tp)
+	g:Merge(g1)
+	c:SetMaterial(g)
+	Duel.SendtoGrave(g,REASON_COST+REASON_MATERIAL)
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SYNCHRO+1
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:IsActiveType(TYPE_QUICKPLAY) or re:GetHandler():IsType(TYPE_QUICKPLAY))
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:IsActiveType(TYPE_QUICKPLAY+TYPE_TRAP) or re:GetHandler():IsType(TYPE_QUICKPLAY+TYPE_TRAP))
 end
 function cm.dmfilter(c)
 	return cm.TM(c) and c:IsFaceup()
@@ -101,27 +116,40 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Damage(p,dam,REASON_EFFECT)
 end
 function cm.stcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:IsActiveType(TYPE_TRAP) or re:GetHandler():IsType(TYPE_TRAP))
+	return re:IsActiveType(TYPE_MONSTER) and rp~=tp
 end
 function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(re:GetHandlerPlayer(),0,LOCATION_DECK)>0 end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 and Duel.GetFieldGroupCount(1-tp,0,LOCATION_DECK)>0 end
 end
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
-	local p=re:GetHandlerPlayer()
-	Duel.ConfirmDecktop(p,1)
-	local g=Duel.GetDecktopGroup(p,1)
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=0 or Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)<=0 then return end
+	Duel.ConfirmDecktop(tp,1)
+	Duel.ConfirmDecktop(1-tp,1)
+	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
 	if tc:IsType(TYPE_QUICKPLAY) and tc:IsSSetable() then
 		Duel.DisableShuffleCheck()
 		Duel.SSet(tp,tc)
-		if cm.TM(tc) then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-			e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-		end
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+	else
+		Duel.MoveSequence(tc,1)
+	end
+	local g1=Duel.GetDecktopGroup(1-tp,1)
+	local tc=g1:GetFirst()
+	if tc:IsType(TYPE_QUICKPLAY) and tc:IsSSetable() then
+		Duel.DisableShuffleCheck()
+		Duel.SSet(tp,tc)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
 	else
 		Duel.MoveSequence(tc,1)
 	end

@@ -40,7 +40,7 @@ function s.setfilter(c,tp)
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK,0,1,nil,1-tp) end
+	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK,0,1,nil,p) end
 	if Duel.GetCurrentChain()<4 then Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1) end
 end
 function s.movefilter(c,tp)

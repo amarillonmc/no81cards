@@ -2,11 +2,11 @@
 local m=14000024
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000021)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCondition(cm.actcon)
 	c:RegisterEffect(e1)
 	--spsummon limit
 	local e2=Effect.CreateEffect(c)
@@ -15,6 +15,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,1)
+	e2:SetCondition(cm.actcon)
 	e2:SetTarget(cm.sumlimit)
 	c:RegisterEffect(e2)
 	--skip
@@ -47,8 +48,7 @@ function cm.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 end
 function cm.actcon1(e)
 	local ph=Duel.GetCurrentPhase()
-	local tp=e:GetHandlerPlayer()
-	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil) and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
 function cm.actlimit(e,re,tp)
 	return true

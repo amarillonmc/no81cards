@@ -2,6 +2,7 @@
 local m=14000032
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000021)
 	--change name
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -14,7 +15,8 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetCategory(CATEGORY_TOGRAVE)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
 	e2:SetCost(cm.tgcost)
@@ -66,23 +68,22 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
-	if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
-		local lv=tc:GetLevel()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-		e1:SetTargetRange(1,1)
-		e1:SetValue(cm.aclimit)
-		e1:SetLabel(tc:GetCode())
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
+	if tc then
+		Duel.SendtoGrave(tc,REASON_EFFECT)
 	end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetTargetRange(1,1)
+	e1:SetValue(cm.aclimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 	if draw then
 		Duel.BreakEffect()
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
 function cm.aclimit(e,re,tp)
-	return re:GetHandler():IsCode(e:GetLabel())
+	return not cm.TM(re:GetHandler()) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and re:GetActivateLocation()==LOCATION_GRAVE
 end

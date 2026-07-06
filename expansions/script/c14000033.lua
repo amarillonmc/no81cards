@@ -2,6 +2,7 @@
 local m=14000033
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000021)
 	--change name
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -62,6 +63,9 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,1,nil)
 	if #g>0 then
-		Duel.SendtoGrave(g,REASON_EFFECT+REASON_RETURN)
+		if Duel.SendtoGrave(g,REASON_EFFECT+REASON_RETURN)~=0 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+			Duel.BreakEffect()
+			Duel.Draw(tp,1,REASON_EFFECT)
+		end
 	end
 end

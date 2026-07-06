@@ -6,9 +6,9 @@ function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCost(cm.actcost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -18,29 +18,15 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCost(cm.tdcost)
+	e2:SetHintTiming(0,TIMING_END_PHASE)
+	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(cm.tdtg)
 	e2:SetOperation(cm.tdop)
 	c:RegisterEffect(e2)
-	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
 end
 function cm.TM(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Marsch
-end
-function cm.counterfilter(c)
-	return c:GetSummonLocation()~=LOCATION_EXTRA
-end
-function cm.actcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return c:IsLocation(LOCATION_EXTRA)
@@ -68,18 +54,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e1,true)
 		end
 	end
-end
-function cm.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() and Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 end
-	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 end
 function cm.tdfilter(c)
 	return cm.TM(c) and not c:IsCode(m)

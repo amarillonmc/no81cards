@@ -3,6 +3,7 @@ local m=14000025
 local cm=_G["c"..m]
 cm.named_with_Marsch=1
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000021)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -31,7 +32,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e3:SetCondition(function(e)
-		return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0
+		return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)<=3
 	end)
 	c:RegisterEffect(e3)
 end

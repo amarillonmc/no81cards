@@ -3,6 +3,7 @@ local m=14000026
 local cm=_G["c"..m]
 cm.named_with_Besessenheit=1
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000021)
 	--xyz summon
 	aux.AddXyzProcedure(c,cm.xyzfilter,4,1)
 	c:EnableReviveLimit()
@@ -85,7 +86,7 @@ function cm.TM(c)
 	return m and m.named_with_Marsch
 end
 function cm.xyzfilter(c)
-	return c:IsCode(14000021)
+	return c:IsCode(14000021) and not c:IsForbidden()
 end
 function cm.cfilter(c)
 	return cm.TM(c) and c:IsDiscardable()
@@ -94,10 +95,39 @@ function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
-		and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,c) and Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==1
+		and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,c) and Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,c) and Duel.GetFlagEffect(tp,m)==0
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.DiscardHand(tp,cm.cfilter,1,1,REASON_COST+REASON_DISCARD)
+	Duel.DiscardHand(tp,cm.cfilter,1,1,REASON_SPSUMMON+REASON_DISCARD)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	local mg=Duel.SelectMatchingCard(tp,cm.xyzfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,c)
+	if #mg>0 then
+		c:SetMaterial(mg)
+		Duel.Overlay(c,mg)
+	end
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	local fid=c:GetFieldID()
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,fid)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetLabel(fid)
+	e1:SetLabelObject(c)
+	e1:SetCondition(cm.tgcon)
+	e1:SetOperation(cm.tgop)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffectLabel(m)~=e:GetLabel() then
+		e:Reset()
+		return false
+	else return true end
+end
+function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SendtoGrave(e:GetLabelObject(),REASON_EFFECT)
 end
 function cm.efcon(e)
 	return Duel.GetTurnPlayer()~=e:GetHandlerPlayer() or Duel.GetCurrentPhase()~=PHASE_MAIN2

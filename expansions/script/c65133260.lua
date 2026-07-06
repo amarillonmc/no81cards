@@ -16,7 +16,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	if not s.global_check then
 		s.global_check=true
-		_ChangeChainOperation=Duel.ChangeChainOperation
+		local _ChangeChainOperation=Duel.ChangeChainOperation
 		function Duel.ChangeChainOperation(ev,op)
 			local te=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
 			local e,tp=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)

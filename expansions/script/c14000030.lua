@@ -3,12 +3,14 @@ local m=14000030
 local cm=_G["c"..m]
 cm.named_with_Marsch=1
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000021)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	--e1:SetCost(cm.actcost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -29,7 +31,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e3:SetCondition(function(e)
-		return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)<=1
+		return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)<=3
 	end)
 	c:RegisterEffect(e3)
 end
@@ -38,15 +40,15 @@ function cm.Besessenheit(c)
 	return m and m.named_with_Besessenheit
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsCode(14000021) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsCode(14000021) or aux.IsCodeListed(c,14000021)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if #g>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
@@ -55,19 +57,16 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.sumlimit)
+	e1:SetTarget(cm.splimit)
 	if Duel.GetTurnPlayer()==tp then
 		e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,2)
 	else
 		e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN)
 	end
 	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_CANNOT_SUMMON)
-	Duel.RegisterEffect(e2,tp)
 end
-function cm.sumlimit(e,c)
-	return c:IsLocation(LOCATION_DECK+LOCATION_EXTRA)
+function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return not (c:IsCode(14000021) or aux.IsCodeListed(c,14000021))
 end
 function cm.getg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

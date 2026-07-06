@@ -43,7 +43,7 @@ function c43990121.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
 		if tc:IsLocation(LOCATION_MZONE) and tc:IsPreviousLocation(LOCATION_REMOVED) and not tc:IsReason(REASON_SPSUMMON) and not tc:IsReason(REASON_SUMMON) then
-			tc:RegisterFlagEffect(43990121,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+			tc:RegisterFlagEffect(43990121,RESET_EVENT+RESETS_STANDARD,0,1)
 		end
 		tc=eg:GetNext()
 	end
@@ -66,7 +66,7 @@ function c43990121.brfilter(c)
 end
 function c43990121.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetMatchingGroupCount(c43990121.brfilter,tp,LOCATION_MZONE,0,nil)
-	if chk==0 then return ct>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,ct+1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,ct+1,nil) end
 	local sg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,ct+1,0,0)
 end

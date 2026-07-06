@@ -15,12 +15,22 @@ function s.initial_effect(c)
 
 	aux.EnablePendulumAttribute(c)
 
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(id,0))
+	e0:SetType(EFFECT_TYPE_IGNITION)
+	e0:SetRange(LOCATION_PZONE)
+	e0:SetCountLimit(1,id)
+	e0:SetCondition(s.base_con)
+	e0:SetTarget(s.acttg)
+	e0:SetOperation(s.actop)
+	c:RegisterEffect(e0)
+
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetRange(LOCATION_PZONE)
-	e1:SetCountLimit(1,id)
-	e1:SetTarget(s.acttg)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e1:SetCondition(s.boost_con)
 	e1:SetOperation(s.actop)
 	c:RegisterEffect(e1)
 
@@ -58,12 +68,17 @@ function s.acttarget(e, c)
 	   and s.HighEvo(c)
 end
 
-function s.filter(c)
-	return c:IsFacedown() and s.HighEvo(c) and c:IsType(TYPE_TRAP)
+function s.base_con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(tp, 40021025) == 0
 end
 
-function s.setfilter(c)
-	return c:IsType(TYPE_TRAP) and c:IsSSetable()
+function s.boost_con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(tp, 40021025) > 0
+	   and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_SZONE,0,1,nil)
+end
+
+function s.filter(c)
+	return c:IsFacedown() and s.HighEvo(c) and c:IsType(TYPE_TRAP)
 end
 
 function s.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -71,26 +86,32 @@ function s.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function s.actop(e,tp,eg,ep,ev,re,r,rp)
+	if e:IsHasType(EFFECT_TYPE_CONTINUOUS) then
+		if not Duel.SelectYesNo(tp,aux.Stringid(id,4)) then return end
+	end
+	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ACTIVATE)
 	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_SZONE,0,1,1,nil)
 	local tc=g:GetFirst()
-	if not tc then return end
-	Duel.ChangePosition(tc,POS_FACEUP)
-	local te=tc:GetActivateEffect()
-	if te then
-		local teg,tep,tev,tre,tr,trp = nil,tp,0,nil,0,tp
-		local tg=te:GetTarget()
-		if tg then
-			tg(te,tp,teg,tep,tev,tre,tr,trp,1)
+	if tc then
+		Duel.ChangePosition(tc,POS_FACEUP)
+		local te=tc:GetActivateEffect()
+		if te then
+			local tg=te:GetTarget()
+			local op=te:GetOperation()
+			if tg then tg(te,tp,nil,tp,0,nil,0,tp,1) end
+			if op then
+				tc:CreateEffectRelation(te)
+				op(te,tp,nil,tp,0,nil,0,tp)
+				tc:ReleaseEffectRelation(te)
+			end
 		end
-		local op=te:GetOperation()
-		if op then
-			tc:CreateEffectRelation(te)
-			op(te,tp,teg,tep,tev,tre,tr,trp)
-			tc:ReleaseEffectRelation(te)
-		end
+		s.set_after_effect(e,tp)
 	end
-	local hg=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_HAND,0,nil)
+end
+
+function s.set_after_effect(e,tp)
+	local hg=Duel.GetMatchingGroup(function(c) return c:IsType(TYPE_TRAP) and c:IsSSetable() end,tp,LOCATION_HAND,0,nil)
 	if #hg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

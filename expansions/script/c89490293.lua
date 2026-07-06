@@ -31,8 +31,7 @@ function s.initial_effect(c)
 	end
 end
 function s.valcheck(e,c)
-	local g=c:GetMaterial()
-	if g:IsExists(Card.IsCode,1,nil,89490273) then c:RegisterFlagEffect(id,RESET_EVENT+0x4fe0000,0,1) end
+	if c:GetMaterial():IsExists(Card.IsCode,1,nil,89490273) then c:RegisterFlagEffect(id,RESET_EVENT+0x4fe0000,0,1) end
 end
 function s.cfilter(c)
 	if c:IsFacedown() or c:GetFlagEffect(id)==0 then return false end

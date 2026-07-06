@@ -2,13 +2,14 @@
 local m=14000035
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	aux.AddCodeList(c,14000021)
 	--damage
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
-	e1:SetCountLimit(1,m)
+	--e1:SetCountLimit(1,m)
 	e1:SetCost(cm.skcost)
 	e1:SetOperation(cm.skop)
 	c:RegisterEffect(e1)
@@ -49,8 +50,12 @@ end
 function cm.filter2(c,tp)
 	return c:GetOwner()==tp
 end
+function cm.cfilter(c)
+	return c:IsFaceupEx() and c:IsCode(14000021)
+end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local d1=eg:FilterCount(cm.filter1,nil,tp)*300
+	if Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) then d1=d1*2 end
 	local d2=eg:FilterCount(cm.filter2,nil,tp)*300
 	Duel.Damage(1-tp,d1,REASON_EFFECT,true)
 	Duel.Damage(tp,d2,REASON_EFFECT,true)
@@ -67,8 +72,15 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		and Duel.IsExistingTarget(cm.spfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 	local g=Duel.SelectTarget(tp,cm.spfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	local tc=g:GetFirst()
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,0,0)
+	if tc:IsCode(14000021) then
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,tc,1,0,0)
+		e:SetLabel(1)
+	else
+		e:SetLabel(0)
+	end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -83,6 +95,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(cm.eqlimit)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
+		if e:GetLabel()==1 then
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		end
 	end
 end
 function cm.eqlimit(e,c)

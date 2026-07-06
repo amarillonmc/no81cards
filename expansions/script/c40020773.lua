@@ -9,12 +9,7 @@ end
 s.named_with_DarkSnake=1
 function s.initial_effect(c)
 		aux.AddCodeList(c,40020764)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_ADD_CODE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetValue(40020764)
-	c:RegisterEffect(e1)
+	aux.EnableChangeCode(c,40020764,LOCATION_MZONE+LOCATION_GRAVE)
 
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
@@ -88,5 +83,13 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetValue(tc2:GetAttack()) 
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc2:RegisterEffect(e3)
+	end
+	if c:IsRelateToEffect(e) then
+		local e4=Effect.CreateEffect(c)
+		e4:SetType(EFFECT_TYPE_SINGLE)
+		e4:SetCode(EFFECT_UPDATE_ATTACK)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e4:SetValue(c:GetAttack()*2)
+		c:RegisterEffect(e4)
 	end
 end
