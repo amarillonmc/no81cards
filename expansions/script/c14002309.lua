@@ -52,7 +52,7 @@ function cm.spcon(e,c)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function cm.tdfilter(c)
-	return cm.Hastur(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
+	return cm.Hastur(c) and c:IsType(TYPE_MONSTER) and (c:IsAbleToDeckAsCost() or c:IsAbleToExtraAsCost())
 end
 function cm.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) end

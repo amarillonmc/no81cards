@@ -48,9 +48,8 @@ function cm.urara_filter(c)
 	return c:IsFaceupEx() and cm.Urara(c)
 end
 function cm.tdfilter(c)
-	return cm.Hastur(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
+	return cm.Hastur(c) and c:IsType(TYPE_MONSTER) and (c:IsAbleToDeckAsCost() or c:IsAbleToExtraAsCost())
 end
-
 function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep==1-tp and Duel.IsExistingMatchingCard(cm.lv3filter,tp,0,LOCATION_MZONE+LOCATION_GRAVE,1,nil)
 end
@@ -80,6 +79,7 @@ function cm.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.actop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local b1 = Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,14002381,0,TYPES_TOKEN_MONSTER,1500,1500,3,RACE_AQUA,ATTRIBUTE_WATER)
 	local b2 = Duel.IsExistingMatchingCard(cm.lv3filter,tp,0,LOCATION_MZONE+LOCATION_GRAVE,1,nil)
 	local b3 = Duel.IsExistingMatchingCard(cm.urara_filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) and Duel.IsChainNegatable(ev)
@@ -94,20 +94,36 @@ function cm.actop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 	elseif op==2 then
 		local g=Duel.GetMatchingGroup(cm.lv3filter,tp,0,LOCATION_MZONE+LOCATION_GRAVE,nil)
-		if #g>0 then
-			for tc in aux.Next(g) do
+		local flag=false
+		for tc in aux.Next(g) do
+			if tc:IsCanBeDisabledByEffect(e,false) then
+				flag=true
 				Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-				local e1=Effect.CreateEffect(e:GetHandler())
+				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 				e1:SetCode(EFFECT_DISABLE)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc:RegisterEffect(e1)
-				local e2=Effect.CreateEffect(e:GetHandler())
+				local e2=Effect.CreateEffect(c)
 				e2:SetType(EFFECT_TYPE_SINGLE)
+				e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 				e2:SetCode(EFFECT_DISABLE_EFFECT)
+				e2:SetValue(RESET_TURN_SET)
 				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc:RegisterEffect(e2)
+				if tc:IsType(TYPE_TRAPMONSTER) then
+					local e3=Effect.CreateEffect(c)
+					e3:SetType(EFFECT_TYPE_SINGLE)
+					e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+					e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc:RegisterEffect(e3)
+				end
 			end
+		end
+		Duel.AdjustInstantly()
+		if flag and #g>0 then
 			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 		end
 	elseif op==3 then

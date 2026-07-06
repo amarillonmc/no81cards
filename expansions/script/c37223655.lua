@@ -20,14 +20,18 @@ function s.initial_effect(c)
 end
 
 function s.handcon(e)
-	return Duel.GetLP(e:GetHandlerPlayer())<8001
+	return Duel.GetLP(e:GetHandlerPlayer())<=8000
+end
+
+function s.filter(c)
+	return c:IsFaceup() and (c:GetAttack()>0 or c:GetDefense()>0)
 end
 
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.filter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local g=Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	local tc=g:GetFirst()
 	local rec=math.max(tc:GetAttack(),tc:GetDefense())
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,rec)
@@ -37,7 +41,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		local rec=math.max(tc:GetAttack(),tc:GetDefense())
-		if Duel.Recover(tp,rec,REASON_EFFECT)>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+		if Duel.Recover(tp,rec,REASON_EFFECT)>0 and tc:IsCanBeDisabledByEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
