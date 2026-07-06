@@ -22,12 +22,14 @@ function cm.sumcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return not c:IsPublic() end
+	local g=Duel.GetMatchingGroup(cm.spfil,tp,LOCATION_HAND,0,c)
+	if chk==0 then return not c:IsPublic() and #g>0 end
 end
 function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.GetMatchingGroup(cm.spfil,tp,LOCATION_HAND,0,c):Select(tp,1,1,nil)
+	if #g==0 or not c:IsRelateToEffect(e) then return end
 	g:AddCard(c)
 	for tc in aux.Next(g) do
 		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))

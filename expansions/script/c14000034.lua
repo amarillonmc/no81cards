@@ -19,12 +19,11 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_SPSUMMON_PROC)
-	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e2:SetRange(LOCATION_EXTRA)
 	e2:SetValue(SUMMON_TYPE_SYNCHRO)
 	e2:SetCondition(cm.spcon)
 	e2:SetOperation(cm.spop)
-	e2:SetValue(1)
 	c:RegisterEffect(e2)
 	--cannot disable spsummon
 	local e3=Effect.CreateEffect(c)
@@ -94,7 +93,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SYNCHRO+1
+	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SYNCHRO and Duel.GetFlagEffect(tp,m)~=0
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:IsActiveType(TYPE_QUICKPLAY+TYPE_TRAP) or re:GetHandler():IsType(TYPE_QUICKPLAY+TYPE_TRAP))
