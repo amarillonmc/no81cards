@@ -56,7 +56,7 @@ function cm.syf(c,syc)
 end
 --Effect 1
 function cm.immcon(e,tp,eg,ep,ev,re,r,rp)
-	return r==REASON_SYNCHRO
+	return bit.band(r,REASON_SYNCHRO)~=0 and e:GetHandler():GetReasonCard():IsSetCard(0x87af)
 end
 function cm.immop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

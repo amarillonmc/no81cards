@@ -52,24 +52,6 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		if tg:GetCount()==0 then break end
 		Duel.SendtoGrave(tg,REASON_EFFECT)
 	end
-	local mg=Duel.GetMatchingGroup(Card.IsCanBeFusionMaterial,tp,LOCATION_HAND+LOCATION_ONFIELD,LOCATION_ONFIELD,nil,c)
-	local fmg=Duel.GetMatchingGroup(s.fusfilter,tp,LOCATION_EXTRA,0,nil,e,tp)
-	if ct>0 and fmg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local fc=fmg:Select(tp,1,1,nil):GetFirst()
-		if fc then
-			local mg=Duel.GetMatchingGroup(Card.IsCanBeFusionMaterial,tp,LOCATION_HAND+LOCATION_ONFIELD,LOCATION_ONFIELD,nil,fc)
-			local mat=Duel.SelectFusionMaterial(tp,fc,mg,nil,tp)
-			if mat:GetCount()>0 then
-				fc:SetMaterial(mat)
-				Duel.SendtoGrave(mat,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
-				Duel.BreakEffect()
-				Duel.SpecialSummon(fc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
-				fc:CompleteProcedure()
-			end
-		end
-	end
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(s.filter3,nil,e)
 	local mg2=Duel.GetMatchingGroup(s.filter1,tp,0,LOCATION_MZONE,nil,e)
