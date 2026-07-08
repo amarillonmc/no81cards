@@ -31,10 +31,10 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_IGNORE_BATTLE_TARGET)
+	e4:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
 	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetValue(1)
+	e4:SetValue(aux.imval1)
 	c:RegisterEffect(e4)
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(id,0))
@@ -42,7 +42,6 @@ function s.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetCode(EVENT_CHAINING)
 	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1,id)
 	e5:SetCondition(s.negcon)
 	e5:SetCost(s.negcost)
 	e5:SetTarget(s.negtg)
@@ -53,15 +52,15 @@ function s.matfilter(c)
 	return s.cc(c)
 end
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp
-		and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_ONFIELD
+	local loc,p=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_PLAYER)
+	return p==1-tp and bit.band(loc,LOCATION_ONFIELD)~=0
 end
 function s.mgfilter(c)
-	return c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and c:IsAbleToHand()
+	return c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and c:IsAbleToHandAsCost()
 end
 function s.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mg=e:GetHandler():GetMaterial():Filter(s.mgfilter,nil)
-	if chk==0 then return mg:GetCount()>0 end
+	if chk==0 then return #mg>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local sg=mg:Select(tp,1,1,nil)
 	Duel.SendtoHand(sg,nil,REASON_EFFECT+REASON_COST)
@@ -72,21 +71,15 @@ function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local etype=TYPE_MONSTER
-	if c:IsType(TYPE_SPELL) then etype=TYPE_SPELL
-	elseif c:IsType(TYPE_TRAP) then etype=TYPE_TRAP end
-	re:GetHandler():RegisterFlagEffect(id,RESET_CHAIN,0,1,etype)
+	local g=Group.CreateGroup()
+	Duel.ChangeTargetCard(ev,g)
 	Duel.ChangeChainOperation(ev,s.repop)
 end
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,id)
-	local rc=re:GetHandler()
-	local etype=TYPE_MONSTER
-	local lab=rc:GetFlagEffectLabel(id)
-	if lab then etype=lab end
+	local c=e:GetHandler()
+	local ctype=c:GetType()&(TYPE_MONSTER|TYPE_SPELL|TYPE_TRAP)
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(1-tp,s.retfilter,1-tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,etype)
+	local g=Duel.SelectMatchingCard(1-tp,s.retfilter,1-tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,ctype)
 	if g:GetCount()>0 then Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT) end
 end
 function s.retfilter(c,etype)

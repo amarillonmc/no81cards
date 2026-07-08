@@ -21,6 +21,9 @@ end
 function s.tgfilter(c)
 	return s.cc(c) and c:IsAbleToGrave()
 end
+function s.fdfilter(c)
+	return c:IsOnField() and c:IsFacedown()
+end
 function s.setfilter(c)
 	return s.cc(c) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
@@ -32,6 +35,8 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.tgfilter),tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,99,e:GetHandler())
 	if sg:GetCount()==0 then return end
+	local fdg=sg:Filter(s.fdfilter,nil)
+	if #fdg>0 then Duel.ConfirmCards(1-tp,fdg) end
 	local oct=Duel.SendtoGrave(sg,REASON_EFFECT)
 	local ct=math.min(Duel.GetLocationCount(tp,LOCATION_SZONE),oct)
 	if ct<=0 or not Duel.SelectYesNo(tp,aux.Stringid(id,1)) then return end
