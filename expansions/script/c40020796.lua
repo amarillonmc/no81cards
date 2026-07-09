@@ -159,7 +159,7 @@ function s.pzop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
 		if Duel.GetFlagEffect(tp,id)==0 then
-			if Duel.IsPlayerCanDiscardDeck(tp,4) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+			if Duel.IsPlayerCanDiscardDeck(tp,3) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 				Duel.BreakEffect()
 				Duel.DiscardDeck(tp,3,REASON_EFFECT)
 			end
