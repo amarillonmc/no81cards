@@ -107,7 +107,31 @@ function s.damop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,tp,id)
 	Duel.Damage(tp,val,REASON_EFFECT)
 end
+function s.regop(e,tp,eg,ep,ev,re,r,rp)
+	-- 若需要严格限定仅2效果扣血，可添加 and re:IsHasType(EFFECT_TYPE_QUICK_O)
+	if not re:GetHandler():IsCode(id) then return end
+	-- 将发动的玩家 rp 存入记录表
+	table.insert(BottomlessSlopeRes,rp)
+end
 
+function s.damop(e,tp,eg,ep,ev,re,r,rp)
+	if #BottomlessSlopeRes==0 then return end
+	local d0,d1=0,0
+	-- 遍历记录表，按玩家分别计算累计伤害
+	for _,p in ipairs(BottomlessSlopeRes) do
+		if p==0 then d0=d0+500
+		elseif p==1 then d1=d1+500 end
+	end
+	-- 分别执行伤害动作
+	if d0>0 then
+		Duel.Hint(HINT_CARD,0,id)
+		Duel.Damage(0,d0,REASON_EFFECT)
+	end
+	if d1>0 then
+		Duel.Hint(HINT_CARD,1,id)
+		Duel.Damage(1,d1,REASON_EFFECT)
+	end
+end
 function s.filter(c)
 	return c:IsCode(id) and c:IsAbleToHand()
 end

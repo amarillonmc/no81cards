@@ -11,7 +11,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetRange(LOCATION_MZONE)
+	e1:SetRange(LOCATION_SZONE)
 	e1:SetValue(aux.tgoval)
 	c:RegisterEffect(e1)
 	--放置 
