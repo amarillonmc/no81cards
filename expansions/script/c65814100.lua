@@ -1,7 +1,7 @@
 --主宰之怒 跳虫
 local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,id)
+	aux.AddCodeList(c,id,65814998)
 	--summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_MSET+CATEGORY_DECKDES)

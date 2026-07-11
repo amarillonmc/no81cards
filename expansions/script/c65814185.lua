@@ -1,6 +1,7 @@
 -- 刀锋虫群的袭扰战术
 local s,id,o=GetID()
 function s.initial_effect(c)
+    aux.AddCodeList(c,65814998)
     --对方回合手发（丢弃1张主宰之怒卡作为cost）
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_SINGLE)

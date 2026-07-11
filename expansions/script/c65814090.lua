@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	aux.AddLinkProcedure(c,nil,2,2,s.lcheck)
 	c:EnableReviveLimit()
 	c:SetUniqueOnField(1,0,id)
-	aux.AddCodeList(c,id)
+	aux.AddCodeList(c,id,65814999)
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)

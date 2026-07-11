@@ -4,7 +4,7 @@ function s.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,s.ffilter1,2,true)
 	c:SetUniqueOnField(1,0,id)
-	aux.AddCodeList(c,id)
+	aux.AddCodeList(c,id,65814998)
 	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

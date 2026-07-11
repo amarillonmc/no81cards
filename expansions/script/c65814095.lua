@@ -1,12 +1,13 @@
 --联邦上将 杜克
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,65814999)
 	c:SetUniqueOnField(1,0,id)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunFun(c,s.ffilter1,s.ffilter2,5,true)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToDeckOrExtraAsCost,LOCATION_ONFIELD+LOCATION_GRAVE,0,aux.ContactFusionSendToDeck(c)):SetCountLimit(1,id)
 	c:SetUniqueOnField(1,0,id)
-	aux.AddCodeList(c,id,65814045)
+	aux.AddCodeList(c,id,65814045,65814999)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DESTROY)

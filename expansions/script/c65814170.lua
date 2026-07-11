@@ -1,11 +1,12 @@
 --脑虫 达克斯
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,65814998)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,s.ffilter1,2,true)
 	aux.AddContactFusionProcedure(c,s.ffilter2,LOCATION_HAND+LOCATION_ONFIELD,0,Duel.SendtoGrave,REASON_COST):SetCountLimit(1,id)
 	c:SetUniqueOnField(1,0,id)
-	aux.AddCodeList(c,id)
+	aux.AddCodeList(c,id,65814998)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
 	e2:SetCategory(CATEGORY_DRAW)

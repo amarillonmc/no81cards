@@ -3,6 +3,7 @@
 --①：只有对方场上有怪兽存在的场合才能发动。从自己手卡·卡组把1只4星以下的「起义呐喊」怪兽特殊召唤。那之后，可以从自己卡组·墓地把1张「起义呐喊」永续陷阱卡在自己场上表侧表示放置。
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,65814999)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))

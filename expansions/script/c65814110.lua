@@ -1,6 +1,7 @@
 --主宰之怒 霸主
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,65814998)
 	--特招
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE+CATEGORY_MSET)

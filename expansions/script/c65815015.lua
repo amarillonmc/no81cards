@@ -10,7 +10,7 @@ local RENO_ID=65814080
 local MENGSIKE_ID=65814090
 local UPRISING_SETCODE=0x6a31
 function s.initial_effect(c)
-	aux.AddCodeList(c,RENO_ID,MENGSIKE_ID)
+	aux.AddCodeList(c,RENO_ID,MENGSIKE_ID,65814999)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)

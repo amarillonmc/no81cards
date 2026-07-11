@@ -1,6 +1,7 @@
 --起义呐喊 SCV
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,65814999)
 	--特招
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)

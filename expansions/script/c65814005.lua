@@ -1,6 +1,7 @@
 --起义呐喊 火焰兵
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,65814999)
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))

@@ -1,6 +1,7 @@
 --主宰之怒 守护者
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,65814998)
 	--summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DESTROY)

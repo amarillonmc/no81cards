@@ -1,6 +1,7 @@
 --起义呐喊 兵营
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,65814999)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)

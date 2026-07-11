@@ -1,6 +1,7 @@
 --主宰之怒 主巢
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,65814998)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)

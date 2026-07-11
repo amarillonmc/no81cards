@@ -2,6 +2,7 @@
 --T1-废土
 local s,id,o=GetID()
 function s.initial_effect(c)
+    aux.AddCodeList(c,65814999,65814080,65814055)
     -- 发动效果
     local e1=Effect.CreateEffect(c)
     e1:SetDescription(aux.Stringid(id,0))

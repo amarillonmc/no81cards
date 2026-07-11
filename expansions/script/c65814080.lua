@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x6a31),1,1)
 	c:EnableReviveLimit()
 	c:SetUniqueOnField(1,0,id)
-	aux.AddCodeList(c,id)
+	aux.AddCodeList(c,id,65814999)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

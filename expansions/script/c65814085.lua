@@ -6,7 +6,7 @@ function s.initial_effect(c)
 	aux.AddFusionProcFunFun(c,s.ffilter1,s.ffilter2,1,true)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_ONFIELD,0,Duel.SendtoGrave,REASON_COST):SetCountLimit(1,id)
 	c:SetUniqueOnField(1,0,id)
-	aux.AddCodeList(c,id,65814010)
+	aux.AddCodeList(c,id,65814010,65814999)
 	--disable spsummon
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)

@@ -4,6 +4,7 @@ local SET_QIYI_NAHAN=0x6a31
 local CARD_KELHAOZI_MENGSEKE=65814090
 
 function s.initial_effect(c)
+	aux.AddCodeList(c,65814090,65814999)
 	-- activate (continuous trap)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)

@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionType,TYPE_FLIP),2,true)
 	aux.AddContactFusionProcedure(c,aux.FilterBoolFunction(Card.IsType,TYPE_FLIP),LOCATION_ONFIELD,0,Duel.SendtoGrave,REASON_COST):SetCountLimit(1,id)
 	c:SetUniqueOnField(1,0,id)
-	aux.AddCodeList(c,id)
+	aux.AddCodeList(c,id,65814998)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
