@@ -89,10 +89,13 @@ function s.cfilter1(c)
 end
 function s.cfilter2(c)
 	return c:GetSequence()<5
+end    
+function s.cfilter3(c)
+	return c:GetSequence()<5 and c:GetOriginalType()&TYPE_MONSTER>0 
 end
 function s.handcon(e)
 	local exc=Duel.IsExistingMatchingCard(s.cfilter1,e:GetHandlerPlayer(),0,LOCATION_MZONE,1,nil)
     local mzc=Duel.IsExistingMatchingCard(s.cfilter2,e:GetHandlerPlayer(),0,LOCATION_MZONE,1,nil)
-    local szc=Duel.IsExistingMatchingCard(s.cfilter2,e:GetHandlerPlayer(),0,LOCATION_SZONE,1,nil)
+    local szc=Duel.IsExistingMatchingCard(s.cfilter3,e:GetHandlerPlayer(),0,LOCATION_SZONE,1,nil)
 	return ((exc and mzc) or (exc and szc) or (mzc and szc))
 end
