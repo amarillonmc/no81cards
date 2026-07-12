@@ -1,6 +1,6 @@
 --无心械姬 疫病
-local m=33700307
-local cm=_G["c"..m]
+local s,id,o=GetID()
+local cm,m=s,id
 function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x1449),4,2)
@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_DAMAGE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,m)
 	e2:SetCost(cm.descost)
 	e2:SetTarget(cm.destg)
 	e2:SetOperation(cm.desop)
@@ -65,7 +65,8 @@ function cm.desfilter(c)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_MZONE)
+	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE,0,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,tp,LOCATION_MZONE)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,0)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)

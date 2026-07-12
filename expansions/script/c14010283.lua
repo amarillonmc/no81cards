@@ -150,7 +150,8 @@ function cm.cfilter(c)
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEDOWN)
 end
 function cm.rtcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil)
+	local c=e:GetHandler()
+	return eg:IsExists(cm.cfilter,1,nil) or (eg:IsContains(c) and c:IsPreviousLocation(LOCATION_ONFIELD))
 end
 function cm.rttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToExtra() end

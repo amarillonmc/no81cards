@@ -1,9 +1,12 @@
 --革新者的首领 薇诺
+local s,id,o=GetID()
+local c33700319=s
 function c33700319.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 	--con
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_PZONE)
@@ -22,15 +25,16 @@ function c33700319.initial_effect(c)
 	--Def
 	local e3=e2:Clone()
 	e3:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e3) 
+	c:RegisterEffect(e3)
 	--battle indestructable
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 	e4:SetValue(1)
-	c:RegisterEffect(e4)   
+	c:RegisterEffect(e4)
 	--tf
 	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(id,1))
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetCode(EVENT_CHAINING)
 	e5:SetRange(LOCATION_HAND)
@@ -42,7 +46,7 @@ function c33700319.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c33700319.tfcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasCategory(CATEGORY_DRAW) or re:IsHasCategory(CATEGORY_SEARCH)
+	return re:IsHasCategory(CATEGORY_SEARCH)
 end
 function c33700319.tfcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
@@ -56,7 +60,7 @@ function c33700319.tfop(e,tp,eg,ep,ev,re,r,rp)
 	if ft<=0 then return end
 	local ct=math.min(2,ft)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c33700319.filter),tp,LOCATION_GRAVE+LOCATION_DECK,0,ct,ct,nil)
+	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c33700319.filter),tp,LOCATION_GRAVE+LOCATION_DECK,0,1,ct,nil)
 	if tg:GetCount()<=0 then return end
 	for tc in aux.Next(tg) do
 	   if Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
@@ -71,7 +75,7 @@ function c33700319.tfop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c33700319.adval(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_ONFIELD,0,nil,TYPE_SPELL+TYPE_TRAP)*200
+	return Duel.GetMatchingGroupCount(Card.IsType,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,nil,TYPE_SPELL+TYPE_TRAP)*200
 end
 function c33700319.filter(c)
 	return c:IsSetCard(0x1449) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()

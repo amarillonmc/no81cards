@@ -65,7 +65,7 @@ function s.hlkcon(e)
 end
 
 function s.cfilter(c)
-	return s.Grandwalker(c) and c:IsAbleToRemoveAsCost()
+	return c:IsCode(40020569) and c:IsAbleToRemoveAsCost()
 end
 
 function s.spcon(e,c)

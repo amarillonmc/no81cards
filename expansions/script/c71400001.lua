@@ -278,4 +278,120 @@ function yume.UniquifyCardName(g)
 		tc=g:GetNext()
 	end
 end
+function yume.HandleSelectionBorderList(blist)
+	local lb1,ub1,lb2,ub2=1,1,1,1
+	if blist then
+		if blist[1] then
+			lb1=blist[1][1] or lb1
+			ub1=blist[1][2] or ub1
+		end
+		if blist[2] then
+			lb2=blist[2][1] or lb2
+			ub2=blist[2][2] or ub2
+		end
+	end
+	return lb1,ub1,lb2,ub2
+end
+--Experimental quick algorithm for checking if there are ub1 cards from g1, including at least ub2 cards in g2
+--Time complexity: O(nlogn)
+---@param g1 Group
+---@param g2 Group
+---@param blist table|nil @A list for selection borders
+---@return boolean
+function yume.QuickInclusiveSelectCheck(g1,g2,blist)
+	local lb1,_,lb2=yume.HandleSelectionBorderList(blist)
+	local g3=g1&g2
+	return #g1>lb1 and #g3>lb2
+end
+--Experimental quick algorithm for selecting ub1-ub2 cards from g1, including at least ub2 cards in g2
+--Time complexity: O(nlogn)
+---@param tp number
+---@param g1 Group
+---@param g2 Group
+---@param blist table|nil @A list for selection borders
+---@param msg number @Hint msg
+---@return Group
+function yume.QuickInclusiveSelect(tp,g1,g2,blist,msg)
+	local resg=Group.CreateGroup()
+	local lb1,ub1,lb2=yume.HandleSelectionBorderList(blist)
+	local g3=g1&g2
+	local rg=g1:Clone()
+	if ub1>#g3 then ub1=#g3 end
+	if #g1<lb1 or #g3<lb2 then return resg end
+	--remaining borders
+	local rlb1,rub1,rlb2=lb1,ub1,lb2
+	local l=rlb1==0 and 0 or 1
+	while rub1>0 do
+		if rlb2>0 then
+			if rub1==rlb2 then
+				Duel.Hint(HINT_SELECTMSG,tp,msg)
+				local sg=g3:Select(tp,rub1,rub1,nil)
+				resg:Merge(sg)
+				return resg
+			else
+				Duel.Hint(HINT_SELECTMSG,tp,msg)
+				local sg=rg:Select(tp,l,1,nil)
+				if #sg==0 then return resg end
+				local sc=sg:GetFirst()
+				resg:AddCard(sc)
+				rg:RemoveCard(sc)
+				rlb1,rub1=rlb1-1,rub1-1
+				if rlb1==0 then l=0 end
+				if g3:IsContains(sc) then
+					rlb2=rlb2-1
+					g3:RemoveCard(sc)
+				end
+			end
+		else
+			Duel.Hint(HINT_SELECTMSG,tp,msg)
+			local sg=rg:Select(tp,rlb1,rub1,nil)
+			resg:Merge(sg)
+			return resg
+		end
+	end
+	return resg
+end
+--Experimental quick algorithm for checking if there are enough cards from two groups, certain number for each group
+--Time complexity: O(nlogn)
+---@param g1 Group
+---@param g2 Group
+---@param blist table|nil @A list for selection borders
+---@return boolean
+function yume.QuickDualSelectCheck(g1,g2,blist)
+	local lb1,_,lb2=yume.HandleSelectionBorderList(blist)
+	local g3=g1+g2
+	return #g1>=lb1 and #g2>=lb2 and #g3>=lb1+lb2
+end
+--Experimental quick algorithm for selecting cards from two groups, certain number for each group
+--Time complexity: O(nlogn)
+---@param tp number
+---@param g1 Group
+---@param g2 Group
+---@param blist table|nil @A list for selection borders
+---@param msg1 number @Hint msg 1
+---@param msg2 number @Hint msg 2
+---@param opf function? @A function for operations after selecting the first card, receiving the selected card as the first param and returning a bool standing for whether you do it("[opf], and if you do, select sg2")
+---@param ... table
+---@return Group,Group
+function yume.QuickDualSelect(tp,g1,g2,blist,msg1,msg2,opf,...)
+	local g3=g1&g2
+	local g4=g2-g3
+	local exgroup=nil
+	local lb1,ub1,lb2,ub2=yume.HandleSelectionBorderList(blist)
+	if #g2==lb2 and #(g1-g3)>=lb1 then
+		exgroup=g3
+	end
+	if #g4<lb2 then
+		local nxtub=#(g1+g4)-lb2
+		if nxtub>=lb1 and ub1>nxtub then ub1=nxtub end
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,msg1)
+	local sg1=g1:Select(tp,lb1,ub1,exgroup)
+	if not msg2 then return sg1 end
+	local ext_params={...}
+	if opf and not opf(sg1,table.unpack(ext_params)) then return sg1,Group.CreateGroup() end
+	Duel.Hint(HINT_SELECTMSG,tp,msg2)
+	local sg2=g2:Select(tp,lb2,ub2,sg1)
+	return sg1,sg2
+end
 end

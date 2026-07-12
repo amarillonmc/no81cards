@@ -61,7 +61,7 @@ function s.global_ovop(e, tp, eg, ep, ev, re, r, rp)
 	for p = 0, 1 do
 		if Duel.GetFlagEffect(p, id + 100) == 0 then
 			local tg = eg:Filter(function(c) 
-				return c:IsControler(p) and c:IsLocation(LOCATION_PZONE) and s.Grandwalker(c)
+				return c:IsControler(p) and c:IsLocation(LOCATION_PZONE) and c:IsCode(40020713)
 			end, nil)
 			
 			if #tg > 0 then

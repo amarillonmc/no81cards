@@ -29,16 +29,24 @@ end
 function cm.filter(c)
 	return cm.BRAVE(c) and not c:IsForbidden()
 end
-function cm.sumfilter(c)
-	return cm.BRAVE(c) and c:IsSummonable(true,nil,1)
+function cm.sumfilter(c,tp)
+	if not cm.BRAVE(c) then return false end
+	if c:IsLocation(LOCATION_SZONE) and c:IsLevelAbove(5) then
+		local min,max=c:GetTributeRequirement()
+		local ct=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
+		local ct1=Duel.GetReleaseGroupCount(tp)
+		ct=ct+ct1
+		if ct<1 or ct<min then return false end
+	end
+	return c:IsSummonable(true,nil,1)
 end
-function cm.thfilter1(c)
-	return c:IsCode(14000108) and c:IsAbleToHand()
+function cm.setfilter1(c)
+	return c:IsCode(14000108) and c:IsSSetable()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-	local b2=Duel.IsExistingMatchingCard(cm.sumfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil)
-	local b3=Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(cm.thfilter1,tp,LOCATION_DECK,0,1,nil)
+	local b2=Duel.IsExistingMatchingCard(cm.sumfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil,tp)
+	local b3=Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(cm.setfilter1,tp,LOCATION_DECK,0,1,nil)
 	if chk==0 then return b1 or b2 or b3 end
 	local off=1
 	local ops={}
@@ -65,7 +73,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 	elseif sel==3 then
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,0,LOCATION_ONFIELD)
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
+		Duel.SetOperationInfo(0,CATEGORY_SSET,nil,1,0,LOCATION_DECK)
 	end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -84,13 +92,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-				e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+				e1:SetValue(TYPE_SPELL)
 				tc:RegisterEffect(e1)
 			end
 		end
 	elseif sel==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-		local g=Duel.SelectMatchingCard(tp,cm.sumfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,cm.sumfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,1,nil,tp)
 		local tc=g:GetFirst()
 		if tc then
 			Duel.Summon(tp,tc,true,nil,1)
@@ -102,10 +110,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if tc then
 			if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
 				Duel.BreakEffect()
-				local tc=Duel.GetFirstMatchingCard(cm.thfilter1,tp,LOCATION_DECK,0,nil)
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+				local tc=Duel.GetFirstMatchingCard(cm.setfilter1,tp,LOCATION_DECK,0,nil)
 				if tc then
-					Duel.SendtoHand(tc,nil,REASON_EFFECT)
-					Duel.ConfirmCards(1-tp,tc)
+					Duel.SSet(tp,tc)
 				end
 			end
 		end

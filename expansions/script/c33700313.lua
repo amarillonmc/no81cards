@@ -1,17 +1,33 @@
 --无限姬 无限
-local m=33700313
-local cm=_G["c"..m]
+local s,id,o=GetID()
+local cm,m=s,id
 function cm.initial_effect(c)
+	--Each player can only Special Summon "Infinity Gal Infinity" once per turn
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.GlobalEffect()
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
+		ge1:SetOperation(cm.splimitop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=Effect.GlobalEffect()
+		ge2:SetType(EFFECT_TYPE_FIELD)
+		ge2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+		ge2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		ge2:SetTargetRange(1,1)
+		ge2:SetTarget(cm.splimit)
+		Duel.RegisterEffect(ge2,0)
+	end
 	--link summon
 	aux.AddLinkProcedure(c,cm.lfilter,3)
-	c:EnableReviveLimit()   
+	c:EnableReviveLimit()
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(cm.limit)
-	c:RegisterEffect(e1)  
+	c:RegisterEffect(e1)
 	--immune
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -19,7 +35,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetValue(cm.efilter)
-	c:RegisterEffect(e2) 
+	c:RegisterEffect(e2)
 	--indes
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -50,6 +66,20 @@ function cm.initial_effect(c)
 	e6:SetCode(EFFECT_UPDATE_ATTACK)
 	e6:SetValue(cm.atkval)
 	c:RegisterEffect(e6)
+end
+function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return c:IsCode(m) and Duel.GetFlagEffect(sump,m)>0
+end
+function cm.splimitop(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(Card.IsCode,nil,m)
+	local tc=g:GetFirst()
+	while tc do
+		local p=tc:GetSummonPlayer()
+		if Duel.GetFlagEffect(p,m)==0 then
+			Duel.RegisterFlagEffect(p,m,RESET_PHASE+PHASE_END,0,1)
+		end
+		tc=g:GetNext()
+	end
 end
 function cm.atkfilter(c)
 	return c:IsFaceup() and (c:IsSetCard(0x1449) or c:IsSetCard(0x3449))
@@ -107,4 +137,3 @@ end
 function cm.lfilter(c)
 	return c:IsLinkSetCard(0x1449) or c:IsLinkSetCard(0x3449)
 end
-

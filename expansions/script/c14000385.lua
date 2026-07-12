@@ -29,12 +29,12 @@ function cm.Grava(c)
 	local m=_G["c"..c:GetCode()]
 	return m and (m.named_with_Gravalond or c:IsCode(14000380))
 end
-function cm.spcfilter(c)
-	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_ONFIELD)
+function cm.spcfilter(c,ec)
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and (c:IsPreviousLocation(LOCATION_ONFIELD) or c==ec)
 end
 function cm.sscon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return eg:IsExists(cm.spcfilter,1,nil) and (c:IsLocation(LOCATION_GRAVE) or Duel.IsPlayerAffectedByEffect(tp,14000386))
+	return eg:IsExists(cm.spcfilter,1,nil,c) and (c:IsLocation(LOCATION_GRAVE) or Duel.IsPlayerAffectedByEffect(tp,14000386))
 end
 function cm.sstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

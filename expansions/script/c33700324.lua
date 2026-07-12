@@ -1,9 +1,12 @@
 --革新者的新血 库洛依
+local s,id,o=GetID()
+local c33700324=s
 function c33700324.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,1))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_DESTROY)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
@@ -11,7 +14,7 @@ function c33700324.initial_effect(c)
 	e1:SetCountLimit(1)
 	e1:SetTarget(c33700324.sptg)
 	e1:SetOperation(c33700324.spop)
-	c:RegisterEffect(e1)	  
+	c:RegisterEffect(e1)
 end
 function c33700324.spfilter(c,e,tp)
 	return c:IsSetCard(0x1449) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -40,7 +43,7 @@ function c33700324.spop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsLocation(LOCATION_REMOVED) then
 	   Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	elseif tc:IsLocation(LOCATION_GRAVE) then
-	   if g1:IsContains(tc) or (not g2:IsContains(tc) or not Duel.SelectYesNo(tp,aux.Stringid(33700324,0))) then
+	   if g1:IsContains(tc) and (not g2:IsContains(tc) or not Duel.SelectYesNo(tp,aux.Stringid(33700324,0))) then
 		  Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	   else
 		  Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)

@@ -9,9 +9,8 @@ function s.initial_effect(c)
 	end
 	--xyz summon
 	aux.AddXyzProcedure(c,yume.YumeCheck(c,true),4,3)
-	c:EnableReviveLimit()
 	--summon limit
-	yume.AddYumeSummonLimit(c)
+	yume.AddYumeSummonLimit(c,1)
 	--negate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))

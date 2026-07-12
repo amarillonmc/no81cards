@@ -31,6 +31,13 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
+	--cannot link material
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e4:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	e4:SetValue(1)
+	c:RegisterEffect(e4)
 end
 function cm.ntfilter(c)
 	return c:IsFacedown()
@@ -48,7 +55,8 @@ function cm.cfilter(c)
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEDOWN)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil)
+	local c=e:GetHandler()
+	return eg:IsExists(cm.cfilter,1,nil) or (eg:IsContains(c) and c:IsPreviousLocation(LOCATION_ONFIELD))
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

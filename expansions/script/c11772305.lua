@@ -105,11 +105,24 @@ end
 function s.sumrfilter(c)
 	return c:IsAbleToRemoveAsCost() and c:IsType(TYPE_MONSTER)
 end
+function s.sumrfilter0(c)
+	return c:IsAbleToGraveAsCost() and c:IsType(TYPE_MONSTER)
+end
 function s.sumrcon(e,c,minc)
 	if c==nil then return true end
 	if c:IsLevelBelow(4) then return end
 	local tp=c:GetControler()
 	local mg=Duel.GetMatchingGroup(s.sumrfilter,tp,LOCATION_GRAVE,0,nil)
+    local mg0=Group.CreateGroup()
+    if Duel.IsPlayerAffectedByEffect(tp,11772390) then
+		local g1=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,0,LOCATION_ONFIELD,nil)
+        mg0:Merge(g1)
+    end
+    if Duel.IsPlayerAffectedByEffect(tp,11772391) then
+		local g2=Duel.GetMatchingGroup(s.sumrfilter0,tp,LOCATION_EXTRA,0,nil)
+        mg0:Merge(g2)    
+    end
+    mg:Merge(mg0)
 	local ct=2 
 	local res=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and mg:GetCount()>=2
 		or Duel.CheckTribute(c,1) and mg:GetCount()>=1
@@ -123,31 +136,71 @@ function s.sumrcon(e,c,minc)
 end
 function s.sumrop(e,tp,eg,ep,ev,re,r,rp,c)
 	local mg=Duel.GetMatchingGroup(s.sumrfilter,tp,LOCATION_GRAVE,0,nil)
+    local mg1=Group.CreateGroup()
+	local mg2=Group.CreateGroup()
+    if Duel.IsPlayerAffectedByEffect(tp,11772390) then
+		mg1=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,0,LOCATION_ONFIELD,nil)
+    end
+    if Duel.IsPlayerAffectedByEffect(tp,11772391) then
+    	mg2=Duel.GetMatchingGroup(s.sumrfilter0,tp,LOCATION_EXTRA,0,nil)
+    end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local g=Group.CreateGroup()
 	local g1=Group.CreateGroup()
 	local g2=Group.CreateGroup()
+    local g3=Group.CreateGroup()
 	local ct=2 
 	if c:IsLevelBelow(6) then ct=1 end
-	while mg:GetCount()>0 and (ct>1 and Duel.CheckTribute(c,ct-1) or ct>0 and ft>0)
-		and (not Duel.CheckTribute(c,ct) or Duel.SelectYesNo(tp,aux.Stringid(id,3))) do
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local tg=mg:Select(tp,1,1,nil)
-		g1:Merge(tg)
-		mg:Sub(tg)
-		ct=ct-1
-	end
-	if g:GetCount()<ct then
+    for i=1,ct do
+		if mg:GetCount()>0 and (ct>1 and Duel.CheckTribute(c,ct-1) or ct>0 and ft>0)
+			and (not Duel.CheckTribute(c,ct) and not (Duel.IsPlayerAffectedByEffect(tp,11772390)
+            and mg1:GetCount()>0) and not (Duel.IsPlayerAffectedByEffect(tp,11772391) and mg2:GetCount()>0)
+            or Duel.SelectYesNo(tp,aux.Stringid(id,3))) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+			local tg=mg:Select(tp,1,1,nil)
+			g1:Merge(tg)
+			mg:Sub(tg)
+			ct=ct-1
+		end
+    	if mg1:GetCount()>0 and (ct>1 and Duel.CheckTribute(c,ct-1) or ct>0 and ft>0)
+			and (not Duel.CheckTribute(c,ct) and not (Duel.IsPlayerAffectedByEffect(tp,11772391) 
+            and mg2:GetCount()>0) or Duel.SelectYesNo(tp,aux.Stringid(11772390,5))) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+			local tg1=mg1:Select(tp,1,1,nil)
+			g1:Merge(tg1)
+			mg1:Sub(tg1)
+			ct=ct-1
+       	 	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
+		end
+    	if mg2:GetCount()>0 and (ct>1 and Duel.CheckTribute(c,ct-1) or ct>0 and ft>0)
+			and (not Duel.CheckTribute(c,ct) or Duel.SelectYesNo(tp,aux.Stringid(11772390,6))) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			local tg2=mg2:Select(tp,1,1,nil)
+			g3:Merge(tg2)
+			mg2:Sub(tg2)
+			ct=ct-1
+		end        		
+    end    
+    if g:GetCount()<ct then
 		local sg=Duel.SelectTribute(tp,c,ct-g:GetCount(),ct-g:GetCount())
-		g2:Merge(sg)
+		g2:Merge(sg)            
 	end
 	g:Merge(g1)
 	g:Merge(g2)
+    g:Merge(g3)
 	c:SetMaterial(g)
 	if g1:GetCount()>0 then 
 		Duel.Remove(g1,POS_FACEUP,REASON_SUMMON+REASON_MATERIAL)
+        if Duel.GetFlagEffect(tp,id)>0 then
+        	Duel.IsPlayerAffectedByEffect(tp,11772390):UseCountLimit(tp)
+            Duel.ResetFlagEffect(tp,id)
+        end
 	end
 	if g2:GetCount()>0 then
 		Duel.Release(g2,REASON_SUMMON+REASON_MATERIAL)
 	end
+    if g3:GetCount()>0 then
+    	Duel.SendtoGrave(g3,REASON_SUMMON+REASON_MATERIAL)
+        Duel.IsPlayerAffectedByEffect(tp,11772391):UseCountLimit(tp)
+    end
 end

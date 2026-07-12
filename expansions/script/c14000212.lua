@@ -72,11 +72,11 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.cfilter(c,tp)
-	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_EARTH) and c:IsPreviousLocation(LOCATION_DECK) and c:GetPreviousControler()==tp
+function cm.cfilter(c,tp,ec)
+	return (c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_EARTH) or c==ec) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:GetPreviousControler()==tp
 end
 function cm.ddcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,tp)
+	return eg:IsExists(cm.cfilter,1,nil,tp,e:GetHandler())
 end
 function cm.ddtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
