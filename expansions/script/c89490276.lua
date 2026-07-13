@@ -22,8 +22,11 @@ function s.initial_effect(c)
 	e1:SetOperation(s.drop)
 	c:RegisterEffect(e1)
 end
+function s.cfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_TUNER+TYPE_SYNCHRO)
+end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_MZONE,0,1,nil,TYPE_TUNER+TYPE_SYNCHRO)
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function s.filter(c,e,tp)
 	return (c:IsSetCard(0x190) or c:IsCode(89490273)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

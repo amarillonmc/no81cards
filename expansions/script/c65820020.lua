@@ -21,25 +21,6 @@ function s.initial_effect(c)
 	local e5=e3:Clone()
 	e5:SetCode(EVENT_CHAIN_SOLVED)
 	c:RegisterEffect(e5)
-	--Cost Change
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_LPCOST_CHANGE)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetRange(LOCATION_FZONE)
-	e2:SetTargetRange(1,0)
-	e2:SetCondition(s.costchcon)
-	e2:SetValue(s.costchange)
-	--c:RegisterEffect(e2)
-	--
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_IGNITION)
-	e6:SetRange(LOCATION_FZONE)
-	e6:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e6:SetCountLimit(1)
-	e6:SetTarget(s.damtg)
-	e6:SetOperation(s.rmop)
-	--c:RegisterEffect(e6)
 	local e7=Effect.CreateEffect(c)
 	e7:SetDescription(aux.Stringid(id,0))
 	e7:SetRange(LOCATION_FZONE)
@@ -70,22 +51,6 @@ function s.damop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+65820000,e,REASON_EFFECT,tp,tp,4000)
 	end
 end
-
-
-function s.costchcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tp=c:GetControler()
-	return (Duel.GetFlagEffect(tp,65820099)==0 and c:GetFlagEffect(65820010)>0 or Duel.GetFlagEffect(tp,65820099)>0 and c:GetFlagEffect(65820010)==0)
-end
-function s.costchange(e,re,rp,val)
-	if re and re:GetHandler():IsSetCard(0x3a32) and not Duel.IsChainSolving() then
-		return 99999--re:GetHandler():GetControler():GetLP()
-	else
-		return val
-	end
-end
-
-
 
 function s.cfilter1(c,tp)
 	return c:IsSetCard(0x3a32)
