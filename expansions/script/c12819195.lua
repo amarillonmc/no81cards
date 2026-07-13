@@ -45,7 +45,7 @@ function s.activate(e,tp)
 				Duel.BreakEffect()
 				local ct=Duel.GetMatchingGroupCount(s.mcheck,tp,LOCATION_ONFIELD,0,nil)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-				local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil)
+				local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,e:GetHandler())
 				Duel.Destroy(g,REASON_EFFECT)
 		   end
 		end
