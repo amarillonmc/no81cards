@@ -69,9 +69,9 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		if tc:IsLocation(LOCATION_MZONE) then
 			local res1,res2=Duel.TossCoin(tp,2)
 			if res1~=res2 then res1=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,0)) end
-			if tc:IsLocation(LOCATION_MZONE) and Duel.SendtoDeck(tc,nil,0,REASON_EFFECT) and tc:IsLocation(LOCATION_DECK) and res1==1 then
+			if tc:IsLocation(LOCATION_MZONE) and Duel.SendtoDeck(tc,nil,0,REASON_EFFECT) and tc:IsLocation(LOCATION_DECK) then
 				Duel.ShuffleDeck(tc:GetControler())
-				tc:ReverseInDeck()
+				if res1==1 then c:ReverseInDeck() end
 			end
 		end
 	end

@@ -240,7 +240,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CHAIN_SOLVED)
 	e4:SetRange(LOCATION_DECK)
-	e4:SetCondition(function(e,tp) return e:GetHandler():IsFaceup() and Duel.GetDecktopGroup(tp,1):IsContains(e:GetHandler()) end)
+	e4:SetCondition(function(e,tp) return e:GetHandler():IsFaceup() end)
 	e4:SetOperation(cm.desop)
 	c:RegisterEffect(e4)
 	local e5=e4:Clone()
@@ -481,6 +481,8 @@ function cm.tgfilter(c,e)
 	return c:IsRelateToEffect(e) --and c:IsOnField()
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	if not Duel.GetDecktopGroup(tp,1):IsContains(e:GetHandler()) then return end
 	local c=e:GetHandler()
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)

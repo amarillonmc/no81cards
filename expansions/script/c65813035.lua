@@ -62,8 +62,11 @@ function s.setfilter(c)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	-- 通过 id+1 和 id+2 两个独立的Flag，完美实现“以下效果各能选择1次”
-	local b1 = Duel.GetFlagEffect(tp,id+1)==0 and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
-	local b2 = Duel.GetFlagEffect(tp,id+2)==0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 
+	local c=e:GetHandler()
+	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+  if not c:IsLocation(LOCATION_SZONE) then ft=ft-1 end
+	local b1 = (not e:IsCostChecked() or Duel.GetFlagEffect(tp,id+1)==0) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
+	local b2 = (not e:IsCostChecked() or Duel.GetFlagEffect(tp,id+2)==0) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and ft>0
 		and Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
 	
 	if chk==0 then return b1 or b2 end

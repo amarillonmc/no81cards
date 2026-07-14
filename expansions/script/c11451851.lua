@@ -235,7 +235,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CHAIN_SOLVED)
 	e4:SetRange(LOCATION_DECK)
-	e4:SetCondition(function(e,tp) return e:GetHandler():IsFaceup() and Duel.GetDecktopGroup(tp,1):IsContains(e:GetHandler()) end)
+	e4:SetCondition(function(e,tp) return e:GetHandler():IsFaceup() end)
 	e4:SetOperation(cm.desop)
 	c:RegisterEffect(e4)
 	cm.highground=e4
@@ -413,7 +413,9 @@ function cm.GetCardsInZone(tp,fd)
 	return Duel.GetFieldCard(p,loc,math.floor(seq+0.5))
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
+	cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	if not Duel.GetDecktopGroup(tp,1):IsContains(e:GetHandler()) then return end
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)
 	if #g>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(11451858,4)) then
 		local fd=0

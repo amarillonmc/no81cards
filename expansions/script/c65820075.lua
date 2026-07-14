@@ -34,7 +34,7 @@ end
 
 s.effect_lixiaoguo=true
 
-function s.consume_use_counter(tp)
+function s.consume_use_counter(e,tp)
 	for i=0,10 do
 		Duel.ResetFlagEffect(tp,EFFECT_FLAG_EFFECT+65820000+i)
 	end
@@ -79,7 +79,7 @@ function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	else
 		loc=LOCATION_REMOVED
 	end
-	if has_use then s.consume_use_counter(tp) end
+	if has_use then s.consume_use_counter(e,tp) end
 	local ag=Duel.GetMatchingGroup(s.thfilter,tp,loc,0,nil,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local mg=ag:FilterSelect(tp,s.thfilter,1,1,nil,c)
