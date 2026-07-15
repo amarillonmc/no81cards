@@ -26,6 +26,9 @@ function c67201815.initial_effect(c)
 	c:RegisterEffect(e4)   
 end
 --
+function s.filter1(c)
+	return c:IsSetCard(0x667f) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+end
 function s.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()

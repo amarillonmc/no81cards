@@ -44,7 +44,7 @@ function c98920776.filter(c,e,tp)
 	return c:IsRace(RACE_WINDBEAST) and c:IsAttribute(ATTRIBUTE_WATER) and not c:IsCode(98920776) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c98920776.cfilter(c)
-	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER)
+	return not c:IsFaceup() or not c:IsAttribute(ATTRIBUTE_WATER)
 end
 function c98920776.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(c98920776.cfilter,tp,LOCATION_MZONE,0,1,nil)
