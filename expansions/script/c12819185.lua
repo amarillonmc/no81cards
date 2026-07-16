@@ -18,7 +18,7 @@ function s.filter1(c,e)
 end
 function s.filter2(c,e)
 	return not c:IsImmuneToEffect(e) and c:IsType(TYPE_PENDULUM) 
-	and c:IsLocation(LOCATION_EXTRA) and c:IsFaceup() and not c:IsForbidden()
+	and c:IsFaceup() and not c:IsForbidden()
 end
 function s.filter3(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c))
@@ -31,7 +31,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
 		local mg1=Duel.GetFusionMaterial(tp):Filter(s.filter1,nil,e)
-		local mg2=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_EXTRA+LOCATION_MZONE,0,nil,e)
+		local mg2=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_EXTRA,0,nil,e)
 		if #mg2>0 then mg1:Merge(mg2) end
 		aux.FCheckAdditional=s.fcheck
 		local res=Duel.IsExistingMatchingCard(s.filter3,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
@@ -54,7 +54,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	if not (Duel.CheckLocation(tp,LOCATION_PZONE,0) and Duel.CheckLocation(tp,LOCATION_PZONE,1)) then return end
 	local mg1=Duel.GetFusionMaterial(tp):Filter(s.filter1,nil,e)
-	local mg2=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_EXTRA+LOCATION_MZONE,0,nil,e)
+	local mg2=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_EXTRA,0,nil,e)
 		if #mg2>0 then mg1:Merge(mg2) end
 	aux.FCheckAdditional=s.fcheck
 	local sg1=Duel.GetMatchingGroup(s.filter3,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)

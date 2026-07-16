@@ -102,15 +102,25 @@ function c10105581.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 -- TARGET：选择场上其他效果怪兽
-function c10105581.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    local c=e:GetHandler()
-    if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsType(TYPE_EFFECT) and chkc~=c end
-    if chk==0 then 
-        return Duel.IsExistingTarget(Card.IsType,tp,LOCATION_MZONE,LOCATION_MZONE,1,c,TYPE_EFFECT) 
+function c10105581.distg(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
+    local c = e:GetHandler()
+    -- 检查目标时必须要求表侧表示且为效果怪兽，且不能是自己
+    if chkc then
+        return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() and chkc:IsType(TYPE_EFFECT) and chkc ~= c
     end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-    local g=Duel.SelectTarget(tp,Card.IsType,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,c,TYPE_EFFECT)
-    Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
+    if chk == 0 then
+        return Duel.IsExistingTarget(
+            function(card) return card:IsFaceup() and card:IsType(TYPE_EFFECT) end,
+            tp, LOCATION_MZONE, LOCATION_MZONE, 1, c
+        )
+    end
+    Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_DISABLE)
+    local g = Duel.SelectTarget(
+        tp,
+        function(card) return card:IsFaceup() and card:IsType(TYPE_EFFECT) end,
+        tp, LOCATION_MZONE, LOCATION_MZONE, 1, 1, c
+    )
+    Duel.SetOperationInfo(0, CATEGORY_DISABLE, g, 1, 0, 0)
 end
 
 -- OPERATION：无效效果

@@ -86,7 +86,7 @@ function s.splimit(e,c)
 	return not c:IsSetCard(0xe5) and c:IsLocation(LOCATION_EXTRA)
 end
 function s.tdfilter(c)
-	return c:IsSetCard(0xe5) and c:IsAbleToDeck()
+	return c:IsFaceupEx() and c:IsSetCard(0xe5) and c:IsAbleToDeck()
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.tdfilter(chkc) end

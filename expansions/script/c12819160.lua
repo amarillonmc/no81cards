@@ -2,7 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.Tuner(nil),aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,nil,nil,1)
 	c:EnableReviveLimit()
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,false)
@@ -13,9 +13,9 @@ function s.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
-	e0:SetCondition(s.SynMixCondition(aux.Tuner(nil),nil,nil,aux.NonTuner(Card.IsSynchroType,TYPE_MONSTER),1,99,gc))
-	e0:SetTarget(s.SynMixTarget(aux.Tuner(nil),nil,nil,aux.NonTuner(Card.IsSynchroType,TYPE_MONSTER),1,99,gc))
-	e0:SetOperation(s.SynMixOperation(aux.Tuner(nil),nil,nil,aux.NonTuner(Card.IsSynchroType,TYPE_MONSTER),1,99,gc))
+	e0:SetCondition(s.SynMixCondition(aux.Tuner(aux.TRUE),nil,nil,aux.NonTuner(Card.IsSynchroType,TYPE_MONSTER),1,99,gc))
+	e0:SetTarget(s.SynMixTarget(aux.Tuner(aux.TRUE),nil,nil,aux.NonTuner(Card.IsSynchroType,TYPE_MONSTER),1,99,gc))
+	e0:SetOperation(s.SynMixOperation(aux.Tuner(aux.TRUE),nil,nil,aux.NonTuner(Card.IsSynchroType,TYPE_MONSTER),1,99,gc))
 	e0:SetValue(SUMMON_TYPE_SYNCHRO)
 	c:RegisterEffect(e0)
 	--

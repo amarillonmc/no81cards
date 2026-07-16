@@ -65,7 +65,7 @@ function c75038001.hspop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c75038001.spfilter(c,e,tp)
-	return c:IsCanBeEffectTarget(e) and c:IsType(TYPE_MONSTER)
+	return c:IsCanBeEffectTarget(e) and c:IsType(TYPE_MONSTER) and c:IsLevelBelow(8)
 end
 function c75038001.spsumfilter1(c,e,tp) 
 	if c:IsType(TYPE_RITUAL) then 
