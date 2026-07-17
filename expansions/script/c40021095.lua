@@ -37,7 +37,7 @@ function s.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
-	c.OgreWizard_spsummon_effect=e3
+	s.OgreWizard_spsummon_effect=e3
 	
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id,2))

@@ -73,7 +73,7 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local num=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
 	local lb=e:GetLabel()
-	if lb==nil then e:SetLabel(num) end
+	if lb==nil then e:SetLabel(num) 
 	elseif lb/2~=math.floor(lb/2) and num/2==math.floor(num/2) then
 		e:SetLabel(num)
 		Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m,nil,0,tp,tp,0)
@@ -131,16 +131,16 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
 end
-function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
 		if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)~=0 then
-			local e1=Effect.CreateEffect(c)
+			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_PHASE+PHASE_END)
 			e1:SetCountLimit(1)

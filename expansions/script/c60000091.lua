@@ -81,7 +81,6 @@ function cm.sprcon(e,c)
 end
 
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local tp=e:GetHandlerPlayer()
 	local g=Duel.GetMatchingGroup(cm.getfusionfilter,tp,LOCATION_ONFIELD,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)

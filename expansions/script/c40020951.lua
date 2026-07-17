@@ -15,7 +15,7 @@ function s.initial_effect(c)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetTarget(s.damtg)
-	e1:SetValue(s.damval)
+	e1:SetValue(aux.ChangeBattleDamage(1,DOUBLE_DAMAGE))
 	c:RegisterEffect(e1)
 	
 	local e2=Effect.CreateEffect(c)
@@ -68,13 +68,6 @@ end
 
 function s.damtg(e,c)
 	return c:IsFaceup() and s.Galaxian(c)
-end
-
-function s.damval(e,re,dam,r,rp,rc)
-	if rc==e:GetHandlerPlayer() then return dam end
-	local d=Duel.GetAttackTarget()
-	if not d then return dam end 
-	return dam*2
 end
 
 function s.rmcon1(e,tp,eg,ep,ev,re,r,rp)
