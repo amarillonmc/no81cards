@@ -1,6 +1,7 @@
 --创界神 赫拉
 local s,id=GetID()
 s.named_with_Grandwalker=1
+s.named_with_Olym=1
 function s.Grandwalker(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Grandwalker
