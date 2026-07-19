@@ -71,6 +71,8 @@ end
 function c28368431.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
 	if not ANTICA_EFFECT_HINT then Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,te,0,0,0,0) else
+		local ph=Duel.GetCurrentPhase()
+		if (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE) then Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(28333723,0)) end
 		c28384553.process_list[tp][#c28384553.process_list[tp]+1]=te
 	end
 end

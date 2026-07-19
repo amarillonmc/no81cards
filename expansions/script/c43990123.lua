@@ -83,7 +83,7 @@ function c43990123.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local ct1=Duel.GetMatchingGroupCount(c43990123.brfilter1,tp,LOCATION_MZONE,0,nil)
 	local ct2=Duel.GetMatchingGroupCount(c43990123.brfilter2,tp,LOCATION_MZONE,0,nil)
 	local ct=ct1+ct2*2
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,ct,ct,nil)
+	local g=Duel.SelectMatchingCard(1-tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,ct,ct,nil)
 	if #g>0 then
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
 		local sg=g:Select(1-tp,ct,ct,nil)

@@ -29,7 +29,7 @@ end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local cnum={}
-	local dg=Duel.GetMatchingGroup(cm.afil,tp,LOCATION_SZONE,0,nil)
+	local dg=Duel.GetMatchingGroup(cm.afil,tp,LOCATION_SZONE,0,c)
 	for tc in aux.Next(dg) do
 		local num=tc:GetCounter(0x62c)
 		if num and num>0 then cnum[tc]=num else cnum[tc]=0 end
