@@ -57,7 +57,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.etg(e,c)
-	return c:GetFlagEffect(m)==0
+	return c:GetFlagEffect(m)==0 and c:IsAttack(1000) and c:IsDefense(1000)
 end
 function cm.eval(e,te,c)
 	local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+m-2)}
