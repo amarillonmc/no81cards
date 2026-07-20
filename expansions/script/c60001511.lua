@@ -274,7 +274,7 @@ function byd.CountdownSP(c,num)
 end
 function byd.CountdownSPcon(e)
 	local code,num=e:GetLabel()
-	return Duel.GetFlagEffect(e:GetHandlerPlayer(),code)>=num and Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_MZONE)>0
+	return Duel.GetFlagEffect(e:GetHandlerPlayer(),code)>=num and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function byd.CountdownSPtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToHand() and Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x625,1,REASON_EFFECT) end
@@ -362,4 +362,64 @@ function byd.link(c,num)
 	if Duel.GetFlagEffect(c:GetOwner(),60040052)>=num then return true else return end
 end
 
+function byd.skyboundart_start(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCondition(cm.spcon)
+	e1:SetOperation(cm.spop)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	c:RegisterEffect(e1)
+end
 
+function byd.EarthRite(e,tp,eg,ep,ev,re,r,rp,chk)
+	local X=e:GetLabel()
+	if chk==0 then
+		if X<=0 then return false end
+		local counter_count=0
+		local g=Duel.GetMatchingGroup(Card.HasCounter,tp,LOCATION_ONFIELD,0,nil,0x62c)
+		for tc in aux.Next(g) do
+			counter_count=counter_count+tc:GetCounter(0x62c)
+		end
+		local magic_count=Duel.GetMatchingGroupCount(byd.earth_rite_filter,tp,LOCATION_ONFIELD,0,nil)
+		return counter_count+magic_count>=X
+	end
+	for i=1,X do
+		local can_remove_counter=Duel.IsExistingMatchingCard(Card.HasCounter,tp,LOCATION_ONFIELD,0,1,nil,0x62c)
+		local can_send_magic=Duel.IsExistingMatchingCard(byd.earth_rite_filter,tp,LOCATION_ONFIELD,0,1,nil)
+		if not (can_remove_counter or can_send_magic) then break end
+		if can_remove_counter and can_send_magic then
+			local opt=Duel.SelectOption(tp,aux.Stringid(60001511,0),aux.Stringid(60001511,1))
+			if opt==0 then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+				local g=Duel.SelectMatchingCard(tp,Card.HasCounter,tp,LOCATION_ONFIELD,0,1,1,nil,0x62c)
+				if #g>0 then
+					g:GetFirst():RemoveCounter(tp,0x62c,1,REASON_COST)
+				end
+			else
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+				local g=Duel.SelectMatchingCard(tp,byd.earth_rite_filter,tp,LOCATION_ONFIELD,0,1,1,nil)
+				if #g>0 then
+					Duel.SendtoGrave(g,REASON_COST)
+				end
+			end
+		elseif can_remove_counter then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+			local g=Duel.SelectMatchingCard(tp,Card.HasCounter,tp,LOCATION_ONFIELD,0,1,1,nil,0x62c)
+			if #g>0 then
+				g:GetFirst():RemoveCounter(tp,0x62c,1,REASON_COST)
+			end
+		else
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			local g=Duel.SelectMatchingCard(tp,byd.earth_rite_filter,tp,LOCATION_ONFIELD,0,1,1,nil)
+			if #g>0 then
+				Duel.SendtoGrave(g,REASON_COST)
+			end
+		end
+	end
+end
+function byd.earth_rite_filter(c)
+	return c:IsCode(60012048) and c:GetCounter(0x62c)==0
+end

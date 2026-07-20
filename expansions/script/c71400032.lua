@@ -42,7 +42,12 @@ function c71400032.tg1(e,c)
 end
 function c71400032.filter2con(c,tp)
 	--return c:IsType(TYPE_QUICKPLAY) or c:IsType(TYPE_COUNTER)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return c:IsType(TYPE_MONSTER)
+end
+function c71400032.filter2con2(c,tp)
+	--return c:IsType(TYPE_QUICKPLAY) or c:IsType(TYPE_COUNTER)
+	return (not c:IsPreviousLocation(LOCATION_ONFIELD) or c:GetPreviousTypeOnField()&TYPE_MONSTER~=0)
+		and c:IsType(TYPE_MONSTER)
 end
 function c71400032.con2(e,tp,eg,ep,ev,re,r,rp)
 	 return eg:IsExists(c71400032.filter2con,1,nil,tp)

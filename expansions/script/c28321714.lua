@@ -2,7 +2,7 @@
 function c28321714.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(c28321714.target)
@@ -10,7 +10,7 @@ function c28321714.initial_effect(c)
 	c:RegisterEffect(e1)
 	--to grave
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(28321714,4))
+	e2:SetDescription(aux.Stringid(28321714,1))
 	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_LEAVE_FIELD)
@@ -21,87 +21,135 @@ function c28321714.initial_effect(c)
 	e2:SetTarget(c28321714.tgtg)
 	e2:SetOperation(c28321714.tgop)
 	c:RegisterEffect(e2)
-end
-function c28321714.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<2 then return false end
-		return Duel.GetDecktopGroup(tp,2) and Duel.IsPlayerCanRemove(tp)
-	end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
-end
-function c28321714.thfilter(c)
-	return c:IsSetCard(0x286) and c:IsAbleToHand()
-end
-function c28321714.activate(e,tp,eg,ep,ev,re,r,rp)
-	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local ct=2
-	if aux.GetAttributeCount(Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,LOCATION_MZONE,nil))>=3 and Duel.GetFieldGroupCount(p,LOCATION_DECK,0)>=3 and Duel.SelectOption(p,aux.Stringid(28321714,0),aux.Stringid(28321714,1))==1 then
-		ct=3
-	end
-	Duel.ConfirmDecktop(p,ct)
-	local g=Duel.GetDecktopGroup(p,ct)
-	if #g>0 then
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
-		local sg=g:FilterSelect(p,c28321714.thfilter,0,#g,nil)
-		if #sg>0 then
-			Duel.DisableShuffleCheck()
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-p,sg)
-			Duel.ShuffleHand(p)
-			g:Sub(sg)
+	if not c28321714.global_check then
+		c28321714.global_check=true
+		for i=0,6 do
+			local ge1=Effect.CreateEffect(c)
+			ge1:SetType(EFFECT_TYPE_FIELD)
+			ge1:SetCode(EFFECT_IMMUNE_EFFECT)
+			ge1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+			ge1:SetTarget(aux.TargetBoolFunction(Card.IsAttribute,1<<i))
+			ge1:SetLabel(1<<i)
+			ge1:SetValue(c28321714.immval)
+			Duel.RegisterEffect(ge1,tp)
 		end
-		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
-		local ct=Duel.GetTurnPlayer()==p and 2 or 1
-		local fid=e:GetHandler():GetFieldID()
-		for tc in aux.Next(g) do
-			tc:RegisterFlagEffect(28321714,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,EFFECT_FLAG_CLIENT_HINT,ct,fid,aux.Stringid(28321714,3))
-		end
-		g:KeepAlive()
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
-		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e1:SetCountLimit(1)
-		e1:SetLabel(fid,Duel.GetTurnCount()+ct)
-		e1:SetLabelObject(g)
-		e1:SetCondition(c28321714.thcon)
-		e1:SetOperation(c28321714.thop)
-		e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,ct)
-		Duel.RegisterEffect(e1,p)
 	end
 end
-function c28321714.cfilter(c,fid)
-	return c:GetFlagEffectLabel(28321714)==fid and c:IsAbleToHand()
-end
-function c28321714.thcon(e,tp,eg,ep,ev,re,r,rp)
-	local fid,ct=e:GetLabel()
-	if Duel.GetTurnCount()<ct then return false end
-	local g=e:GetLabelObject()
-	if not g:IsExists(c28321714.cfilter,1,nil,fid) then
-		g:DeleteGroup()
-		e:Reset()
-		return false
-	else return true end
-end
-function c28321714.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,28321714)
-	local fid,ct=e:GetLabel()
-	local g=e:GetLabelObject()
-	local sg=g:Filter(c28321714.cfilter,nil,fid)
-	--g:DeleteGroup()
-	Duel.SendtoHand(sg,nil,REASON_EFFECT)
-	Duel.ConfirmCards(1-tp,sg)
-	--e:Reset()
+function c28321714.immval(e,te,c)
+	if not (c:IsLevel(4) and te:GetOwner()~=c:GetControler() and te:IsActivated() and Duel.IsChainSolving()) then return false end
+	--
+	local res=true--ctns;contains?
+	for _,se in pairs({c:IsHasEffect(EFFECT_FLAG_EFFECT+28321714)}) do
+		if se:GetLabelObject()==te and se:GetLabel()==Duel.GetCurrentChain() then res=false end
+	end
+	--
+	local t={Duel.GetFlagEffectLabel(c:GetControler(),28321714)}--IsPlayerAffectedByEffect
+	local attr_check=false
+	for _,v in pairs(t)
+		if v==e:GetLabel() then attr_check=true end
+	end
+	if not (res and attr_check) then return false end
+	if res then
+		Duel.Hint(HINT_CARD,0,28321714)
+		local ge1=c:RegisterFlagEffect(28321714,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+		ge1:SetLabelObject(te)
+		ge1:SetLabel(Duel.GetCurrentChain())
+		local e0=Effect.CreateEffect(e:GetHandler())
+		e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e0:SetCode(EVENT_BREAK_EFFECT)
+		e0:SetOperation(function(fe) ge1:SetLabelObject(nil) fe:Reset() end)
+		Duel.RegisterEffect(e0,0)
+		local e1=e0:Clone()
+		e1:SetCode(EVENT_ADJUST)
+		Duel.RegisterEffect(e1,0)
+		--
+		Duel.ResetFlagEffect(c:GetControler(),28321714)
+		for _,v in pairs(t)
+			if c:IsNonAttribute(v) then
+				Duel.RegisterFlagEffect(c:GetControler(),28321714,RESET_PHASE+PHASE_END,0,1,v)
+			end
+		end
+	end
+	return true
 end
 function c28321714.chkfilter(c)
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsReason(REASON_EFFECT)
-end
-function c28321714.tgcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_MZONE)
+	return (c:IsOnField() or c:IsLevel(4)) and c:IsFaceupEx()
 end
 function c28321714.tgfilter(c)
 	return c:IsSetCard(0x286) and c:IsAbleToGrave()
+end
+function c28321714.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(c28321714.chkfilter,tp,LOCATION_HAND+LOCATION_MZONE,LOCATION_MZONE,nil)
+	local ct=Duel.GetMatchingGroupCount(c28321714.tgfilter,tp,LOCATION_DECK,0,nil)
+	if chk==0 then return #g>0 and ct>0 end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+end
+function c28321714.activate(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c28321714.chkfilter,tp,LOCATION_HAND+LOCATION_MZONE,LOCATION_MZONE,nil)
+	local ct=Duel.GetMatchingGroupCount(c28321714.tgfilter,tp,LOCATION_DECK,0,nil)
+	if #g<=0 and ct<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local cg=g:SelectSubGroup(tp,aux.dabcheck,false,1,ct)
+	Duel.ConfirmCards(1-tp,cg)
+	for i=0,6 do
+		if cg:IsExists(Card.IsAttribute,1,nil,1<<i) then
+			Duel.RegisterFlagEffect(tp,28321714,RESET_PHASE+PHASE_END,0,1,1<<i)
+		end
+	end
+	Duel.ShuffleHand(tp)
+	Duel.BreakEffect()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local tg=Duel.SelectMatchingCard(tp,c28321714.tgfilter,tp,LOCATION_DECK,0,#cg,#cg,nil)
+	Duel.SendtoGrave(tg,REASON_EFFECT)
+	--[[--immune
+	local fid=e:GetHandler():GetFieldID()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	--e1:SetTarget(c28321714.immtg)--aux.TargetBoolFunction(Card.IsLevel,4)
+	e1:SetValue(c28321714.immval)
+	e1:SetLabel(attr,fid)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)]]
+end
+--[[function c28321714.immfilter(c,attr,fid)
+	if not (c:IsLevel(4) and c:IsAttribute(attr)) then return false end
+	local res=true
+	for _,v in pairs({c:GetFlagEffectLabel(28321714)})
+		if v==fid then res=false end
+	end
+	return res
+end
+function c28321714.immval(e,te,c)
+	local attr,fid=e:GetLabel()
+	local cont=false--ctns;contains?
+	if te:GetOwner()~=e:GetOwnerPlayer() and te:IsActivated() and Duel.IsChainSolving() then
+		for _,se in pairs({c:IsHasEffect(EFFECT_FLAG_EFFECT+28321714+1)}) do
+			if se:GetLabelObject()==te and se:GetLabel()==Duel.GetCurrentChain() then cont=true end
+		end
+	end
+	local res=cont or (te:GetOwner()~=e:GetOwnerPlayer() and te:IsActivated() and Duel.IsChainSolving() and c28321714.immfilter(c,attr,fid))
+	if res and not cont then
+		Duel.Hint(HINT_CARD,0,28321714)
+		c:RegisterFlagEffect(28321714,RESET_EVENT+RESETS_STANDARD,0,1,fid)
+		e:SetLabel(attr&~c:GetAttribute(),fid)
+		local ge1=c:RegisterFlagEffect(28321714+1,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+		ge1:SetLabelObject(te)
+		ge1:SetLabel(Duel.GetCurrentChain())
+		local e0=Effect.CreateEffect(e:GetHandler())
+		e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e0:SetCode(EVENT_BREAK_EFFECT)
+		e0:SetOperation(function(fe) ge1:SetLabelObject(nil) fe:Reset() end)
+		Duel.RegisterEffect(e0,0)
+		local e1=e0:Clone()
+		e1:SetCode(EVENT_ADJUST)
+		Duel.RegisterEffect(e1,0)
+	end
+	return res
+end]]
+function c28321714.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_MZONE)
 end
 function c28321714.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28321714.tgfilter,tp,LOCATION_DECK,0,1,nil) end

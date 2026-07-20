@@ -159,20 +159,20 @@ function cm.drcon3(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(loc,LOCATION_MZONE)~=0 and rc:IsSetCard(0x12e)
 end
 function cm.filter2(c)
-	return c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_MONSTER)
+	return c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_EFFECT)
 end
 function cm.tpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
 function cm.tptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_DECK,0,nil):GetClassCount(Card.GetCode)>=4 end
+	if chk==0 then return Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_DECK,0,nil):GetClassCount(Card.GetCode)>=3 end
 end
 function cm.tpop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_DECK,0,nil)
-	if g:GetClassCount(Card.GetCode)>=4 then
+	if g:GetClassCount(Card.GetCode)>=3 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		aux.GCheckAdditional=aux.dncheck
-		local rg=g:SelectSubGroup(tp,aux.TRUE,false,4,#g)
+		local rg=g:SelectSubGroup(tp,aux.TRUE,false,3,#g)
 		aux.GCheckAdditional=nil
 		Duel.ConfirmCards(1-tp,rg)
 		Duel.ShuffleDeck(tp)

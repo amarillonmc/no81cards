@@ -18,7 +18,7 @@ function s.initial_effect(c)
 	e1:SetCategory(CATEGORY_HANDES+CATEGORY_TODECK+CATEGORY_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,id)
+
 	e1:SetCost(s.cost)
 	e1:SetTarget(s.tg)
 	e1:SetOperation(s.op)
@@ -30,6 +30,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetCountLimit(1,id)
 	e2:SetCondition(aux.IsDualState)
 	e2:SetTarget(s.thtg)
 	e2:SetOperation(s.thop)
@@ -47,7 +48,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function s.sumfilter(c)
-	return s.FungalTree(c) and c:IsSummonable(true, nil)
+	return c:IsType(TYPE_DUAL) and c:IsSummonable(true, nil)
 end
 
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)

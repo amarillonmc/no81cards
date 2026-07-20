@@ -85,8 +85,7 @@ function s.chcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and loc&(LOCATION_HAND|LOCATION_ONFIELD)>0
 end
 function s.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local rc=re:GetHandler()
-	if chk==0 then return rc:IsRelateToEffect(re) and rc:IsAbleToGrave() end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,rp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
 end
 function s.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
@@ -94,9 +93,11 @@ function s.chop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeChainOperation(ev,s.repop)
 end
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-    if c:IsRelateToEffect(e) then
-    	Duel.SendtoGrave(c,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+    if g:GetCount()>0 then
+    	Duel.HintSelection(g)
+        Duel.SendtoGrave(g,REASON_EFFECT)
     end
 end
 function s.atktg(e,c)

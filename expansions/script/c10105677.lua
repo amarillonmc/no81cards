@@ -2,19 +2,21 @@ function c10105677.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x1084),4,2)
 	c:EnableReviveLimit()
-    	 --伤害计算
+	--①：破坏低攻击力怪兽并给予差值伤害
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(10105677,1))
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetHintTiming(0,TIMING_END_PHASE)
-   	e1:SetCountLimit(1,10105677)
+	e1:SetHintTiming(0,0x1c0)
+	e1:SetCountLimit(1,10105677)
 	e1:SetCost(c10105677.cost)
 	e1:SetTarget(c10105677.batg)
 	e1:SetOperation(c10105677.baop)
 	c:RegisterEffect(e1)
-    	--spsummon
+	--②：被破坏时特召、加倍攻击、可选补素材
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(10105677,0))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -25,26 +27,31 @@ function c10105677.initial_effect(c)
 	e2:SetTarget(c10105677.sptg)
 	e2:SetOperation(c10105677.spop)
 	c:RegisterEffect(e2)
-    end
+end
 function c10105677.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c10105677.batg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) end
-	if chk==0 then return c:IsAttackable()
-		and Duel.IsExistingTarget(nil,tp,0,LOCATION_MZONE,1,nil)  end
+	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() and chkc:GetAttack()<c:GetAttack() end
+	if chk==0 then
+		return Duel.IsExistingTarget(function(tc) return tc:IsFaceup() and tc:GetAttack()<c:GetAttack() end,tp,0,LOCATION_MZONE,1,nil)
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPPO)
-	local g=Duel.SelectTarget(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,function(tc) return tc:IsFaceup() and tc:GetAttack()<c:GetAttack() end,tp,0,LOCATION_MZONE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,0)
 end
 function c10105677.baop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsAttackable() and c:IsControler(tp) and c:IsFaceup() and c:IsRelateToEffect(e) then
-		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-		local tc=g:GetFirst()
-		if tc:IsControler(1-tp) and tc:IsRelateToEffect(e) then
-			Duel.CalculateDamage(c,tc)
+	local tc=Duel.GetFirstTarget()
+	if not (c:IsRelateToEffect(e) and c:IsFaceup()) then return end
+	if tc:IsRelateToEffect(e) and tc:IsControler(1-tp) and tc:IsFaceup() then
+		local diff=c:GetAttack()-tc:GetAttack()
+		if diff<0 then diff=0 end
+		if Duel.Destroy(tc,REASON_EFFECT)~=0 and diff>0 then
+			Duel.Damage(1-tp,diff,REASON_EFFECT)
 		end
 	end
 end
@@ -68,13 +75,13 @@ function c10105677.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 			local mg=g:Select(tp,1,1,nil)
 			Duel.Overlay(c,mg)
-        local e1=Effect.CreateEffect(c) 
-		e1:SetType(EFFECT_TYPE_SINGLE) 
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL) 
-		e1:SetRange(LOCATION_MZONE) 
-		e1:SetValue(c:GetBaseAttack()*2)		
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
-		c:RegisterEffect(e1)   
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+			e1:SetRange(LOCATION_MZONE)
+			e1:SetValue(c:GetBaseAttack()*2)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			c:RegisterEffect(e1)
 		end
 	end
 end

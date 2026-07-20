@@ -8,11 +8,9 @@ function s.AwakenedDragon(c)
 end
 
 function s.initial_effect(c)
-
-	c:SetSPSummonOnce(id)
 	
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,s.matfilter,1,1)
+	aux.AddLinkProcedure(c,s.matfilter,2,2)
 	
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))

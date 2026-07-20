@@ -13,10 +13,11 @@ function s.initial_effect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_REMOVE)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.spcon)
+	e1:SetCost(s.spcost)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
@@ -50,24 +51,43 @@ function s.initial_effect(c)
 end
 
 function s.rmcfilter(c)
-	return c:IsFaceup() and s.AwakenedDragon(c)
+	return s.AwakenedDragon(c) and c:IsFaceup()
+end
+
+function s.costfilter(c)
+	return s.AwakenedDragon(c) and c:IsAbleToRemoveAsCost()
+		and (not c:IsLocation(LOCATION_ONFIELD) or c:IsFaceup())
+end
+
+function s.costchk(g,tp)
+	return Duel.GetMZoneCount(tp,g)>0
 end
 
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsFaceup() and Duel.GetMatchingGroupCount(s.rmcfilter,tp,LOCATION_REMOVED,0,nil)>=6
+	return e:GetHandler():IsFaceup()
+end
+
+function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ct=Duel.GetMatchingGroupCount(s.rmcfilter,tp,LOCATION_REMOVED,0,nil)
+	local need=6-ct
+	local cg=Duel.GetMatchingGroup(s.costfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)
+	if chk==0 then 
+		return need>0 and cg:CheckSubGroup(s.costchk,need,need,tp) 
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=cg:SelectSubGroup(tp,s.costchk,false,need,need,tp)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

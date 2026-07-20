@@ -2,7 +2,7 @@ local m=40020025
 local cm=_G["c"..m]
 -- 雷皇龙 齐格普尔姆
 function cm.initial_effect(c)
-	-- ① 特殊召唤
+
 	local e1 = Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
@@ -12,7 +12,6 @@ function cm.initial_effect(c)
 	e1:SetCountLimit(1, m, EFFECT_COUNT_CODE_OATH)
 	c:RegisterEffect(e1)
 
-	-- ② 战斗阶段破坏
 	local e2 = Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m, 0))
 	e2:SetCategory(CATEGORY_DESTROY  + CATEGORY_DRAW)
@@ -28,7 +27,6 @@ function cm.initial_effect(c)
 	e2:SetHintTiming(0, TIMING_BATTLE_PHASE)
 	c:RegisterEffect(e2)
 
-	-- ③ 直接攻击
 	local e3 = Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_DIRECT_ATTACK)
@@ -36,13 +34,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
--- ① LP ≤ 4000 时特召
 function cm.spcon(e, c)
 	if c == nil then return true end
 	return Duel.GetLP(e:GetHandlerPlayer()) <= 4000 and Duel.GetLocationCount(c:GetControler(), LOCATION_MZONE) > 0
 end
 
--- ② 战斗阶段 + 丢卡 + 无法对应
 function cm.descon(e, tp, eg, ep, ev, re, r, rp)
 	local ph = Duel.GetCurrentPhase()
 	return ph >= PHASE_BATTLE_START and ph <= PHASE_BATTLE
@@ -78,7 +74,6 @@ function cm.desop(e, tp, eg, ep, ev, re, r, rp)
 	end
 end
 
--- ③ 对方场上无攻击表示怪兽时可直接攻击
 function cm.dircon(e)
 	return not Duel.IsExistingMatchingCard(Card.IsAttackPos, e:GetHandlerPlayer(), 0, LOCATION_MZONE, 1, nil)
 end

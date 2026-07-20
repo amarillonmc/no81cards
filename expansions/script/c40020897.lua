@@ -129,12 +129,12 @@ function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.extra_filter(c)
-	return c:IsCode(s.TEZCATLIPOCA_CODE) and not c:IsForbidden()
+	return c:IsCode(s.TEZCATLIPOCA_CODE) and not c:IsForbidden() and (c:IsLocation(LOCATION_DECK) or c:IsFaceup())
 end
 
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.extra_filter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.extra_filter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_DECK+LOCATION_REMOVED)
 end
 
 function s.setfilter(c)
@@ -143,7 +143,7 @@ end
 
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOEXTRA)
-	local g=Duel.SelectMatchingCard(tp,s.extra_filter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.extra_filter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then
 		local res = 0
