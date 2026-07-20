@@ -28,7 +28,7 @@ function c43990222.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c43990222.rmfilter(c,tp)
-	return (c:IsCode(43990120) and c:IsSetCard(0x6510)) and c:IsFaceupEx() and c:IsAbleToRemove() and Duel.GetMZoneCount(tp,c)>0
+	return (c:IsCode(43990120) or c:IsSetCard(0x6510)) and c:IsFaceupEx() and c:IsAbleToRemove() and Duel.GetMZoneCount(tp,c)>0
 end
 function c43990222.spfilter(c,e,tp,chk)
 	return c:IsSetCard(0x6510) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -53,7 +53,7 @@ function c43990222.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c43990222.tdfilter(c)
-	return (c:IsCode(43990120) and c:IsSetCard(0x6510)) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+	return (c:IsCode(43990120) or c:IsSetCard(0x6510)) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
 function c43990222.spstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

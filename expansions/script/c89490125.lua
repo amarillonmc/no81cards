@@ -33,10 +33,10 @@ function s.indtg(e,c)
 	return c:IsSetCard(0xc37) and c:IsStatus(STATUS_SUMMON_TURN+STATUS_SPSUMMON_TURN)
 end
 function s.filter(c,tp)
-	return c:IsLocation(LOCATION_EXTRA) and c:IsFaceup() and c:IsControler(tp)
+	return c:IsLocation(LOCATION_EXTRA) and c:IsSetCard(0xc37) and c:IsFaceup() and c:IsControler(tp)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(s.filter,1,nil)
+	return eg:IsExists(s.filter,1,nil,tp)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

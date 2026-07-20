@@ -35,7 +35,7 @@ function s.cfilter(c)
 	return c:IsFaceup() and (c:IsCode(56099748) or c:GetFlagEffect(id)>0 and c:IsSummonType(SUMMON_TYPE_FUSION))
 end
 function s.filter(c,e,tp,check)
-	return c:IsSetCard(0xc3e) and c:IsLevelBelow(7) and (c:IsAbleToHand() or check and c:IsCanBeSpecialSummoned(e,0,tp,true,false))
+	return c:IsSetCard(0xc3e) and c:IsLevelBelow(7) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or check and c:IsCanBeSpecialSummoned(e,0,tp,true,false))
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

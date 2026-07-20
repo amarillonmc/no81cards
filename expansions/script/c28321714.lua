@@ -45,7 +45,7 @@ function c28321714.immval(e,te,c)
 	--
 	local t={Duel.GetFlagEffectLabel(c:GetControler(),28321714)}--IsPlayerAffectedByEffect
 	local attr_check=false
-	for _,v in pairs(t)
+	for _,v in pairs(t) do
 		if v==e:GetLabel() then attr_check=true end
 	end
 	if not (res and attr_check) then return false end
@@ -64,7 +64,7 @@ function c28321714.immval(e,te,c)
 		Duel.RegisterEffect(e1,0)
 		--
 		Duel.ResetFlagEffect(c:GetControler(),28321714)
-		for _,v in pairs(t)
+		for _,v in pairs(t) do
 			if c:IsNonAttribute(v) then
 				Duel.RegisterFlagEffect(c:GetControler(),28321714,RESET_PHASE+PHASE_END,0,1,v)
 			end

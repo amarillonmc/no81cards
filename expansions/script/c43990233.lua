@@ -27,7 +27,7 @@ function c43990233.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c43990233.rmfilter(c)
-	return (c:IsCode(43990120) and c:IsSetCard(0x6510)) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and c:IsAbleToRemove()
+	return (c:IsCode(43990120) or c:IsSetCard(0x6510)) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and c:IsAbleToRemove()
 end
 function c43990233.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c43990233.rmfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,e:GetHandler())
