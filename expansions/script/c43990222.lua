@@ -57,14 +57,14 @@ function c43990222.tdfilter(c)
 end
 function c43990222.spstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c43990222.tdfilter,tp,LOCATION_GRAVE,0,nil)
+	local g=Duel.GetMatchingGroup(c43990222.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	if chk==0 then return Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function c43990222.spsop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c43990222.tdfilter,tp,LOCATION_GRAVE,0,nil)
+	local g=Duel.GetMatchingGroup(c43990222.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local tc=g:Select(tp,1,1,nil)
+	local tc=g:Select(tp,1,1,nil):GetFirst()
 	if not tc then return end
 	Duel.HintSelection(Group.FromCards(tc))
 	local ct=tc:IsCode(43990120) and 1 or 0

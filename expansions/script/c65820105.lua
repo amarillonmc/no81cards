@@ -64,10 +64,10 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.gravecost(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
-    local ct=Duel.GetFlagEffect(tp,65820105)
-    if chk==0 then return ct>0 end
-    local count=math.max(Duel.GetFlagEffect(tp,65820105)-1,0)
+  local c=e:GetHandler()
+  local ct=Duel.GetFlagEffect(tp,65820105)
+  if chk==0 then return ct>0 and c:IsLocation(LOCATION_GRAVE) end
+  local count=math.max(Duel.GetFlagEffect(tp,65820105)-1,0)
 	Duel.ResetFlagEffect(tp,65820105)
 	for i=1,count do
 		Duel.RegisterFlagEffect(tp,65820105,0,0,1)

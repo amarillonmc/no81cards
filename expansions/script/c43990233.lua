@@ -4,6 +4,7 @@ function c43990233.initial_effect(c)
 	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(43990233,0))
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_DRAW)
 	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -43,7 +44,7 @@ function c43990233.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToChain() then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local tc=Duel.SelectMatchingCard(tp,c43990233.rmfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c43990233.rmfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,e:GetHandler()):GetFirst()
 	if not tc then return end
 	Duel.HintSelection(Group.FromCards(tc))
 	if Duel.Remove(Group.FromCards(c,tc),POS_FACEUP,REASON_EFFECT)==0 then return end
