@@ -15,7 +15,7 @@ function s.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,id)
+	e1:SetCountLimit(1)
 	e1:SetCost(s.spcost)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
@@ -27,6 +27,13 @@ function s.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetValue(s.efilter)
 	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCode(EFFECT_UPDATE_ATTACK)
+	e3:SetValue(s.val)
+	c:RegisterEffect(e3)
 end
 function s.filter(c)
 	return c:IsRace(RACE_SPELLCASTER) and not c:IsSummonableCard()
@@ -74,5 +81,26 @@ end
 function s.efilter(e,te)
 	return te:GetOwnerPlayer()~=e:GetHandlerPlayer()
 end
+
+
+function s.vfilter(c)
+	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER) and  not c:IsSummonableCard()
+end
+function s.val(e,c)
+	local g=Duel.GetMatchingGroup(s.vfilter,c:GetControler(),LOCATION_MZONE,LOCATION_MZONE,e:GetHandler())
+
+	return g:GetSum(Card.GetBaseAttack)
+end
+
+
+
+
+
+
+
+
+
+
+
 
 

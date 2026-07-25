@@ -258,7 +258,7 @@ function s.setop2(e,tp,eg,ep,ev,re,r,rp)
 	if ft<=0 then return end
 	if ft>2 then ft=2 end 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.setfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,ft,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.setfilter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,ft,nil)
 	if #g>0 then
 		Duel.SSet(tp,g)
 	end

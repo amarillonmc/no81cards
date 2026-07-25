@@ -72,7 +72,7 @@ function c62501611.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c62501611.sumcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
+	return Duel.GetFieldGroupCount(tp,LOCATION_SZONE,0)==0
 end
 function c62501611.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsSummonable(true,nil) end

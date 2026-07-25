@@ -36,7 +36,7 @@ function c28321714.initial_effect(c)
 	end
 end
 function c28321714.immval(e,te,c)
-	if not (c:IsLevel(4) and te:GetOwner()~=c:GetControler() and te:IsActivated() and Duel.IsChainSolving()) then return false end
+	if not (c:IsLevel(4) and te:GetOwnerPlayer()~=c:GetControler() and te:IsActivated() and Duel.IsChainSolving()) then return false end
 	--
 	local res=true--ctns;contains?
 	for _,se in pairs({c:IsHasEffect(EFFECT_FLAG_EFFECT+28321714)}) do
@@ -50,6 +50,7 @@ function c28321714.immval(e,te,c)
 	end
 	if not (res and attr_check) then return false end
 	if res then
+		Duel.HintSelection(Group.FromCards(te:GetHandler()))--debug
 		Duel.Hint(HINT_CARD,0,28321714)
 		local ge1=c:RegisterFlagEffect(28321714,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 		ge1:SetLabelObject(te)

@@ -245,7 +245,8 @@ end
 
 function cm.mgfilter(c,tp,sync)
 	return c:IsControler(tp) and not c:IsFacedown()
-		and bit.band(c:GetReason(),0x80008)==0x80008 and c:GetReasonCard()==sync
+		--and bit.band(c:GetReason(),0x80008)==0x80008
+		and c:GetReasonCard()==sync
 		and c:IsAbleToHand()
 end
 function cm.bkop(e,tp,eg,ep,ev,re,r,rp)
