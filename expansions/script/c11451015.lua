@@ -38,7 +38,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(cm.drcon)
@@ -292,7 +292,11 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	re:Reset()
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+	for i=1,Duel.GetCurrentChain() do
+		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
+		if te:IsActiveType(TYPE_TRAP) and te:IsHasType(EFFECT_TYPE_ACTIVATE) then return true end
+	end
+	return false
 end
 function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -25,10 +25,11 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetCategory(CATEGORY_DESTROY)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e3:SetRange(LOCATION_SZONE)
-	e3:SetCode(EVENT_CHAINING)
+	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetCondition(cm.descon)
 	e3:SetTarget(cm.destg)
 	e3:SetOperation(cm.desop)
@@ -122,7 +123,11 @@ function cm.atkval(e,c)
 	return 500*Duel.GetMatchingGroupCount(cm.atkfilter,tp,LOCATION_MZONE,0,nil)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetHandler():GetSequence()==5
+	for i=1,Duel.GetCurrentChain() do
+		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
+		if te:IsActiveType(TYPE_TRAP) and te:IsHasType(EFFECT_TYPE_ACTIVATE) then return e:GetHandler():GetSequence()==5 end
+	end
+	return false
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

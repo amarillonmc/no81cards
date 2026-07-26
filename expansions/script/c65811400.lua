@@ -93,7 +93,28 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
                 if tc then
                     -- 检测对方的卡组顶卡片是否具有“不受效果影响”的抗性
                     if not tc:IsImmuneToEffect(e) then
-                        if KOISHI_CHECK then Duel.Exile(tc,0) else Duel.Remove(tc,POS_FACEDOWN,REASON_RULE,nil) end
+                        if KOISHI_CHECK then 
+                            Duel.Exile(tc,0) 
+                        else 
+                            local e1=Effect.CreateEffect(e:GetHandler())
+			                e1:SetType(EFFECT_TYPE_FIELD)
+			                e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
+			                e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+			                e1:SetTargetRange(LOCATION_DECK,LOCATION_DECK)
+			                e1:SetValue(LOCATION_GRAVE+LOCATION_REMOVED)
+			                e1:SetReset(RESET_CHAIN)
+			                Duel.RegisterEffect(e1,tp)
+                            local e2=Effect.CreateEffect(e:GetHandler())
+                            e2:SetType(EFFECT_TYPE_FIELD)
+                            e2:SetCode(EFFECT_CANNOT_REMOVE)
+                            e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+                            e2:SetTargetRange(1, 1)
+                            e2:SetValue(1)
+                            Duel.RegisterEffect(e2,tp)
+			                Duel.SendtoGrave(tc,REASON_RULE)
+			                e1:Reset() 
+                            e2:Reset()
+                        end
                     end
                 end
             end

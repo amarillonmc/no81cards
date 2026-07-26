@@ -33,8 +33,9 @@ function cm.initial_effect(c)
 	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetCondition(cm.spcon)
 	e2:SetCost(cm.spcost)
 	e2:SetTarget(cm.sptg)
@@ -258,25 +259,31 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	re:Reset()
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+	for i=1,Duel.GetCurrentChain() do
+		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
+		if te:IsActiveType(TYPE_TRAP) and te:IsHasType(EFFECT_TYPE_ACTIVATE) then return true end
+	end
+	return false
 end
 function cm.mvfilter(c,tp)
 	return c:IsControler(tp) or c:IsControlerCanBeChanged()
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.mvfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.mvfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)+Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local tc=Duel.SelectMatchingCard(tp,cm.mvfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp):GetFirst()
 	local prop=e:GetProperty()
 	e:SetProperty(prop|EFFECT_FLAG_IGNORE_IMMUNE)
-	if tc and tc:IsControler(tp) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
-		local nseq=math.log(s,2)
-		Duel.MoveSequence(tc,nseq)
-	elseif tc then
-		Duel.GetControl(tc,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+	local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0x600060)
+	local nseq=math.log(s&0xff,2)
+	local mv=(s<=0xffff and c:IsControler(tp)) or (s>0xffff and c:IsControler(1-tp))
+	local zone=(s<=0xffff and s&0xff) or (s>0xffff and s>>16)
+	if mv then
+		Duel.MoveSequence(c,nseq)
+	else
+		Duel.GetControl(c,1-c:GetControler(),0,0,zone)
 	end
 	e:SetProperty(prop)
 end

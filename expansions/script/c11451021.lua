@@ -1,13 +1,6 @@
 --幽玄龙景＊太白蚀昴
 local cm,m=GetID()
 function cm.initial_effect(c)
-	--cannot special summon
-	local e0=Effect.CreateEffect(c)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(aux.FALSE)
-	c:RegisterEffect(e0)
 	--spirit return
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -82,7 +75,7 @@ function cm.SpiritReturnReg(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if not tc then return end
-	Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	Duel.SendtoHand(tc,nil,REASON_COST)
 	Duel.ConfirmCards(1-tp,tc)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)

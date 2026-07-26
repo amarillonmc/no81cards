@@ -1,13 +1,6 @@
 --幽玄龙景＊纪镇一宿
 local cm,m=GetID()
 function cm.initial_effect(c)
-	--cannot special summon
-	local e0=Effect.CreateEffect(c)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(aux.FALSE)
-	c:RegisterEffect(e0)
 	--spirit return
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -28,6 +21,7 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	--e3:SetCondition(cm.sumcon)
+	e3:SetCost(cm.sumcost)
 	e3:SetTarget(cm.sumtg1)
 	e3:SetOperation(cm.sumop1)
 	c:RegisterEffect(e3)
@@ -132,13 +126,13 @@ function cm.RegisterMergedDelayedEvent_ToSingleCard(c,code,events)
 						g:Merge(eg:Filter(cm.cfilter,nil))
 						g2:Merge(eg:Filter(cm.cfilter2,nil))
 						if Duel.CheckEvent(EVENT_MOVE) then 
-							_,meg=Duel.CheckEvent(EVENT_MOVE,true)
+							local _,meg=Duel.CheckEvent(EVENT_MOVE,true)
 							local c=e:GetOwner()
 							if meg:IsContains(c) and (c:IsFaceup() or c:IsPublic()) then
 								g:Clear()
 								g2:Clear()
 							end 
-						end 
+						end
 						if Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_END) then
 							local _eg=g:Clone()
 							local _eg2=g2:Clone()
@@ -153,13 +147,13 @@ function cm.RegisterMergedDelayedEvent_ToSingleCard(c,code,events)
 							g2:Clear()
 						end
 					end)
-	c:RegisterEffect(e1)
+	Duel.RegisterEffect(e1,0)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_CHAIN_END)
 	e2:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 						local c=e:GetOwner()
 						if Duel.CheckEvent(EVENT_MOVE) then 
-							_,meg=Duel.CheckEvent(EVENT_MOVE,true)
+							local _,meg=Duel.CheckEvent(EVENT_MOVE,true)
 							local c=e:GetOwner()
 							if meg:IsContains(c) and (c:IsFaceup() or c:IsPublic()) then
 								g:Clear()
@@ -178,7 +172,7 @@ function cm.RegisterMergedDelayedEvent_ToSingleCard(c,code,events)
 						g:Clear()
 						g2:Clear()
 					end)
-	c:RegisterEffect(e2)
+	Duel.RegisterEffect(e2,0)
 	--listened to again
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -202,7 +196,7 @@ function cm.SpiritReturnReg(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if not tc then return end
-	Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	Duel.SendtoHand(tc,nil,REASON_COST)
 	Duel.ConfirmCards(1-tp,tc)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
@@ -236,6 +230,21 @@ function cm.sumcon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.sumcon3(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,1-tp) and eg:IsExists(cm.cfilter2,1,nil,1-tp)
+end
+function cm.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return (c:IsOnField() and c:IsCanTurnSet()) or (c:IsLocation(LOCATION_HAND) and not c:IsPublic()) end
+	if c:IsOnField() then
+		Duel.ChangePosition(c,POS_FACEDOWN_DEFENSE)
+	elseif c:IsLocation(LOCATION_HAND) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(m,5))
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+		e1:SetCode(EFFECT_PUBLIC)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e1)
+	end
 end
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) and e:GetHandler():GetFlagEffect(m)==0 end

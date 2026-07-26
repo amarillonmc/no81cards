@@ -70,14 +70,52 @@ function s.exop(e,tp,eg,ep,ev,re,r,rp)
             if tc:IsLocation(LOCATION_DECK) then
                 Duel.DisableShuffleCheck()
                 Duel.ConfirmCards(tp,tc)
-                if KOISHI_CHECK then Duel.Exile(tc,REASON_EFFECT) else Duel.Remove(tc,POS_FACEDOWN,REASON_RULE,nil) end
+                if KOISHI_CHECK then 
+                    Duel.Exile(tc,0) 
+                else 
+                    local e1=Effect.CreateEffect(e:GetHandler())
+		            e1:SetType(EFFECT_TYPE_FIELD)
+		            e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
+		            e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+		            e1:SetTargetRange(LOCATION_DECK,LOCATION_DECK)
+		            e1:SetValue(LOCATION_GRAVE+LOCATION_REMOVED)
+		            e1:SetReset(RESET_CHAIN)
+		            Duel.RegisterEffect(e1,tp)
+		            local e2=Effect.CreateEffect(e:GetHandler())
+                    e2:SetType(EFFECT_TYPE_FIELD)
+                    e2:SetCode(EFFECT_CANNOT_REMOVE)
+                    e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+                    e2:SetTargetRange(1, 1)
+                    e2:SetValue(1)
+                    Duel.RegisterEffect(e2,tp)
+			        Duel.SendtoGrave(tc,REASON_RULE) 
+			        e1:Reset() 
+                    e2:Reset()
+                end
             else
                 Duel.HintSelection(Group.FromCards(tc))
                 if KOISHI_CHECK then 
-                    Duel.Exile(tc,REASON_EFFECT)
-                else
-                    if tc:IsLocation(LOCATION_REMOVED) then Duel.SendtoGrave(tc,REASON_RULE) end
-                    Duel.Remove(tc,POS_FACEDOWN,REASON_RULE,nil)
+                    Duel.Exile(tc,0) 
+                else 
+                    local e1=Effect.CreateEffect(e:GetHandler())
+		            e1:SetType(EFFECT_TYPE_FIELD)
+		            e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
+		            e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+		            e1:SetTargetRange(LOCATION_DECK,LOCATION_DECK)
+		            e1:SetValue(LOCATION_GRAVE+LOCATION_REMOVED)
+		            e1:SetReset(RESET_CHAIN)
+		            Duel.RegisterEffect(e1,tp)
+		            local e2=Effect.CreateEffect(e:GetHandler())
+                    e2:SetType(EFFECT_TYPE_FIELD)
+                    e2:SetCode(EFFECT_CANNOT_REMOVE)
+                    e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+                    e2:SetTargetRange(1, 1)
+                    e2:SetValue(1)
+                    Duel.RegisterEffect(e2,tp)
+                    if tc:IsLocation(LOCATION_GRAVE) then Duel.SendtoDeck(tc,nil,2,REASON_RULE) end
+			        Duel.SendtoGrave(tc,REASON_RULE) 
+			        e1:Reset() 
+                    e2:Reset()
                 end
             end
         end

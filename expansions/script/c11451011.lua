@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(cm.spcon)
 	e2:SetCost(cm.spcost)
@@ -336,11 +336,15 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	re:Reset()
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+	for i=1,Duel.GetCurrentChain() do
+		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
+		if te:IsActiveType(TYPE_TRAP) and te:IsHasType(EFFECT_TYPE_ACTIVATE) then return true end
+	end
+	return false
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and c:IsType(TYPE_PENDULUM) end
+	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and e:GetHandler():GetOriginalType()&TYPE_PENDULUM~=0 end
 	Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 end
 function cm.desfilter(c)

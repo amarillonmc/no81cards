@@ -43,13 +43,13 @@ function cm.thcon3(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>=3
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsLocation(LOCATION_GRAVE) and r==REASON_SYNCHRO
+	return e:GetHandler():IsLocation(LOCATION_GRAVE) and (r==REASON_SYNCHRO or r==REASON_FUSION)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) and Duel.IsPlayerCanDraw(tp,1) then Duel.Draw(tp,1,REASON_EFFECT) end
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0xc620) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0xc620,0x9622) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

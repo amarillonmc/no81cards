@@ -1,13 +1,6 @@
 --幽玄龙景＊荧惑守心
 local cm,m=GetID()
 function cm.initial_effect(c)
-	--cannot special summon
-	local e0=Effect.CreateEffect(c)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(aux.FALSE)
-	c:RegisterEffect(e0)
 	--spirit return
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -38,9 +31,10 @@ end
 function cm.SpiritReturnReg(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c):GetFirst()
+	local tc=aux.SelectCardFromFieldFirst(tp,Card.IsAbleToHand,tp,LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,1,1,c):GetFirst()
 	if not tc then return end
-	if tc:IsAbleToHand() and (not tc:IsAbleToDeck() or Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))==0) then Duel.SendtoHand(tc,nil,REASON_RULE) else Duel.SendtoDeck(tc,nil,2,REASON_RULE) end
+	Duel.SendtoHand(tc,nil,REASON_RULE)
+	--if tc:IsAbleToHand() and (not tc:IsAbleToDeck() or Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))==0) then Duel.SendtoHand(tc,nil,REASON_RULE) else Duel.SendtoDeck(tc,nil,2,REASON_RULE) end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e1:SetDescription(1104)
