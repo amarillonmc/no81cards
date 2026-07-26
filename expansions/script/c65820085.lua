@@ -58,19 +58,22 @@ function s.consume_use_counter(e,tp)
 	Duel.RegisterEffect(te,tp)
 end
 
-function s.sprfilter(c,sc)
-	local tp=sc:GetControler()
-	if not c:IsSetCard(0x3a32) then return false end
-	if c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsCanBeXyzMaterial(sc) then return true end
-	local has_use=Duel.GetFlagEffect(tp,65820099)>0
-	local is_flipped=sc:GetFlagEffect(65820010)>0
-	if c:IsLocation(LOCATION_EXTRA) and c:IsCanBeXyzMaterial(sc) then
-		return (has_use and not is_flipped) or (not has_use and is_flipped)
-	end
-	if c:IsLocation(LOCATION_SZONE) then
-		return (not has_use and not is_flipped) or (has_use and is_flipped)
-	end
-	return false
+function s.sprfilter(c, sc)
+    local tp = sc:GetControler()
+    if not c:IsSetCard(0x3a32) then return false end
+    local has_use = Duel.GetFlagEffect(tp, 65820099) > 0
+    local is_flipped = sc:GetFlagEffect(65820010) > 0
+    if c:IsLocation(LOCATION_MZONE) then
+        return c:IsFaceup() and c:IsCanBeXyzMaterial(sc)
+    end
+    if c:IsLocation(LOCATION_SZONE) then
+        return (not has_use and not is_flipped) or (has_use and is_flipped)
+    end
+    if c:IsLocation(LOCATION_EXTRA) then
+        if not c:IsCanBeXyzMaterial(sc) then return false end
+        return (has_use and not is_flipped) or (not has_use and is_flipped)
+    end
+    return false
 end
 
 function s.sprcon(e,c)
