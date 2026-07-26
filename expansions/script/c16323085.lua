@@ -1,7 +1,7 @@
 --机械源流 马尔修斯 萌装铁甲
 function c16323085.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,4,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3dcf),4,2)
 	c:EnableReviveLimit()
 	--search
 	local e1=Effect.CreateEffect(c)

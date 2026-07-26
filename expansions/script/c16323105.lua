@@ -27,7 +27,7 @@ function c16323105.initial_effect(c)
 	e2:SetTarget(c16323105.target)
 	e2:SetOperation(c16323105.operation)
 	c:RegisterEffect(e2)
-	--tograve
+	--[[--tograve
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(16323105,1))
 	e3:SetCategory(CATEGORY_ATKCHANGE)
@@ -39,7 +39,7 @@ function c16323105.initial_effect(c)
 	e3:SetCondition(c16323105.atkcon)
 	e3:SetTarget(c16323105.tgtg)
 	e3:SetOperation(c16323105.tgop)
-	c:RegisterEffect(e3)
+	c:RegisterEffect(e3)]]
 end
 function c16323105.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
@@ -56,10 +56,10 @@ function c16323105.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c16323105.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) end
-	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and chkc:IsControler(tp) end
+	if chk==0 then return Duel.IsExistingTarget(nil,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)
 	local atk=g:GetFirst():GetTextAttack()
 	if atk<0 then atk=0 end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)

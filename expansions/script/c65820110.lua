@@ -64,13 +64,14 @@ function s.deckfilter(c,e,tp,eg,ep,ev,re,r,rp)
     if tg and not tg(te,tp,eg,ep,ev,re,r,rp,0) then return false end
     return true
 end
-function s.deckfilter1(c,e,tp,eg,ep,ev,re,r,rp)
+-- 翻3张时选择魔法·陷阱卡发动使用的过滤函数（不限字段）
+function s.topfilter(c,e,tp,eg,ep,ev,re,r,rp)
     local te=c:CheckActivateEffect(false,false,false)
     if not te then return false end
-	if not (c:IsType(TYPE_QUICKPLAY+TYPE_TRAP) and te:CheckCountLimit(tp) and not c:IsCode(id) and c:CheckUniqueOnField(tp) and not c:IsForbidden()) then return false end
-	local con=te:GetCondition()
-	if con and not con(te,tp,eg,ep,ev,re,r,rp) then return false end
-	local co=te:GetCost()
+    if not (c:IsType(TYPE_SPELL+TYPE_TRAP) and te:CheckCountLimit(tp) and c:CheckUniqueOnField(tp) and not c:IsForbidden()) then return false end
+    local con=te:GetCondition()
+    if con and not con(te,tp,eg,ep,ev,re,r,rp) then return false end
+    local co=te:GetCost()
     if co and not co(te,tp,eg,ep,ev,re,r,rp,0) then return false end
     local tg=te:GetTarget()
     if tg and not tg(te,tp,eg,ep,ev,re,r,rp,0) then return false end
@@ -91,10 +92,8 @@ function s.maintg(e,tp,eg,ep,ev,re,r,rp,chk)
         e:SetLabel(1)
     else
         if chk==0 then
-			local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-            if not c:IsLocation(LOCATION_SZONE) then ft=ft-1 end
-            if ft<=0 then return false end
-            return Duel.IsExistingMatchingCard(s.deckfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.IsPlayerCanDiscardDeck(tp,1)
+            -- 只需要卡组有卡就能发动○后效果
+            return Duel.GetMatchingGroupCount(nil,tp,LOCATION_DECK,0,c)>=3
         end
         if has_use then s.consume_use_counter(e,tp) end
         e:SetLabel(2)
@@ -160,71 +159,82 @@ function s.mainop(e,tp,eg,ep,ev,re,r,rp)
         end
         te:UseCountLimit(tp,1)
     else
-        -- ○后效果：翻卡直到可发动的速攻魔法·陷阱卡出现，发动，其余回卡组
-        local mg = Duel.GetMatchingGroup(s.deckfilter1, tp, LOCATION_DECK, 0, nil, e, tp, eg, ep, ev, re, r, rp)
-        if #mg == 0 then return end
-        local dcount = Duel.GetFieldGroupCount(tp, LOCATION_DECK, 0)
-        local seq = -1
-        local qc = nil
-        for tc in aux.Next(mg) do
-            if tc:GetSequence() > seq then
-                seq = tc:GetSequence()
-                qc = tc
+        -- ○后效果：翻开卡组最上面3张卡，可选其中1张魔法·陷阱卡发动，剩下的回卡组
+        local ct = math.min(3, Duel.GetFieldGroupCount(tp, LOCATION_DECK, 0))
+        if ct == 0 then return end
+        Duel.ConfirmDecktop(tp, ct)
+        local g = Duel.GetDecktopGroup(tp, ct)
+        local sg = g:Filter(s.topfilter, nil, e, tp, eg, ep, ev, re, r, rp)
+        local has_target = false
+        if #sg > 0 then
+            local can_activate = false
+            -- 检查是否有可用的魔陷区来发动选中的卡
+            if Duel.GetLocationCount(tp, LOCATION_SZONE) > 0
+                or (sg:IsExists(Card.IsType, 1, nil, TYPE_FIELD) and Duel.GetLocationCount(tp, LOCATION_FZONE) > 0) then
+                can_activate = true
+            end
+            if can_activate and Duel.SelectYesNo(tp, aux.Stringid(id, 2)) then
+                Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_OPERATECARD)
+                local tc = sg:Select(tp, 1, 1, nil):GetFirst()
+                if tc then
+                    local te = tc:GetActivateEffect()
+                    local tpe = tc:GetType()
+                    local co = te:GetCost()
+                    local tg2 = te:GetTarget()
+                    local op = te:GetOperation()
+                    e:SetCategory(te:GetCategory())
+                    e:SetProperty(te:GetProperty())
+                    Duel.ClearTargetCard()
+                    if bit.band(tpe, TYPE_EQUIP + TYPE_CONTINUOUS) ~= 0 or tc:IsHasEffect(EFFECT_REMAIN_FIELD) then
+                        if Duel.GetLocationCount(tp, LOCATION_SZONE) <= 0 then return end
+                        Duel.MoveToField(tc, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
+                    elseif bit.band(tpe, TYPE_FIELD) ~= 0 then
+                        Duel.MoveToField(tc, tp, tp, LOCATION_FZONE, POS_FACEUP, true)
+                    else
+                        if Duel.GetLocationCount(tp, LOCATION_SZONE) <= 0 then return end
+                        Duel.MoveToField(tc, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
+                        tc:SetStatus(STATUS_LEAVE_CONFIRMED, true)
+                    end
+                    if bit.band(tpe, TYPE_EQUIP + TYPE_CONTINUOUS) == 0 and not tc:IsHasEffect(EFFECT_REMAIN_FIELD) and bit.band(tpe, TYPE_FIELD) == 0 then
+                        local e1 = Effect.CreateEffect(c)
+                        e1:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
+                        e1:SetCode(EVENT_CHAIN_END)
+                        e1:SetLabelObject(tc)
+                        e1:SetCountLimit(1)
+                        e1:SetOperation(s.leaveop)
+                        Duel.RegisterEffect(e1, tp)
+                    end
+                    tc:CreateEffectRelation(te)
+                    if co then co(te, tp, eg, ep, ev, re, r, rp, 1) end
+                    if tg2 then tg2(te, tp, eg, ep, ev, re, r, rp, 1) end
+                    Duel.BreakEffect()
+                    local tgc = Duel.GetChainInfo(0, CHAININFO_TARGET_CARDS)
+                    if tgc and #tgc > 0 then
+                        local etc = tgc:GetFirst()
+                        while etc do
+                            etc:CreateEffectRelation(te)
+                            etc = tgc:GetNext()
+                        end
+                    end
+                    if op then op(te, tp, eg, ep, ev, re, r, rp) end
+                    tc:ReleaseEffectRelation(te)
+                    if tgc and #tgc > 0 then
+                        local etc = tgc:GetFirst()
+                        while etc do
+                            etc:ReleaseEffectRelation(te)
+                            etc = tgc:GetNext()
+                        end
+                    end
+                    te:UseCountLimit(tp, 1)
+                end
+                has_target = true
             end
         end
-        if seq == -1 then return end
-        Duel.ConfirmDecktop(tp, dcount - seq)
-        local tc = qc
-        if not tc then return end
-        local te = tc:GetActivateEffect()
-        local tpe = tc:GetType()
-        local co = te:GetCost()
-        local tg = te:GetTarget()
-        local op = te:GetOperation()
-        e:SetCategory(te:GetCategory())
-        e:SetProperty(te:GetProperty())
-        Duel.ClearTargetCard()
-        if bit.band(tpe, TYPE_EQUIP + TYPE_CONTINUOUS) ~= 0 or tc:IsHasEffect(EFFECT_REMAIN_FIELD) then
-            if Duel.GetLocationCount(tp, LOCATION_SZONE) <= 0 then return end
-            Duel.MoveToField(tc, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
-        elseif bit.band(tpe, TYPE_FIELD) ~= 0 then
-            Duel.MoveToField(tc, tp, tp, LOCATION_FZONE, POS_FACEUP, true)
-        else
-            if Duel.GetLocationCount(tp, LOCATION_SZONE) <= 0 then return end
-            Duel.MoveToField(tc, tp, tp, LOCATION_SZONE, POS_FACEUP, true)
-            tc:SetStatus(STATUS_LEAVE_CONFIRMED, true)
+        -- 剩下的卡回到卡组（洗牌）
+        if not has_target then
+            -- 如果没有选择任何卡发动，则所有翻开的卡仍在卡组，洗牌即可
         end
-        if bit.band(tpe, TYPE_EQUIP + TYPE_CONTINUOUS) == 0 and not tc:IsHasEffect(EFFECT_REMAIN_FIELD) and bit.band(tpe, TYPE_FIELD) == 0 then
-            local e1 = Effect.CreateEffect(c)
-            e1:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
-            e1:SetCode(EVENT_CHAIN_END)
-            e1:SetLabelObject(tc)
-            e1:SetCountLimit(1)
-            e1:SetOperation(s.leaveop)
-            Duel.RegisterEffect(e1, tp)
-        end
-        tc:CreateEffectRelation(te)
-        if co then co(te, tp, eg, ep, ev, re, r, rp, 1) end
-        if tg then tg(te, tp, eg, ep, ev, re, r, rp, 1) end
-        Duel.BreakEffect()
-        local tgc = Duel.GetChainInfo(0, CHAININFO_TARGET_CARDS)
-        if tgc and #tgc > 0 then
-            local etc = tgc:GetFirst()
-            while etc do
-                etc:CreateEffectRelation(te)
-                etc = tgc:GetNext()
-            end
-        end
-        if op then op(te, tp, eg, ep, ev, re, r, rp) end
-        tc:ReleaseEffectRelation(te)
-        if tgc and #tgc > 0 then
-            local etc = tgc:GetFirst()
-            while etc do
-                etc:ReleaseEffectRelation(te)
-                etc = tgc:GetNext()
-            end
-        end
-        te:UseCountLimit(tp, 1)
+        Duel.ShuffleDeck(tp)
     end
 end
 
