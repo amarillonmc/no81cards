@@ -196,7 +196,7 @@ function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=0
 	for i=0,2 do if typ&(1<<i)>0 then ct=ct+1 end end
 	local q1=#g>0 and Duel.IsPlayerCanDraw(tp,ct)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 or q1 end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)+Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)>0 or q1 end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
 end
 function cm.mop(e,tp,eg,ep,ev,re,r,rp)

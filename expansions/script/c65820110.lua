@@ -174,15 +174,6 @@ function s.mainop(e,tp,eg,ep,ev,re,r,rp)
         end
         if seq == -1 then return end
         Duel.ConfirmDecktop(tp, dcount - seq)
-        local cg = Duel.GetDecktopGroup(tp, dcount - seq - 1)
-        Duel.DisableShuffleCheck()
-        if #cg > 0 then
-            Duel.SortDecktop(tp, tp, #cg)
-            for i = 1, #cg do
-                local mvg = Duel.GetDecktopGroup(tp, 1)
-                Duel.MoveSequence(mvg:GetFirst(), SEQ_DECKBOTTOM)
-            end
-        end
         local tc = qc
         if not tc then return end
         local te = tc:GetActivateEffect()
@@ -246,7 +237,7 @@ function s.leaveop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.setfilter2(c)
-    return c:IsSetCard(0x3a32) and c:IsType(TYPE_SPELL) and c:IsSSetable()
+    return c:IsSetCard(0x3a32) and c:IsType(TYPE_SPELL) and c:IsSSetable() and c:IsFaceupEx()
 end
 
 function s.settg2(e,tp,eg,ep,ev,re,r,rp,chk)

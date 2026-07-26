@@ -139,7 +139,7 @@ function cm.spfilter1(c,e,tp,lk)
 	return c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLink(lk)
 end
 function cm.fselect(g,e,tp,tg)
-	return tg:IsExists(cm.spfilter,1,nil,e,tp,g) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or g:IsExists(function(c) return c:IsLocation(LOCATION_SZONE) and c:GetSequence()<5 end,1,nil))
+	return tg:IsExists(cm.spfilter,1,nil,e,tp,g) and Duel.GetSZoneCount(tp,g)>0 --(Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or g:IsExists(function(c) return c:IsLocation(LOCATION_SZONE) and c:GetSequence()<5 end,1,nil))
 end
 function cm.stg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local cg=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,nil,e)
@@ -206,7 +206,7 @@ function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b4=(seq==1 and Duel.CheckLocation(tp,LOCATION_MZONE,5)) or (seq==3 and Duel.CheckLocation(tp,LOCATION_MZONE,6))
 	local g=Duel.GetMatchingGroup(cm.spfilter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
 	local q1=#g>0
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 or q1 end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)+Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)>0 or q1 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function cm.mop(e,tp,eg,ep,ev,re,r,rp)
