@@ -56,23 +56,32 @@ function c28368431.activate(e,tp,eg,ep,ev,re,r,rp)
 	e0:SetOperation(c28368431.regop)
 	e0:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e0,tp)
-	--trigger
-	local flag=not ANTICA_EFFECT_HINT and EFFECT_FLAG_DELAY or 0--console
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetDescription(aux.Stringid(28368431,0))
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_DESTROYED)
-	e1:SetProperty(flag+EFFECT_FLAG_CLIENT_HINT)
-	e1:SetOperation(c28368431.checkop)
-	e1:SetLabelObject(e0)
-	e1:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e1,tp)
+	if ANTICA_EFFECT_HINT then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(0x20000000+28368431)--EFFECT_FLAG_EFFECT
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(1,0)
+		e1:SetLabelObject(e0)
+		e1:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e1,tp)
+	else
+		--trigger
+		--local flag=not ANTICA_EFFECT_HINT and EFFECT_FLAG_DELAY or 0--console
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(28368431,0))
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_DESTROYED)
+		e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
+		e1:SetOperation(c28368431.checkop)
+		e1:SetLabelObject(e0)
+		e1:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e1,tp)
+	end
 end
 function c28368431.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
 	if not ANTICA_EFFECT_HINT then Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,te,0,0,0,0) else
-		local ph=Duel.GetCurrentPhase()
-		if (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE) then Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(28333723,0)) end
 		c28384553.process_list[tp][#c28384553.process_list[tp]+1]=te
 	end
 end

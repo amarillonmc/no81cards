@@ -50,7 +50,7 @@ function c28321714.immval(e,te,c)
 	end
 	if not (res and attr_check) then return false end
 	if res then
-		Duel.HintSelection(Group.FromCards(te:GetHandler()))--debug
+		--Duel.HintSelection(Group.FromCards(te:GetHandler()))--debug
 		Duel.Hint(HINT_CARD,0,28321714)
 		local ge1=c:RegisterFlagEffect(28321714,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 		ge1:SetLabelObject(te)

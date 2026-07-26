@@ -1,6 +1,7 @@
---古之钥的最强音 假面狂欢
+--古之钥尾声 假面狂欢
 function c28384553.initial_effect(c)
-	aux.AddFusionProcFunRep2(c,c28384553.mfilter,2,99,true)
+	--fusion summon
+	aux.AddFusionProcFunRep2(c,c28384553.mfilter,2,283,true)
 	c:EnableReviveLimit()
 	--spsummon
 	local e0=Effect.CreateEffect(c)
@@ -39,8 +40,7 @@ function c28384553.initial_effect(c)
 		ge1:SetCode(EVENT_PREDRAW)
 		ge1:SetOperation(c28384553.checkop)
 		Duel.RegisterEffect(ge1,0)
-		c28384553.process_list={}
-		c28384553.process_list[0],c28384553.process_list[1]={},{}
+		c28384553.process_list={[0]={},[1]={}}
 		--Deathrattle console
 		local ge2=Effect.CreateEffect(c)
 		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -68,7 +68,7 @@ end
 function c28384553.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local mg=Duel.GetMatchingGroup(c28384553.matfilter,tp,LOCATION_MZONE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=mg:SelectSubGroup(tp,c28384553.gcheck,true,2,99,tp,c)
+	local sg=mg:SelectSubGroup(tp,c28384553.gcheck,true,2,283,tp,c)
 	if sg then
 		sg:KeepAlive()
 		e:SetLabelObject(sg)
@@ -146,7 +146,7 @@ function c28384553.checkop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function c28384553.hintop(e,tp,eg,ep,ev,re,r,rp)
-	--if rp~=tp then return end
+	if rp~=tp then return end
 	--if r~=0 then return end
 	local member_list={28316149,28316051,28316558,28315844,28317560}
 	local code_ascver={28315844,28316051,28316149,28316558,28317560}--ascending order
@@ -165,6 +165,9 @@ function c28384553.hintop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c28384553.intop(e,tp,eg,ep,ev,re,r,rp)
 	for p in aux.TurnPlayers() do
+		for _,te in pairs({Duel.IsPlayerAffectedByEffect(p,EFFECT_FLAG_EFFECT+28368431)}) do
+			Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,te:GetLabelObject(),0,0,0,0)
+		end
 		--if #c28384553.process_list[p]==0 then return end
 		while #c28384553.process_list[p]>1 do
 			local ops={aux.Stringid(28384553,3)}
@@ -181,7 +184,10 @@ function c28384553.intop(e,tp,eg,ep,ev,re,r,rp)
 				table.remove(c28384553.process_list[p],sel)
 			end
 		end
-		Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,c28384553.process_list[p][1],0,0,0,0)
+		--Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,c28384553.process_list[p][1],0,0,0,0)
+		for _,te in ipairs(c28384553.process_list[p]) do
+			Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,te,0,0,0,0)
+		end
 		c28384553.process_list[p]={}
 	end
 end
