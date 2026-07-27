@@ -128,6 +128,7 @@ function s.costop(e,tp,eg,ep,ev,re,r,rp)
 	local p=c:GetControler()
 	local gc=Duel.GetMatchingGroupCount(Card.IsCode,p,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,CodeList2)
 	local g=Duel.GetDecktopGroup(tp,gc)
+	Duel.DisableShuffleCheck()
 	if Duel.Remove(g,POS_FACEDOWN,REASON_COST+REASON_TEMPORARY)>0 then
 		local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
 		local c=e:GetHandler()

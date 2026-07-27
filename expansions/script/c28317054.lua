@@ -4,7 +4,7 @@ function c28317054.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	--shhis pendulum
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(28317054,1))
+	e1:SetDescription(aux.Stringid(28317054,2))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -15,6 +15,7 @@ function c28317054.initial_effect(c)
 	c:RegisterEffect(e1)
 	--search
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(28317054,3))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DESTROY+CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
@@ -79,7 +80,7 @@ function c28317054.thfilter(c)
 end
 function c28317054.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local res=e:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL) and re and 1 or 0
+	local res=e:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL) and re and re:IsHasType(EFFECT_TYPE_ACTIONS) and 1 or 0
 	e:SetLabel(res)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end

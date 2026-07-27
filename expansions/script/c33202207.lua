@@ -72,7 +72,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,tp,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,PLAYER_ALL,LOCATION_ONFIELD)
 	if #cg>0 then
-		Duel.SetPossibleOperationInfo(0,CATEGORY_DISABLE,cg,#cg,1-tp,LOCATION_ONFIELD)
+		Duel.SetOperationInfo(0,CATEGORY_DISABLE,cg,#cg,1-tp,LOCATION_ONFIELD)
 	end
 end
 
@@ -165,8 +165,15 @@ function s.fsop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if not tc then return end
 
-	local te=tc:GetActivateEffect()
-	if te then
-		Duel.Activate(te)
+	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+	if fc then
+		Duel.SendtoGrave(fc,REASON_RULE)
+		Duel.BreakEffect()
 	end
+	Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+	te:UseCountLimit(tp,1,true)
+	local tep=tc:GetControler()
+	local cost=te:GetCost()
+	if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+	Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 end
