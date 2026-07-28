@@ -21,7 +21,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.filter1(c,e,tp)
-	return c:IsReleasable() and c:IsSetCard(0xc3c) and Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp,c)
+	return c:IsReleasable() and c:IsSetCard(0xc3c) and Duel.GetMZoneCount(tp,c)>0 and Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp,c)
 end
 function s.filter2(c,e,tp,mc)
 	return (c:IsSetCard(0xc3c) or c:IsLevel(2) and c:IsType(TYPE_TUNER)) and c:GetOriginalCodeRule()~=mc:GetOriginalCodeRule() and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0

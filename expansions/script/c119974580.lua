@@ -152,6 +152,7 @@ function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		cregister=Card.RegisterEffect
 		cisDiscardable=Card.IsDiscardable
 		local marked=false
+		local table_effect={}
 		Card.IsDiscardable=function(card)
 			marked=true
 			return true

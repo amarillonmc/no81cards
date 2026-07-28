@@ -64,6 +64,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		cisDiscardable=Card.IsDiscardable
 		disexistingmatchingcard=Duel.IsExistingMatchingCard
 		local marked=false
+		local table_effect={}
 		Duel.IsExistingMatchingCard=function(filter,player,s,o,count,c_g_n,...)
 			if not Duel.GetFieldGroup(player,s,o) or #Duel.GetFieldGroup(player,s,o)<=0 then
 				s=0xff
