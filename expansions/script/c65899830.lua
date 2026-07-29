@@ -31,6 +31,7 @@ function s.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		return rc and rc:IsRelateToEffect(re) and Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,rc)
 	end
+	Duel.Hint(24,0,aux.Stringid(id,1))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,rc)
 	Duel.ConfirmCards(1-tp,g)
@@ -43,7 +44,6 @@ function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetLabelObject(),1,0,0)
 	end
-	Duel.Hint(24,0,aux.Stringid(id,1))
 end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
