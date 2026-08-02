@@ -15,7 +15,7 @@ function c9911107.initial_effect(c)
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9911107,1))
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_HANDES_SELF)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e2:SetCountLimit(1,9911108)

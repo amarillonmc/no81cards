@@ -13,7 +13,7 @@ function c9910875.initial_effect(c)
 	c:RegisterEffect(e1)
 	--turn set
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_HANDES+CATEGORY_POSITION+CATEGORY_MSET)
+	e2:SetCategory(CATEGORY_HANDES_SELF+CATEGORY_POSITION+CATEGORY_MSET)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
@@ -66,7 +66,7 @@ function c9910875.postg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT)
 		and Duel.IsExistingMatchingCard(c9910875.posfilter,tp,0,LOCATION_MZONE,1,nil) end
 	local g=Duel.GetMatchingGroup(c9910875.posfilter,tp,0,LOCATION_MZONE,nil)
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES_SELF,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
 end
 function c9910875.posop(e,tp,eg,ep,ev,re,r,rp)

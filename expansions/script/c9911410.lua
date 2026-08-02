@@ -13,7 +13,7 @@ function c9911410.initial_effect(c)
 	c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_HANDES+CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_HANDES_SELF+CATEGORY_HANDES_OPPO+CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_LEAVE_FIELD)
@@ -59,7 +59,11 @@ function c9911410.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local spcheck=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9911410.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp)
 	if chk==0 then return (h1>0 and h2>0) or #dg>0 or spcheck end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,PLAYER_ALL,math.min(h1,h2))
+	local ct=math.min(h1,h2)
+	if ct>0 then
+		Duel.SetOperationInfo(0,CATEGORY_HANDES_SELF,nil,0,tp,ct)
+		Duel.SetOperationInfo(0,CATEGORY_HANDES_OPPO,nil,0,1-tp,ct)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,dg,#dg,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end

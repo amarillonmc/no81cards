@@ -50,10 +50,11 @@ function c9910442.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	local rg=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
 	if #rg==0 then return end
+	local fid=c:GetFieldID()
+	c:RegisterFlagEffect(9910442,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 	local sg=Group.CreateGroup()
 	for tc in aux.Next(rg) do
-		tc:RegisterFlagEffect(9910442,RESET_EVENT+RESETS_STANDARD,0,0)
-		e:GetLabelObject():SetLabel(1)
+		tc:RegisterFlagEffect(9910444,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 		e:GetLabelObject():GetLabelObject():AddCard(tc)
 		local typ=bit.band(tc:GetOriginalType(),0x7)
 		local tg=Duel.GetMatchingGroup(c9910442.disfilter,tp,0,LOCATION_ONFIELD,sg,typ)
@@ -94,16 +95,24 @@ end
 function c9910442.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(e:GetHandler())
 end
-function c9910442.thfilter(c)
-	return c:GetFlagEffect(9910442)~=0 and c:IsAbleToHand()
+function c9910442.thfilter(c,fid)
+	return c:GetFlagEffectLabel(9910444)==fid and c:IsAbleToHand()
 end
 function c9910442.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return true end
-	local g=e:GetLabelObject():Filter(c9910442.thfilter,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	if c:GetFlagEffect(9910442)~=0 then
+		local fid=c:GetFlagEffectLabel(9910442)
+		e:SetLabel(fid)
+		local g=e:GetLabelObject():Filter(c9910442.thfilter,nil,fid)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	else
+		e:SetLabel(0)
+		e:GetLabelObject():DeleteGroup()
+	end
 end
 function c9910442.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetLabelObject():Filter(c9910442.thfilter,nil)
+	local g=e:GetLabelObject():Filter(c9910442.thfilter,nil,e:GetLabel())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local sg=g:Select(1-tp,1,1,nil)
 	if #sg>0 then

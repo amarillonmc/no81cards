@@ -74,9 +74,14 @@ end
 function c9910651.spfilter(c,e,tp)
 	return c:IsRace(RACE_MACHINE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+function c9910651.pubfilter(c)
+	return c:IsPublic() and c:IsCanOverlay()
+end
 function c9910651.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+	if not Duel.IsExistingMatchingCard(c9910651.pubfilter,1-tp,LOCATION_HAND,0,1,nil) then
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+	end
 end
 function c9910651.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsChainDisablable(0) then

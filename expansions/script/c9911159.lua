@@ -2,7 +2,7 @@
 function c9911159.initial_effect(c)
 	--set
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_HANDES+CATEGORY_SSET)
+	e1:SetCategory(CATEGORY_HANDES_SELF+CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
 	e1:SetCountLimit(1,9911159)
@@ -46,7 +46,7 @@ end
 function c9911159.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler(),REASON_EFFECT)
 		and Duel.IsExistingMatchingCard(c9911159.setfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES_SELF,nil,0,tp,1)
 end
 function c9911159.setop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD,nil,REASON_EFFECT)==0 then return end

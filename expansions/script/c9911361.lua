@@ -13,7 +13,7 @@ function c9911361.initial_effect(c)
 	c:RegisterEffect(e1)
 	--discard
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_HANDES)
+	e2:SetCategory(CATEGORY_HANDES_OPPO)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
@@ -82,7 +82,7 @@ function c9911361.dctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9911361.dcfilter,tp,0,LOCATION_HAND,1,nil) end
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,1-tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES_OPPO,nil,0,1-tp,1)
 end
 function c9911361.dcop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

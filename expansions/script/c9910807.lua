@@ -3,7 +3,7 @@ function c9910807.initial_effect(c)
 	aux.AddRitualProcGreater2(c,aux.TRUE,LOCATION_HAND,c9910807.filter)
 	--set
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_HANDES+CATEGORY_SSET)
+	e2:SetCategory(CATEGORY_HANDES_SELF+CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetProperty(EFFECT_FLAG_BOTH_SIDE)
 	e2:SetRange(LOCATION_GRAVE)
@@ -19,7 +19,7 @@ function c9910807.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT)
 		and c:IsSSetable() end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES_SELF,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,c,1,0,0)
 end
 function c9910807.setop(e,tp,eg,ep,ev,re,r,rp)

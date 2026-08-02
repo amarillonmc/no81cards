@@ -5,7 +5,7 @@ function c9910625.initial_effect(c)
 	c:EnableReviveLimit()
 	--draw
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DRAW+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES_SELF+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
@@ -31,7 +31,7 @@ function c9910625.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(ct)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,4)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES_SELF,nil,0,tp,4)
 end
 function c9910625.rafilter(c)
 	return c:GetRace()~=0

@@ -24,7 +24,7 @@ function c9910349.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local tc=g:GetFirst()
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and tc:IsFaceup() and tc:IsCode(9910316,9910624) then
 		Duel.SetTargetParam(1)
-		e:SetCategory(CATEGORY_HANDES+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
+		e:SetCategory(CATEGORY_HANDES_SELF+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	end
 end
 function c9910349.activate(e,tp,eg,ep,ev,re,r,rp)

@@ -13,7 +13,7 @@ function c9910882.initial_effect(c)
 	c:RegisterEffect(e1)
 	--negate
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_HANDES+CATEGORY_NEGATE+CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_HANDES_SELF+CATEGORY_NEGATE+CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_GRAVE)
@@ -64,7 +64,7 @@ end
 function c9910882.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return aux.nbcon(tp,re)
 		and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT) end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES_SELF,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)

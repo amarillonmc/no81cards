@@ -14,7 +14,7 @@ function c9911353.initial_effect(c)
 	--choose effect
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9911353,0))
-	e2:SetCategory(CATEGORY_HANDES+CATEGORY_DRAW+CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_HANDES_SELF+CATEGORY_DRAW+CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -113,7 +113,7 @@ function c9911353.cetg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(sel)
 	if sel==0 then
 		e:SetCategory(CATEGORY_HANDES+CATEGORY_DRAW)
-		Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+		Duel.SetOperationInfo(0,CATEGORY_HANDES_SELF,nil,0,tp,1)
 		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
 	else
 		e:SetCategory(CATEGORY_DESTROY)

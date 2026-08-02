@@ -33,7 +33,7 @@ function c9910126.initial_effect(c)
 	c:RegisterEffect(e4)
 	--to hand
 	local e6=Effect.CreateEffect(c)
-	e6:SetCategory(CATEGORY_HANDES+CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e6:SetCategory(CATEGORY_HANDES_SELF+CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e6:SetCode(EVENT_LEAVE_FIELD)
 	e6:SetCountLimit(1,9910126)
@@ -77,7 +77,7 @@ function c9910126.thcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910126.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,0,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES_SELF,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9910126.thfilter(c)

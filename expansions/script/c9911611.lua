@@ -22,7 +22,7 @@ function c9911611.initial_effect(c)
 	c:RegisterEffect(e2)
 	--disable
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DISABLE)
+	e3:SetCategory(CATEGORY_HANDES_OPPO+CATEGORY_DISABLE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_MZONE)
@@ -93,12 +93,18 @@ end
 function c9911611.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and Duel.IsChainDisablable(ev)
 end
+function c9911611.pubfilter(c,tpe)
+	return c:IsPublic() and c:IsType(tpe) and c:IsDiscardable(REASON_EFFECT)
+end
 function c9911611.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
+	local rtype=bit.band(re:GetActiveType(),0x7)
+	if not Duel.IsExistingMatchingCard(c9911611.pubfilter,1-tp,LOCATION_HAND,0,1,nil,rtype) then
+		Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
+	end
 end
 function c9911611.filter(c,tpe)
-	return c:IsType(tpe) and c:IsDiscardable()
+	return c:IsType(tpe) and c:IsDiscardable(REASON_EFFECT)
 end
 function c9911611.disop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsChainDisablable(0) then
