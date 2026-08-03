@@ -97,7 +97,7 @@ function c9910677.lvop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910677.efcon(e,tp,eg,ep,ev,re,r,rp)
-	return r==REASON_XYZ
+	return r==REASON_XYZ and e:GetHandler():GetReasonCard():IsRankBelow(10)
 end
 function c9910677.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

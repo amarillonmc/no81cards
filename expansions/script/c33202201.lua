@@ -5,12 +5,12 @@ function s.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-	e0:SetCondition(s.actcon)
+	e0:SetCondition(s.setcon)
 	c:RegisterEffect(e0)
 	--①：变成陷阱怪兽并破坏
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -32,7 +32,6 @@ function s.initial_effect(c)
 	e2:SetOperation(s.setop)
 	c:RegisterEffect(e2)
 end
-s.listed_series={0x6328}
 function s.columnfilter(c,p)
 	return c:IsControler(p)
 end
@@ -40,8 +39,13 @@ function s.hasopponentcolumn(c)
 	local tp=c:GetControler()
 	return c:GetColumnGroup():IsExists(s.columnfilter,1,nil,1-tp)
 end
-function s.actcon(e)
-	return s.hasopponentcolumn(e:GetHandler())
+function s.colfilter(c,tc)
+	return c~=tc
+end
+function s.setcon(e)
+	local c=e:GetHandler()
+	local tp=e:GetHandlerPlayer()
+	return c:GetColumnGroup():IsExists(s.colfilter,1,nil,tc)
 end
 function s.desfilter(c)
 	return c:IsDestructable()
@@ -72,6 +76,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
 	if e:GetLabel()~=1 then return end
+	Duel.Draw(tp,1,REASON_EFFECT)
 	local mg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 	if not Duel.IsExistingMatchingCard(s.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,mg) then return end
 	if not Duel.SelectYesNo(tp,aux.Stringid(id,2)) then return end

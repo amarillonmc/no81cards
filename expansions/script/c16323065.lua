@@ -136,5 +136,5 @@ function c16323065.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c16323065.splimit(e,c)
-	return not c:IsRace(RACE_MACHINE)
+	return not (c:IsRace(RACE_MACHINE) or c:IsSetCard(0x3dcf))
 end

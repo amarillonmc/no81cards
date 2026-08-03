@@ -8,7 +8,7 @@ function c28317560.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,28317560)
 	e1:SetCondition(c28317560.spcon)
-	e1:SetCost(c28317560.cost)
+	e1:SetCost(c28317560.spcost)
 	e1:SetTarget(c28317560.sptg)
 	e1:SetOperation(c28317560.spop)
 	e1:SetLabel(1)
@@ -21,7 +21,7 @@ function c28317560.initial_effect(c)
 	e2:SetCode(EVENT_DESTROYED)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,38317560)
+	e2:SetCountLimit(1,28317560+1)
 	e2:SetCondition(c28317560.spcon2)
 	e2:SetCost(c28317560.cost)
 	--e2:SetTarget(c28317560.sptg2)
@@ -32,6 +32,11 @@ function c28317560.initial_effect(c)
 end
 function c28317560.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetTurnPlayer()==tp or Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) or (Duel.IsPlayerAffectedByEffect(tp,28361833)~=nil and e:GetHandler():IsOriginalSetCard(0x283))
+end
+function c28317560.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	c28317560.cost(e,tp,eg,ep,ev,re,r,rp,1)
+	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 end
 function c28317560.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -47,7 +52,7 @@ function c28317560.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLP(tp)>3000 then Duel.Damage(tp,2000,REASON_EFFECT) end
 end
 function c28317560.cfilter(c,tp)
-	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp)
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE)-- and c:IsPreviousControler(tp)
 end
 function c28317560.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler()) and eg:IsExists(c28317560.cfilter,1,nil,tp)

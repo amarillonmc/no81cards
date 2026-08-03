@@ -42,13 +42,13 @@ end
 
 -- === 效果①：放置与光环 ===
 function s.tdfilter(c)
-	return c:IsAbleToDeckAsCost() and c:IsType(TYPE_MONSTER) 
+	return c:IsAbleToDeckAsCost()
 end
 
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,c)
+	local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_REMOVED,0,c)
 	-- 询问是否让1张卡回到卡组最上面来发动
 	if #g>=3 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
@@ -72,7 +72,7 @@ end
 
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(s.tffilter,tp,LOCATION_DECK,0,1,nil) end
+		and Duel.IsExistingMatchingCard(s.tffilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil) end
 end
 
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -81,7 +81,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	-- 放置怪兽到魔陷区
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-		local tc=Duel.SelectMatchingCard(tp,s.tffilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
+		local tc=Duel.SelectMatchingCard(tp,s.tffilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil):GetFirst()
 		if tc and Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 			-- 当作永续陷阱卡使用
 			local e1=Effect.CreateEffect(c)
@@ -108,14 +108,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	
-	-- 这个回合只有1次，对方从卡组把卡加入手卡时，可以把被破坏的1张自己的卡加入手卡
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_TO_HAND)
-	e3:SetCondition(s.reccon)
-	e3:SetOperation(s.recop_defer)
-	e3:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e3,tp)
+
 	
 	-- 那之后，判定除外回手
 	if Duel.GetFlagEffect(tp,id)<=1 and c:IsRelateToEffect(e) then
@@ -162,55 +155,6 @@ function s.mvop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsFaceup() then
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
-	end
-end
-
--- 对方加入手卡时回收自己破坏卡的逻辑
-function s.shfilter(c,tp)
-	return c:IsControler(1-tp) and c:IsPreviousLocation(LOCATION_DECK)
-end
-function s.reccon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(s.shfilter,1,nil,tp) and Duel.GetFlagEffect(tp,id+3)==0
-end
-function s.recfilter(c)
-	return c:IsReason(REASON_DESTROY) and c:IsAbleToHand()
-end
-function s.recop_defer(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetCurrentChain()==0 then
-		s.do_rec_action(tp)
-	else
-		local chain_id = Duel.GetCurrentChain()
-		if Duel.GetFlagEffectLabel(tp,id+4) ~= chain_id then
-			Duel.RegisterFlagEffect(tp,id+4,RESET_CHAIN,0,1,chain_id)
-			local e1=Effect.CreateEffect(e:GetOwner())
-			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e1:SetCode(EVENT_CHAIN_SOLVED)
-			e1:SetLabel(chain_id)
-			e1:SetOperation(s.recop_execute)
-			e1:SetReset(RESET_CHAIN)
-			Duel.RegisterEffect(e1,tp)
-		end
-	end
-end
-function s.recop_execute(e,tp,eg,ep,ev,re,r,rp)
-	if ev == e:GetLabel() then
-		s.do_rec_action(tp)
-		e:Reset()
-	end
-end
-function s.do_rec_action(tp)
-	if Duel.GetFlagEffect(tp,id+3)>0 then return end
-	if Duel.IsExistingMatchingCard(s.recfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) then
-		if Duel.SelectYesNo(tp,aux.Stringid(id,2)) then --"是否回收被破坏的卡？"
-			Duel.RegisterFlagEffect(tp,id+3,RESET_PHASE+PHASE_END,0,1)
-			Duel.Hint(HINT_CARD,0,id)
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.recfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
-			if #g>0 then
-				Duel.SendtoHand(g,nil,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,g)
-			end
-		end
 	end
 end
 

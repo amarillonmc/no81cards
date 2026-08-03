@@ -1,4 +1,4 @@
---闪耀的紫焰光 田中摩美美
+--闪耀的古之钥 谜暮
 function c28316149.initial_effect(c)
 	--antica spsummon
 	local e1=Effect.CreateEffect(c)
@@ -8,7 +8,7 @@ function c28316149.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,28316149)
 	e1:SetCondition(c28316149.spcon)
-	e1:SetCost(c28316149.cost)
+	e1:SetCost(c28316149.spcost)
 	e1:SetTarget(c28316149.sptg)
 	e1:SetOperation(c28316149.spop)
 	e1:SetLabel(1)
@@ -22,17 +22,22 @@ function c28316149.initial_effect(c)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,38316149)
+	e2:SetCountLimit(1,28316149+1)
 	e2:SetCondition(c28316149.thcon)
 	e2:SetCost(c28316149.cost)
 	--e2:SetTarget(c28316149.thtg)
 	e2:SetOperation(c28316149.thop)
 	e2:SetLabel(2)
 	c:RegisterEffect(e2)
-	c28316149.field_effect=e2
+	--c28316149.field_effect=e2
 end
 function c28316149.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetTurnPlayer()==tp or Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) or (Duel.IsPlayerAffectedByEffect(tp,28361833)~=nil and e:GetHandler():IsOriginalSetCard(0x283))
+end
+function c28316149.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	c28316149.cost(e,tp,eg,ep,ev,re,r,rp,1)
+	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 end
 function c28316149.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -48,7 +53,7 @@ function c28316149.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLP(tp)>3000 then Duel.Damage(tp,2000,REASON_EFFECT) end
 end
 function c28316149.cfilter(c,tp)
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp)
+	return c:IsPreviousLocation(LOCATION_MZONE)-- and c:IsPreviousControler(tp)
 end
 function c28316149.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c28316149.cfilter,1,nil,tp)

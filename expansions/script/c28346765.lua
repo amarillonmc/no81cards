@@ -6,6 +6,7 @@ function c28346765.initial_effect(c)
 	c:EnableReviveLimit()
 	--set
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,28346765)
@@ -44,7 +45,7 @@ function c28346765.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c28346765.setfilter(c)
-	return c:IsCode(28381214,28323723) and c:IsSSetable()
+	return c:IsSetCard(0x283) and c:GetType()==TYPE_SPELL and c:IsSSetable()--c:IsCode(28381214,28323723)
 end
 function c28346765.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28346765.setfilter,tp,LOCATION_DECK,0,1,nil) end

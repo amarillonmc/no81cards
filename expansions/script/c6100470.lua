@@ -88,8 +88,8 @@ function s.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsSummonable(true,nil)
 		-- 破坏的卡必须排除自己
-		and Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_HAND,0,1,c) end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND)
+		and Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_DECK,0,1,c) end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,c,1,0,0)
 end
 
@@ -97,7 +97,7 @@ function s.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	-- 从手卡选卡破坏（排除此卡自身）
-	local g=Duel.SelectMatchingCard(tp,s.desfilter,tp,LOCATION_HAND,0,1,1,c)
+	local g=Duel.SelectMatchingCard(tp,s.desfilter,tp,LOCATION_DECK,0,1,1,c)
 	if #g>0 and Duel.Destroy(g,REASON_EFFECT)>0 then
 		if c:IsRelateToEffect(e) and c:IsSummonable(true,nil) then
 			Duel.Summon(tp,c,true,nil)

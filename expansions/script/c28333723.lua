@@ -4,7 +4,9 @@ function c28333723.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
-	e0:SetCost(c28333723.cost)
+	--e0:SetCost(c28333723.cost)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e0:SetOperation(c28333723.acop)
 	c:RegisterEffect(e0)
 	--effect
 	local e1=Effect.CreateEffect(c)
@@ -18,16 +20,18 @@ function c28333723.initial_effect(c)
 	e1:SetTarget(c28333723.eftg)
 	e1:SetOperation(c28333723.efop)
 	c:RegisterEffect(e1)
-	--set
-	if not CATEGORY_MSET then CATEGORY_MSET,CATEGORY_SSET = 0,0 end
+	--to grave
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_MSET+CATEGORY_SSET)
+	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_DESTROYED)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetTarget(c28333723.settg)
-	e2:SetOperation(c28333723.setop)
+	e2:SetTarget(c28333723.tgtg)
+	e2:SetOperation(c28333723.tgop)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(4179255)
+	c:RegisterEffect(e3)
 	if not c28333723.global_check then
 		c28333723.global_check=true
 		c28333723.effect_list={}
@@ -37,6 +41,9 @@ function c28333723.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetMatchingGroup(Card.IsAttribute,tp,LOCATION_MZONE,LOCATION_MZONE,nil,ATTRIBUTE_DARK):FilterCount(Card.IsFaceup,nil)
 	if chk==0 then return ct>0 and Duel.IsPlayerCanDiscardDeckAsCost(tp,ct) end
 	Duel.DiscardDeck(tp,ct,REASON_COST)
+end
+function c28333723.acop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RaiseEvent(e:GetHandler(),4179255,e,0,tp,tp,Duel.GetCurrentChain())
 end
 function c28333723.chkfilter(c,tp)
 	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE)-- and c:IsPreviousControler(tp) and c:IsPreviousPosition(POS_FACEUP) and c:GetPreviousLevelOnField()==3
@@ -120,4 +127,15 @@ function c28333723.setop(e,tp,eg,ep,ev,re,r,rp)
 	if not tc then return end
 	Duel.HintSelection(Group.FromCards(tc))
 	Duel.Destroy(tc,REASON_EFFECT)
+end
+function c28333723.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ct=Duel.GetMatchingGroup(Card.IsAttribute,tp,LOCATION_MZONE,LOCATION_MZONE,nil,ATTRIBUTE_DARK):FilterCount(Card.IsFaceup,nil)
+	if chk==0 then return ct>0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=ct and Duel.IsPlayerCanDiscardDeck(tp,ct) end
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,ct)
+end
+function c28333723.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local ct=Duel.GetMatchingGroup(Card.IsAttribute,tp,LOCATION_MZONE,LOCATION_MZONE,nil,ATTRIBUTE_DARK):FilterCount(Card.IsFaceup,nil)
+	if ct>0 then
+		Duel.DiscardDeck(tp,ct,REASON_EFFECT)
+	end
 end

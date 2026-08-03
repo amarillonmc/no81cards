@@ -25,14 +25,16 @@ function s.initial_effect(c)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
 
-	--①：伤判结束时扣血 (不入连锁)
+	--①分支A：怪兽召唤·特殊召唤时 - 不入连锁取除指示物，回收本家卡
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_DAMAGE_STEP_END)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCondition(s.lpcon)
-	e2:SetOperation(s.lpop)
+	e2:SetOperation(s.thop1)
 	c:RegisterEffect(e2)
+	local e2a=e2:Clone()
+	e2a:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e2a)
 
 	--①：有卡被破坏时，不入连锁宣告卡名赋予连击 (连续效果 + 延迟穿插机制)
 	local e3=Effect.CreateEffect(c)
@@ -71,33 +73,25 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 
 -- === 伤判结束扣血 ===
-function s.lpcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:GetCounter(0x153f)==0 then return false end
-	local a=Duel.GetAttacker()
-	local d=Duel.GetAttackTarget()
-	return a and d and (a:IsControler(tp) or d:IsControler(tp))
+function s.thfilter(c)
+	return c:IsSetCard(0x3615) and c:IsReason(REASON_DESTROY) and c:IsAbleToHand()
+		and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
 end
 
-function s.lpop(e,tp,eg,ep,ev,re,r,rp)
+function s.thop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:GetCounter(0x153f)==0 then return end
-	local a=Duel.GetAttacker()
-	local d=Duel.GetAttackTarget()
-	if not a or not d then return end
 	
-	-- 智能抓取原攻击力 (防备已被送进墓地吃灰)
-	local atk1 = a:GetAttack()
-	if not a:IsLocation(LOCATION_MZONE) then atk1 = a:GetPreviousAttackOnField() end
-	local atk2 = d:GetAttack()
-	if not d:IsLocation(LOCATION_MZONE) then atk2 = d:GetPreviousAttackOnField() end
-	
-	local diff = math.abs(atk1 - atk2)
-	local lpp=Duel.GetLP(1-tp)
-	if diff>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then -- "是否取除1个指示物让对方失去差值LP？"
-		-- 拔毛！(若拔毛后归0，上方的全局监听器会自动将它破坏送墓)
-		c:RemoveCounter(tp,0x153f,1,REASON_EFFECT)
-		Duel.SetLP(1-tp,lpp-diff)
+	-- 此时去寻找自己的墓地、除外、表侧额外里带有被破坏属性的本家卡
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.thfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,nil)
+	if #g>0 and c:IsCanRemoveCounter(tp,0x153f,1,REASON_EFFECT) then
+		if Duel.SelectYesNo(tp,aux.Stringid(id,0)) then 
+			c:RemoveCounter(tp,0x153f,1,REASON_EFFECT)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local sg=g:Select(tp,1,1,nil)
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg)
+		end
 	end
 end
 

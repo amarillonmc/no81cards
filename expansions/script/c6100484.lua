@@ -89,22 +89,18 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,Card.IsDestructable,tp,LOCATION_HAND,0,1,1,nil)
-	if #g>0 and Duel.Destroy(g,REASON_EFFECT)>0 then
-		if c:IsRelateToEffect(e) then
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-				local thg=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-				if #thg>0 then
-					Duel.BreakEffect()
-					Duel.SendtoHand(thg,nil,REASON_EFFECT)
-					Duel.ConfirmCards(1-tp,thg)
-				end
+	if c:IsRelateToEffect(e) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local thg=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		if #thg>0 then
+			Duel.BreakEffect()
+			Duel.SendtoHand(thg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,thg)
+			local g=Duel.SelectMatchingCard(tp,Card.IsDestructable,tp,LOCATION_HAND,0,1,1,nil)
+	    if #g>0 then 
+				Duel.Destroy(g,REASON_EFFECT)
+			end
 		end
-		    if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0x3615,TYPE_MONSTER+TYPE_NORMAL+TYPE_TUNER+TYPE_SPELL,0,0,1,RACE_BEAST,ATTRIBUTE_EARTH) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
-			
-	  		c:AddMonsterAttribute(TYPE_NORMAL+TYPE_TUNER+TYPE_SPELL)
-			  Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
-			 end
 	end
 end
 

@@ -233,7 +233,7 @@ function s.recop_execute(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.recfilter(c,fid)
-	return c:GetFlagEffectLabel(id+1)==fid and c:IsAbleToRemove()
+	return c:IsReason(REASON_DESTROY) and c:IsAbleToRemove() and not c:IsLocation(LOCATION_REMOVED)
 end
 
 function s.do_rec_action(tp, fid, owner)

@@ -14,12 +14,11 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 
 	--相同纵列有对方卡存在时，盖放的回合也能发动
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-	e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-	e2:SetCondition(s.setcon)
-	c:RegisterEffect(e2)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+	e0:SetCondition(s.setcon)
+	c:RegisterEffect(e0)
 
 	--②：丢弃自身，从卡组·墓地发动「纸影剧马戏团」
 	local e3=Effect.CreateEffect(c)
@@ -28,24 +27,30 @@ function s.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_HAND)
 	e3:SetCountLimit(1,id)
-	e3:SetCondition(s.fscon)
+	--e3:SetCondition(s.fscon)
 	e3:SetCost(s.fscost)
 	e3:SetTarget(s.fstg)
 	e3:SetOperation(s.fsop)
 	c:RegisterEffect(e3)
 end
 
-s.listed_names={CARD_PAPER_SHADOW_CIRCUS}
+function s.columnfilter(c,p)
+	return c:IsControler(p)
+end
+function s.hasopponentcolumn(c)
+	local tp=c:GetControler()
+	return c:GetColumnGroup():IsExists(s.columnfilter,1,nil,1-tp)
+end
 
 --相同纵列的对方卡
-function s.colfilter(c,tp)
-	return c:IsControler(1-tp)
+function s.colfilter(c,tc)
+	return c~=tc
 end
 
 function s.setcon(e)
 	local c=e:GetHandler()
 	local tp=e:GetHandlerPlayer()
-	return c:GetColumnGroup():IsExists(s.colfilter,1,nil,tp)
+	return c:GetColumnGroup():IsExists(s.colfilter,1,nil,tc)
 end
 
 --①：可以回到手卡的其他卡
@@ -164,7 +169,7 @@ function s.fsop(e,tp,eg,ep,ev,re,r,rp)
 		tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if not tc then return end
-
+	local te=tc:GetActivateEffect()
 	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 	if fc then
 		Duel.SendtoGrave(fc,REASON_RULE)

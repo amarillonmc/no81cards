@@ -43,13 +43,13 @@ end
 
 -- === 效果①：翻卡与特召 ===
 function s.tdfilter(c)
-	return c:IsAbleToDeckAsCost() and c:IsType(TYPE_SPELL) 
+	return c:IsAbleToDeckAsCost() 
 end
 
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,c)
+	local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_GRAVE,0,c)
 	-- 询问是否让1张卡回到卡组最上面来发动
 	if #g>=3 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
@@ -107,15 +107,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	
-	-- 挂载：这个回合中自己的怪兽被战斗破坏时的代破
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EFFECT_DESTROY_REPLACE)
-	e1:SetTarget(s.reptg)
-	e1:SetValue(s.repval)
-	e1:SetOperation(s.repop)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+
 	
 	-- 那之后，判定除外回手
 	-- 检查：这个回合没有其他同名卡发动过 (当前这个发动标记算作1次)
@@ -146,42 +138,11 @@ if Duel.Remove(c,POS_FACEUP,REASON_EFFECT)>0 and c:IsLocation(LOCATION_REMOVED) 
 	end
 end
 
--- 战斗代破的相关逻辑
-function s.repfilter(c,tp)
-	-- 自己的怪兽被战斗破坏
-	return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE)
-		and c:IsReason(REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
-end
 
-function s.rmfilter(c)
-	return c:IsCode(id) and c:IsAbleToRemove()
-end
-
-function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(s.repfilter,1,nil,tp)
-		and Duel.IsExistingMatchingCard(s.rmfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,s.rmfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-		e:SetLabelObject(g:GetFirst())
-		return true
-	else return false end
-end
-
-function s.repval(e,c)
-	return s.repfilter(c,e:GetHandlerPlayer())
-end
-
-function s.repop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT+REASON_REPLACE)
-end
 
 -- 回手条件与操作
 function s.rthcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetLabelObject()
-	-- 严谨防Bug：如果这张卡被别的卡移出了除外区，或者回过卡组等，标记会消失
-	-- 此时说明不再需要回手，直接清理掉这个监听器，避免内存残留
 	if c:GetFlagEffect(id+1)==0 then
 		e:Reset()
 		return false
