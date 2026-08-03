@@ -43,7 +43,7 @@ end
 function s.setcon(e)
 	local c=e:GetHandler()
 	local tp=e:GetHandlerPlayer()
-	return c:GetColumnGroup():IsExists(s.colfilter,1,nil,tc)
+	return c:GetColumnGroup():IsExists(s.colfilter,1,nil,c)
 end
 function s.disfilter(c)
 	return c:IsFaceup() and not c:IsDisabled()

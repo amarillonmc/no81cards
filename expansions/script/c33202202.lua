@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-	e0:SetCondition(s.setcon)
+	e0:SetCondition(s.setcon0)
 	c:RegisterEffect(e0)
 	--①：把对方场上的卡盖放并变成陷阱怪兽
 	local e1=Effect.CreateEffect(c)
@@ -41,10 +41,10 @@ end
 function s.colfilter(c,tc)
 	return c~=tc
 end
-function s.setcon(e)
+function s.setcon0(e)
 	local c=e:GetHandler()
 	local tp=e:GetHandlerPlayer()
-	return c:GetColumnGroup():IsExists(s.colfilter,1,nil,tc)
+	return c:GetColumnGroup():IsExists(s.colfilter,1,nil,c)
 end
 function s.turnsetfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()

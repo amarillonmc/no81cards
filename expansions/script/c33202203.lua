@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-	e0:SetCondition(s.setcon)
+	e0:SetCondition(s.setcon0)
 	c:RegisterEffect(e0)
 	--①：变成陷阱怪兽并使「纸影剧」怪兽攻击力上升
 	local e1=Effect.CreateEffect(c)
@@ -40,17 +40,17 @@ end
 function s.colfilter(c,tc)
 	return c~=tc
 end
-function s.setcon(e)
+function s.setcon0(e)
 	local c=e:GetHandler()
 	local tp=e:GetHandlerPlayer()
-	return c:GetColumnGroup():IsExists(s.colfilter,1,nil,tc)
+	return c:GetColumnGroup():IsExists(s.colfilter,1,nil,c)
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,TYPE_MONSTER|TYPE_EFFECT|TYPE_TRAP,1800,0,4,RACE_INSECT,ATTRIBUTE_WIND) end
-	local dg=s.hasopponentcolumn(c)
-	if #dg>0 then
+	local dg=c:GetColumnGroup():Filter(s.columnfilter,nil,1-tp)
+	if dg:GetCount()>0 then
 		dg:KeepAlive()
 		e:SetLabelObject(dg)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,dg,#dg,1-tp,LOCATION_ONFIELD)

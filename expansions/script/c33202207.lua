@@ -50,7 +50,7 @@ end
 function s.setcon(e)
 	local c=e:GetHandler()
 	local tp=e:GetHandlerPlayer()
-	return c:GetColumnGroup():IsExists(s.colfilter,1,nil,tc)
+	return c:GetColumnGroup():IsExists(s.colfilter,1,nil,c)
 end
 
 --①：可以回到手卡的其他卡
@@ -101,15 +101,10 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
 	Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
 
-	if not sp then
-		if cg then cg:DeleteGroup() end
-		return
-	end
-
 	--选这张卡以外的场上1张卡回到手卡
 	Duel.BreakEffect()
 	local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c,c)
-	if #g>0 then
+	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)

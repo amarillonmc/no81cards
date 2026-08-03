@@ -48,7 +48,7 @@ function c67201825.matval(e,lc,mg,c,tp)
 	return true,true
 end
 function c67201825.mattg(e,c)
-	return c:IsFaceup() and c:IsLinkType(TYPE_MONSTER)
+	return c:IsFaceup() and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0 and c:IsLinkSetCard(0x667f)
 end
 --
 function c67201825.condition(e,tp,eg,ep,ev,re,r,rp)
