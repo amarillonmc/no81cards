@@ -135,7 +135,7 @@ function c10111191.op(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		local tc=g:GetFirst()
 		if replace then
-			if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 then -- 注意：不取对象回手牌，原代码的 tp 建议换成 nil（回到持有者手牌）
+			if Duel.SendtoHand(tc,tp,REASON_EFFECT)~=0 then -- 注意：不取对象回手牌，原代码的 tp 建议换成 nil（回到持有者手牌）
 				Duel.ConfirmCards(1-tp,tc)
 			end
 		else
