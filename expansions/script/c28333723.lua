@@ -30,7 +30,9 @@ function c28333723.initial_effect(c)
 	e2:SetOperation(c28333723.tgop)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(4179255)
+	e3:SetRange(LOCATION_FZONE)
 	c:RegisterEffect(e3)
 	if not c28333723.global_check then
 		c28333723.global_check=true

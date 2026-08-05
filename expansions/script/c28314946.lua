@@ -82,7 +82,7 @@ function c28314946.spop(e,tp,eg,ep,ev,re,r,rp)
 	if #e_list==0 or not Duel.SelectYesNo(tp,aux.Stringid(28314946,3)) then return end
 	Duel.BreakEffect()
 	local te,se=e_list[1],e_list[2]
-	if #e_list>2 or te:GetDescription()~=se:GetDescription() then
+	if #e_list>2 or (se and te:GetDescription()~=se:GetDescription()) then
 		local des_list={}
 		for _,te in ipairs(e_list) do table.insert(des_list,te:GetDescription()) end
 		local op=Duel.SelectOption(tp,table.unpack(des_list))
