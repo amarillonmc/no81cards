@@ -2,7 +2,7 @@
 function c28315844.initial_effect(c)
 	--antica spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DAMAGE)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)--CATEGORY_DAMAGE
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
@@ -41,14 +41,10 @@ function c28315844.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-	if Duel.GetLP(tp)>3000 then
-		Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,2000)
-	end
 end
 function c28315844.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToChain() then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
-	if Duel.GetLP(tp)>3000 then Duel.Damage(tp,2000,REASON_EFFECT) end
 end
 function c28315844.descon(e,tp,eg,ep,ev,re,r,rp)
 	local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)

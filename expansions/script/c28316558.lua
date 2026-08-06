@@ -3,7 +3,7 @@ function c28316558.initial_effect(c)
 	aux.AddCodeList(c,28335405)
 	--antica spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DAMAGE)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
@@ -43,9 +43,6 @@ function c28316558.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-	if Duel.GetLP(tp)>3000 then
-		Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,2000)
-	end
 end
 function c28316558.chkfilter(c)
 	return c:IsCode(28335405) and not c:IsPublic()
@@ -53,7 +50,6 @@ end
 function c28316558.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToChain() then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
-	if Duel.GetLP(tp)>3000 then Duel.Damage(tp,2000,REASON_EFFECT) end
 end
 function c28316558.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler()) and eg:IsExists(Card.IsControler,1,nil,tp)
