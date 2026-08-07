@@ -97,15 +97,17 @@ function c9910677.lvop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910677.efcon(e,tp,eg,ep,ev,re,r,rp)
-	return r==REASON_XYZ and e:GetHandler():GetReasonCard():IsRankBelow(10)
+	return r==REASON_XYZ
 end
 function c9910677.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=c:GetReasonCard()
 	local e1=Effect.CreateEffect(rc)
 	e1:SetDescription(aux.Stringid(9910677,1))
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetRange(LOCATION_MZONE)
 	e1:SetCondition(c9910677.rlcon)
 	e1:SetTarget(c9910677.rltg)
 	e1:SetOperation(c9910677.rlop)
@@ -121,7 +123,8 @@ function c9910677.efop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910677.rlcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
+	local c=e:GetHandler()
+	return eg:IsContains(c) and c:IsSummonType(SUMMON_TYPE_XYZ) and c:IsRankBelow(10)
 end
 function c9910677.rltg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
