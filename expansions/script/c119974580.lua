@@ -59,7 +59,7 @@ end
 function s.copytg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return e:IsCostChecked() and s.efffilter(c,e,tp,eg,ep,ev,re,r,rp) and Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_DECK,0,1,nil) end
-	local tc=Duel.GetFirstMatchingCard(s.costfilter,tp,LOCATION_DECK,0,1,nil)
+	local tc=Duel.GetFirstMatchingCard(s.costfilter,tp,LOCATION_DECK,0,nil)
 	Duel.SendtoGrave(Group.FromCards(c,tc),REASON_COST)
 	local te=s.drdiseff(c,e,tp,eg,ep,ev,re,r,rp)
 	e:SetProperty(te:GetProperty())
