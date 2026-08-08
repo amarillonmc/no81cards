@@ -331,7 +331,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EFFECT_CANNOT_TO_DECK)
 		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		rc:RegisterEffect(e1)
+		rc:RegisterEffect(e1,true)
 	end
 	re:Reset()
 end

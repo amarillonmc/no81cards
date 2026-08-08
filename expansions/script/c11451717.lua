@@ -44,11 +44,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if tc:GetReasonEffect() then rc=tc:GetReasonEffect():GetOwner() end
 		local e1=Effect.CreateEffect(rc)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(m)
+		e1:SetCode(EVENT_CUSTOM+m)
 		e1:SetLabelObject(tc)
 		e1:SetOperation(cm.retop3)
-		Duel.RegisterEffect(e1,0)
-		Duel.RaiseEvent(tc,m,e,0,0,0,0)
+		Duel.RegisterEffect(e1,e:GetHandlerPlayer())
+		Duel.RaiseEvent(tc,EVENT_CUSTOM+m,e,0,0,0,0)
 		e1:Reset()
 	end
 end

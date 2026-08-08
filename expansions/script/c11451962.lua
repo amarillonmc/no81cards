@@ -140,7 +140,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	if not res then e:Reset() return end
 	for i=1,1+#{Duel.IsPlayerAffectedByEffect(0,11451973)} do
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
-		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 		if #g>0 then
 			Duel.HintSelection(g)
 			local e1=Effect.CreateEffect(e:GetHandler())
@@ -160,18 +160,19 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.efilter(e,te)
 	local tc=te:GetHandler()
-	if e:GetHandler():GetFlagEffect(m+0xffffff)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) then
+	if e:GetHandler():GetFlagEffect(m+0xffffff)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) and (Duel.IsChainSolving() or not te:IsActivated()) then
 		if KOISHI_CHECK then
 			Duel.DisableActionCheck(true)
 			pcall(Duel.HintSelection,Group.FromCards(e:GetHandler()))
 			local e1=Effect.CreateEffect(tc)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e1:SetCode(m)
+			e1:SetCode(EVENT_CUSTOM+m)
 			e1:SetLabel(te:GetOwnerPlayer())
 			e1:SetOperation(function(e) pcall(Duel.Draw,e:GetLabel(),1,REASON_EFFECT) e:Reset() end)
-			Duel.RegisterEffect(e1,0)
-			pcall(Duel.RaiseEvent,tc,m,e,0,0,0,0)
+			Duel.RegisterEffect(e1,te:GetOwnerPlayer())
+			pcall(Duel.RaiseEvent,tc,EVENT_CUSTOM+m,e,0,0,0,0)
 			e1:Reset()
+			--Debug.Message(Duel.GetFieldGroupCount(0,LOCATION_HAND,0))
 			Duel.DisableActionCheck(false)
 		else
 			local e5=Effect.CreateEffect(tc)

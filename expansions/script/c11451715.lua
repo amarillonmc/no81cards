@@ -209,10 +209,10 @@ function cm.returntofield(tc,e)
 		if tc:GetReasonEffect() then rc=tc:GetReasonEffect():GetOwner() end
 		local e1=Effect.CreateEffect(rc)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(m)
+		e1:SetCode(EVENT_CUSTOM+m)
 		e1:SetLabelObject(tc)
 		e1:SetOperation(cm.retop3)
-		Duel.RegisterEffect(e1,0)
+		Duel.RegisterEffect(e1,e:GetHandlerPlayer())
 	end
 end
 function cm.retop3(e,tp,eg,ep,ev,re,r,rp)
@@ -273,7 +273,7 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
 			if opt==1 then Duel.RegisterFlagEffect(tp,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
 			sg:ForEach(cm.returntofield,e)
-			Duel.RaiseEvent(sg,m,e,0,0,0,0)
+			Duel.RaiseEvent(sg,EVENT_CUSTOM+m,e,0,0,0,0)
 		end
 	end
 	--[[while ct>=1 do

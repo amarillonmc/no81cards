@@ -62,12 +62,12 @@ function cm.coinop(e,tp,eg,ep,ev,re,r,rp)
 		if ct1>1 or ct2>1 then
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e2:SetCode(m)
+			e2:SetCode(EVENT_CUSTOM+m)
 			e2:SetProperty(EFFECT_FLAG_DELAY)
 			e2:SetLabel(math.max(ct1,1)-1,math.max(ct2,1)-1)
 			e2:SetOperation(cm.drop)
-			Duel.RegisterEffect(e2,0)
-			Duel.RaiseEvent(c,m,e,0,0,0,0)
+			Duel.RegisterEffect(e2,tp)
+			Duel.RaiseEvent(c,EVENT_CUSTOM+m,e,0,0,0,0)
 		end
 	end
 end
