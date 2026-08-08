@@ -16,6 +16,13 @@ function cm.initial_effect(c)
 	e2:SetLabelObject(e1)
 	e2:SetOperation(cm.adjustop)
 	Duel.RegisterEffect(e2,0)
+	--cannot disable
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_CANNOT_DISABLE)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e5:SetCondition(cm.condition)
+	c:RegisterEffect(e5)
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=e:GetLabelObject()
@@ -26,6 +33,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
 	local ct=math.abs(Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)-Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD))
 	return ct<=3
 end

@@ -51,10 +51,11 @@ function cm.initial_effect(c)
 			local te=tc:GetActivateEffect()
 			if te then
 				local fid=tc:GetFieldID()
-				local cost=te:GetCost() or aux.TRUE
+				local cost=te:GetCost()
+				local cost1=cost or aux.TRUE
 				local cost2=function(e,tp,eg,ep,ev,re,r,rp,chk)
-								if chk==0 then return cost(e,tp,eg,ep,ev,re,r,rp,0) end
-								cost(e,tp,eg,ep,ev,re,r,rp,1)
+								if chk==0 then return cost1(e,tp,eg,ep,ev,re,r,rp,0) end
+								cost1(e,tp,eg,ep,ev,re,r,rp,1)
 								if fid==tc:GetFieldID() then
 									tc:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
 								end

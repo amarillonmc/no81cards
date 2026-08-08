@@ -10,6 +10,12 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
+	--cannot disable
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_CANNOT_DISABLE)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	c:RegisterEffect(e5)
 end
 function cm.filter(c)
 	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and (c:IsAttribute(ATTRIBUTE_WATER) or c:IsRace(RACE_AQUA))

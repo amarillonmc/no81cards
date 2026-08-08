@@ -111,7 +111,7 @@ function cm.accon(e)
 end
 function cm.acfilter(c,tp)
 	local code,code2=c:GetCode()
-	return c:IsSetCard(0xc976) and c:IsAbleToGraveAsCost() and Duel.GetFlagEffect(0,m+code+0xffffff)==0 and (not code2 or Duel.GetFlagEffect(0,m+code2+0xffffff)==0) --and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,c:GetCode())
+	return c:IsSetCard(0xc976) and c:IsAbleToGraveAsCost() and Duel.GetFlagEffect(tp,m+code+0xffffff)==0 and (not code2 or Duel.GetFlagEffect(tp,m+code2+0xffffff)==0) --and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,c:GetCode())
 end
 function Group.ForEach(group,func,...)
 	if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
@@ -129,8 +129,8 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.acfilter,tp,LOCATION_DECK,0,nil,tp):CancelableSelect(tp,1,1,nil)
 	if g and #g>0 then
 		local code,code2=g:GetFirst():GetCode()
-		Duel.RegisterFlagEffect(0,m+code+0xffffff,RESET_PHASE+PHASE_END,0,1)
-		if code2 then Duel.RegisterFlagEffect(0,m+code2+0xffffff,RESET_PHASE+PHASE_END,0,1) end
+		Duel.RegisterFlagEffect(tp,m+code+0xffffff,RESET_PHASE+PHASE_END,0,1)
+		if code2 then Duel.RegisterFlagEffect(tp,m+code2+0xffffff,RESET_PHASE+PHASE_END,0,1) end
 		Duel.SendtoGrave(g,REASON_COST)
 	else
 		local cg=Duel.GetMatchingGroup(cm.cfilterx,tp,LOCATION_MZONE,0,nil)

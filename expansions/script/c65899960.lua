@@ -9,11 +9,22 @@ function s.initial_effect(c)
 	e1:SetTarget(s.distg)
 	e1:SetOperation(s.disop)
 	c:RegisterEffect(e1)
-	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,s.counterfilter)
+	if not s.RZFZcheck then
+		s.RZFZcheck=true
+		local ge6=Effect.CreateEffect(c)
+		ge6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge6:SetCode(EVENT_CHAINING)
+		ge6:SetCondition(s.condition)
+		ge6:SetOperation(s.checkop6)
+		Duel.RegisterEffect(ge6,true)
+	end
 end
 
-function s.counterfilter(re,tp,cid)
+function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
+end
+function s.checkop6(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
 end
 
 function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -68,5 +79,5 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e5,tp)
 end
 function s.aclimit(e,re,tp)
-	return (Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)>3 or Duel.GetFlagEffect(tp,id)==0) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
+	return (Duel.GetFlagEffect(tp,id)>3 or Duel.GetFlagEffect(tp,id)==0) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
