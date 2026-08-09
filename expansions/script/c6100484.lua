@@ -2,14 +2,6 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--全局监听：记录同名卡的破坏批次
-	if not s.global_check then
-		s.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_CHAINING)
-		ge1:SetOperation(s.checkop)
-		Duel.RegisterEffect(ge1,0)
-	end
 
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
@@ -24,6 +16,16 @@ function s.initial_effect(c)
 	e1:SetTargetRange(LOCATION_HAND,0)
 	e1:SetTarget(s.actg)
 	c:RegisterEffect(e1)
+
+		--Pos Change
+	local e1b=Effect.CreateEffect(c)
+	e1b:SetType(EFFECT_TYPE_FIELD)
+	e1b:SetCode(EFFECT_SET_POSITION)
+	e1b:SetRange(LOCATION_FZONE)
+	e1b:SetCondition(s.atkcon)
+	e1b:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e1b:SetValue(POS_FACEUP_ATTACK)
+	c:RegisterEffect(e1b)
 
 	--②：破坏手卡，特召自身并检索
 	local e2=Effect.CreateEffect(c)
@@ -45,22 +47,18 @@ function s.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_DESTROYED)
-	e3:SetCondition(s.thcon)
 	e3:SetTarget(s.thtg)
 	e3:SetOperation(s.thop)
 	c:RegisterEffect(e3)
 end
 
--- === 全局破坏监听 ===
-function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetHandler():IsCode(id) then
-		Duel.RegisterFlagEffect(rp,id,RESET_PHASE+PHASE_END,0,1)
-	end
-end
-
 -- === 效果①：手卡速攻 ===
 function s.actg(e,c)
 	return c:IsSetCard(0x3615) and c:IsType(TYPE_QUICKPLAY)
+end
+
+function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsBattlePhase()
 end
 
 -- === 效果②：特召与检索 ===
@@ -105,9 +103,6 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 -- === 效果③：破坏追踪监控 ===
-function s.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,id)==0
-end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

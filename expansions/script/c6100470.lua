@@ -115,7 +115,7 @@ function s.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local tc=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,c):GetFirst()
-		tc:AddCounter(0x153f,1)
+		tc:AddCounter(0x161f,1)
 		
 		if not tc:IsImmuneToEffect(e) then
 			local e1=Effect.CreateEffect(c)
@@ -146,12 +146,12 @@ end
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE) 
-		and c:IsCanRemoveCounter(tp,0x153f,1,REASON_EFFECT) end
+		and c:IsCanRemoveCounter(tp,0x161f,1,REASON_EFFECT) end
 	return Duel.SelectEffectYesNo(tp,c,aux.Stringid(id,5)) -- "是否取除指示物来代替破坏？"
 end
 
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RemoveCounter(tp,0x153f,1,REASON_EFFECT)
+	e:GetHandler():RemoveCounter(tp,0x161f,1,REASON_EFFECT)
 end
 
 -- 破坏卡组对象过滤器：本家卡
@@ -164,7 +164,7 @@ function s.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	if not tc then return end
 	if eg:IsContains(tc) then
-		local g1=Duel.GetDecktopGroup(tp,2)
+		local g1=Duel.GetDecktopGroup(tp,1)
 		if #g1>0 and Duel.IsExistingMatchingCard(s.mtfilter,tp,LOCATION_DECK,0,1,g1) then
 			Duel.Hint(HINT_CARD,0,id)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

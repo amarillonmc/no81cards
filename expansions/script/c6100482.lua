@@ -67,7 +67,7 @@ end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		c:AddCounter(0x153f,3)
+		c:AddCounter(0x161f,3)
 	end
 end
 
@@ -78,7 +78,7 @@ end
 
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:GetCounter(0x153f)>0 and eg:IsExists(s.repfilter,1,c,tp) end
+	if chk==0 then return c:GetCounter(0x161f)>0 and eg:IsExists(s.repfilter,1,c,tp) end
 	if Duel.SelectEffectYesNo(tp,c,96) then
 		return true
 	else
@@ -92,8 +92,8 @@ end
 
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	c:RemoveCounter(tp,0x153f,1,REASON_EFFECT+REASON_REPLACE)
-	if c:GetCounter(0x153f)==0 then
+	c:RemoveCounter(tp,0x161f,1,REASON_EFFECT+REASON_REPLACE)
+	if c:GetCounter(0x161f)==0 then
 		Duel.Destroy(c,REASON_EFFECT)
 	end
 end
@@ -107,7 +107,7 @@ end
 -- 第一步：捕捉破坏事件，如果处于连锁中，则向该连锁阶级排入延迟监听
 function s.rmop_defer(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:GetCounter(0x153f)==0 then return end
+	if c:GetCounter(0x161f)==0 then return end
 	
 	-- 如果当前不在连锁处理中（例如战斗破坏），直接执行
 	if Duel.GetCurrentChain()==0 then
@@ -140,14 +140,14 @@ end
 
 -- 第三步：实际的不入连锁执行逻辑
 function s.do_remove_action(c, tp)
-	if c:GetCounter(0x153f)==0 then return end
+	if c:GetCounter(0x161f)==0 then return end
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if #g==0 then return end
 	
 	-- 弹出提示询问是否拔毛除外
 	if Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
-		c:RemoveCounter(tp,0x153f,1,REASON_EFFECT)
-		local is_zero = (c:GetCounter(0x153f)==0)
+		c:RemoveCounter(tp,0x161f,1,REASON_EFFECT)
+		local is_zero = (c:GetCounter(0x161f)==0)
 		
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg=g:Select(tp,1,1,nil)

@@ -53,6 +53,7 @@ end
 function s.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
     Duel.SendtoDeck(e:GetHandler(),nil,1,REASON_COST) 
+    Duel.ConfirmCards(1-tp,e:GetHandler())
 end
 function s.tdfilter(c)
 	return c:IsSetCard(0x57b0) and c:IsAbleToDeck()

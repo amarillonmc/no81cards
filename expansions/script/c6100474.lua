@@ -72,7 +72,7 @@ function s.spfilter(c,e,tp)
 end
 
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=6 end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=6 and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	-- 此处是可选特召，所以不硬性要求 SetOperationInfo，不过可加上以明示可能发生的特召
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_DECK)
 end
@@ -115,20 +115,18 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SelectYesNo(tp,aux.Stringid(id,1)) then -- "是否将这张卡除外？"
 			Duel.BreakEffect()
 if Duel.Remove(c,POS_FACEUP,REASON_EFFECT)>0 and c:IsLocation(LOCATION_REMOVED) then
-				-- 打上除外标记
+				-- 打上除外标记，防止离开除外区后误发
 				c:RegisterFlagEffect(id+1,RESET_EVENT+RESETS_STANDARD,0,1)
-				c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,4))
 				
-				-- 记录除外时的当前阶段
-				local current_phase = Duel.GetCurrentPhase()
-								if current_phase >= PHASE_BATTLE_START and current_phase <= PHASE_BATTLE then 
-					current_phase = PHASE_BATTLE  end
+				-- 获取当前回合数和阶段，合成一个绝对时间戳 (乘以1000是为了留出足够的空间容纳阶段常数)
+				-- 例如：第2回合的主要阶段1(常量为4) = 2004
+				local current_mark = Duel.GetTurnCount() * 1000 + Duel.GetCurrentPhase()
 				
-				-- 注册一个全局状态监听器
+				-- 注册状态监听器，在下个主要阶段开始时触发
 				local e_ret = Effect.CreateEffect(c)
 				e_ret:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-				e_ret:SetCode(EVENT_ADJUST) -- 状态调整，最快捕捉到阶段变化的事件
-				e_ret:SetLabel(current_phase)
+				e_ret:SetCode(EVENT_ADJUST) 
+				e_ret:SetLabel(current_mark)
 				e_ret:SetLabelObject(c)
 				e_ret:SetCondition(s.rthcon)
 				e_ret:SetOperation(s.rthop)
@@ -143,20 +141,27 @@ end
 -- 回手条件与操作
 function s.rthcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetLabelObject()
+	-- 严谨防Bug：如果这张卡被别的卡移出了除外区，标记会消失，立刻销毁监听器
 	if c:GetFlagEffect(id+1)==0 then
 		e:Reset()
 		return false
 	end
 	
-	-- 当“现在的阶段”不再等于“记录的阶段”时，说明下个阶段开始了！
-	return Duel.GetCurrentPhase() ~= e:GetLabel() and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+	local ph = Duel.GetCurrentPhase()
+	local is_main_phase = (ph == PHASE_MAIN1 or ph == PHASE_MAIN2)
+	
+	-- 生成现在的绝对时间戳
+	local now_mark = Duel.GetTurnCount() * 1000 + ph
+	
+	-- 当且仅当目前处于主要阶段，且时间戳大于除外时记录的时间戳（即抵达了新的主要阶段）
+	return is_main_phase and now_mark > e:GetLabel()
 end
 
 -- 回手操作
 function s.rthop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetLabelObject()
 	
-	Duel.Hint(HINT_CARD,0,id) -- 闪烁一下卡片，告诉玩家是它自己回来的
+	Duel.Hint(HINT_CARD,0,id) 
 	Duel.SendtoHand(c,nil,REASON_EFFECT)
 	
 	c:ResetFlagEffect(id+1) -- 清除标记

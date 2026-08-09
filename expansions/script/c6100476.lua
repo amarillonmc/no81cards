@@ -92,19 +92,33 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
 			tc:RegisterEffect(e1)
 			
-			-- 挂载：相同纵列有卡被放置时加入手卡
-			local e2=Effect.CreateEffect(c)
-			e2:SetDescription(aux.Stringid(id,1)) -- "加入手卡"
-			e2:SetCategory(CATEGORY_TOHAND)
-			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-			e2:SetProperty(EFFECT_FLAG_DELAY)
-			e2:SetCode(EVENT_MOVE)
-			e2:SetRange(LOCATION_SZONE)
-			e2:SetCondition(s.mvcon)
-			e2:SetTarget(s.mvtg)
-			e2:SetOperation(s.mvop)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
+			local fid = tc:GetFieldID()
+			local cg = tc:GetColumnGroup()
+			for cc in aux.Next(cg) do
+				-- 给已经存在的卡打上标记，Label设为这只怪兽的专属FieldID
+				cc:RegisterFlagEffect(id+100, RESET_EVENT+RESETS_STANDARD, 0, 1, fid)
+			end
+			
+			-- 【第一步】：连续效果雷达，时刻扫描同一列的新面孔
+			local e2a=Effect.CreateEffect(c)
+			e2a:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e2a:SetCode(EVENT_ADJUST)
+			e2a:SetRange(LOCATION_SZONE)
+			e2a:SetOperation(s.mvadjust)
+			e2a:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2a)
+			
+			-- 【第二步】：触发效果监听雷达信号，带 DELAY 标记安全入连锁
+			local e2b=Effect.CreateEffect(c)
+			e2b:SetDescription(aux.Stringid(id,1)) -- "加入手卡"
+			e2b:SetCategory(CATEGORY_TOHAND)
+			e2b:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F) -- 强制入连锁
+			e2b:SetCode(EVENT_CUSTOM+id)
+			e2b:SetProperty(EFFECT_FLAG_DELAY) -- 核心：通知系统将其放入延迟队列，避开屏蔽期
+			e2b:SetTarget(s.mvtg)
+			e2b:SetOperation(s.mvop)
+			e2b:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2b)
 		end
 	end
 	
@@ -114,21 +128,19 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,id)<=1 and c:IsRelateToEffect(e) then
 		if Duel.SelectYesNo(tp,aux.Stringid(id,4)) then -- "是否将这张卡除外？"
 			Duel.BreakEffect()
-        if Duel.Remove(c,POS_FACEUP,REASON_EFFECT)>0 and c:IsLocation(LOCATION_REMOVED) then
-				-- 打上除外标记
+if Duel.Remove(c,POS_FACEUP,REASON_EFFECT)>0 and c:IsLocation(LOCATION_REMOVED) then
+				-- 打上除外标记，防止离开除外区后误发
 				c:RegisterFlagEffect(id+1,RESET_EVENT+RESETS_STANDARD,0,1)
-				c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
 				
-				-- 记录除外时的当前阶段
-				local current_phase = Duel.GetCurrentPhase()
-					if current_phase >= PHASE_BATTLE_START and current_phase <= PHASE_BATTLE then 
-					current_phase = PHASE_BATTLE  end
+				-- 获取当前回合数和阶段，合成一个绝对时间戳 (乘以1000是为了留出足够的空间容纳阶段常数)
+				-- 例如：第2回合的主要阶段1(常量为4) = 2004
+				local current_mark = Duel.GetTurnCount() * 1000 + Duel.GetCurrentPhase()
 				
-				-- 注册一个全局状态监听器
+				-- 注册状态监听器，在下个主要阶段开始时触发
 				local e_ret = Effect.CreateEffect(c)
 				e_ret:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-				e_ret:SetCode(EVENT_ADJUST) -- 状态调整，最快捕捉到阶段变化的事件
-				e_ret:SetLabel(current_phase)
+				e_ret:SetCode(EVENT_ADJUST) 
+				e_ret:SetLabel(current_mark)
 				e_ret:SetLabelObject(c)
 				e_ret:SetCondition(s.rthcon)
 				e_ret:SetOperation(s.rthop)
@@ -139,21 +151,52 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 
 -- EVENT_MOVE 相关逻辑
-function s.mvfilter(c,col)
-	return aux.GetColumn(c)==col
-end
-function s.mvcon(e,tp,eg,ep,ev,re,r,rp)
+function s.mvadjust(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local col=aux.GetColumn(c)
-	return col and eg:IsExists(s.mvfilter,1,c,col)
+	local cg=c:GetColumnGroup()
+	local fid=c:GetFieldID()
+	local new_card = false
+	
+	-- 扫描同一列的所有卡
+	for cc in aux.Next(cg) do
+		local has_flag = false
+		local labels = {cc:GetFlagEffectLabel(id+100)}
+		-- 检查这张卡身上有没有当前雷达留下的“已扫描”标记
+		for _, label in ipairs(labels) do
+			if label == fid then
+				has_flag = true
+				break
+			end
+		end
+		
+		-- 如果没有标记，说明它是刚刚跑到这一列的“新面孔”！
+		if not has_flag then
+			-- 赶紧打上标记，防止重复报警
+			cc:RegisterFlagEffect(id+100, RESET_EVENT+RESETS_STANDARD, 0, 1, fid)
+			new_card = true
+		end
+	end
+	
+	-- 如果发现了新面孔，并且还没拉响过警报
+	if new_card and c:GetFlagEffect(id+7)==0 then
+		-- 锁死警报器（直到它被处理）
+		c:RegisterFlagEffect(id+7, RESET_EVENT+RESETS_STANDARD, 0, 1)
+		-- 拉响警报：向系统抛出自定义事件
+		Duel.RaiseSingleEvent(c, EVENT_CUSTOM+id, e, 0, tp, tp, 0)
+	end
 end
+
+-- 诱发效果接收到警报信号后，正式入连锁
 function s.mvtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	-- 解锁警报器，方便下次继续探测
+	e:GetHandler():ResetFlagEffect(id+7)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
+
 function s.mvop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsFaceup() then
+	if c:IsRelateToEffect(e) then
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
 	end
 end
@@ -161,22 +204,27 @@ end
 -- 延迟回手的相关逻辑
 function s.rthcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetLabelObject()
-	-- 严谨防Bug：如果这张卡被别的卡移出了除外区，或者回过卡组等，标记会消失
-	-- 此时说明不再需要回手，直接清理掉这个监听器，避免内存残留
+	-- 严谨防Bug：如果这张卡被别的卡移出了除外区，标记会消失，立刻销毁监听器
 	if c:GetFlagEffect(id+1)==0 then
 		e:Reset()
 		return false
 	end
 	
-	-- 当“现在的阶段”不再等于“记录的阶段”时，说明下个阶段开始了！
-	return Duel.GetCurrentPhase() ~= e:GetLabel() and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+	local ph = Duel.GetCurrentPhase()
+	local is_main_phase = (ph == PHASE_MAIN1 or ph == PHASE_MAIN2)
+	
+	-- 生成现在的绝对时间戳
+	local now_mark = Duel.GetTurnCount() * 1000 + ph
+	
+	-- 当且仅当目前处于主要阶段，且时间戳大于除外时记录的时间戳（即抵达了新的主要阶段）
+	return is_main_phase and now_mark > e:GetLabel()
 end
 
 -- 回手操作
 function s.rthop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetLabelObject()
 	
-	Duel.Hint(HINT_CARD,0,id) -- 闪烁一下卡片，告诉玩家是它自己回来的
+	Duel.Hint(HINT_CARD,0,id) 
 	Duel.SendtoHand(c,nil,REASON_EFFECT)
 	
 	c:ResetFlagEffect(id+1) -- 清除标记

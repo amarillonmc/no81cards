@@ -68,7 +68,7 @@ end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		c:AddCounter(0x153f,3)
+		c:AddCounter(0x161f,3)
 	end
 end
 
@@ -80,18 +80,21 @@ end
 
 function s.thop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:GetCounter(0x153f)==0 then return end
+	if c:GetCounter(0x161f)==0 then return end
 	
 	-- 此时去寻找自己的墓地、除外、表侧额外里带有被破坏属性的本家卡
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.thfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,nil)
-	if #g>0 and c:IsCanRemoveCounter(tp,0x153f,1,REASON_EFFECT) then
+	if #g>0 and c:IsCanRemoveCounter(tp,0x161f,1,REASON_EFFECT) then
 		if Duel.SelectYesNo(tp,aux.Stringid(id,0)) then 
-			c:RemoveCounter(tp,0x153f,1,REASON_EFFECT)
+			c:RemoveCounter(tp,0x161f,1,REASON_EFFECT)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=g:Select(tp,1,1,nil)
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,sg)
 		end
+	end
+		if c:GetCounter(0x161f)==0 then
+		Duel.Destroy(c,REASON_EFFECT)
 	end
 end
 
@@ -103,8 +106,8 @@ end
 
 function s.rmop_defer(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:GetCounter(0x153f)==0 then return end
-	local is_zero = (c:GetCounter(0x153f)==0)
+	if c:GetCounter(0x161f)==0 then return end
+	local is_zero = (c:GetCounter(0x161f)==0)
 	-- 若未涉入连锁结算直接执行
 	if Duel.GetCurrentChain()==0 then
 		s.do_announce_action(c,tp)
@@ -121,9 +124,9 @@ function s.rmop_defer(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_CHAIN)
 			Duel.RegisterEffect(e1,tp)
 		end
-				if is_zero then
-			Duel.Destroy(c,REASON_EFFECT)
-		end
+	if c:GetCounter(0x161f)==0 then
+		Duel.Destroy(c,REASON_EFFECT)
+	end
 	end
 end
 
@@ -135,10 +138,10 @@ function s.rmop_execute(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.do_announce_action(c, tp)
-	if c:GetCounter(0x153f)==0 then return end
+	if c:GetCounter(0x161f)==0 then return end
 	
 	if Duel.SelectYesNo(tp,aux.Stringid(id,1)) then -- "是否取除1个指示物宣言怪兽使之获得2次攻击？"
-		c:RemoveCounter(tp,0x153f,1,REASON_EFFECT)
+		c:RemoveCounter(tp,0x161f,1,REASON_EFFECT)
 		
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 	getmetatable(c).announce_filter={0x3615,OPCODE_ISSETCARD,ATTRIBUTE_EARTH,OPCODE_ISATTRIBUTE,OPCODE_AND,TYPE_MONSTER,OPCODE_ISTYPE,OPCODE_AND}
@@ -154,10 +157,9 @@ function s.do_announce_action(c, tp)
 		e1:SetValue(1)
 		Duel.RegisterEffect(e1,tp)
 	end
-	local is_zero = (c:GetCounter(0x153f)==0)
-			if is_zero then
-			Duel.Destroy(c,REASON_EFFECT)
-		end
+	if c:GetCounter(0x161f)==0 then
+		Duel.Destroy(c,REASON_EFFECT)
+	end
 end
 
 -- === 回收 ===
