@@ -62,7 +62,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				e1:SetValue(cm.eqlimit)
-				tc:RegisterEffect(e1)
+				tc:RegisterEffect(e1,true)
 				c:RegisterFlagEffect(0,0,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 				--activate
 				local e2=Effect.CreateEffect(c)
@@ -73,12 +73,12 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				e2:SetCondition(cm.eqcon)
 				e2:SetOperation(aux.chainreg)
 				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-				tc:RegisterEffect(e2)
+				tc:RegisterEffect(e2,true)
 				local e3=e2:Clone()
 				e3:SetCode(EVENT_CHAIN_SOLVING)
 				e3:SetCondition(cm.accon)
 				e3:SetOperation(cm.acop)
-				tc:RegisterEffect(e3)
+				tc:RegisterEffect(e3,true)
 			end
 		end
 	end

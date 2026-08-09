@@ -1,7 +1,6 @@
 --破坏剑-心灵破坏之剑
 --21.08.26
-local m=11451603
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--equip
 	local e1=Effect.CreateEffect(c)
@@ -79,7 +78,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	e1:SetValue(cm.eqlimit)
 	e1:SetLabelObject(tc)
-	c:RegisterEffect(e1)
+	c:RegisterEffect(e1,true)
 end
 function cm.eqlimit(e,c)
 	return c==e:GetLabelObject()
@@ -173,7 +172,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 			else
 				local f=function(e,tp,eg,ep,ev,re,r,rp)
 							local zones1=0
-							if aux.GetValueType(val)=="Number" then
+							if aux.GetValueType(val)=="number" then
 								zones1=val
 							else
 								zones1=val(e,tp,eg,ep,ev,re,r,rp)

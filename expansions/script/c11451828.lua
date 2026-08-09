@@ -126,33 +126,14 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsCanAddCounter(tp,0x970,7,c) end
-	Duel.IsCanAddCounter(tp,0x970,7,c)
+	local prop=e:GetProperty()
+	e:SetProperty(prop|EFFECT_FLAG_IGNORE_IMMUNE)
 	c:AddCounter(0x970,7)
+	e:SetProperty(prop)
 end
 function cm.ctpermit(e)
 	local c=e:GetHandler()
 	return c:IsLocation(LOCATION_SZONE) and c:IsStatus(STATUS_CHAINING)
-end
-function cm.cfilter(c)
-	return c:IsSetCard(0x163) and c:IsFaceup() and c:IsPreviousLocation(LOCATION_HAND+LOCATION_EXTRA)
-end
-function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil)
-end
-function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsCanRemoveCounter(tp,0x60,1,REASON_COST) end
-	c:RemoveCounter(tp,0x60,1,REASON_COST)
-end
-function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-end
-function cm.drop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
 end
 function cm.tdfilter(c,tp)
 	return c:IsControler(tp) and c:IsSetCard(0x97c) and c:IsAbleToHand()

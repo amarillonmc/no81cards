@@ -227,7 +227,7 @@ function Auxiliary.PreloadUds()
 	end
 	
 	local _CRegisterEffect=Card.RegisterEffect
-	function Card.RegisterEffect(c,e,...)
+	function Card.RegisterEffect(c,e,bool)
 		if aux.GetValueType(c)~="Card" then error("Card.RegisterEffect没有输入正确的Card参数。",2) return end
 		if aux.GetValueType(e)~="Effect" then error("Card.RegisterEffect没有输入正确的Effect参数。",2) return end
 		if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not table_range[e] then
@@ -248,7 +248,8 @@ function Auxiliary.PreloadUds()
 			local con=e:GetCondition() or aux.TRUE
 			e:SetCondition(function(e,tp,eg,...) return eg:IsContains(e:GetHandler()) and con(e,tp,eg,...) end)
 		end
-		local eid=_CRegisterEffect(c,e,...)
+		if e:GetCode()==EFFECT_EQUIP_LIMIT then bool=true end
+		local eid=_CRegisterEffect(c,e,bool)
 		if e and eid then effect_registered[e]=true end
 		return eid
 	end

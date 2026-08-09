@@ -57,7 +57,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	e1:SetValue(cm.eqlimit)
 	e1:SetLabelObject(tc)
-	c:RegisterEffect(e1)
+	c:RegisterEffect(e1,true)
 end
 function cm.eqlimit(e,c)
 	return c==e:GetLabelObject()

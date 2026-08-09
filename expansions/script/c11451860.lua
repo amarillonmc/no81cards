@@ -28,9 +28,10 @@ function cm.initial_effect(c)
 		PNFL_MOVE_DELAY_CHECK=true
 		local _Equip=Duel.Equip
 		Duel.Equip=function(p,c,...)
-			if not (c:IsControler(p) and c:IsLocation(LOCATION_SZONE)) and not c:IsHasEffect(EFFECT_EQUIP_LIMIT) then c:RegisterFlagEffect(11451848,RESET_CHAIN,0,1) c:RegisterFlagEffect(11451848,RESET_CHAIN,0,1) end
+			local ns=not (c:IsControler(p) and c:IsLocation(LOCATION_SZONE))
+			if ns and not c:IsHasEffect(EFFECT_EQUIP_LIMIT) then c:RegisterFlagEffect(11451848,RESET_CHAIN,0,1) c:RegisterFlagEffect(11451848,RESET_CHAIN,0,1) end
 			local res=_Equip(p,c,...)
-			if c:IsHasEffect(EFFECT_EQUIP_LIMIT) then
+			if ns and c:IsHasEffect(EFFECT_EQUIP_LIMIT) then
 				c:ResetFlagEffect(11451848)
 				cm.desop2(e,0,Group.FromCards(c),0,0,e,0,0)
 			end

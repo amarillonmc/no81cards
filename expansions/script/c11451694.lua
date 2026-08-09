@@ -12,7 +12,6 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--remove
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_EQUIP)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetRange(LOCATION_FZONE)
@@ -82,7 +81,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetLabelObject(tc)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e1:SetValue(cm.eqlimit)
-			qc:RegisterEffect(e1)
+			qc:RegisterEffect(e1,true)
 		end
 		Duel.EquipComplete()
 	end

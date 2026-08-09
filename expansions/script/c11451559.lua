@@ -65,7 +65,7 @@ function cm.equipfd(c,tp,tc)
 	e1:SetCode(EFFECT_EQUIP_LIMIT)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	e1:SetValue(cm.eqlimit)
-	tc:RegisterEffect(e1)
+	tc:RegisterEffect(e1,true)
 	return true
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
@@ -100,10 +100,10 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	pnfl_adjusting=false
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsPlayerAffectedByEffect(tp,11451556)
+	return not Duel.IsPlayerAffectedByEffect(tp,11451556) or not e:GetHandler():IsOriginalSetCard(0x97e)
 end
 function cm.con2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,11451556)
+	return Duel.IsPlayerAffectedByEffect(tp,11451556) and e:GetHandler():IsOriginalSetCard(0x97e)
 end
 function cm.filter(c)
 	return c:IsSetCard(0x97e) and c:IsAbleToDeck()

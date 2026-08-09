@@ -153,7 +153,7 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(cm.eqlimit)
 		e1:SetLabelObject(tc)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e1)
+		c:RegisterEffect(e1,true)
 		--aclimit
 		local ge0=Effect.CreateEffect(tc)
 		ge0:SetType(EFFECT_TYPE_FIELD)

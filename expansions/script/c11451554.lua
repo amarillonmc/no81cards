@@ -42,7 +42,7 @@ function cm.equipfd(c,tp,tc)
 	e1:SetCode(EFFECT_EQUIP_LIMIT)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	e1:SetValue(cm.eqlimit)
-	tc:RegisterEffect(e1)
+	tc:RegisterEffect(e1,true)
 	return true
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)

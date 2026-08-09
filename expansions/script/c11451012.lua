@@ -351,7 +351,10 @@ end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and e:GetHandler():GetOriginalType()&TYPE_PENDULUM~=0 end
+	local prop=e:GetProperty()
+	e:SetProperty(prop|EFFECT_FLAG_IGNORE_IMMUNE)
 	Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+	e:SetProperty(prop)
 end
 function cm.thfilter2(c)
 	return c:IsSetCard(0x5977) and c:IsAbleToHand() and c:IsFaceup()

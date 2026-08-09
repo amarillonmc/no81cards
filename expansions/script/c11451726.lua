@@ -210,7 +210,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(cm.eqlimit)
 			e1:SetLabelObject(tc)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			ec:RegisterEffect(e1)
+			ec:RegisterEffect(e1,true)
 		end
 		Duel.EquipComplete()
 		if sg:IsContains(c) and not rg:IsContains(c) then c:CancelToGrave(false) end
@@ -274,7 +274,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	else
 		local flag=eset[1]
 		local tab=cm[flag]
-		Debug.Message(c:GetCode().." "..(tab[ct] or 1000).." "..c:GetSequence())
+		--Debug.Message(c:GetCode().." "..(tab[ct] or 1000).." "..c:GetSequence())
 		if not tab[ct] or tab[ct]~=c:GetSequence() then bool=true end
 	end
 	if bool and c:GetColumnGroup():FilterCount(Card.IsControler,nil,1-c:GetControler())>0 then

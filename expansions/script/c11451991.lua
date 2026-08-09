@@ -3,7 +3,7 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_EQUIP)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -81,7 +81,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(cm.eqlimit)
 		e1:SetLabelObject(c)
-		e:GetHandler():RegisterEffect(e1)
+		e:GetHandler():RegisterEffect(e1,true)
 		if tc then
 			--copy effect
 			local code=tc:GetOriginalCodeRule()

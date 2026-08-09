@@ -99,10 +99,10 @@ function cm.initial_effect(c)
 		PNFL_TOFIELD_CHECK=true
 		local _Equip=Duel.Equip
 		Duel.Equip=function(p,c,...)
-			if not (c:IsControler(p) and c:IsLocation(LOCATION_SZONE)) then c:RegisterFlagEffect(11451409,RESET_CHAIN,0,1) c:RegisterFlagEffect(11451409,RESET_CHAIN,0,1) end
+            local nf=not c:IsOnField()
+			if nf and not c:IsHasEffect(EFFECT_EQUIP_LIMIT) then c:RegisterFlagEffect(11451409,RESET_CHAIN,0,1) end
 			local res=_Equip(p,c,...)
-			if c:IsHasEffect(EFFECT_EQUIP_LIMIT) then
-				c:ResetFlagEffect(11451409)
+			if nf and c:IsHasEffect(EFFECT_EQUIP_LIMIT) then
 				cm.desop21(e,0,Group.FromCards(c),0,0,e,0,0)
 			end
 			return res
@@ -154,7 +154,7 @@ function cm.costchk1(e,c,tp,st)
 	return false
 end
 function cm.filter12(c,e)
-	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED))) or c:GetFlagEffect(11451409)>1 then return false end
+	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED))) or c:GetFlagEffect(11451409)>0 then return false end
 	if e:GetCode()==EVENT_MOVE then
 		local b1,g1=Duel.CheckEvent(EVENT_SUMMON_SUCCESS,true)
 		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)

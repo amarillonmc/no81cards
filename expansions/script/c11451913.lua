@@ -146,6 +146,8 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		sg=g:FilterSelect(tp,fil,1,1,nil,lv)
 	end
+	local prop=e:GetProperty()
+	e:SetProperty(prop|EFFECT_FLAG_IGNORE_IMMUNE)
 	for sc in aux.Next(sg) do
 		if not sc:IsLocation(LOCATION_HAND) then
 			local e1=Effect.CreateEffect(c)
@@ -160,6 +162,7 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 		Duel.MoveToField(sc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
+	e:SetProperty(prop)
 	--cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end

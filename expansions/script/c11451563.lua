@@ -225,7 +225,7 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetLabelObject(rc)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				e1:SetValue(cm.eqlimit)
-				tc:RegisterEffect(e1)
+				tc:RegisterEffect(e1,true)
 			end
 		end
 		Duel.EquipComplete()

@@ -159,7 +159,7 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(cm.eqlimit)
 		e1:SetLabelObject(tc)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e1)
+		c:RegisterEffect(e1,true)
 		--type
 		local e2=Effect.CreateEffect(c)
 		e2:SetCode(EFFECT_CHANGE_TYPE)
@@ -167,7 +167,7 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		e2:SetValue(TYPE_EQUIP+TYPE_TRAP)
-		c:RegisterEffect(e2)
+		c:RegisterEffect(e2,true)
 	end
 end
 function cm.eqlimit(e,c)
