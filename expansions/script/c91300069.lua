@@ -42,7 +42,7 @@ function c91300069.checkop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c91300069.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return (e:IsHasType(EFFECT_TYPE_ACTIVATE) or c:IsLocation(LOCATION_SZONE)) and c:GetSequence()<5 end
+	if chk==0 then return e:IsCostChecked() and (e:IsHasType(EFFECT_TYPE_ACTIVATE) or c:IsLocation(LOCATION_SZONE)) and c:GetSequence()<5 end
 	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
 end
 function c91300069.rmfilter(c,tp)

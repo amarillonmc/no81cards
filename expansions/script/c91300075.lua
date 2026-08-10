@@ -118,7 +118,7 @@ function c91300075.activate(e,tp,eg,ep,ev,re,r,rp)
 		local codes={}
 		for _,code in pairs({91300063,91300065,91300067,91300069,91300071,91300073,91300075,91300077,91300079,91300081,91300083}) do
 			local tc=Crossroads_card_list[code]
-			if tc:CheckActivateEffect(false,true,false)~=nil then--code~=e:GetHandler():GetCode() and 
+			if code~=e:GetHandler():GetCode() and tc:CheckActivateEffect(false,true,false)~=nil then-- 
 				table.insert(codes,code)
 			end
 		end
@@ -174,14 +174,18 @@ function c91300075.gaop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		--e1:SetLabelObject(ce)
 		e1:SetTargetRange(1,1)
+		e1:SetCost(c91300075.excost)
 		e1:SetTarget(
 			function (e,te,tp)
 				e:SetLabelObject(te)
-				return te==ce and Duel.IsExistingMatchingCard(c91300075.tdfilter,0,LOCATION_REMOVED,LOCATION_REMOVED,1,nil)
+				return te==ce-- and 
 			end)--c91300075.extg
 		e1:SetOperation(c91300075.exop)
 		Duel.RegisterEffect(e1,tp)
 	end
+end
+function c91300075.excost(e,te_or_c,tp)
+	return Duel.IsExistingMatchingCard(c91300075.tdfilter,0,LOCATION_REMOVED,LOCATION_REMOVED,1,nil)
 end
 function c91300075.tdfilter(c)
 	return c:IsHasEffect(91300075) and c:IsAbleToDeck()

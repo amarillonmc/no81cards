@@ -67,7 +67,7 @@ function c91300067.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c91300067.tgfilter(c,p)
-	return c:IsType(TYPE_QUICKPLAY) and c:GetActivateEffect():IsActivatable(p,true) and c:IsAbleToGrave() and c:IsFaceupEx()
+	return c:IsType(TYPE_QUICKPLAY) and c:CheckActivateEffect(true,true,false)~=nil and c:IsAbleToGrave() and c:IsFaceupEx() and not c:IsCode(91300067)
 end
 function c91300067.win(e,p,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -96,7 +96,7 @@ function c91300067.lost(e,p,eg,ep,ev,re,r,rp,chk)
 		local tc=Duel.SelectMatchingCard(p,c91300067.tgfilter,p,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(e),p):GetFirst()
 		Duel.HintSelection(Group.FromCards(tc))
 		if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
-			local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(false,true,true)
+			local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(true,true,true)
 			Duel.ClearTargetCard()
 			e:SetProperty(te:GetProperty())
 			local tg=te:GetTarget()

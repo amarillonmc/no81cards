@@ -50,7 +50,7 @@ function c91300065.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c91300065.tgfilter(c)
-	return (c:IsSetCard(0x855) or c:IsOnField()) and c:IsAbleToGrave()
+	return (c:IsSetCard(0x855) and not c:IsCode(91300065) or c:IsOnField()) and c:IsAbleToGrave()
 end
 function c91300065.gcheck(g,p)
 	return #g==1 and g:FilterCount(Card.IsControler,nil,p)==1 or g:FilterCount(Card.IsOnField,nil)==2
@@ -66,7 +66,7 @@ function c91300065.obverse(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.HintSelection(tg)
 			Duel.SendtoGrave(tg,REASON_EFFECT)
 			local og=Duel.GetOperatedGroup()
-			if og:IsExists(Card.IsAbleToHand,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(91300065,2)) then
+			if og:IsExists(Card.IsAbleToHand,1,nil) and c91300065.reverse(e,tp,eg,ep,ev,re,r,rp,0) and Duel.SelectYesNo(tp,aux.Stringid(91300065,2)) then
 				Duel.BreakEffect()
 				Duel.SendtoHand(og,nil,REASON_EFFECT)
 				c91300065.reverse(e,tp,eg,ep,ev,re,r,rp,1)
@@ -80,8 +80,9 @@ function c91300065.reverse(e,tp,eg,ep,ev,re,r,rp,chk)
 		for des,f in pairs(Crossroads_morra_effect_list) do
 			local res=f(e,tp,eg,ep,ev,re,r,rp,0)
 			if res then
+				local ct=e:GetHandler():GetCode()*16
 				for _,v in pairs(t) do
-					if v==des then res=false end
+					if v==des or (des-ct>=0 and des-ct<=15) then res=false end
 				end
 			end
 			if res then table.insert(t,des) end

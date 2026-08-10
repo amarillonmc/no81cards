@@ -16,7 +16,7 @@ function c91300073.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	--e1:SetTarget(c91300073.target)
+	e1:SetTarget(c91300073.target)
 	e1:SetOperation(c91300073.activate)
 	c:RegisterEffect(e1)
 	--act qp in hand
@@ -58,7 +58,7 @@ function c91300073.acop(e,tp,eg,ep,ev,re,r,rp)
 		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e0)
 		local p=Duel.RockPaperScissors()
-		if c:IsDiscardable(REASON_EFFECT) and Duel.SelectYesNo(p,aux.Stringid(91300073,3)) then
+		if c:IsDiscardable(REASON_EFFECT) and c91300073.target(e,tp,eg,ep,ev,re,r,rp,0) and Duel.SelectYesNo(p,aux.Stringid(91300073,3)) then
 			Duel.SendtoGrave(c,REASON_EFFECT+REASON_DISCARD)
 			c91300073.activate(e,p,eg,ep,ev,re,r,rp)
 			--[[local e1=Effect.CreateEffect(c)
@@ -73,6 +73,9 @@ function c91300073.acop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RaiseSingleEvent(c,EVENT_CUSTOM+91300073,e,0,p,p,0)]]
 		end
 	end
+end
+function c91300073.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return c91300073.win(e,tp,eg,ep,ev,re,r,rp,0) or c91300073.lost(e,tp,eg,ep,ev,re,r,rp,0) end
 end
 function c91300073.activate(e,tp,eg,ep,ev,re,r,rp)
 	e:SetLabel(1)--morra;91300063
@@ -93,7 +96,7 @@ function c91300073.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c91300073.tgfilter(c,p)
-	return (c:IsSetCard(0x855) and c:IsLocation(LOCATION_DECK) and c:GetActivateEffect():IsActivatable(p,true,true) or c:IsControler(1-p)) and c:IsAbleToGrave()
+	return (c:IsSetCard(0x855) and c:IsLocation(LOCATION_DECK) and not c:IsCode(91300073) and c:GetActivateEffect():IsActivatable(p,true,true) or c:IsControler(1-p)) and c:IsAbleToGrave()
 end
 function c91300073.win(e,p,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

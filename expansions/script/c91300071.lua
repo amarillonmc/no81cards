@@ -107,7 +107,7 @@ function c91300071.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c91300071.chkfilter(c,p)
-	return c:IsSetCard(0x855) and c:GetActivateEffect():IsActivatable(p,true,true) and not c:IsPublic()
+	return c:IsSetCard(0x855) and c:CheckActivateEffect(true,true,false)~=nil and not c:IsPublic() and not c:IsCode(91300071)
 end
 function c91300071.correct(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
