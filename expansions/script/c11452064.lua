@@ -31,13 +31,38 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_TO_DECK)
+	e3:SetCode(EVENT_CUSTOM+m)
+	e3:SetRange(0xff)
 	e3:SetCondition(cm.tdcon)
 	e3:SetTarget(cm.tdtg)
 	e3:SetOperation(cm.tdop)
 	c:RegisterEffect(e3)
+	if cm[EVENT_TO_DECK]==true then return end
+	cm[EVENT_TO_DECK]=true
+	if not g then g=Group.CreateGroup() end
+	g:KeepAlive()
+	local ge1=Effect.CreateEffect(c)
+	ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	ge1:SetCode(EVENT_TO_DECK)
+	ge1:SetLabel(m)
+	ge1:SetLabelObject(g)
+	ge1:SetOperation(cm.MergedDelayEventCheck1)
+	Duel.RegisterEffect(ge1,0)
+	local ge2=ge1:Clone()
+	ge2:SetCode(EVENT_CHAIN_END)
+	ge2:SetOperation(Auxiliary.MergedDelayEventCheck2)
+	Duel.RegisterEffect(ge2,0)
+end
+function cm.MergedDelayEventCheck1(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	g:Merge(eg:Filter(Card.IsPreviousPosition,nil,POS_FACEUP))
+	if Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_END) then
+		local _eg=g:Clone()
+		Duel.RaiseEvent(_eg,EVENT_CUSTOM+e:GetLabel(),re,r,rp,ep,ev)
+		g:Clear()
+	end
 end
 -- =========================================
 -- ① 动态复制系统
@@ -98,7 +123,7 @@ end
 -- =========================================
 function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsPreviousPosition(POS_FACEUP)
+	return eg:IsContains(c)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x5978) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx() and ((not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,c)>0))
@@ -164,11 +189,11 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local rc=re:GetHandler()
 		local e2=Effect.CreateEffect(rc)
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e2:SetCode(EVENT_CUSTOM+m)
+		e2:SetCode(EVENT_CUSTOM+m+1)
 		e2:SetOperation(function() Duel.SendtoGrave(c,r) end)
 		Duel.RegisterEffect(e2,0)
 		e:SetLabel(1)
-		Duel.RaiseEvent(rc,EVENT_CUSTOM+m,e,0,0,0,0)
+		Duel.RaiseEvent(rc,EVENT_CUSTOM+m+1,e,0,0,0,0)
 		e:SetLabel(0)
 		e2:Reset()
 	end

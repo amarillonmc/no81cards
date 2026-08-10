@@ -22,75 +22,82 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.leaveop) -- 帮你修正了这里的拼写错误
 	c:RegisterEffect(e3)
 
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_ADJUST)
+	e2:SetRange(0xff)
+	e2:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+						e:Reset()
+						if cm.ini and cm.ini[tp] then return end
+						cm.ini=cm.ini or {}
+						cm.ini[tp]=true
+						local ge1=Effect.CreateEffect(c)
+						ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+						ge1:SetCode(EVENT_TO_DECK)
+						ge1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+							local turn = Duel.GetTurnCount()
+							if not cm.ret_loc_this_turn[turn] then cm.ret_loc_this_turn[turn] = {} end
+							
+							local changed = false -- 判定是否需要刷新UI
+							for tc in aux.Next(eg) do
+								if tc:IsLocation(LOCATION_DECK|LOCATION_EXTRA) then
+									local ploc = tc:GetPreviousLocation()
+									if bit.band(ploc, LOCATION_ONFIELD)>0 and not cm.ret_loc_this_turn[turn][LOCATION_ONFIELD] then 
+										cm.ret_loc_this_turn[turn][LOCATION_ONFIELD]=true 
+										changed = true
+									end
+									if bit.band(ploc, LOCATION_GRAVE)>0 and not cm.ret_loc_this_turn[turn][LOCATION_GRAVE] then 
+										cm.ret_loc_this_turn[turn][LOCATION_GRAVE]=true 
+										changed = true
+									end
+									if bit.band(ploc, LOCATION_REMOVED)>0 and not cm.ret_loc_this_turn[turn][LOCATION_REMOVED] then 
+										cm.ret_loc_this_turn[turn][LOCATION_REMOVED]=true 
+										changed = true
+									end
+									if bit.band(ploc, LOCATION_EXTRA)>0 and not cm.ret_loc_this_turn[turn][LOCATION_EXTRA] then 
+										cm.ret_loc_this_turn[turn][LOCATION_EXTRA]=true 
+										changed = true
+									end
+								end
+							end
+							
+							-- 【全新客户端提示系统】：如果检测到新区域，则重新计算并覆盖提示
+							if changed then
+								local state = 0
+								if cm.ret_loc_this_turn[turn][LOCATION_ONFIELD] then state = state | 1 end
+								if cm.ret_loc_this_turn[turn][LOCATION_GRAVE] then state = state | 2 end
+								if cm.ret_loc_this_turn[turn][LOCATION_REMOVED] then state = state | 4 end
+								if cm.ret_loc_this_turn[turn][LOCATION_EXTRA] then state = state | 8 end
+								
+								if cm.client_hint_eff[tp] then
+									cm.client_hint_eff[tp]:Reset()
+									cm.client_hint_eff[tp] = nil
+								end
+								
+								if state > 0 then
+									local de=Effect.CreateEffect(e:GetHandler())
+									-- 直接读取 1 ~ 15 号描述。需要你在字符串配置里按组合填好
+									de:SetDescription(aux.Stringid(m, state))
+									de:SetType(EFFECT_TYPE_FIELD)
+									de:SetCode(EFFECT_FLAG_EFFECT)
+									de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+									de:SetTargetRange(1,0)
+									de:SetReset(RESET_PHASE+PHASE_END)
+									Duel.RegisterEffect(de, tp)
+									
+									cm.client_hint_eff[tp] = de
+								end
+							end
+						end)
+						Duel.RegisterEffect(ge1,tp)
+					end)
+	c:RegisterEffect(e2)
 	-- 全局追踪：本回合卡从哪里回到卡组
 	if not cm.global_check then
 		cm.global_check=true
 		cm.ret_loc_this_turn = {}
 		cm.bonus_mat_used = {}
 		cm.client_hint_eff = {} -- 【新增】：用于缓存客户端提示效果以便清理
-		
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_TO_DECK)
-		ge1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-			local turn = Duel.GetTurnCount()
-			if not cm.ret_loc_this_turn[turn] then cm.ret_loc_this_turn[turn] = {} end
-			
-			local changed = false -- 判定是否需要刷新UI
-			for tc in aux.Next(eg) do
-				if tc:IsLocation(LOCATION_DECK|LOCATION_EXTRA) then
-					local ploc = tc:GetPreviousLocation()
-					if bit.band(ploc, LOCATION_ONFIELD)>0 and not cm.ret_loc_this_turn[turn][LOCATION_ONFIELD] then 
-						cm.ret_loc_this_turn[turn][LOCATION_ONFIELD]=true 
-						changed = true
-					end
-					if bit.band(ploc, LOCATION_GRAVE)>0 and not cm.ret_loc_this_turn[turn][LOCATION_GRAVE] then 
-						cm.ret_loc_this_turn[turn][LOCATION_GRAVE]=true 
-						changed = true
-					end
-					if bit.band(ploc, LOCATION_REMOVED)>0 and not cm.ret_loc_this_turn[turn][LOCATION_REMOVED] then 
-						cm.ret_loc_this_turn[turn][LOCATION_REMOVED]=true 
-						changed = true
-					end
-					if bit.band(ploc, LOCATION_EXTRA)>0 and not cm.ret_loc_this_turn[turn][LOCATION_EXTRA] then 
-						cm.ret_loc_this_turn[turn][LOCATION_EXTRA]=true 
-						changed = true
-					end
-				end
-			end
-			
-			-- 【全新客户端提示系统】：如果检测到新区域，则重新计算并覆盖提示
-			if changed then
-				local state = 0
-				if cm.ret_loc_this_turn[turn][LOCATION_ONFIELD] then state = state | 1 end
-				if cm.ret_loc_this_turn[turn][LOCATION_GRAVE] then state = state | 2 end
-				if cm.ret_loc_this_turn[turn][LOCATION_REMOVED] then state = state | 4 end
-				if cm.ret_loc_this_turn[turn][LOCATION_EXTRA] then state = state | 8 end
-				
-				-- 向双方玩家（p=0, 1）派发提示
-				for p = 0, 1 do
-					if cm.client_hint_eff[p] then
-						cm.client_hint_eff[p]:Reset()
-						cm.client_hint_eff[p] = nil
-					end
-					
-					if state > 0 then
-						local de=Effect.CreateEffect(e:GetHandler())
-						-- 直接读取 1 ~ 15 号描述。需要你在字符串配置里按组合填好
-						de:SetDescription(aux.Stringid(m, state))
-						de:SetType(EFFECT_TYPE_FIELD)
-						de:SetCode(EFFECT_FLAG_EFFECT)
-						de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
-						de:SetTargetRange(1,0)
-						de:SetReset(RESET_PHASE+PHASE_END)
-						Duel.RegisterEffect(de, p)
-						
-						cm.client_hint_eff[p] = de
-					end
-				end
-			end
-		end)
-		Duel.RegisterEffect(ge1,0)
 	end
 end
 
@@ -142,7 +149,7 @@ function cm.spcon(e,c,og,min,max)
 	if sg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
 	Duel.SetSelectedCard(sg)
 	aux.GCheckAdditional=aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
-	local res=mg:CheckSubGroup(aux.XyzLevelFreeGoal,4,4,tp,c,cm.exchk)
+	local res=mg:CheckSubGroup(aux.XyzLevelFreeGoal,3,3,tp,c,cm.exchk)
 	aux.GCheckAdditional=nil
 	return res
 end
@@ -165,7 +172,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local cancel=Duel.IsSummonCancelable()
 	aux.GCheckAdditional=aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
-	local g=mg:SelectSubGroup(tp,aux.XyzLevelFreeGoal,cancel,4,4,tp,c,cm.exchk)
+	local g=mg:SelectSubGroup(tp,aux.XyzLevelFreeGoal,cancel,3,3,tp,c,cm.exchk)
 	aux.GCheckAdditional=nil
 	if g and #g>0 then
 		g:KeepAlive()

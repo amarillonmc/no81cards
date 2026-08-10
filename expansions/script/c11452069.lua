@@ -1,4 +1,4 @@
---落渊界枢『三世轮转』
+-- 落渊界枢『三世轮转』
 local cm,m=GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
@@ -19,6 +19,66 @@ function cm.initial_effect(c)
 						end
 					end)
 	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_ADJUST)
+	e2:SetRange(0xff)
+	e2:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+						e:Reset()
+						if cm.ini and cm.ini[tp] then return end
+						cm.ini=cm.ini or {}
+						cm.ini[tp]=true
+						local ge1=Effect.CreateEffect(c)
+						ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+						ge1:SetCode(EVENT_TO_DECK)
+						ge1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+							local changed = false
+							local turn = Duel.GetTurnCount()
+							for tc in aux.Next(eg) do
+								if tc:IsLocation(LOCATION_DECK) and (tc:IsPreviousPosition(POS_FACEUP) or tc:IsStatus(STATUS_CHAINING)) then
+									local code,code2=tc:GetCode()
+									if cm.returned_codes[code] ~= turn then
+										cm.returned_codes[code] = turn
+										changed = true
+									end
+									if code2 and cm.returned_codes[code2] ~= turn then
+										cm.returned_codes[code2] = turn
+										changed = true
+									end
+								end
+							end
+							
+							-- 【全新客户端提示系统：同名卡回卡组动态追踪】
+							if changed then
+								local code1, code2, code3 = 11452060, 11452061, 11452062
+								local state = 0
+								if cm.returned_codes[code1] == turn then state = state | 1 end
+								if cm.returned_codes[code2] == turn then state = state | 2 end
+								if cm.returned_codes[code3] == turn then state = state | 4 end
+								
+								if state > 0 then
+									-- 此为公开情报（重叠超量素材相关），故向双方玩家派发UI提示
+									if cm.client_hint_eff_ret[tp] then
+										cm.client_hint_eff_ret[tp]:Reset()
+										cm.client_hint_eff_ret[tp] = nil
+									end
+									local de = Effect.CreateEffect(e:GetHandler())
+									-- state (1~7) + 5 = (6~12)，完美映射 6-12 号字符串
+									de:SetDescription(aux.Stringid(11452071, 5 + state)) 
+									de:SetType(EFFECT_TYPE_FIELD)
+									de:SetCode(EFFECT_FLAG_EFFECT)
+									de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+									de:SetTargetRange(1,0)
+									de:SetReset(RESET_PHASE+PHASE_END)
+									Duel.RegisterEffect(de, tp)
+									
+									cm.client_hint_eff_ret[tp] = de
+								end
+							end
+						end)
+						Duel.RegisterEffect(ge1,tp)
+					end)
+	c:RegisterEffect(e2)
 	if not cm.global_check then
 		cm.global_check=true
 		local _Overlay=Duel.Overlay
@@ -55,33 +115,31 @@ function cm.initial_effect(c)
 			end
 			return res
 		end
+		
 		cm.returned_codes={}
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_TO_DECK)
-		ge1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-			for tc in aux.Next(eg) do
-				if tc:IsLocation(LOCATION_DECK) and (tc:IsPreviousPosition(POS_FACEUP) or tc:IsStatus(STATUS_CHAINING)) then
-					local turn=Duel.GetTurnCount()
-					local code,code2=tc:GetCode()
-					cm.returned_codes[code]=turn
-					if code2 then cm.returned_codes[code2]=turn end
-				end
-			end
-		end)
-		Duel.RegisterEffect(ge1,0)
+		cm.client_hint_eff_ret={} -- 【新增】：用于缓存回卡组的客户端提示
+		
+		
 		local e_leave=Effect.CreateEffect(c)
 		e_leave:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e_leave:SetCode(EVENT_LEAVE_DECK)
+		e_leave:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+								local g=eg:Filter(function(c) return c:IsPreviousLocation(LOCATION_EXTRA) and not c:IsOnField() end,nil)
+								return #g>0
+							end)
 		e_leave:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 								local g=eg:Filter(function(c) return c:IsPreviousLocation(LOCATION_EXTRA) and not c:IsOnField() end,nil)
-								if #g>0 then --and c:IsPreviousPosition(POS_FACEUP) and c:IsSetCard(0x5978)
+								if #g>0 then
 									cm.process(g,e,tp,eg,ep,ev,re,r,rp)
 								end
 							end)
 		Duel.RegisterEffect(e_leave,0)
 		local e_l2=e_leave:Clone()
 		e_l2:SetCode(EVENT_LEAVE_GRAVE)
+		e_l2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+								local g=eg:Filter(function(c) return not c:IsOnField() end,nil)
+								return #g>0
+							end)
 		e_l2:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 								local g=eg:Filter(function(c) return not c:IsOnField() end,nil)
 								if #g>0 then
@@ -91,6 +149,10 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(e_l2,0)
 		local e_l3=e_leave:Clone()
 		e_l3:SetCode(EVENT_MOVE)
+		e_l3:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+								local g=eg:Filter(function(c) return c:IsPreviousLocation(LOCATION_REMOVED) and not c:IsOnField() end,nil)
+								return #g>0
+							end)
 		e_l3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 								local g=eg:Filter(function(c) return c:IsPreviousLocation(LOCATION_REMOVED) and not c:IsOnField() end,nil)
 								if #g>0 then
@@ -235,25 +297,15 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 				end
 				
 				-- 2. 计算当前的组合状态
-				-- 假设卡组中有3只特定的「落渊」怪兽（请将 111, 222, 333 替换为它们的真实卡号）
 				local code1, code2, code3 = 11452060,11452061,11452062
 				local state = 0
 				if cm.added_codes[tp][code1] == turn then state = state | 1 end
 				if cm.added_codes[tp][code2] == turn then state = state | 2 end
 				if cm.added_codes[tp][code3] == turn then state = state | 4 end
 				
-				-- 如果你说的 7 个情况单纯是“检索了几次（1~7次）”，
-				-- 那么请删掉上面位运算，改用这段统计数量的代码：
-				-- local state = 0
-				-- for code, t in pairs(cm.added_codes[tp]) do
-				--	 if t == turn then state = state + 1 end
-				-- end
-				-- if state > 7 then state = 7 end
-				
 				-- 3. 注册覆盖的全新提示
 				if state > 0 then
 					local de=Effect.CreateEffect(e:GetHandler())
-					-- 根据状态偏移 Stringid。假设你在 conf 文件里用 id的 4~10 描述了这7种情况，这里就 +3
 					de:SetDescription(aux.Stringid(m, 3 + state)) 
 					de:SetType(EFFECT_TYPE_FIELD)
 					de:SetCode(EFFECT_FLAG_EFFECT)

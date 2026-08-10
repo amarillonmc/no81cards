@@ -25,53 +25,62 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,0)
 	c:RegisterEffect(e2)
+
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_ADJUST)
+	e3:SetRange(0xff)
+	e3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+						e:Reset()
+						if cm.ini and cm.ini[tp] then return end
+						cm.ini=cm.ini or {}
+						cm.ini[tp]=true
+						local ge1=Effect.CreateEffect(c)
+						ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+						ge1:SetCode(EVENT_CHAINING)
+						ge1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+							-- 核心修正：使用 GetOperationInfo 获取效果的发动预告
+							local ex,tg,tc=Duel.GetOperationInfo(ev,CATEGORY_TODECK)
+							-- ex代表有此类别预告；tc>0 代表有具体的卡片数量预告；tg存在且数量>0 代表有明确对象预告
+							if ex and ((tg and #tg>0) or tc>0) then
+								local turn=Duel.GetTurnCount()
+								local count=(cm.todeck_count[turn] or 0)+1
+								cm.todeck_count[turn]=count
+								
+								-- =========================================================
+								-- 【UI 刷新逻辑】：限制在 1~5 之间，向双方玩家刷新提示
+								-- =========================================================
+								local state = math.min(count, 5)
+								
+								-- 清理旧的 UI 提示
+								if cm.client_hint_eff[tp] then
+									cm.client_hint_eff[tp]:Reset()
+									cm.client_hint_eff[tp] = nil
+								end
+								
+								-- 注册新的 UI 提示
+								local de=Effect.CreateEffect(e:GetHandler())
+								de:SetDescription(aux.Stringid(m, state)) -- 读取 1~5 号描述
+								de:SetType(EFFECT_TYPE_FIELD)
+								de:SetCode(EFFECT_FLAG_EFFECT)
+								de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+								de:SetTargetRange(1,0)
+								de:SetReset(RESET_PHASE+PHASE_END)
+								Duel.RegisterEffect(de, tp)
+								
+								-- 保存引用供下次检索时 Reset
+								cm.client_hint_eff[tp] = de
+							end
+						end)
+						Duel.RegisterEffect(ge1,tp)
+					end)
+	c:RegisterEffect(e3)
 	
 	-- 【全局追踪】与动态客户端提示
 	if not cm.global_check then
 		cm.global_check=true
 		cm.todeck_count={}
 		cm.client_hint_eff={} -- 新增：用于缓存并动态覆盖客户端提示
-		
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_CHAINING)
-		ge1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-			-- 核心修正：使用 GetOperationInfo 获取效果的发动预告
-			local ex,tg,tc=Duel.GetOperationInfo(ev,CATEGORY_TODECK)
-			-- ex代表有此类别预告；tc>0 代表有具体的卡片数量预告；tg存在且数量>0 代表有明确对象预告
-			if ex and ((tg and #tg>0) or tc>0) then
-				local turn=Duel.GetTurnCount()
-				local count=(cm.todeck_count[turn] or 0)+1
-				cm.todeck_count[turn]=count
-				
-				-- =========================================================
-				-- 【UI 刷新逻辑】：限制在 1~5 之间，向双方玩家刷新提示
-				-- =========================================================
-				local state = math.min(count, 5)
-				
-				for p = 0, 1 do
-					-- 清理旧的 UI 提示
-					if cm.client_hint_eff[p] then
-						cm.client_hint_eff[p]:Reset()
-						cm.client_hint_eff[p] = nil
-					end
-					
-					-- 注册新的 UI 提示
-					local de=Effect.CreateEffect(e:GetHandler())
-					de:SetDescription(aux.Stringid(m, state)) -- 读取 1~5 号描述
-					de:SetType(EFFECT_TYPE_FIELD)
-					de:SetCode(EFFECT_FLAG_EFFECT)
-					de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
-					de:SetTargetRange(1,0)
-					de:SetReset(RESET_PHASE+PHASE_END)
-					Duel.RegisterEffect(de, p)
-					
-					-- 保存引用供下次检索时 Reset
-					cm.client_hint_eff[p] = de
-				end
-			end
-		end)
-		Duel.RegisterEffect(ge1,0)
 	end
 end
 
@@ -82,7 +91,7 @@ function cm.get_req_count()
 	local turn=Duel.GetTurnCount()
 	local count=cm.todeck_count[turn] or 0
 	-- 基础为 6，每有 1 次减少 1 个，最少为 1
-	return math.max(1, 6 - count)
+	return math.max(1, 4 - count)
 end
 
 function cm.spfilter(c,sc)
