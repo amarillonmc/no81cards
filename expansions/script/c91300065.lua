@@ -38,15 +38,15 @@ function c91300065.activate(e,tp,eg,ep,ev,re,r,rp)
 	e:SetLabel(1)--coin;91300063
 	local res=Duel.TossCoin(tp,1)
 	if res==1 then
-		c91300065.obverse(e,tp,eg,ep,ev,re,r,rp,1)
 		if e:IsActivated() then
 			Crossroads_coin_effect_list[aux.Stringid(91300065,1)]=c91300065.reverse
 		end
+		c91300065.obverse(e,tp,eg,ep,ev,re,r,rp,1)
 	else
-		c91300065.reverse(e,tp,eg,ep,ev,re,r,rp,1)
 		if e:IsActivated() then
 			Crossroads_coin_effect_list[aux.Stringid(91300065,0)]=c91300065.obverse
 		end
+		c91300065.reverse(e,tp,eg,ep,ev,re,r,rp,1)
 	end
 end
 function c91300065.tgfilter(c)

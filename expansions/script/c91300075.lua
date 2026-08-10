@@ -118,7 +118,7 @@ function c91300075.activate(e,tp,eg,ep,ev,re,r,rp)
 		local codes={}
 		for _,code in pairs({91300063,91300065,91300067,91300069,91300071,91300073,91300075,91300077,91300079,91300081,91300083}) do
 			local tc=Crossroads_card_list[code]
-			if code~=e:GetHandler():GetCode() and tc:CheckActivateEffect(false,true,false)~=nil then-- 
+			if code~=91300075 and tc:CheckActivateEffect(false,true,false)~=nil then-- 
 				table.insert(codes,code)
 			end
 		end

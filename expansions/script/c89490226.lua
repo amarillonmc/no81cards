@@ -17,13 +17,10 @@ function s.initial_effect(c)
 	e3:SetOperation(s.lvop)
 	c:RegisterEffect(e3)
 end
-function s.ntfilter(c)
-	return c:IsFaceup() and c:IsCode(89490223)
-end
 function s.ntcon(e,c,minc)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return minc==0 and c:IsLevelAbove(5) and (Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 or Duel.IsExistingMatchingCard(s.ntfilter,tp,LOCATION_FZONE,0,1,nil)) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return minc==0 and c:IsLevelAbove(5) and (Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 or Duel.IsEnvironment(89490223,PLAYER_ALL,LOCATION_FZONE)) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function s.tgfilter(c)
 	return not c:IsCode(id) and c:IsSetCard(0xc3b) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()

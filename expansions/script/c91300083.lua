@@ -41,8 +41,8 @@ function c91300083.initial_effect(c)
 end
 function c91300083.thfilter(c)
 	if not c:IsAbleToHand() then return false end
-	local b1=c:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_COIN)) and Duel.GetFlagEffect(0,91300083)==0
-	local b2=c:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_DICE)) and Duel.GetFlagEffect(0,91300084)==0
+	local b1=c:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_DICE)) and Duel.GetFlagEffect(0,91300083)==0
+	local b2=c:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_COIN)) and Duel.GetFlagEffect(0,91300084)==0
 	local b3=c:IsCode(9300420,10173087,33701339,91300067,91300073,91300079) and Duel.GetFlagEffect(0,91300085)==0
 	return b1 or b2 or b3
 end

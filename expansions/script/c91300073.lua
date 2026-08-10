@@ -96,7 +96,7 @@ function c91300073.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c91300073.tgfilter(c,p)
-	return (c:IsSetCard(0x855) and c:IsLocation(LOCATION_DECK) and not c:IsCode(91300073) and c:GetActivateEffect():IsActivatable(p,true,true) or c:IsControler(1-p)) and c:IsAbleToGrave()
+	return (c:IsSetCard(0x855) and c:IsLocation(LOCATION_DECK) and c:CheckActivateEffect(true,true,false)~=nil and not c:IsCode(91300073) or c:IsControler(1-p)) and c:IsAbleToGrave()
 end
 function c91300073.win(e,p,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
