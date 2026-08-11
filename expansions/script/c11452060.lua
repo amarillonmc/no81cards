@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	-- 【怪兽效果】①：双方回合，把手卡的这张卡和卡组1张「落渊」魔法卡除外才能发动...
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,0))
+	e3:SetDescription(aux.Stringid(11452063,1))
 	e3:SetCategory(CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
@@ -46,7 +46,7 @@ function cm.p_buffop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	-- 赋予全局“手卡发陷阱”Buff
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,5))
+	e1:SetDescription(aux.Stringid(11452063,2))
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e1:SetTargetRange(LOCATION_HAND,0)
@@ -148,18 +148,34 @@ function cm.m_operation(e,tp,eg,ep,ev,re,r,rp)
 				local cost=te:GetCost()
 				if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 			end
-			-- 记录自肃：本回合不能再发动相同数量
-			if count>4 then
-				Duel.RegisterFlagEffect(tp,restrict_flag,RESET_PHASE+PHASE_END,0,1)
-			else
-				local de=Effect.CreateEffect(e:GetHandler())
-				de:SetDescription(aux.Stringid(m,count))
-				de:SetType(EFFECT_TYPE_FIELD)
-				de:SetCode(EFFECT_FLAG_EFFECT+restrict_flag)
-				de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
-				de:SetTargetRange(1,0)
-				de:SetReset(RESET_PHASE+PHASE_END)
-				Duel.RegisterEffect(de,tp)
+			Duel.RegisterFlagEffect(tp, restrict_flag, RESET_PHASE+PHASE_END, 0, 1)
+			
+			-- 2. 处理统合版客户端提示（仅当 1~4 张时状态会发生改变）
+			if count <= 4 then
+				-- 组合状态计算 (1~15)
+				local state = 0
+				if Duel.GetFlagEffect(tp, m * 10 + 1) > 0 then state = state | 1 end
+				if Duel.GetFlagEffect(tp, m * 10 + 2) > 0 then state = state | 2 end
+				if Duel.GetFlagEffect(tp, m * 10 + 3) > 0 then state = state | 4 end
+				if Duel.GetFlagEffect(tp, m * 10 + 4) > 0 then state = state | 8 end
+				
+				-- 利用底层等价原理，直接一键抹除旧的统合提示
+				Duel.ResetFlagEffect(tp, m+0xffffff)
+				
+				-- 注册全新的统合提示
+				if state > 0 then
+					local de = Effect.CreateEffect(e:GetHandler())
+					-- 【完美避开 6 号位映射】：状态 1~6 减1对应 0~5；状态 7~15 原样对应 7~15
+					local desc_id = state <= 6 and (state - 1) or state
+					de:SetDescription(aux.Stringid(m, desc_id))
+					de:SetType(EFFECT_TYPE_FIELD)
+					-- 这里的 Code 用 m 独立占位，专职负责显示提示，与 restrict_flag 解耦
+					de:SetCode(EFFECT_FLAG_EFFECT+m+0xffffff) 
+					de:SetProperty(EFFECT_FLAG_PLAYER_TARGET + EFFECT_FLAG_CLIENT_HINT)
+					de:SetTargetRange(1,0)
+					de:SetReset(RESET_PHASE+PHASE_END)
+					Duel.RegisterEffect(de, tp)
+				end
 			end
 		end
 	end

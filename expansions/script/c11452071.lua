@@ -50,7 +50,7 @@ function cm.initial_effect(c)
 								-- =========================================================
 								-- 【UI 刷新逻辑】：限制在 1~5 之间，向双方玩家刷新提示
 								-- =========================================================
-								local state = math.min(count, 5)
+								local state = math.min(count, 15)
 								
 								-- 清理旧的 UI 提示
 								if cm.client_hint_eff[tp] then

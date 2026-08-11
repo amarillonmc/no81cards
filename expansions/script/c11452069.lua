@@ -64,7 +64,7 @@ function cm.initial_effect(c)
 									end
 									local de = Effect.CreateEffect(e:GetHandler())
 									-- state (1~7) + 5 = (6~12)，完美映射 6-12 号字符串
-									de:SetDescription(aux.Stringid(11452071, 5 + state)) 
+									de:SetDescription(aux.Stringid(11452068, 6 + state)) 
 									de:SetType(EFFECT_TYPE_FIELD)
 									de:SetCode(EFFECT_FLAG_EFFECT)
 									de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)

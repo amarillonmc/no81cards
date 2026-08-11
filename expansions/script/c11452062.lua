@@ -17,7 +17,7 @@ function cm.initial_effect(c)
 	e1:SetLabelObject(g)
 	-- 【怪兽效果】①：双方回合，把手卡的这张卡和卡组1只「落渊」灵摆怪兽表侧加入额外卡组才能发动...
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetDescription(aux.Stringid(11452063,1))
 	e2:SetCategory(CATEGORY_TODECK+CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -34,11 +34,11 @@ end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
-		if not (eg:IsContains(c) and re and re:IsActivated() and bit.band(r,REASON_EFFECT)~=0 and c:GetDestination()&LOCATION_ONFIELD==0 and (c:IsLocation(LOCATION_PZONE) or c:GetOriginalCode()~=m)) then return end
-		local dg=Duel.GetMatchingGroup(function(c) return c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED) end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
+		if not (eg:IsContains(c) and re and re:IsActivated() and bit.band(r,REASON_EFFECT)~=0 and c:GetDestination()&LOCATION_ONFIELD==0 and (c:IsLocation(LOCATION_PZONE) or c:GetOriginalCode()~=m) and c:IsDestructable(e)) then return end
+		local dg=Duel.GetMatchingGroup(function(c) return c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED) end,tp,0,LOCATION_ONFIELD,c)
 		dg:KeepAlive()
 		cm[e]=dg
-		return #dg>0
+		return true --#dg>0
 	end
 	local container=e:GetLabelObject()
 	container:Clear()
@@ -47,12 +47,14 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.HintSelection(container)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESREPLACE)
 	local dg=cm[e]
-	if not dg or aux.GetValueType(dg)~="Group" then dg=Duel.GetMatchingGroup(function(c) return c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED) end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c) end 
+	if not dg or aux.GetValueType(dg)~="Group" then dg=Duel.GetMatchingGroup(function(c) return c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED) end,tp,0,LOCATION_ONFIELD,c) end 
 	local g=dg:Select(tp,1,1,nil)
 	dg:DeleteGroup()
 	cm[e]=nil
-	Duel.HintSelection(g)
-	g:AddCard(c)
+	if #g>0 then
+		Duel.HintSelection(g)
+		g:AddCard(c)
+	end
 	--c:SetStatus(STATUS_DESTROY_CONFIRMED,true)
 	--g:GetFirst():SetStatus(STATUS_DESTROY_CONFIRMED,true)
 	Duel.Destroy(g,REASON_EFFECT+REASON_REPLACE)
@@ -135,17 +137,34 @@ function cm.m_operation(e,tp,eg,ep,ev,re,r,rp)
 				Duel.SendtoHand(sg,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,sg)
 			end
-			if count>4 then
-				Duel.RegisterFlagEffect(tp,restrict_flag,RESET_PHASE+PHASE_END,0,1)
-			else
-				local de=Effect.CreateEffect(e:GetHandler())
-				de:SetDescription(aux.Stringid(m,count))
-				de:SetType(EFFECT_TYPE_FIELD)
-				de:SetCode(EFFECT_FLAG_EFFECT+restrict_flag)
-				de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
-				de:SetTargetRange(1,0)
-				de:SetReset(RESET_PHASE+PHASE_END)
-				Duel.RegisterEffect(de,tp)
+			Duel.RegisterFlagEffect(tp, restrict_flag, RESET_PHASE+PHASE_END, 0, 1)
+			
+			-- 2. 处理统合版客户端提示（仅当 1~4 张时状态会发生改变）
+			if count <= 4 then
+				-- 组合状态计算 (1~15)
+				local state = 0
+				if Duel.GetFlagEffect(tp, m * 10 + 1) > 0 then state = state | 1 end
+				if Duel.GetFlagEffect(tp, m * 10 + 2) > 0 then state = state | 2 end
+				if Duel.GetFlagEffect(tp, m * 10 + 3) > 0 then state = state | 4 end
+				if Duel.GetFlagEffect(tp, m * 10 + 4) > 0 then state = state | 8 end
+				
+				-- 利用底层等价原理，直接一键抹除旧的统合提示
+				Duel.ResetFlagEffect(tp, m+0xffffff)
+				
+				-- 注册全新的统合提示
+				if state > 0 then
+					local de = Effect.CreateEffect(e:GetHandler())
+					-- 【完美避开 6 号位映射】：状态 1~6 减1对应 0~5；状态 7~15 原样对应 7~15
+					local desc_id = state <= 6 and (state - 1) or state
+					de:SetDescription(aux.Stringid(m, desc_id))
+					de:SetType(EFFECT_TYPE_FIELD)
+					-- 这里的 Code 用 m 独立占位，专职负责显示提示，与 restrict_flag 解耦
+					de:SetCode(EFFECT_FLAG_EFFECT+m+0xffffff) 
+					de:SetProperty(EFFECT_FLAG_PLAYER_TARGET + EFFECT_FLAG_CLIENT_HINT)
+					de:SetTargetRange(1,0)
+					de:SetReset(RESET_PHASE+PHASE_END)
+					Duel.RegisterEffect(de, tp)
+				end
 			end
 		end
 	end

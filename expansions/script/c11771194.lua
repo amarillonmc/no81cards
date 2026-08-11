@@ -68,10 +68,9 @@ end
 function s.negop1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,id)>0 then return end 
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		if Duel.Destroy(eg,REASON_EFFECT)~=0 then
-			Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
-		end
+		Duel.Destroy(eg,REASON_EFFECT)
 	end
+	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
 end
 function s.negcon2(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp and Duel.IsChainNegatable(ev) and 
@@ -88,10 +87,9 @@ end
 function s.negop2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,id+o)>0 then return end 
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		if Duel.Destroy(eg,REASON_EFFECT)~=0 then
-			Duel.RegisterFlagEffect(tp,id+o,RESET_PHASE+PHASE_END,0,1)
-		end
+		Duel.Destroy(eg,REASON_EFFECT)
 	end
+	Duel.RegisterFlagEffect(tp,id+o,RESET_PHASE+PHASE_END,0,1)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
