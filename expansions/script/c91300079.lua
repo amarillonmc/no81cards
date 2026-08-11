@@ -89,7 +89,7 @@ function c91300079.costop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,c91300079.tgfilter,tp,LOCATION_HAND,0,1,1,te:GetHandler())
 		g:AddCard(e:GetHandler())
 		Duel.SendtoGrave(g,REASON_EFFECT)
-		e:SetLabel(1)--morra;91300063
+		Dead_Town_99_Check=true--morra;91300063
 		local p=Duel.RockPaperScissors()
 		if e:IsActivated() then
 			Crossroads_morra_win_effect_list[aux.Stringid(91300079,0)]=c91300079.win

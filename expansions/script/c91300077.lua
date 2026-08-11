@@ -57,6 +57,8 @@ function c91300077.costop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,c91300077.tgfilter,tp,LOCATION_HAND,0,1,1,te:GetHandler())
 		g:AddCard(e:GetHandler())
 		Duel.SendtoGrave(g,REASON_EFFECT)
+		--coin
+		Dead_Town_99_Check=true
 		local res=Duel.TossCoin(tp,1)
 		if res==1 then
 			c91300077.obverse(e,tp,eg,ep,ev,re,r,rp,1)

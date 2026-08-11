@@ -35,7 +35,7 @@ function c91300065.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 end
 function c91300065.activate(e,tp,eg,ep,ev,re,r,rp)
-	e:SetLabel(1)--coin;91300063
+	Dead_Town_99_Check=true--coin;91300063
 	local res=Duel.TossCoin(tp,1)
 	if res==1 then
 		if e:IsActivated() then

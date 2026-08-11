@@ -78,7 +78,7 @@ function c91300073.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return c91300073.win(e,tp,eg,ep,ev,re,r,rp,0) or c91300073.lost(e,tp,eg,ep,ev,re,r,rp,0) end
 end
 function c91300073.activate(e,tp,eg,ep,ev,re,r,rp)
-	e:SetLabel(1)--morra;91300063
+	Dead_Town_99_Check=true--morra;91300063
 	local p=Duel.RockPaperScissors()
 	if e:IsActivated() then
 		Crossroads_morra_win_effect_list[aux.Stringid(91300073,0)]=c91300073.win

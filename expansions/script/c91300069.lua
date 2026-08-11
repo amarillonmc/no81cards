@@ -63,7 +63,7 @@ function c91300069.activate(e,tp,eg,ep,ev,re,r,rp)
 	else
 		local tc=Duel.GetFieldCard(tp,LOCATION_MZONE,d-seq-1)
 		if tc then Duel.SendtoGrave(c,REASON_EFFECT) return else
-			e:SetLabel(1)
+			Dead_Town_99_Check=true
 			Duel.MoveToField(c,tp,tp,LOCATION_MZONE,POS_FACEUP,true,1<<(d-seq-1))
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)

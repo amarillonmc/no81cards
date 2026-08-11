@@ -90,7 +90,7 @@ function c91300071.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 end
 function c91300071.activate(e,tp,eg,ep,ev,re,r,rp)
-	e:SetLabel(1)--coin;91300063
+	Dead_Town_99_Check=true--coin;91300063
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COIN)
 	local opt=Duel.AnnounceCoin(tp)
 	local coin=Duel.TossCoin(tp,1)

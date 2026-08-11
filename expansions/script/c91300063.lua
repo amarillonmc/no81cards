@@ -18,6 +18,23 @@ function c91300063.initial_effect(c)
 		ge1:SetOperation(c91300063.regop)
 		Duel.RegisterEffect(ge1,0)
 	end
+	if not c91300063.global_check then
+		c91300063.global_check=true
+		c91300063.dice_sum={}
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_TOSS_DICE_NEGATE)
+		ge2:SetOperation(c91300063.sumop)
+		Duel.RegisterEffect(ge2,0)
+		local ge3=Effect.CreateEffect(c)
+		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge3:SetCode(EVENT_CHAINING)
+		ge3:SetOperation(function (e,tp,eg,ep,ev,re,r,rp) c91300063.dice_sum={} Dead_Town_99_Check=false end)
+		Duel.RegisterEffect(ge3,0)
+		local ge4=ge3:Clone()
+		ge4:SetCode(EVENT_CHAIN_SOLVING)
+		Duel.RegisterEffect(ge4,0)
+	end
 end
 function c91300063.regop(e,tp,eg,ep,ev,re,r,rp)
 	for _,code in pairs({91300063,91300065,91300067,91300069,91300071,91300073,91300075,91300077,91300079,91300081,91300083}) do
@@ -73,8 +90,8 @@ function c91300063.activate(e,tp,eg,ep,ev,re,r,rp)
 		f(e,tp,eg,ep,ev,re,r,rp)
 		return
 	elseif dc==99 then
-		if e:GetLabel()==1 then
-			Duel.SetLP(1-tp,Duel.GetLP(1-tp)-dc*200)
+		if Dead_Town_99_Check then
+			Duel.SetLP(1-tp,Duel.GetLP(1-tp)-c91300063.dice_sum[e]*200)
 		end
 	end
 end
@@ -145,4 +162,9 @@ function c91300063.acop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c91300063.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,2,REASON_EFFECT)
+end
+function c91300063.sumop(e,tp,eg,ep,ev,re,r,rp)
+	for _,v in ipairs({Duel.GetDiceResult()}) do
+		c91300063.dice_sum[re]=c91300063.dice_sum[re]+v
+	end
 end

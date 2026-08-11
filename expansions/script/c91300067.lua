@@ -49,7 +49,7 @@ function c91300067.clear(e,tp,eg,ep,ev,re,r,rp)
 	Crossroads_morra_win_effect_list={}
 end
 function c91300067.activate(e,tp,eg,ep,ev,re,r,rp)
-	e:SetLabel(1)--morra;91300063
+	Dead_Town_99_Check=true--morra;91300063
 	local p=Duel.RockPaperScissors()
 	if e:IsActivated() then
 		Crossroads_morra_win_effect_list[aux.Stringid(91300067,0)]=c91300067.win
