@@ -56,7 +56,10 @@ function c67200991.aclimit(e,re,tp)
 end
 --
 function c67200991.filter1(c,e,tp)
-	return c:IsSetCard(0xc67a) and c:IsType(TYPE_PENDULUM) and ((Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) or (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsLocation(LOCATION_HAND)) or (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLocation(LOCATION_EXTRA))))
+	local b1=not c:IsForbidden()
+	local b2=c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsLocation(LOCATION_HAND)
+	local b3=Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLocation(LOCATION_EXTRA)
+	return c:IsSetCard(0xc67a) and c:IsType(TYPE_PENDULUM) and (b1 or b2 or b3)
 end
 function c67200991.pspcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
@@ -64,26 +67,37 @@ function c67200991.pspcon(e,tp,eg,ep,ev,re,r,rp)
 	return (re:GetActiveType()==TYPE_PENDULUM+TYPE_SPELL and not re:IsHasType(EFFECT_TYPE_ACTIVATE)
 		and bit.band(loc,LOCATION_PZONE)==LOCATION_PZONE and rc:IsSetCard(0x67a))
 end
+function c67200991.check1(g,e,tp)
+	return g:IsExists(c67200991.cfilter1,1,nil,e,tp,g) and g:IsContains(e:GetHandler())
+end
+function c67200991.cfilter1(c,e,tp,g)
+	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsLocation(LOCATION_HAND)
+	local b2=Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLocation(LOCATION_EXTRA)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (b1 or b2) and g:IsExists(c67200991.cfilter2,1,c,e,tp)
+end
+function c67200991.cfilter2(c)
+	return not c:IsForbidden()
+end
 function c67200991.pstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c67200991.filter1,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,c,e,tp) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsLocation(LOCATION_HAND)) or (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLocation(LOCATION_EXTRA))) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-end
-function c67200991.spfilter(c,e,tp)
-	return c:IsSetCard(0xc67a) and c:IsType(TYPE_PENDULUM) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsLocation(LOCATION_HAND)) or (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLocation(LOCATION_EXTRA)))
+	local g=Duel.GetMatchingGroup(c67200991.filter1,tp,LOCATION_HAND+LOCATION_EXTRA,0,nil,e,tp)
+	if chk==0 then return g:CheckSubGroup(c67200991.check1,2,2,e,tp) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) end
 end
 function c67200991.psop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if not (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) then return end
 	if c:IsRelateToEffect(e) then
+		local g=Duel.GetMatchingGroup(c67200991.filter1,tp,LOCATION_HAND+LOCATION_EXTRA,0,nil,e,tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-		local sg=Duel.SelectMatchingCard(tp,c67200991.filter1,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,1,c,e,tp)
-		sg:AddCard(c)
-		--local b1=Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)
-		--local b2=c:IsCanBeSpecialSummoned(e,0,tp,false,false) and ((Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsLocation(LOCATION_HAND)) or (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLocation(LOCATION_EXTRA)))
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local tc=sg:FilterSelect(tp,c67200991.spfilter,1,1,nil,e,tp):GetFirst()
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-		sg:RemoveCard(tc)
-		Duel.MoveToField(sg:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+		local sg=g:SelectSubGroup(tp,c67200991.check1,false,2,2,e,tp)
+		if #sg==2 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+			local tc=sg:FilterSelect(tp,c67200991.cfilter2,1,1,nil):GetFirst()
+			Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+			sg:RemoveCard(tc)
+			if #sg>0 then
+				Duel.SpecialSummon(sg:GetFirst(),0,tp,tp,false,false,POS_FACEUP)
+			end
+		end
 	end
 end

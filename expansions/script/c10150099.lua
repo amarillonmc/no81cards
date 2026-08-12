@@ -1,5 +1,5 @@
 --No.62 超银河眼光子龙皇
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+Duel.LoadScript("c10199990.lua")
 local m,cm=rscf.DefineCard(10150099)
 function cm.initial_effect(c)
 	--xyz summon
