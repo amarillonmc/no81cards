@@ -92,7 +92,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetLabelObject(tc)
 	e2:SetReset(RESET_CHAIN)
 	e2:SetOperation(cm.resetop)
-	Duel.RegisterEffect(e2,tp)
+	--Duel.RegisterEffect(e2,tp)
 end
 function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetLabelObject()

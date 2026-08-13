@@ -25,6 +25,9 @@ local A=1103515245
 local B=12345
 local M=32767
 function cm.roll(min,max)
+	if not cm.r then
+		cm.r=Duel.GetFieldGroup(0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_EXTRA):GetSum(Card.GetCode)
+	end
 	min=tonumber(min)
 	max=tonumber(max)
 	cm.r=((cm.r*A+B)%M)/M
@@ -38,7 +41,9 @@ function cm.roll(min,max)
 	end
 	return cm.r
 end
---if Duel.GetRandomNumber then cm.roll=Duel.GetRandomNumber end
+if not Duel.GetRandomNumber then
+	Duel.GetRandomNumber=cm.roll
+end
 if not require and loadfile then
 	function require(str)
 		require_list=require_list or {}
@@ -195,9 +200,6 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.DisableShuffleCheck()
 		Duel.Exile(c,REASON_RULE)
 	elseif c:IsLocation(LOCATION_HAND) and #g>=36 then
-		if not cm.r then
-			cm.r=Duel.GetFieldGroup(0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_EXTRA):GetSum(Card.GetCode)
-		end
 		--[[local tab={}
 		for i=1,10000000 do
 			tab[cm.r]=true

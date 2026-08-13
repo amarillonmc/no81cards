@@ -41,13 +41,13 @@ function c67200909.initial_effect(c)
 end
 function c67200909.filter(c,tp)
 	local r=LOCATION_REASON_TOFIELD
-	--if not c:IsControler(c:GetOwner()) then r=LOCATION_REASON_CONTROL end
+	if not c:IsControler(c:GetOwner()) then r=LOCATION_REASON_CONTROL end
 	return c:IsType(TYPE_PENDULUM) and c:IsFaceupEx()
-		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
+		and not c:IsForbidden()
 end
 function c67200909.mvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_MZONE) and c67200909.filter(chkc,tp) end
-	if chk==0 then return Duel.IsExistingTarget(c67200909.filter,tp,LOCATION_GRAVE+LOCATION_MZONE,LOCATION_GRAVE+LOCATION_MZONE,1,nil) end
+	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.IsExistingTarget(c67200909.filter,tp,LOCATION_GRAVE+LOCATION_MZONE,LOCATION_GRAVE+LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,c67200909.filter,tp,LOCATION_GRAVE+LOCATION_MZONE,LOCATION_GRAVE+LOCATION_MZONE,1,1,nil)
 	if g:GetFirst():IsLocation(LOCATION_GRAVE) then
@@ -56,6 +56,7 @@ function c67200909.mvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c67200909.mvop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
+	if not (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) then return end
 	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
 		Duel.MoveToField(tc,tp,tc:GetOwner(),LOCATION_PZONE,POS_FACEUP,true)
 	end

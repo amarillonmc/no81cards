@@ -36,11 +36,11 @@ function c67200906.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
-function c67200906.cfilter(c)
+function c67200906.cfilter(c,tp)
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsSetCard(0x367a) and c:IsType(TYPE_PENDULUM) and c:IsPreviousControler(tp)
 end
 function c67200906.mvcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c67200906.cfilter,1,nil)
+	return eg:IsExists(c67200906.cfilter,1,nil,tp)
 end
 function c67200906.stfilter(c)
 	return c:IsSetCard(0x367a) and c:IsType(TYPE_PENDULUM) and c:IsFaceup() and not c:IsForbidden()

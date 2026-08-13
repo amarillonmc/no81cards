@@ -17,7 +17,7 @@ end
 -- ==================== 发动准备（扫描对方墓地并限选宣告） ====================
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	-- 检查对方墓地是否至少存在1张卡
-	if chk==0 then return Duel.IsExistingMatchingCard(nil, tp, 0, LOCATION_GRAVE, 1, nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(function(tc) return Duel.GetMatchingGroup(function(c) return c:IsCode(tc:GetCode()) and c:IsAbleToHand() end, tp, LOCATION_DECK, 0, nil) or Duel.GetMatchingGroup(function(c) return c:IsAbleToHand() end, tp, 0, LOCATION_DECK, nil) end
 	
 	-- 抓取对方墓地所有卡片，提取出不重复的卡名密码
 	local g=Duel.GetMatchingGroup(nil, tp, 0, LOCATION_GRAVE, nil)
