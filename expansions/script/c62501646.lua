@@ -68,7 +68,7 @@ function c62501646.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c62501646.thfilter(c)
-	return aux.IsTypeInText(c,TYPE_SPIRIT) and c:IsAbleToHand()
+	return (aux.IsTypeInText(c,TYPE_SPIRIT) or c:IsOriginalCodeRule(6544078,16889337,24701235,25415052,32181268,33325951,39817919,43378076,43543777,52900000,57722593,60823690,66815913,67972302,82841979,90365482,92200612)) and c:IsAbleToHand()
 end
 function c62501646.sumfilter(c)
 	return c:IsType(TYPE_SPIRIT) and c:IsSummonable(true,nil)

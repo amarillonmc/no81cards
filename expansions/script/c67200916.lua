@@ -59,7 +59,7 @@ function c67200916.damcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local b2=Duel.IsExistingMatchingCard(c67200916.costfilter,tp,LOCATION_HAND,0,1,c)
 	if chk==0 then return c:IsDiscardable() and b2 end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(67200916,4))
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(67200916,3))
 	local g=Duel.SelectMatchingCard(tp,c67200916.costfilter,tp,LOCATION_HAND,0,1,1,c)
 	g:AddCard(c)
 	Duel.SendtoExtraP(g,nil,REASON_COST)

@@ -213,6 +213,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			c:SetEntityCode(tc:GetOriginalCode())
 			if not tc.initial_effect then
 				c:ReplaceEffect(80316585,0)
+				setmetatable(c,{})
 				c:SetStatus(STATUS_EFFECT_REPLACED,false)
 			else
 				cm.proeffects=cm.proeffects or {}
@@ -236,6 +237,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 					return ce
 				end
 				c:ReplaceEffect(tc:GetOriginalCode(),0)
+				setmetatable(c,_G["c"..tc:GetOriginalCode()])
 				c:SetStatus(STATUS_EFFECT_REPLACED,false)
 				Effect.SetProperty=_SetProperty
 				Effect.Clone=_Clone

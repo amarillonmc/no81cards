@@ -64,6 +64,7 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 				return ce
 			end
 			c:ReplaceEffect(m+48,0)
+			setmetatable(c,_G["c"..m+48])
 			Effect.SetProperty=_SetProperty
 			Effect.Clone=_Clone
 			for ke,vp in pairs(cm.proeffects) do

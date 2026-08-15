@@ -71,7 +71,7 @@ function c62501601.chainlm(e,rp,tp)
 	return tp==rp
 end
 function c62501601.thfilter(c)
-	return (c:IsSetCard(0xea2) or aux.IsTypeInText(c,TYPE_SPIRIT)) and c:IsAbleToHand()
+	return (c:IsSetCard(0xea2) or (aux.IsTypeInText(c,TYPE_SPIRIT) or c:IsOriginalCodeRule(6544078,16889337,24701235,25415052,32181268,33325951,39817919,43378076,43543777,52900000,57722593,60823690,66815913,67972302,82841979,90365482,92200612))) and c:IsAbleToHand()
 end
 function c62501601.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c62501601.thfilter,tp,LOCATION_DECK,0,1,nil,0) and e:GetHandler():IsAbleToHand() end

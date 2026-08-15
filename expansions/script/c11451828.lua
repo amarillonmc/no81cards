@@ -68,8 +68,8 @@ function cm.initial_effect(c)
 						local lscale=lpz:GetLeftScale()
 						local rscale=rpz:GetRightScale()
 						if lscale>rscale then lscale,rscale=rscale,lscale end
-						local _,maxlv=g:GetMaxGroup(Card.GetLevel)
-						local _,minlv=g:GetMinGroup(Card.GetLevel)
+						local _,maxlv=g:GetMaxGroup(cm.plv)
+						local _,minlv=g:GetMinGroup(cm.plv)
 						local clv=math.max(lscale-minlv+1,0)+math.max(maxlv-rscale+1,0)
 						if clv>0 then cm[0]=true end
 						return #g<=ft and #exg<=ft2 and #mg<=ft1 and (clv==0 or Duel.IsCanRemoveCounter(tp,1,1,0x970,clv,REASON_EFFECT))
@@ -92,8 +92,8 @@ function cm.initial_effect(c)
 					lscale,rscale=rscale,lscale
 					lpz,rpz=rpz,lpz
 				end
-				local _,maxlv=sg:GetMaxGroup(Card.GetLevel)
-				local _,minlv=sg:GetMinGroup(Card.GetLevel)
+				local _,maxlv=sg:GetMaxGroup(cm.plv)
+				local _,minlv=sg:GetMinGroup(cm.plv)
 				local clv=math.max(lscale-minlv+1,0)+math.max(maxlv-rscale+1,0)
 				if clv>0 and Duel.IsCanRemoveCounter(tp,1,1,0x970,clv,REASON_EFFECT) then
 					Duel.RemoveCounter(tp,1,1,0x970,clv,REASON_EFFECT)
@@ -122,6 +122,13 @@ function cm.initial_effect(c)
 			return sg
 		end
 	end   
+end
+function cm.plv(c)
+	if c.pendulum_level then
+		return c.pendulum_level
+	else
+		return c:GetLevel()
+	end
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -54,7 +54,7 @@ function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then return end
 	local tc=g:GetFirst()
 	if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 then
-		local te=rc.self_hand_effect
+		local te=_G["c"..rc:GetOriginalCode()].self_hand_effect
 		local ce=te:Clone()
 		ce:SetReset(RESET_EVENT+RESETS_STANDARD)
 		ce:SetRange(LOCATION_MZONE)

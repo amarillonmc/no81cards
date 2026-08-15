@@ -50,8 +50,10 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			c:SetEntityCode(code)
 			if g:GetFirst():GetOriginalType()&0x11~=0x11 or g:GetFirst():GetOriginalType()&TYPE_PENDULUM>0 then
 				c:ReplaceEffect(code,0)
+				setmetatable(c,_G["c"..code])
 			else
 				c:ReplaceEffect(80316585,0)
+				setmetatable(c,{})
 			end
 			Duel.ConfirmCards(1-tp,c)
 			Duel.ShuffleDeck(tp)
