@@ -52,7 +52,7 @@ function c28316558.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToChain() then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
 end
 function c28316558.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return not eg:IsContains(e:GetHandler()) and eg:IsExists(Card.IsControler,1,nil,tp)
+	return not eg:IsContains(e:GetHandler())-- and eg:IsExists(Card.IsControler,1,nil,tp)
 end
 function c28316558.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

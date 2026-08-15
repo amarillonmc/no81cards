@@ -61,7 +61,9 @@ function c10111160.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c10111160.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local atk=Duel.GetMatchingGroupCount(Card.IsFacedown,0,LOCATION_REMOVED,0,nil)*200
+	-- 修复：将 player 参数从 0 改为 tp，统计自己里侧除外的卡
+	local count = Duel.GetMatchingGroupCount(Card.IsFacedown, tp, LOCATION_REMOVED, 0, nil)
+	local atk = count * 200
 	if atk>0 and c:IsFaceup() and c:IsRelateToEffect(e) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -73,9 +75,6 @@ function c10111160.atkop(e,tp,eg,ep,ev,re,r,rp)
     	e2:SetCode(EFFECT_UPDATE_DEFENSE)
     	c:RegisterEffect(e2)
 	end
-end
-function c10111160.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c10111160.remfilter1,1,nil)
 end
 function c10111160.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return tp==Duel.GetTurnPlayer()

@@ -41,7 +41,8 @@ function c67200971.mvop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c67200971.filter2(c,tp)
-	return not c:IsCode(67200971) and c:IsSetCard(0x367a) and c:IsType(TYPE_PENDULUM) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+	if not (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) then return false end
+	return not c:IsCode(67200971) and c:IsSetCard(0x367a) and c:IsType(TYPE_PENDULUM)
 end
 function c67200971.mvtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67200971.filter2,tp,LOCATION_EXTRA,0,1,nil,tp)
@@ -53,6 +54,7 @@ function c67200971.mvop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local g=Duel.SelectMatchingCard(tp,c67200971.filter2,tp,LOCATION_EXTRA,0,1,1,nil,tp)
+	if #g==0 then return end
 	local tc=g:GetFirst()
 	if Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
 		if c:IsRelateToEffect(e) then
