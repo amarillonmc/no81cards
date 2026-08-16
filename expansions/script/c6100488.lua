@@ -69,21 +69,40 @@ function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return true
 end
 
+function s.type_check(tp, ty)
+	-- 检查卡组里是否有 2 张以上的该种类卡片，并且其中至少有 1 张可以加入手卡
+	local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_DECK,0,nil,ty)
+	return #g>=2 and g:IsExists(Card.IsAbleToHand,1,nil)
+end
+
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
+	-- 动态检测卡组中符合条件（>=2张且可加手）的种类
+	local b1 = s.type_check(tp, TYPE_MONSTER)
+	local b2 = s.type_check(tp, TYPE_SPELL)
+	local b3 = s.type_check(tp, TYPE_TRAP)
+	
+	-- 【修复1&2】：如果在锁鸟状态下（无法加入手卡），或者没有任何种类满2张，这里会直接返回 false，阻止空发。
+	if chk==0 then return b1 or b2 or b3 end
+	
+	-- 动态构建供玩家选择的种类菜单（只显示卡组里确实合法的种类）
+	local ops={}
+	local opval={}
+	local off=1
+	if b1 then ops[off]=70 opval[off]=TYPE_MONSTER off=off+1 end
+	if b2 then ops[off]=71 opval[off]=TYPE_SPELL off=off+1 end
+	if b3 then ops[off]=72 opval[off]=TYPE_TRAP off=off+1 end
+	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CARDTYPE)
-	-- 0: 怪兽, 1: 魔法, 2: 陷阱
-	local ty=Duel.AnnounceType(tp)
-	e:SetLabel(ty)
+	local op=Duel.SelectOption(tp,table.unpack(ops))
+	local sel=opval[op+1]
+	
+	e:SetLabel(sel)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local ty=e:GetLabel()
-	local card_type=0
-	if ty==0 then card_type=TYPE_MONSTER
-	elseif ty==1 then card_type=TYPE_SPELL
-	elseif ty==2 then card_type=TYPE_TRAP end
+	local card_type=e:GetLabel()
 
 	local dcount=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
 	if dcount==0 then return end
@@ -104,13 +123,16 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 
 	if #match_g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local th=match_g:Select(tp,1,1,nil)
-		Duel.SendtoHand(th,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,th)
-		exc_g:Sub(th) -- 将选入手的卡从被翻开的卡群中剔除
+		-- 【修复细节】：这里强制筛选必须是确实能加入手卡的卡，防止因为锁鸟或其他奇怪的封印结界导致错误
+		local th=match_g:FilterSelect(tp,Card.IsAbleToHand,1,1,nil)
+		if #th>0 then
+			Duel.SendtoHand(th,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,th)
+			exc_g:Sub(th) -- 将选入手的卡从被翻开的卡群中剔除
+		end
 	end
 	
-	-- 剩余的卡回到卡组洗切
+	-- 剩下的卡回到卡组洗切
 	if #exc_g>0 then
 		Duel.SendtoDeck(exc_g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
@@ -164,7 +186,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
 		-- 抓取场上所有非衍生物的怪兽
-		local g=Duel.GetMatchingGroup(function(tc) return tc:IsType(TYPE_MONSTER) and not tc:IsType(TYPE_TOKEN) end,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		local g=Duel.GetMatchingGroup(function(tc) return tc:IsType(TYPE_MONSTER) and not tc:IsType(TYPE_TOKEN) end,tp,LOCATION_MZONE,LOCATION_MZONE,c)
 		if #g>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 			-- 选场上1只怪兽作为这张卡的超量素材
