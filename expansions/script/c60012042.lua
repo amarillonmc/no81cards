@@ -46,35 +46,36 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
   
   -- 2只以上的效果：连接区召唤怪兽的时候，给它们加进化指示物
   if ct>=2 then
-    local e1=Effect.CreateEffect(c)
-    e1:SetDescription(aux.Stringid(m,0))
-    e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-    e1:SetProperty(EFFECT_FLAG_DELAY)
-    e1:SetCode(EVENT_SUMMON_SUCCESS)
-    e1:SetRange(LOCATION_MZONE)
-    e1:SetCondition(cm.ctcon)
-    e1:SetOperation(cm.ctop)
-    e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-    c:RegisterEffect(e1)
-    local e2=e1:Clone()
-    e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-    c:RegisterEffect(e2)
-    c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(5)
+	e1:SetCondition(cm.ctcon)
+	e1:SetOperation(cm.ctop)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e2)
+	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
   end
   
   -- 3只以上的效果：主阶段特殊召唤手卡怪兽
   if ct>=3 then
-    local e3=Effect.CreateEffect(c)
-    e3:SetDescription(aux.Stringid(m,1))
-    e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-    e3:SetType(EFFECT_TYPE_IGNITION)
-    e3:SetRange(LOCATION_MZONE)
-    e3:SetCountLimit(1)
-    e3:SetTarget(cm.sptg)
-    e3:SetOperation(cm.spop)
-    e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-    c:RegisterEffect(e3)
-    c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,1))
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1)
+	e3:SetTarget(cm.sptg)
+	e3:SetOperation(cm.spop)
+	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e3)
+	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
   end
 end
 
@@ -97,11 +98,11 @@ function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
   local g=eg:Filter(cm.cfilter,nil,lg)
   local tc=g:GetFirst()
   while tc do
-    if tc:IsCanHaveCounter(0x624) then
-      tc:AddCounter(0x624,1)
-      Duel.RegisterFlagEffect(tp,60002148,0,0,1)
-    end
-    tc=g:GetNext()
+	if tc:IsCanHaveCounter(0x624) then
+	  tc:AddCounter(0x624,1)
+	  Duel.RegisterFlagEffect(tp,60002148,0,0,1)
+	end
+	tc=g:GetNext()
   end
 end
 
@@ -113,7 +114,7 @@ end
 -- 特殊召唤的目标
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
   if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-    and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
   Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 
@@ -123,7 +124,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
   local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
   if g:GetCount()>0 then
-    Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
   end
 end
 

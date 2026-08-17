@@ -30,10 +30,10 @@ end
 
 -- 目标
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-  if chk==0 then return Duel.IsPlayerCanDraw(tp,5) end
+  if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end
   Duel.SetTargetPlayer(tp)
-  Duel.SetTargetParam(5)
-  Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,5)
+  Duel.SetTargetParam(2)
+  Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
 end
 
 -- 操作

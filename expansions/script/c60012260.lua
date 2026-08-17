@@ -39,7 +39,7 @@ function s.initial_effect(c)
 end
 s.listed_series={0x6622}
 function s.matfilter(c)
-	return c:IsRace(RACE_WARRIOR)
+	return c:IsRace(RACE_WARRIOR) and c:IsAttackAbove(2000)
 end
 function s.con1b(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)

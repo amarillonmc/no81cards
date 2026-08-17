@@ -47,14 +47,15 @@ function cm.initial_effect(c)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local f=Duel.GetFlagEffect(tp,60002148)
-	if f<5 then
-		if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,5-f,e:GetHandler()) end
-		Duel.DiscardHand(tp,Card.IsDiscardable,5-f,5-f,REASON_COST+REASON_DISCARD)
-	elseif f==5 then
+	if f<3 then
+		if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,3-f,e:GetHandler()) end
+		Duel.DiscardHand(tp,Card.IsDiscardable,3-f,3-f,REASON_COST+REASON_DISCARD)
+	elseif f==3 then
 		if chk==0 then return true end
-	elseif f>5 then
-		if chk==0 then return Duel.IsPlayerCanDraw(tp,f-5) end
-		Duel.Draw(tp,f-5,REASON_COST)
+	elseif f>3 then
+		if chk==0 then return Duel.IsPlayerCanDraw(tp,f-3) end
+		local num=math.min(f-3,3)
+		Duel.Draw(tp,num,REASON_COST)
 	end
 end
 function cm.filter(c)

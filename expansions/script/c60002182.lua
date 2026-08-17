@@ -16,6 +16,7 @@ function cm.initial_effect(c)
 	e2:SetCategory(CATEGORY_DRAW+CATEGORY_RECOVER+CATEGORY_DAMAGE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
+	e2:SetCountLimit(4,m+10000000)
 	e2:SetCost(cm.thcost)
 	e2:SetOperation(cm.thop2)
 	c:RegisterEffect(e2)
@@ -58,9 +59,9 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	--Duel.Damage(1-tp,500,REASON_EFFECT)
 	if Duel.Recover(tp,500,REASON_EFFECT)~=0 then
 		Duel.BreakEffect()
-		if Duel.IsPlayerCanDraw(tp) and Duel.GetFlagEffect(tp,m+40000000)<2 then
-			if Duel.Draw(tp,1,REASON_EFFECT)~=0 then Duel.RegisterFlagEffect(tp,m+40000000,RESET_PHASE+PHASE_END,0,1) end
-		end
+		--if Duel.IsPlayerCanDraw(tp) and Duel.GetFlagEffect(tp,m+40000000)<2 then
+			--if Duel.Draw(tp,1,REASON_EFFECT)~=0 then Duel.RegisterFlagEffect(tp,m+40000000,RESET_PHASE+PHASE_END,0,1) end
+		--end
 	end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1000)
 end

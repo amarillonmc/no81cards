@@ -39,15 +39,15 @@ function cm.eqfilter(c)
 end
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		if not Duel.IsExistingMatchingCard(cm.msfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) or not Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_DECK,0,1,nil) then return false end
+		if not Duel.IsExistingMatchingCard(cm.msfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) or not Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil) then return false end
 		return Duel.GetSZoneCount(tp,Duel.GetFieldGroup(tp,LOCATION_SZONE,0))>0
 	end
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_DECK+LOCATION_EXTRA)
 end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(cm.msfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) or not Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_DECK,0,1,nil) or Duel.GetSZoneCount(tp,Duel.GetFieldGroup(tp,LOCATION_SZONE,0))<=0 then return end
+	if not Duel.IsExistingMatchingCard(cm.msfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) or not Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil) or Duel.GetSZoneCount(tp,Duel.GetFieldGroup(tp,LOCATION_SZONE,0))<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local eqg = Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local eqg = Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil)
 	local eqc = eqg:GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local msg = Duel.SelectMatchingCard(tp,cm.msfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)

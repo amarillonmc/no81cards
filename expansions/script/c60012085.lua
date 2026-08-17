@@ -112,7 +112,7 @@ function s.machinefilter(c,e,tp,tss)
 	return c:IsRace(RACE_MACHINE) and c:IsLevelBelow(tss) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.summonop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Draw(tp,1,REASON_EFFECT)
+	--Duel.Draw(tp,1,REASON_EFFECT)
 	local tss=Duel.GetFlagEffect(tp,60012085)
 	if Duel.IsExistingMatchingCard(s.machinefilter,tp,LOCATION_HAND,0,1,nil,e,tp,tss)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then

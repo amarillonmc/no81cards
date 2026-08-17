@@ -176,7 +176,7 @@ function s.copyfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x57b0) and c:CheckActivateEffect(false,true,false)~=nil
 end
 function s.costfilter(c,e,tp)
-	return c:IsAbleToDeckOrExtraAsCost() 
+	return c:IsAbleToDeckAsCost() 
     	and Duel.IsExistingMatchingCard(s.copyfilter,tp,LOCATION_GRAVE,0,1,c)
 end
 function s.copycost(e,tp,eg,ep,ev,re,r,rp,chk)

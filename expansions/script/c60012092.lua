@@ -36,6 +36,6 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if Duel.GetLP(tp)<=4000 then
-		Duel.Draw(tp,2,REASON_EFFECT)
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end

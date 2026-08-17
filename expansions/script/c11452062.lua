@@ -34,11 +34,11 @@ end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
-		if not (eg:IsContains(c) and re and re:IsActivated() and bit.band(r,REASON_EFFECT)~=0 and c:GetDestination()&LOCATION_ONFIELD==0 and (c:IsLocation(LOCATION_PZONE) or c:GetOriginalCode()~=m) and c:IsDestructable(e)) then return end
-		local dg=Duel.GetMatchingGroup(function(c) return c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED) end,tp,0,LOCATION_ONFIELD,c)
+		if not (eg:IsContains(c) and re and re:IsActivated() and bit.band(r,REASON_EFFECT)~=0 and c:GetDestination()&LOCATION_ONFIELD==0 and (c:IsLocation(LOCATION_PZONE) or c:GetOriginalCode()~=m)) then return end
+		local dg=Duel.GetMatchingGroup(function(c) return c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED) end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 		dg:KeepAlive()
 		cm[e]=dg
-		return true --#dg>0
+		return c:IsDestructable(e) or #dg>0
 	end
 	local container=e:GetLabelObject()
 	container:Clear()
@@ -47,7 +47,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.HintSelection(container)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESREPLACE)
 	local dg=cm[e]
-	if not dg or aux.GetValueType(dg)~="Group" then dg=Duel.GetMatchingGroup(function(c) return c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED) end,tp,0,LOCATION_ONFIELD,c) end 
+	if not dg or aux.GetValueType(dg)~="Group" then dg=Duel.GetMatchingGroup(function(c) return c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED) end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c) end 
 	local g=dg:Select(tp,1,1,nil)
 	dg:DeleteGroup()
 	cm[e]=nil
@@ -164,6 +164,33 @@ function cm.m_operation(e,tp,eg,ep,ev,re,r,rp)
 					de:SetTargetRange(1,0)
 					de:SetReset(RESET_PHASE+PHASE_END)
 					Duel.RegisterEffect(de, tp)
+				end
+			-- 2. 处理统合版客户端提示（仅当 1~4 张时状态会发生改变）
+			elseif count <= 6 then
+				-- 组合状态计算 (1~15)
+				for i=5,6 do
+					local state = 0
+					if Duel.GetFlagEffect(tp, 114520600 + i) > 0 then state = state | 1 end
+					if Duel.GetFlagEffect(tp, 114520610 + i) > 0 then state = state | 2 end
+					if Duel.GetFlagEffect(tp, 114520620 + i) > 0 then state = state | 4 end
+					
+					-- 利用底层等价原理，直接一键抹除旧的统合提示
+					Duel.ResetFlagEffect(tp, 11452060+0xffffff+i)
+					
+					-- 注册全新的统合提示
+					if state > 0 then
+						local de = Effect.CreateEffect(e:GetHandler())
+						-- 【完美避开 6 号位映射】：状态 1~6 减1对应 0~5；状态 7~15 原样对应 7~15
+						local desc_id = 6 + state
+						de:SetDescription(aux.Stringid(11452061+i, desc_id))
+						de:SetType(EFFECT_TYPE_FIELD)
+						-- 这里的 Code 用 m 独立占位，专职负责显示提示，与 restrict_flag 解耦
+						de:SetCode(EFFECT_FLAG_EFFECT+11452060+0xffffff+i) 
+						de:SetProperty(EFFECT_FLAG_PLAYER_TARGET + EFFECT_FLAG_CLIENT_HINT)
+						de:SetTargetRange(1,0)
+						de:SetReset(RESET_PHASE+PHASE_END)
+						Duel.RegisterEffect(de, tp)
+					end
 				end
 			end
 		end

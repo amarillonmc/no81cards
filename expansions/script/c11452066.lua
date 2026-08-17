@@ -2,11 +2,13 @@
 local cm,m=GetID()
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCost(cm.cost0)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -112,6 +114,21 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 	end
 	if count>0 then
+		--[[local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_TO_DECK_REDIRECT)
+		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetTarget(function(e,c) c:RegisterFlagEffect(m,RESET_EVENT+RESETS_REDIRECT-RESET_REMOVE-RESET_TEMP_REMOVE,0,1) return true end)
+		e1:SetLabel(count)
+		e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
+		e1:SetValue(LOCATION_REMOVED)
+		Duel.RegisterEffect(e1,tp)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_REMOVE)
+		e2:SetLabelObject(e1)
+		e2:SetOperation(cm.reset)
+		Duel.RegisterEffect(e2,tp)--]]
 		local tg=Duel.GetMatchingGroup(aux.NecroValleyFilter(),tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
 		if #tg>=count then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
@@ -119,14 +136,27 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.HintSelection(sg)
 			for tc in aux.Next(sg) do
 				local e1=Effect.CreateEffect(c)
-				e1:SetDescription(aux.Stringid(m,1))
+				e1:SetDescription(aux.Stringid(m,2))
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_TO_DECK_REDIRECT)
-				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_IGNORE_IMMUNE)
 				e1:SetValue(LOCATION_REMOVED)
 				e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-				tc:RegisterEffect(e1)
+				tc:RegisterEffect(e1,true)
 			end
 		end
 	end
+end
+function cm.reset(e,tp,eg,ep,ev,re,r,rp)
+	local label=e:GetLabelObject():GetLabel()
+	if eg:IsExists(cm.redfilter,1,nil,e) then
+		e:GetLabelObject():SetLabel(label-1)
+		if label<=1 then
+			e:GetLabelObject():Reset()
+			e:Reset()
+		end
+	end
+end
+function cm.redfilter(c,e)
+	return c:IsReason(REASON_REDIRECT) and c:GetFlagEffect(m)>0
 end

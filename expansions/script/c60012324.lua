@@ -31,7 +31,7 @@ function s.thfilter1(c)
 	return c:IsCode(60012048) and c:IsAbleToHand()
 end
 function s.thfilter2(c)
-	return aux.IsCodeListed(c,60012048) and c:IsAbleToHand()
+	return aux.IsCodeListed(c,60012048) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.thfilter1),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)

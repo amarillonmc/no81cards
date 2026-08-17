@@ -179,6 +179,7 @@ function s.op_adjust(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetCurrentChain()==0 and c:IsLocation(LOCATION_MZONE) then
 			Duel.Remove(c,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)
 			c:RegisterFlagEffect(id+2,RESET_EVENT+RESETS_STANDARD,0,1)
+			c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
 		end
 	end
 end

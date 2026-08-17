@@ -17,6 +17,7 @@ function s.initial_effect(c)
 	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(TIMING_DRAW_PHASE+TIMING_STANDBY_PHASE,TIMING_DRAW_PHASE+TIMING_STANDBY_PHASE+TIMINGS_CHECK_MONSTER)
 	e1:SetCost(s.cost)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
@@ -113,7 +114,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 if Duel.Remove(c,POS_FACEUP,REASON_EFFECT)>0 and c:IsLocation(LOCATION_REMOVED) then
 				-- 打上除外标记，防止离开除外区后误发
 				c:RegisterFlagEffect(id+1,RESET_EVENT+RESETS_STANDARD,0,1)
-				
+				c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,4))
 				-- 获取当前回合数和阶段，合成一个绝对时间戳 (乘以1000是为了留出足够的空间容纳阶段常数)
 				-- 例如：第2回合的主要阶段1(常量为4) = 2004
 				local current_mark = Duel.GetTurnCount() * 1000 + Duel.GetCurrentPhase()

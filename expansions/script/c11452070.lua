@@ -30,114 +30,130 @@ function cm.initial_effect(c)
 end
 
 -- =========================================
--- 超量召唤手续 (支持手卡·卡组)
+-- 超量召唤手续 (官方双轨替代结构)
 -- =========================================
-function cm.spfilter(c,sc)
-	--if not c:IsType(TYPE_MONSTER) and not c:IsCanBeXyzMaterial(sc) then return false end
-	local loc = c:GetLocation()
-	
-	-- 常规素材：场上表侧表示的 2 星怪兽
-	if loc == LOCATION_MZONE then 
-		return c:IsFaceup() and c:IsXyzLevel(sc,2)
-	end
-	-- 额外素材：手卡·卡组的「落渊」卡
-	if loc == LOCATION_HAND or loc == LOCATION_DECK then
-		return c:IsSetCard(0x5978)
-	end
-	return false
+function cm.altfilter(c)
+	-- 仅抓取手卡和卡组的落渊卡
+	return (c:IsLocation(LOCATION_HAND) or c:IsLocation(LOCATION_DECK)) and c:IsSetCard(0x5978)
 end
 
-function cm.exchk(g,sc,tp)
-	-- 提取出从手卡和卡组被选中的额外素材
-	local exg = g:Filter(Card.IsLocation, nil, LOCATION_HAND+LOCATION_DECK)
-	
-	-- 落实文本【包含手卡的卡】：如果使用了额外素材，则这些额外素材中必须至少有1张来自手卡
-	if #exg > 0 and exg:FilterCount(Card.IsLocation, nil, LOCATION_HAND) == 0 then
-		return false
-	end
-	
-	local m_ct = 0
+function cm.altgoal(g)
+	local deck_m = 0
+	local deck_st = 0
+	local hand_st = 0
 	local s_ct = 0
 	local t_ct = 0
 	
-	-- 校验：3种类各最多1张
-	for tc in aux.Next(exg) do
-		if tc:GetOriginalType()&0x1>0 then m_ct = m_ct + 1 end
-		if tc:GetOriginalType()&0x2>0 then s_ct = s_ct + 1 end
-		if tc:GetOriginalType()&0x4>0 then t_ct = t_ct + 1 end
+	for tc in aux.Next(g) do
+		local loc = tc:GetLocation()
+		local typ = tc:GetType()
+		
+		if loc == LOCATION_DECK then
+			if typ & TYPE_MONSTER > 0 then deck_m = deck_m + 1
+			else deck_st = deck_st + 1 end
+		elseif loc == LOCATION_HAND then
+			if typ & TYPE_MONSTER == 0 then hand_st = hand_st + 1
+			else return false end -- 手卡不能是怪兽
+		else
+			return false
+		end
+		
+		if typ & TYPE_SPELL > 0 then s_ct = s_ct + 1 end
+		if typ & TYPE_TRAP > 0 then t_ct = t_ct + 1 end
 	end
 	
-	if m_ct > 1 or s_ct > 1 or t_ct > 1 then return false end
+	-- 精准匹配：卡组1怪，卡组1魔陷，手卡1魔陷
+	if deck_m ~= 1 or deck_st ~= 1 or hand_st ~= 1 then return false end
+	-- 精准匹配：魔陷种类各不相同（各1）
+	if s_ct ~= 1 or t_ct ~= 1 then return false end
 	
 	return true
 end
 
 function cm.spcon(e,c,og,min,max)
 	if c==nil then return true end
-	local tp=c:GetControler()
+	local tp = c:GetControler()
+	local minc = min or 3
+	local maxc = max or 3
+	if minc > 3 or maxc < 3 then return false end
 	
-	local mg=nil
-	if og then
-		mg=og:Filter(cm.spfilter,c,c)
-	else
-		mg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_MZONE+LOCATION_HAND+LOCATION_DECK,0,c,c)
-		Debug.Message(#mg)
+	-- b1: 常规超量条件（交由底层C++高效处理）
+	local b1 = Duel.CheckXyzMaterial(c,nil,2,3,3,og)
+	
+	-- b2: 替代超量条件（1回合1次，且不使用og）
+	local b2 = false
+	if Duel.GetFlagEffect(tp,m) == 0 and (not og) then
+		local mg = Duel.GetMatchingGroup(cm.altfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
+		b2 = mg:CheckSubGroup(cm.altgoal,3,3)
 	end
 	
-	local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
-	if sg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
-	Duel.SetSelectedCard(sg)
-	aux.GCheckAdditional=aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
-	-- 需求为精准的 3 张素材
-	local res=mg:CheckSubGroup(aux.XyzLevelFreeGoal,3,3,tp,c,cm.exchk)
-	aux.GCheckAdditional=nil
-	return res
+	return b1 or b2
 end
 
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 	if og and not min then return true end
+	local minc = min or 3
+	local maxc = max or 3
 	
-	local mg=nil
-	if og then
-		mg=og:Filter(cm.spfilter,c,c)
+	local b1 = Duel.CheckXyzMaterial(c,nil,2,3,3,og)
+	local b2 = false
+	local mg = nil
+	
+	if Duel.GetFlagEffect(tp,m) == 0 and (not og) then
+		mg = Duel.GetMatchingGroup(cm.altfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
+		b2 = mg:CheckSubGroup(cm.altgoal,3,3)
+	end
+	
+	local g = nil
+	-- 如果两种方式都满足，询问是否使用替代方式（你可以把提示字符串换成自定义的）
+	if b2 and (not b1 or Duel.SelectYesNo(tp,aux.Stringid(m,0))) then
+		e:SetLabel(1) -- 标记为使用了替代召唤
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+		local cancel = Duel.IsSummonCancelable()
+		g = mg:SelectSubGroup(tp,cm.altgoal,cancel,3,3)
+		if not g then return false end
 	else
-		mg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_MZONE+LOCATION_HAND+LOCATION_DECK,0,c,c)
+		e:SetLabel(0) -- 标记为常规召唤
+		g = Duel.SelectXyzMaterial(tp,c,nil,2,3,3,og)
+		if not g then return false end
 	end
 	
-	local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
-	Duel.SetSelectedCard(sg)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local cancel=Duel.IsSummonCancelable()
-	aux.GCheckAdditional=aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
-	local g=mg:SelectSubGroup(tp,aux.XyzLevelFreeGoal,cancel,3,3,tp,c,cm.exchk)
-	aux.GCheckAdditional=nil
-	if g and #g>0 then
-		g:KeepAlive()
-		e:SetLabelObject(g)
-		return true
-	else 
-		return false 
-	end
+	g:KeepAlive()
+	e:SetLabelObject(g)
+	return true
 end
 
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
-	local g=nil
 	if og and not min then
-		g=og
+		local sg=Group.CreateGroup()
+		for tc in aux.Next(og) do
+			local sg1=tc:GetOverlayGroup()
+			sg:Merge(sg1)
+		end
+		Duel.SendtoGrave(sg,REASON_RULE)
+		c:SetMaterial(og)
+		Duel.Overlay(c,og)
 	else
-		g=e:GetLabelObject()
+		local g=e:GetLabelObject()
+		if not g then return end
+		
+		local sg=Group.CreateGroup()
+		for tc in aux.Next(g) do
+			local sg1=tc:GetOverlayGroup()
+			sg:Merge(sg1)
+		end
+		Duel.SendtoGrave(sg,REASON_RULE)
+		c:SetMaterial(g)
+		Duel.Overlay(c,g)
+		
+		-- 如果是替代召唤，打上1回合1次标记并洗牌
+		if e:GetLabel() == 1 then
+			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+			if g:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_HAND) then Duel.ShuffleHand(tp) end
+		end
+		
+		g:DeleteGroup()
 	end
-	
-	local sg=Group.CreateGroup()
-	for tc in aux.Next(g) do
-		local sg1=tc:GetOverlayGroup()
-		sg:Merge(sg1)
-	end
-	Duel.SendtoGrave(sg,REASON_RULE)
-	c:SetMaterial(g)
-	Duel.Overlay(c,g)
-	
-	if not (og and not min) then g:DeleteGroup() end
 end
 
 -- =========================================
@@ -146,13 +162,14 @@ end
 function cm.leaveop(e,tp,eg,ep,ev,re,r,rp)
 	-- 注意：作为 CONTINUOUS 效果在离场后适用时，自身如果本来带有素材，也会随着离开场上的动作规则送墓
 	-- 因此 GetOverlayGroup(tp,1,1) 获取到的将是【此时场上其他还活着的】所有超量怪兽的素材，逻辑极其严密。
-	local og=Duel.GetOverlayGroup(tp,1,1)
+	local c=e:GetHandler()
+	local og=Duel.GetOverlayGroup(tp,1,1)+c:GetOverlayGroup()
 	if #og==0 then return end
-	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local hg=og:FilterSelect(tp,Card.IsAbleToHand,1,1,nil)
 	if #hg>0 then
 		Duel.SendtoHand(hg,nil,REASON_EFFECT)
+		if hg:GetFirst():IsLocation(LOCATION_HAND) then Duel.ShuffleHand(hg:GetFirst():GetControler()) end
 		og:Sub(hg)
 		if #og>0 then
 			Duel.Remove(og,POS_FACEUP,REASON_EFFECT)

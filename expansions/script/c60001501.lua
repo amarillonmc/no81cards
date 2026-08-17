@@ -30,10 +30,10 @@ function cm.initial_effect(c)
 	e3:SetCondition(cm.incon)
 	e3:SetValue(800)
 	c:RegisterEffect(e3)
-	--indes
+	--atk up
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_IMMUNE_EFFECT)
+	e3:SetCode(EFFECT_UPDATE_ATTACK)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTargetRange(LOCATION_MZONE,0)
 	e3:SetTarget(cm.indtg)
@@ -61,5 +61,5 @@ function cm.indtg(e,c)
 	return c:GetCounter(0x624)>0 and e:GetHandler()~=c and c:IsFaceup()
 end
 function cm.efilter(e,te)
-	return e:GetHandlerPlayer()~=te:GetOwnerPlayer() and te:IsActivated() and e:GetHandler():GetCounter(0x624)>0
+	return e:GetHandler():GetCounter(0x624)*100
 end

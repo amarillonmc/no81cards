@@ -71,11 +71,11 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		for tc in aux.Next(g) do
 			for i=1,3 do
 				if not tc:IsPublic() then
-					local e11=Effect.CreateEffect(c)
+					local e11=Effect.CreateEffect(e:GetHandler())
 					e11:SetType(EFFECT_TYPE_SINGLE)
 					e11:SetCode(EFFECT_PUBLIC)
 					e11:SetReset(RESET_EVENT+RESETS_STANDARD)
-					c:RegisterEffect(e11)
+					e:GetHandler():RegisterEffect(e11)
 				end
 				tc:RegisterFlagEffect(60001538,RESET_EVENT+RESET_LEAVE+RESET_TODECK+RESET_TOGRAVE+RESET_REMOVE,0,1)
 			end

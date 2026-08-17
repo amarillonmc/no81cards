@@ -40,7 +40,7 @@ function c60002282.initial_effect(c)
 end
 --exto e1
 function c60002282.con(e,tp)
-   return Duel.GetFlagEffect(tp,60002148)>=5
+   return Duel.GetFlagEffect(tp,60002148)>=10
 end  
 function c60002282.ddtg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chk==0 then return true end
@@ -58,22 +58,22 @@ function c60002282.incon(e)
 end
 --exto e5
 function c60002282.excon(e,tp)
-   return Duel.GetFlagEffect(tp,60002148)>=10 and Card.GetCounter(e:GetHandler(),0x624)>=1 and Duel.GetTurnPlayer()==tp
+   return Duel.GetFlagEffect(tp,60002148)>=20 and Card.GetCounter(e:GetHandler(),0x624)>=1 and Duel.GetTurnPlayer()==tp
 end 
 function c60002282.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return  Duel.IsPlayerCanDraw(tp,3) end 
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,1-tp,4000) 
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,3)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,4000)
+	if chk==0 then return  Duel.IsPlayerCanDraw(tp,1) end 
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,0,0,1-tp,1000) 
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
 function c60002282.damop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
-	   if Duel.Damage(1-tp,4000,REASON_EFFECT)~=0 then
-		   if Duel.Recover(tp,4000,REASON_EFFECT)~=0 then
-			  if  Duel.Draw(tp,3,REASON_EFFECT)~=0 then
-				 if g:GetCount()>=3 then
-					Duel.DiscardHand(1-tp,nil,3,3,REASON_EFFECT+REASON_DISCARD)
-				elseif g:GetCount()<3 then
+	   if Duel.Damage(1-tp,1000,REASON_EFFECT)~=0 then
+		   if Duel.Recover(tp,1000,REASON_EFFECT)~=0 then
+			  if  Duel.Draw(tp,1,REASON_EFFECT)~=0 then
+				 if g:GetCount()>=1 then
+					Duel.DiscardHand(1-tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
+				elseif g:GetCount()<1 then
 					Duel.SendtoGrave(g,REASON_EFFECT+REASON_DISCARD)
 				 end
 			  end

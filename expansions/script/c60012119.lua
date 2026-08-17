@@ -57,7 +57,10 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	if ep==tp then
-		Duel.Draw(tp,1,REASON_EFFECT)
+		if Duel.GetFlagEffect(tp,m+99999999)<3 then
+			Duel.Draw(tp,1,REASON_EFFECT)
+			Duel.RegisterFlagEffect(tp,m+99999999,RESET_PHASE+PHASE_END,0,1)
+		end
 		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 		for tc in aux.Next(g) do
 			local e1=Effect.CreateEffect(e:GetOwner())

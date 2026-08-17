@@ -54,7 +54,7 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
 		Duel.Draw(tp,1,REASON_EFFECT)
-		if Duel.GetFlagEffect(tp,60002148)>=5 then
+		if Duel.GetFlagEffect(tp,60002148)>=10 then
 			Duel.Damage(1-tp,1200,REASON_EFFECT)
 		end
 	end

@@ -74,7 +74,7 @@ function s.tdcon2(e,tp,eg,ep,ev,re,r,rp)
 	return cor.IsCanBeQuickEffect(e:GetHandler(),tp,16191870)
 end
 function s.costfilter(c,e,tp)
-	return c:IsAbleToDeckOrExtraAsCost() 
+	return c:IsAbleToDeckAsCost() 
     	and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,Group.FromCards(c,e:GetHandler()))
 end
 function s.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -25,10 +25,10 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetCountLimit(1,m+10000000)
 	e1:SetOperation(cm.thop2)
-	c:RegisterEffect(e1)
+	--c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 	local e7=Effect.CreateEffect(c)
 	e7:SetDescription(aux.Stringid(m,2))
 	e7:SetCategory(CATEGORY_DRAW)
@@ -61,7 +61,7 @@ function cm.initial_effect(c)
 end
 function cm.cd(e,c)
 	local c=e:GetHandler()
-	return Duel.GetFlagEffect(tp,60002148)>=5
+	return Duel.GetFlagEffect(tp,60002148)>=15
 		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>1
 end
 function cm.filter(c,e,tp)
@@ -116,8 +116,8 @@ end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(1600)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1600)
+	Duel.SetTargetParam(800)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,800)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

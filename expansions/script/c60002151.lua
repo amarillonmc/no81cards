@@ -57,7 +57,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) and sr~=0 then
 		e:GetHandler():AddCounter(0x624,sr)
 		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
-		if sr>=5 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		if sr>=10 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.Draw(tp,1,REASON_EFFECT)
 		end
 	end

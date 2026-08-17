@@ -36,6 +36,7 @@ function s.initial_effect(c)
 	e2:SetOperation(s.disop)
 	c:RegisterEffect(e2)
 
+
 	--③：一时除外系统 (战斗阶段留场)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -174,65 +175,115 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
--- === 附属的离场不入连锁除外 ===
+function s.disfilter(c,e)
+	return c:IsFaceup() and c:IsCanBeDisabledByEffect(e)
+end
 
-function s.rmfilter(c,tp)
-	-- 只要是被破坏的自己的卡即可，无需核对破坏源
-	return c:IsReason(REASON_DESTROY) and c:IsAbleToRemove() and c:IsControler(tp)
+function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	-- 这个回合这个同名卡的②效果适用次数 + 1
+	local des_count = Duel.GetFlagEffect(tp,id+1000) + 1
+	
+	if chk==0 then 
+		return Duel.IsExistingMatchingCard(Card.IsDestructable,tp,LOCATION_HAND+LOCATION_ONFIELD,0,des_count,nil)
+			and Duel.IsExistingMatchingCard(s.disfilter,tp,0,LOCATION_ONFIELD,1,nil,e)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,des_count,tp,LOCATION_HAND+LOCATION_ONFIELD)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,1-tp,LOCATION_ONFIELD)
+end
+
+function s.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local des_count = Duel.GetFlagEffect(tp,id+1000) + 1
+	
+	local dg = Duel.GetMatchingGroup(Card.IsDestructable,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
+	if #dg < des_count then return end
+	
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	-- 把那个数量的自己的手卡·场上的卡破坏
+	local des_g = dg:Select(tp,des_count,des_count,nil)
+	if #des_g > 0 then
+		local ct = Duel.Destroy(des_g,REASON_EFFECT)
+		-- 破坏数量达标，且对方场上有可无效的卡时处理
+		if ct == des_count then
+			local ng = Duel.GetMatchingGroup(s.disfilter,tp,0,LOCATION_ONFIELD,nil,e)
+			if #ng > 0 then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+				local sg = ng:Select(tp,1,1,nil)
+				Duel.HintSelection(sg)
+				local tc = sg:GetFirst()
+				if tc then
+					Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e1:SetCode(EFFECT_DISABLE)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc:RegisterEffect(e1)
+					local e2=Effect.CreateEffect(c)
+					e2:SetType(EFFECT_TYPE_SINGLE)
+					e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e2:SetCode(EFFECT_DISABLE_EFFECT)
+					e2:SetValue(RESET_TURN_SET)
+					e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc:RegisterEffect(e2)
+					if tc:IsType(TYPE_TRAPMONSTER) then
+						local e3=Effect.CreateEffect(c)
+						e3:SetType(EFFECT_TYPE_SINGLE)
+						e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+						e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+						e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+						tc:RegisterEffect(e3)
+					end
+				end
+			end
+			
+			-- 处理适用完毕：增加本回合该同名卡效果的适用次数记录
+			Duel.RegisterFlagEffect(tp,id+1000,RESET_PHASE+PHASE_END,0,1)
+			
+			-- 挂载遗言：如果这张卡还在场上，注册防重置的离场监听
+			if c:IsRelateToEffect(e) and c:IsFaceup() and c:GetFlagEffect(id+100)==0 then
+				c:RegisterFlagEffect(id+100,RESET_EVENT+RESETS_STANDARD,0,0)
+				-- 注册全局监听，防离场效果重置
+				local e_lv=Effect.CreateEffect(c)
+				e_lv:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e_lv:SetCode(EVENT_LEAVE_FIELD)
+				e_lv:SetLabelObject(c)
+				e_lv:SetOperation(s.lvop)
+				Duel.RegisterEffect(e_lv,tp)
+			end
+		end
+	end
+end
+
+-- === 附属的离场不入连锁加入手卡 ===
+function s.thfilter_rec(c,tp)
+	return c:IsAbleToHand() and c:IsControler(tp)
 end
 
 function s.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	if not tc then return end
+	-- 如果发生离场的群组包含我们锁定的这张卡
 	if eg:IsContains(tc) then
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.rmfilter),tp,LOCATION_GRAVE+LOCATION_EXTRA,0,nil,tp)
-	
-	if #g>0 then
-		Duel.Hint(HINT_CARD,0,id)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg=g:Select(tp,1,1,nil)
-		local tc=sg:GetFirst()
-		-- 不入连锁除外
-		if tc and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_REMOVED) then
-			-- 给除外的卡打上专属标记
-			tc:RegisterFlagEffect(id+3,RESET_EVENT+RESETS_STANDARD,0,1)
-			
-			-- 挂载：下个抽卡阶段，返回手卡 (不入连锁)
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e1:SetCode(EVENT_PHASE+PHASE_DRAW)
-			e1:SetCountLimit(1)
-			e1:SetLabelObject(tc)
-			e1:SetLabel(Duel.GetTurnCount()) -- 记录除外时的回合数
-			e1:SetCondition(s.thcon3)
-			e1:SetOperation(s.thop3)
-			Duel.RegisterEffect(e1,tp)
+		local c=e:GetHandler()
+		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.thfilter_rec),tp,LOCATION_REMOVED,0,nil,tp)
+		if #g>0 then
+			Duel.Hint(HINT_CARD,0,id)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local sg=g:Select(tp,1,1,nil)
+			if #sg>0 then
+				Duel.SendtoHand(sg,nil,REASON_EFFECT)
+				if sg:GetFirst():IsLocation(LOCATION_HAND) then
+				Duel.ConfirmCards(1-tp,sg)
+				Duel.Destroy(sg,REASON_EFFECT)
+				end
 			end
 		end
-	e:Reset() -- 触发后自我销毁，防止复活后还带着这效果
-		elseif tc:GetFlagEffect(id+100)==0 then
-		e:Reset() -- 若怪兽被里侧等原因抹除标志，监听器亦自我清理
-		end
-end
-
--- === 下个抽卡阶段回手 ===
-function s.thcon3(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	-- 防Bug：如果卡被移出了除外区，标记消失，自动清理监听器
-	if tc:GetFlagEffect(id+3)==0 then
+		e:Reset() -- 任务完成自我销毁
+	-- 如果卡片由于转里侧等原因清空了标记，监听器亦自我清理
+	elseif tc:GetFlagEffect(id+100)==0 then
 		e:Reset()
-		return false
 	end
-	-- 当“现在的回合数”不等于“记录的回合数”时，即迎来了下个回合的抽卡阶段
-	return Duel.GetTurnCount() ~= e:GetLabel()
-end
-
-function s.thop3(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	Duel.Hint(HINT_CARD,0,id)
-	Duel.SendtoHand(tc,nil,REASON_EFFECT)
-	e:Reset() -- 任务完成，自我清理
 end
 
 -- === 效果③：除外/回场状态机 (战阶留场) ===
@@ -248,6 +299,7 @@ function s.op_adjust(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetCurrentChain()==0 and c:IsLocation(LOCATION_MZONE) then
 			Duel.Remove(c,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)
 			c:RegisterFlagEffect(id+2,RESET_EVENT+RESETS_STANDARD,0,1)
+			c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
 		end
 	end
 end

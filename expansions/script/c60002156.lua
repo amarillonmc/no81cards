@@ -52,9 +52,9 @@ function cm.filter(c,e,tp)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local sr=Duel.GetFlagEffect(tp,60002148)
-	if sr>=3 then
+	if sr>=10 then
 		local num=1
-		if sr>=5 then 
+		if sr>=15 then 
 			num=2
 		end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)

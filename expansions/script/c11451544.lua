@@ -75,10 +75,10 @@ function cm.adcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsLevel(7)
@@ -86,7 +86,7 @@ end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,e,tp)
+	local sg=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if #sg>0 then Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP) end
 end
 function cm.adcon2(e,tp,eg,ep,ev,re,r,rp)
@@ -124,8 +124,8 @@ function cm.adop2(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) or Duel.GetLocationCount(1-tp,LOCATION_MZONE)<=0 then return end
 	local att=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SPSUMMON)
-	local g=Duel.GetMatchingGroup(cm.spfilter2,tp,0,LOCATION_HAND,nil,e,1-tp,att)
-	if #g==0 then g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter2),tp,0,LOCATION_GRAVE,nil,e,1-tp,att) end
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter2),tp,0,LOCATION_HAND+LOCATION_GRAVE,nil,e,1-tp,att)
+	--if #g==0 then g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter2),tp,0,LOCATION_GRAVE,nil,e,1-tp,att) end
 	local sg=g:Select(1-tp,1,1,nil)
 	if #sg>0 then
 		local e1=Effect.CreateEffect(e:GetHandler())

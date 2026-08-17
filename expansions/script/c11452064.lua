@@ -51,6 +51,9 @@ function cm.initial_effect(c)
 	ge1:SetOperation(cm.MergedDelayEventCheck1)
 	Duel.RegisterEffect(ge1,0)
 	local ge2=ge1:Clone()
+	ge2:SetCode(EVENT_TO_HAND)
+	Duel.RegisterEffect(ge2,0)
+	local ge2=ge1:Clone()
 	ge2:SetCode(EVENT_CHAIN_END)
 	ge2:SetOperation(Auxiliary.MergedDelayEventCheck2)
 	Duel.RegisterEffect(ge2,0)
@@ -87,13 +90,13 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		local code=g1:GetFirst():GetOriginalCode()
 		cm[c][1]=code
 		cm[c][3]=c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD,1)
-		if math.abs(m-code)<=4 then c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(code,6)) end
+		if math.abs(m-code)<=4 then c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(code,6)) end
 	end
 	if #g2>0 and cm[c][2]~=g2:GetFirst():GetOriginalCode() then
 		local code=g2:GetFirst():GetOriginalCode()
 		cm[c][2]=code
 		cm[c][4]=c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD,1)
-		if math.abs(m-code)<=4 then c:RegisterFlagEffect(1,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(code,6)) end
+		if math.abs(m-code)<=4 then c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(code,6)) end
 	end
 	Card.RegisterEffect=_CRegisterEffect
 end
@@ -101,13 +104,13 @@ function cm.clear_effects(c)
 	if cm[c][1] then
 		cm[c][1]=nil
 		c:ResetEffect(cm[c][3],RESET_COPY)
-		c:ResetFlagEffect(0)
+		c:ResetFlagEffect(m)
 		cm[c][3]=nil
 	end
 	if cm[c][2] then
 		cm[c][2]=nil
 		c:ResetEffect(cm[c][4],RESET_COPY)
-		c:ResetFlagEffect(1)
+		c:ResetFlagEffect(m+1)
 		cm[c][4]=nil
 	end
 end
@@ -126,21 +129,33 @@ function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(c)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x5978) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx() and ((not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,c)>0))
+	return c:IsSetCard(0x5978) and c:GetOriginalType()&0x1>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and ((not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,c)>0)) and (c:IsLocation(LOCATION_EXTRA) or c:IsFaceupEx())
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local locs = LOCATION_HAND | LOCATION_SZONE | LOCATION_EXTRA | LOCATION_GRAVE | LOCATION_REMOVED
+	local locs = LOCATION_HAND | LOCATION_SZONE | LOCATION_EXTRA | LOCATION_GRAVE | LOCATION_REMOVED | LOCATION_DECK
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,locs,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,locs)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local locs = LOCATION_HAND | LOCATION_SZONE | LOCATION_EXTRA | LOCATION_GRAVE | LOCATION_REMOVED
+	local c=e:GetHandler()
+	local locs = LOCATION_HAND | LOCATION_SZONE | LOCATION_EXTRA | LOCATION_GRAVE | LOCATION_REMOVED | LOCATION_DECK
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,locs,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc then
 		local prev_loc = tc:GetLocation()
 		if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1,true)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2,true)
 			if (prev_loc & (LOCATION_EXTRA | LOCATION_GRAVE)) ~= 0 then
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetDescription(aux.Stringid(m,2))
@@ -160,7 +175,7 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 				if (prev_loc & (LOCATION_HAND | LOCATION_SZONE)) ~= 0 then
 					e1:SetValue(LOCATION_HAND)
 					e1:SetDescription(aux.Stringid(m,1))
-				elseif (prev_loc & LOCATION_REMOVED) ~= 0 then
+				elseif (prev_loc & (LOCATION_REMOVED | LOCATION_DECK)) ~= 0 then
 					e1:SetValue(LOCATION_REMOVED)
 					e1:SetDescription(aux.Stringid(m,3))
 				end

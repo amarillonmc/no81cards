@@ -78,10 +78,10 @@ function s.discon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeckOrExtraAsCost,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,c) 
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeckAsCost,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,c) 
         and c:IsAbleToDeckAsCost() end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeckOrExtraAsCost,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,c)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeckAsCost,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,c)
 	g:AddCard(c)
     Duel.HintSelection(g)
     Duel.SendtoDeck(g,nil,0,REASON_COST)

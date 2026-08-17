@@ -71,7 +71,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function cm.thfilter(c)
-	return (c:IsCanHaveCounter(0x624) and Duel.IsCanAddCounter(tp,0x624,1,c) and not c:IsCode(m)) or c:IsCode(60001210) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return (c:IsCanHaveCounter(0x624) and c:IsRace(RACE_WARRIOR) and Duel.IsCanAddCounter(tp,0x624,1,c) and not c:IsCode(m)) or c:IsCode(60001210) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

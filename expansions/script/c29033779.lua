@@ -1,5 +1,4 @@
 --方舟骑士-澄闪
-c29033779.named_with_Arknight=1
 function c29033779.initial_effect(c)
 	aux.AddCodeList(c,29033779,29065532)
 	c:EnableReviveLimit()
@@ -68,18 +67,33 @@ function c29033779.atlimit(e,c)
 	return c:IsFacedown() or not c:IsType(TYPE_TOKEN)
 end
 function c29033779.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>1
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,29033780,0,TYPES_TOKEN_MONSTER,2000,2000,2,RACE_MACHINE,ATTRIBUTE_LIGHT) end
-	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,29033780,0,TYPES_TOKEN_MONSTER,2000,2000,1,RACE_MACHINE,ATTRIBUTE_LIGHT) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c29033779.tkop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=1
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,29033780,0,TYPES_TOKEN_MONSTER,2000,2000,2,RACE_MACHINE,ATTRIBUTE_LIGHT) then return end
-	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
-	local token=Duel.CreateToken(tp,29033780)
-	local token1=Duel.CreateToken(tp,29033780)
-	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
-	Duel.SpecialSummon(token1,0,tp,tp,false,false,POS_FACEUP)
+	local c=e:GetHandler()
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local ct=2
+	if ft>0 and ct>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,29033780,0,TYPES_TOKEN_MONSTER,2000,2000,1,RACE_MACHINE,ATTRIBUTE_LIGHT) then
+		local count=math.min(ft,ct)
+		if Duel.IsPlayerAffectedByEffect(tp,59822133) then count=1 end
+		if count>1 then
+			local num={}
+			local i=1
+			while i<=count do
+				num[i]=i
+				i=i+1
+			end
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(29033779,1))
+			count=Duel.AnnounceNumber(tp,table.unpack(num))
+		end
+		repeat
+			local token=Duel.CreateToken(tp,29033780)
+			Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
+			count=count-1
+		until count==0
+		Duel.SpecialSummonComplete()
+	end
 end

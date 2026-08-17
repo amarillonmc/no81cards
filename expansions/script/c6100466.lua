@@ -104,7 +104,7 @@ end
 
 -- === 效果②：装备与赋予遗言 ===
 function s.eqfilter(c)
-	return c:IsSetCard(0x3615) and c:IsType(TYPE_SPELL) and c:IsType(TYPE_QUICKPLAY) and c:IsFaceup() and not c:IsForbidden()
+	return c:IsSetCard(0x3615) and c:IsType(TYPE_SPELL) and c:IsFaceup() and not c:IsForbidden()
 end
 
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -152,23 +152,24 @@ end
 -- 附加给装备卡的遗言：除外对方墓地3卡
 function s.rmop_defer(e,tp,eg,ep,ev,re,r,rp)
 	local tc = e:GetLabelObject()
+	if not tc then return end
 	if eg:IsContains(tc) then
 		-- 确保是从魔陷区（作为装备卡时）表侧离开的
 		if tc:IsPreviousPosition(POS_FACEUP) and tc:IsPreviousLocation(LOCATION_SZONE) then
+			-- 如果不在连锁处理中，立即执行不入连锁操作
 			if Duel.GetCurrentChain()==0 then
-				s.do_rm_action(tp)
+				s.do_rm_action(tc, tp)
 			else
+				-- 如果正在连锁处理中，则注册至该连锁块结算完毕时再执行
 				local chain_id = Duel.GetCurrentChain()
-				if Duel.GetFlagEffectLabel(tp,id+4) ~= chain_id then
-					Duel.RegisterFlagEffect(tp,id+4,RESET_CHAIN,0,1,chain_id)
-					local e1=Effect.CreateEffect(e:GetOwner())
-					e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-					e1:SetCode(EVENT_CHAIN_SOLVED)
-					e1:SetLabel(chain_id)
-					e1:SetOperation(s.rmop_execute)
-					e1:SetReset(RESET_CHAIN)
-					Duel.RegisterEffect(e1,tp)
-				end
+				local e1=Effect.CreateEffect(e:GetOwner())
+				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e1:SetCode(EVENT_CHAIN_SOLVED)
+				e1:SetLabel(chain_id)
+				e1:SetLabelObject(tc) -- 传递实体卡片指针
+				e1:SetOperation(s.rmop_execute)
+				e1:SetReset(RESET_CHAIN)
+				Duel.RegisterEffect(e1,tp)
 			end
 		end
 		e:Reset() -- 触发后销毁全局监听器
@@ -177,19 +178,31 @@ function s.rmop_defer(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
+-- 连锁块结算完毕时的接力执行
 function s.rmop_execute(e,tp,eg,ep,ev,re,r,rp)
-	if ev == e:GetLabel() then
-		s.do_rm_action(tp)
-		e:Reset()
+	if ev==e:GetLabel() then
+		s.do_rm_action(e:GetLabelObject(), tp)
+		e:Reset() -- 触发一次后注销自身
 	end
 end
 
-function s.do_rm_action(tp)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,nil,tp,POS_FACEDOWN)
+-- 真正的除外动作执行器
+function s.do_rm_action(tc, tp)
+	local sg = Group.CreateGroup()
+
+	if tc and tc:IsLocation(LOCATION_GRAVE) and tc:IsAbleToRemove(tp,POS_FACEDOWN) then
+		sg:AddCard(tc)
+	end
+
+	local g = Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,nil,tp,POS_FACEDOWN)
 	if #g>0 then
-		Duel.Hint(HINT_CARD,0,id)
+		Duel.Hint(HINT_CARD,0,id) -- UI闪烁，明示效果来源
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg=g:Select(tp,1,3,nil)
+		local tg = g:Select(tp,1,1,nil)
+		sg:Merge(tg)
+	end
+
+	if #sg>0 then
 		Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
 	end
 end
@@ -209,6 +222,7 @@ function s.op_adjust(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetCurrentChain()==0 and c:IsLocation(LOCATION_MZONE) then
 			Duel.Remove(c,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)
 			c:RegisterFlagEffect(id+2,RESET_EVENT+RESETS_STANDARD,0,1)
+			c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
 		end
 	end
 end

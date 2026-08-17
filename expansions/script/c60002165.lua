@@ -62,7 +62,10 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			e:GetHandler():AddCounter(0x624,1)
 			Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 		end
-		Duel.Draw(tp,1,REASON_EFFECT)
+		if Duel.GetFlagEffect(tp,m+20000000)==0 then
+			Duel.Draw(tp,1,REASON_EFFECT)
+			Duel.RegisterFlagEffect(tp,m+20000000,RESET_PHASE+PHASE_END,0,1)
+		end
 	end
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)

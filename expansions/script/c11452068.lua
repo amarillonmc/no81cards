@@ -26,7 +26,13 @@ function cm.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_SZONE+LOCATION_GRAVE)
 	e3:SetHintTiming(0,TIMING_END_PHASE)
-	e3:SetCost(aux.bfgcost)
+	e3:SetCondition(function(e) return not e:GetHandler():IsLocation(LOCATION_SZONE) or e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED) end)
+	e3:SetCost(function(e,tp,eg,ep,ev,re,r,rp,chk)
+		local c=e:GetHandler()
+		if chk==0 then return (c:IsOnField() and c:IsAbleToGraveAsCost())or (c:IsLocation(LOCATION_GRAVE) and c:IsAbleToRemoveAsCost()) end
+		if c:IsOnField() then Duel.SendtoGrave(c,REASON_COST)
+		elseif c:IsLocation(LOCATION_GRAVE) then Duel.Remove(c,POS_FACEUP,REASON_COST) end
+	end)
 	e3:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
 		if chk==0 then return Duel.IsExistingMatchingCard(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,nil,nil) end
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)

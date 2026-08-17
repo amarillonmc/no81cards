@@ -19,12 +19,10 @@ function cm.initial_effect(c)
 	--chain limit
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(cm.chtg)
-	e2:SetOperation(cm.chop)
+	e2:SetOperation(cm.chainop)
 	c:RegisterEffect(e2)
 	Duel.AddCustomActivityCounter(14000021,ACTIVITY_SPSUMMON,cm.counterfilter)
 end
@@ -83,8 +81,11 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.chainop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
+	local c=e:GetHandler()
+	if not c:IsAbleToRemove() then return end
 	if rc:IsCode(14000021) or cm.TM(rc) then
 		Duel.SetChainLimit(cm.chainlm)
+		Duel.Remove(c,POS_FACEUP,REASON_EFFECT)
 	end
 end
 function cm.chainlm(e,rp,tp)

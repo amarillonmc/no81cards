@@ -18,19 +18,6 @@ function cm.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
-	--to hand2
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,4))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetCondition(cm.cd1)
-	e1:SetOperation(cm.thop2)
-	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e2)
 	--attackup
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -127,46 +114,7 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 		e:GetHandler():AddCounter(0x624,1)
 		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 	end
-	local op=0
-	op=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2),aux.Stringid(m,3))
-	if op==0 then
-		local g1=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_DECK,0,nil)
-		local g2=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_DECK,0,nil)
-		if g1:GetCount()>0 and g2:GetCount()>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg1=g1:Select(tp,1,1,nil)
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg2=g2:Select(tp,1,1,nil)
-			sg1:Merge(sg2)
-			Duel.SendtoHand(sg1,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,sg1)
-		end
-	elseif op==1 then
-		local c=e:GetHandler()
-		local atk=c:GetAttack()
-		local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil) 
-		local tc=g:GetFirst()
-		while tc do 
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetValue(-atk)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)   
-			if tc:GetAttack()==0 then
-				Duel.Destroy(tc,REASON_EFFECT)
-			end
-			tc=g:GetNext()
-		end 
-	elseif op==2 then
-		local c=e:GetHandler()
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e2:SetCode(EFFECT_EXTRA_ATTACK_MONSTER)
-		e2:SetValue(2)
-		c:RegisterEffect(e2)
-	end
+	
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)

@@ -12,16 +12,14 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
-	--draw
+	--draw count
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_DRAW)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_DRAW_COUNT)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(cm.tdtg)
-	e2:SetOperation(cm.tdop)
+	e2:SetTargetRange(1,0)
+	e2:SetValue(cm.drval)
 	c:RegisterEffect(e2)
 end
 function cm.TM(c)
@@ -71,4 +69,11 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 		local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 		Duel.Draw(p,d,REASON_EFFECT)
 	end
+end
+function cm.drfilter(c)
+	return c:IsCode(m)
+end
+function cm.drval(e)
+	local ct=Duel.GetMatchingGroupCount(cm.drfilter,e:GetHandlerPlayer(),LOCATION_GRAVE,0,nil)
+	return ct+1
 end

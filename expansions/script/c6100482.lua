@@ -22,6 +22,7 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(TIMING_DRAW_PHASE+TIMING_STANDBY_PHASE,TIMINGS_CHECK_MONSTER)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
 
@@ -73,7 +74,7 @@ end
 
 -- === 代破 ===
 function s.repfilter(c,tp)
-	return c:IsControler(tp) and c:IsOnField() and c:IsReason(REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+	return c:IsReason(REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)

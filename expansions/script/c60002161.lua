@@ -19,8 +19,8 @@ function cm.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,nil,e,tp) end
 	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(400)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,400)
+	Duel.SetTargetParam(100)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,100)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 function cm.damop(e,tp,eg,ep,ev,re,r,rp)
@@ -35,9 +35,9 @@ function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_HAND,0,1,nil,e,tp,m-1) then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
-	if Duel.GetFlagEffect(tp,60002148)>=5 then
-		Duel.Damage(1-tp,1600,REASON_EFFECT)
-	end
+	--if Duel.GetFlagEffect(tp,60002148)>=5 then
+	   -- Duel.Damage(1-tp,1600,REASON_EFFECT)
+	--end
 end
 
 

@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetCountLimit(1,m)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
@@ -73,7 +74,7 @@ function cm.filter(c,e,tp)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local sr=Duel.GetFlagEffect(tp,60002148)
-	if sr>=3 then
+	if sr>=5 then
 		if Duel.Draw(tp,2,REASON_EFFECT)~=0 then
 			Duel.ShuffleHand(tp)
 			Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
@@ -82,7 +83,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 			end
 		end
-		if sr>=5 then 
+		if sr>=12 then 
 			if e:GetHandler():IsRelateToEffect(e) then
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)

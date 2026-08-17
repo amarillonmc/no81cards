@@ -16,7 +16,7 @@ end
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	local all_mode=Duel.GetFlagEffect(tp,60012309)>0
 	if all_mode then
-		local g=Duel.GetDecktopGroup(tp,7)
+		local g=Duel.GetDecktopGroup(tp,3)
 		if #g>0 then
 			Duel.ConfirmCards(1-tp,g)
 			local sg=g:Filter(Card.IsType,nil,TYPE_SPELL)
@@ -37,7 +37,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	else
 		local opt=Duel.SelectOption(tp,aux.Stringid(id,1),aux.Stringid(id,2))
 		if opt==0 then
-			local g=Duel.GetDecktopGroup(tp,7)
+			local g=Duel.GetDecktopGroup(tp,3)
 			if #g>0 then
 				Duel.ConfirmCards(1-tp,g)
 				local sg=g:Filter(Card.IsType,nil,TYPE_SPELL)
