@@ -41,7 +41,7 @@ end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
     local rc=re:GetHandler()
     if rc:IsCode(43492000) and re:IsActivated() then
-        Duel.RegisterFlagEffect(rp,43492000,RESET_PHASE+PHASE_END,0,1)
+        Duel.RegisterFlagEffect(rp,id,RESET_PHASE+PHASE_END,0,1)
     end
 end
 
@@ -51,7 +51,7 @@ function s.cfilter(c)
 end
 function s.ritcon(e,tp,eg,ep,ev,re,r,rp)
     local ct=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
-    return Duel.GetFlagEffect(tp,43492000)>=3 and ct>0 and ct==Duel.GetMatchingGroupCount(s.cfilter,tp,LOCATION_MZONE,0,nil)
+    return Duel.GetFlagEffect(tp,id)>=3 and ct>0 and ct==Duel.GetMatchingGroupCount(s.cfilter,tp,LOCATION_MZONE,0,nil)
 end
 
 --仪式怪兽过滤：手卡·卡组的本家仪式怪兽

@@ -15,7 +15,7 @@ function c43990991.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetRange(LOCATION_GRAVE)
+	e2:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
 	e2:SetCondition(c43990991.drcon)
 	e2:SetCost(c43990991.drcost)
 	e2:SetTarget(c43990991.drtg)
@@ -114,10 +114,10 @@ function c43990991.efilter(e,re)
 end
 function c43990991.sumlimit(e,c,sumtype)
 	if not c then return false end
-	return c:IsControler(e:GetHandlerPlayer()) and (e:GetCode()~=EFFECT_CANNOT_BE_FUSION_MATERIAL or sumtype==SUMMON_TYPE_FUSION)
+	return not c:IsControler(e:GetHandlerPlayer()) and (e:GetCode()~=EFFECT_CANNOT_BE_FUSION_MATERIAL or sumtype==SUMMON_TYPE_FUSION)
 end
 function c43990991.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsSetCard(0x9510) and re:IsActiveType(TYPE_MONSTER)
+	return re:GetHandler():IsSetCard(0x9510) and re:IsActiveType(TYPE_MONSTER) and e:GetHandler():GetReasonEffect()~=re
 end
 function c43990991.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end

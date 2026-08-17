@@ -55,6 +55,13 @@ end
 function c91300065.gcheck(g,p)
 	return #g==1 and g:FilterCount(Card.IsControler,nil,p)==1 or g:FilterCount(Card.IsOnField,nil)==2
 end
+function c91300065.thfilter(c)
+	if not c:IsAbleToHand() then return false end
+	local b1=c:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_DICE)) and Duel.GetFlagEffect(0,91300064)==0
+	local b2=c:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_COIN)) and Duel.GetFlagEffect(0,91300065)==0
+	local b3=c:IsCode(9300420,10173087,33701339,91300067,91300073,91300079) and Duel.GetFlagEffect(0,91300066)==0
+	return b1 or b2 or b3
+end
 function c91300065.obverse(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c91300065.tgfilter,tp,LOCATION_DECK,LOCATION_ONFIELD,nil)
 	if chk==0 then
@@ -66,9 +73,18 @@ function c91300065.obverse(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.HintSelection(tg)
 			Duel.SendtoGrave(tg,REASON_EFFECT)
 			local og=Duel.GetOperatedGroup()
-			if og:IsExists(Card.IsAbleToHand,1,nil) and c91300065.reverse(e,tp,eg,ep,ev,re,r,rp,0) and Duel.SelectYesNo(tp,aux.Stringid(91300065,2)) then
+			if og:IsExists(c91300065.thfilter,1,nil) and c91300065.reverse(e,tp,eg,ep,ev,re,r,rp,0) and Duel.SelectYesNo(tp,aux.Stringid(91300065,2)) then
 				Duel.BreakEffect()
-				Duel.SendtoHand(og,nil,REASON_EFFECT)
+				Duel.SendtoHand(og:Filter(c91300065.thfilter,nil),nil,REASON_EFFECT)
+				for tc in aux.Next(og) do
+					if tc:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_DICE)) then
+						Duel.RegisterFlagEffect(0,91300064,RESET_PHASE+PHASE_END,0,1)
+					elseif tc:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_COIN)) then
+						Duel.RegisterFlagEffect(0,91300065,RESET_PHASE+PHASE_END,0,1)
+					elseif tc:IsCode(9300420,10173087,33701339,91300067,91300073,91300079) then
+						Duel.RegisterFlagEffect(0,91300066,RESET_PHASE+PHASE_END,0,1)
+					end
+				end
 				c91300065.reverse(e,tp,eg,ep,ev,re,r,rp,1)
 			end
 		end
@@ -76,17 +92,17 @@ function c91300065.obverse(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c91300065.reverse(e,tp,eg,ep,ev,re,r,rp,chk)
 	local t={}
-	if CROSSROADS_MORRA then
-		for des,f in pairs(Crossroads_morra_effect_list) do
+	if CROSSROADS_DICE then
+		for des,f in pairs(Crossroads_dice_effect_list) do
 			local res=f(e,tp,eg,ep,ev,re,r,rp,0)
 			if res then
-				local ct=e:GetHandler():GetCode()*16
 				for _,v in pairs(t) do
-					if v==des or (des-ct>=0 and des-ct<=15) then res=false end
+					if v==des then res=false end
 				end
 			end
 			if res then table.insert(t,des) end
 		end
+		for des,_ in pairs(Crossroads_dice_except_list) do table.remove(t,des) end
 	end
 	if chk==0 then
 		return #t>0
@@ -95,7 +111,7 @@ function c91300065.reverse(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RESOLVEEFFECT)
 			local sel=Duel.SelectOption(tp,table.unpack(t))
 			local des=t[sel+1]
-			local f=Crossroads_morra_effect_list[des]
+			local f=Crossroads_dice_effect_list[des]
 			f(e,tp,eg,ep,ev,re,r,rp,1)
 		end
 	end

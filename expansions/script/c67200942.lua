@@ -11,6 +11,7 @@ function c67200942.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,67200942)
+	e1:SetCondition(c67200942.thcon)
 	e1:SetTarget(c67200942.thtg)
 	e1:SetOperation(c67200942.thop)
 	c:RegisterEffect(e1)
@@ -37,8 +38,11 @@ function c67200942.valcheck(e,c)
 	end
 end
 --
+function c67200942.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetLabel()~=0
+end
 function c67200942.thfilter(c)
-	return not c:IsCode(67200942) and c:IsFaceupEx() and c:IsSetCard(0x67a) and c:IsAbleToHand()
+	return not c:IsCode(67200941) and c:IsFaceupEx() and c:IsSetCard(0x67a) and c:IsAbleToHand()
 end
 function c67200942.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c67200942.thfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil)

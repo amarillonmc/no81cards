@@ -55,6 +55,17 @@ function c91300075.initial_effect(c)
 		ge1:SetOperation(c91300075.regop)
 		Duel.RegisterEffect(ge1,0)
 	end
+	if not CROSSROADS_DICE then
+		CROSSROADS_DICE = true
+		Crossroads_dice_effect_list={}
+		Crossroads_dice_except_list={}
+		local ge0=Effect.CreateEffect(c)
+		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge0:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+		ge0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+		ge0:SetOperation(function (e,tp,eg,ep,ev,re,r,rp) Crossroads_dice_effect_list={} Crossroads_dice_except_list={} end)
+		Duel.RegisterEffect(ge0,0)
+	end
 end
 function c91300075.regop(e,tp,eg,ep,ev,re,r,rp)
 	for _,code in pairs({91300063,91300065,91300067,91300069,91300071,91300073,91300075,91300077,91300079,91300081,91300083}) do
@@ -67,7 +78,7 @@ function c91300075.accon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c91300075.acop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.SelectEffectYesNo(tp,c,aux.Stringid(91300075,2)) then
+	if true then--Duel.SelectEffectYesNo(tp,c,aux.Stringid(91300075,2))
 		Duel.ConfirmCards(1-tp,c)
 		local e0=Effect.CreateEffect(c)
 		e0:SetType(EFFECT_TYPE_SINGLE)
@@ -94,7 +105,26 @@ end
 function c91300075.activate(e,tp,eg,ep,ev,re,r,rp)
 	local d1,d2,d3=Duel.TossDice(tp,3)
 	local v=(d1+d2+d3)
+	if e:IsActivated() then
+		if not v<=9 then Crossroads_dice_effect_list[aux.Stringid(91300075,5)]=c91300075.rmop end
+		if not v>=9 then Crossroads_dice_effect_list[aux.Stringid(91300075,6)]=c91300075.rdop end
+		if not v>=18 then Crossroads_dice_effect_list[aux.Stringid(91300075,7)]=c91300075.cpop end
+	end
 	if v<=9 then
+		c91300075.rmop(e,tp,eg,ep,ev,re,r,rp,1)
+	end
+	if v>=18 then
+		c91300075.acop(e,tp,eg,ep,ev,re,r,rp,1)
+	end
+	if v>=9 then
+		c91300075.cpop(e,tp,eg,ep,ev,re,r,rp,1)
+	end
+end
+function c91300075.rmop(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsAbleToRemove),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,2,nil)
+	else
+		Crossroads_dice_except_list[aux.Stringid(91300075,5)]=c91300075.rmop
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local rg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToRemove),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,2,2,nil)
 		if #rg==2 then
@@ -102,26 +132,19 @@ function c91300075.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 		end
 	end
-	if v>=18 then
-		local ph=Duel.GetCurrentPhase()
-		if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetTargetRange(0,1)
-		e1:SetValue(1)
-		e1:SetReset(RESET_PHASE+ph)
-		Duel.RegisterEffect(e1,tp)
-	end
-	if v>=9 then
-		local codes={}
-		for _,code in pairs({91300063,91300065,91300067,91300069,91300071,91300073,91300075,91300077,91300079,91300081,91300083}) do
-			local tc=Crossroads_card_list[code]
-			if code~=91300075 and tc:CheckActivateEffect(false,true,false)~=nil then-- 
-				table.insert(codes,code)
-			end
+end
+function c91300075.cpop(e,tp,eg,ep,ev,re,r,rp,chk)
+	local codes={}
+	for _,code in pairs({91300063,91300065,91300067,91300069,91300071,91300073,91300075,91300077,91300079,91300081,91300083}) do
+		local tc=Crossroads_card_list[code]
+		if code~=91300075 and tc:CheckActivateEffect(false,true,false)~=nil then-- 
+		table.insert(codes,code)
 		end
+	end
+	if chk==0 then
+		return #codes>0
+	else
+		Crossroads_dice_except_list[aux.Stringid(91300075,6)]=c91300075.cpop
 		if #codes==0 then return end
 		table.sort(codes)
 		--c:IsCode(codes[1])
@@ -145,6 +168,23 @@ function c91300075.activate(e,tp,eg,ep,ev,re,r,rp)
 		local op=te:GetOperation()
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end
 		e:SetProperty(0)--Original Property
+	end
+end
+function c91300075.acop(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		return true
+	else
+		Crossroads_dice_except_list[aux.Stringid(91300075,7)]=c91300075.acop
+		local ph=Duel.GetCurrentPhase()
+		if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(0,1)
+		e1:SetValue(1)
+		e1:SetReset(RESET_PHASE+ph)
+		Duel.RegisterEffect(e1,tp)
 	end
 end
 function c91300075.excost(e,tp,eg,ep,ev,re,r,rp,chk)

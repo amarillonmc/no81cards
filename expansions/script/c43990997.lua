@@ -15,7 +15,7 @@ function c43990997.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetRange(LOCATION_GRAVE)
+	e2:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
 	e2:SetCondition(c43990997.tdcon)
 	e2:SetCost(c43990997.tdcost)
 	e2:SetTarget(c43990997.tdtg)
@@ -74,14 +74,14 @@ function c43990997.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	elseif op==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,3,nil)
+		local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil)
 		if #tg==0 then return end
 		Duel.HintSelection(tg)
 		Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end
 function c43990997.tdcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsSetCard(0x9510) and re:IsActiveType(TYPE_MONSTER)
+	return re:GetHandler():IsSetCard(0x9510) and re:IsActiveType(TYPE_MONSTER) and e:GetHandler():GetReasonEffect()~=re
 end
 function c43990997.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end

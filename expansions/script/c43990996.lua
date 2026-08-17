@@ -15,7 +15,7 @@ function c43990996.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetRange(LOCATION_GRAVE)
+	e2:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
 	e2:SetCondition(c43990996.descon)
 	e2:SetCost(c43990996.descost)
 	e2:SetTarget(c43990996.destg)
@@ -102,7 +102,7 @@ function c43990996.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c43990996.descon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsSetCard(0x9510) and re:IsActiveType(TYPE_MONSTER)
+	return re:GetHandler():IsSetCard(0x9510) and re:IsActiveType(TYPE_MONSTER) and e:GetHandler():GetReasonEffect()~=re
 end
 function c43990996.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end

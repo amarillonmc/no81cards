@@ -9,12 +9,14 @@ function c43990994.initial_effect(c)
 	e1:SetOperation(c43990994.activate)
 	c:RegisterEffect(e1)
 	--draw
+	--local e0=aux.AddThisCardInGraveAlreadyCheck(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(43990994,2))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetRange(LOCATION_GRAVE)
+	e2:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	e2:SetLabelObject(e0)
 	e2:SetCondition(c43990994.cpcon)
 	e2:SetCost(c43990994.cpcost)
 	e2:SetTarget(c43990994.cptg)
@@ -125,7 +127,8 @@ function c43990994.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
 function c43990994.cpcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsSetCard(0x9510) and re:IsActiveType(TYPE_MONSTER)
+	--local se=e:GetLabelObject():GetLabelObject()
+	return re:GetHandler():IsSetCard(0x9510) and re:IsActiveType(TYPE_MONSTER) and e:GetHandler():GetReasonEffect()~=re
 end
 function c43990994.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
