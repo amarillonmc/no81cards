@@ -59,6 +59,7 @@ function s.ddtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 end
 function s.ddop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Debug.Message("你是怎么触发这个效果的？")
 	local g=Duel.GetMatchingGroup(s.rmfilter,tp,0,LOCATION_HAND,nil,tp)
 	g:KeepAlive()
@@ -100,7 +101,7 @@ function s.fakercon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_PENDULUM)
 end
 function s.fakerop(e,tp,eg,ep,ev,re,r,rp)
-	local c=Duel.GetFieldGroup(tp,LOCATION_FZONE,0):GetFirst()	
+	local c=Duel.GetFieldGroup(tp,LOCATION_FZONE,0):GetFirst()  
 	if c and c:IsFaceup() then
 		if KOISHI_CHECK then
 			Duel.Hint(HINT_MUSIC,0,aux.Stringid(id,0))
@@ -111,7 +112,7 @@ function s.fakerop(e,tp,eg,ep,ev,re,r,rp)
 			for i=0,97 do
 				c:SetCardData(CARDDATA_CODE,id+i)
 			end
-			c:SetCardData(CARDDATA_CODE,code)	 
+			c:SetCardData(CARDDATA_CODE,code)   
 			Duel.ResetTimeLimit(tp,233)
 			Duel.ResetTimeLimit(1-tp,233)
 		else
