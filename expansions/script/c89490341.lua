@@ -45,6 +45,14 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
+	if not s.global_check then
+		s.global_check=true
+		Duel.DiscardDeck=function(tp,ct,r)
+			local g=Duel.GetDecktopGroup(tp,ct)
+			Duel.DisableShuffleCheck()
+			return Duel.SendtoGrave(g,r)
+		end
+	end
 end
 function s.ovfilter(c)
 	return c:IsFaceup() and c:IsRankBelow(7) and c:IsSetCard(0xc3d)
@@ -62,11 +70,11 @@ end
 function s.raval(e,c)
 	return e:GetHandler():GetOverlayCount()-1
 end
-function s.repfilter(c)
-	return c:IsLocation(LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD) and c:IsType(TYPE_MONSTER) and c:GetDestination()==LOCATION_GRAVE
+function s.repfilter(c,tp)
+	return c:IsLocation(LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD) and c:IsType(TYPE_MONSTER) and c:GetDestination()==LOCATION_GRAVE and c:GetOwner()==tp
 end
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=eg:Filter(s.repfilter,nil)
+	local g=eg:Filter(s.repfilter,nil,1-tp)
 	if chk==0 then return #g>0 end
 	for tc in aux.Next(g) do
 		tc:CancelToGrave()

@@ -64,6 +64,14 @@ function s.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_CHAIN_NEGATED)
 	c:RegisterEffect(e2)
+	if not s.global_check then
+		s.global_check=true
+		Duel.DiscardDeck=function(tp,ct,r)
+			local g=Duel.GetDecktopGroup(tp,ct)
+			Duel.DisableShuffleCheck()
+			return Duel.SendtoGrave(g,r)
+		end
+	end
 end
 function s.effconf(v)
 	return function(e) return e:GetHandler():GetOverlayCount()>=v end

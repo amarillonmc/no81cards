@@ -66,7 +66,7 @@ function c9911810.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,9911810,RESET_CHAIN,0,1)
 end
 function c9911810.ddtcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,9911810)>0
+	return Duel.GetFlagEffect(tp,9911810)>0 and Duel.IsExistingMatchingCard(c9911810.etfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c9911810.ddtop2(e,tp,eg,ep,ev,re,r,rp)
 	local n=math.min(Duel.GetFlagEffect(tp,9911810),Duel.GetFieldGroupCount(tp,LOCATION_DECK,0))

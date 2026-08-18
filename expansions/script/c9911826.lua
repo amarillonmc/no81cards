@@ -40,13 +40,14 @@ function c9911826.initial_effect(c)
 	e5:SetOperation(c9911826.dedop)
 	c:RegisterEffect(e5)
 end
-function c9911826.regop(e,tp,eg,ep,ev,re,r,rp)
-	if rp==1-tp and re:IsActiveType(TYPE_MONSTER) then
-		e:GetHandler():RegisterFlagEffect(9911826,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
-	end
-end
 function c9911826.etfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xa957) and c:GetOriginalType()&TYPE_MONSTER~=0
+end
+function c9911826.regop(e,tp,eg,ep,ev,re,r,rp)
+	if rp==1-tp and re:IsActiveType(TYPE_MONSTER)
+		and Duel.IsExistingMatchingCard(c9911826.etfilter,tp,LOCATION_ONFIELD,0,1,nil) then
+		e:GetHandler():RegisterFlagEffect(9911826,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
+	end
 end
 function c9911826.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
