@@ -151,8 +151,10 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	else
 		mg=mg:Filter(cm.mzfilter,nil,tp)
 	end
+	local chk=false
 	local b1=cm[tp] and ft>=0 and mg:IsExists(cm.filter,1,nil,e,tp,true)
 	if b1 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+		chk=true
 		::cancel::
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 		local mat=mg:FilterSelect(tp,cm.filter,1,1,nil,e,tp,true)
@@ -199,7 +201,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	local b2=cm[3-tp] and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.spfilter2),tp,0x7b,0,1,nil,e,tp)
-	if b2 and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+	if b2 and (not chk or Duel.SelectYesNo(tp,aux.Stringid(m,3))) then
 		local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter2),tp,0x7b,0,nil,e,tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tc=sg:Select(tp,1,1,nil):GetFirst()
