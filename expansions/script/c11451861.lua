@@ -147,8 +147,8 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return e:GetValue()==100 or Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
+	local ev0=Duel.GetCurrentChain()
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then --and re:GetHandler():IsRelateToEffect(re) then
-		local ev0=Duel.GetCurrentChain()
 		local e1=Effect.CreateEffect(re:GetHandler())
 		e1:SetDescription(aux.Stringid(m,5))
 		e1:SetType(EFFECT_TYPE_QUICK_F)
@@ -163,6 +163,21 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		e1:SetLabel(tp)
 		--Duel.RegisterEffect(e1,re:GetHandlerPlayer())
 		re:GetHandler():RegisterEffect(e1,true)
+	end
+	if e:GetValue()==100 then
+		e:SetValue(0)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_CHAIN_SOLVED)
+		e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+		e2:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+							local c=e:GetHandler()
+							if c:IsRelateToEffect(e) then
+								c:CancelToGrave()
+								Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
+							end
+						end)
+		Duel.RegisterEffect(e2,tp)
 	end
 end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -187,11 +202,11 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		ge2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		tc:RegisterEffect(ge2,true)
 	end
-	if c:IsRelateToEffect(e) and e:GetValue()==100 then
+	--[[if c:IsRelateToEffect(e) and e:GetValue()==100 then
 		e:SetValue(0)
 		c:CancelToGrave()
 		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
-	end
+	end--]]
 end
 function cm.shfilter(c)
 	return c:GetFlagEffect(m)>0
