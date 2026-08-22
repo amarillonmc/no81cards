@@ -23,7 +23,8 @@ function c9911768.rpscon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp
 end
 function c9911768.rpstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_EFFECT) end
+	local c=e:GetHandler()
+	if chk==0 then return c:GetOverlayCount()>0 and c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT) end
 end
 function c9911768.rpsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
