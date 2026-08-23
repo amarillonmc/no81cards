@@ -207,7 +207,7 @@ function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,11451556) and e:GetHandler():IsOriginalSetCard(0x97e)
 end
 function cm.filter(c)
-	return c:GetEquipTarget() and c:IsFacedown() and c:IsAbleToHandAsCost()
+	return c:GetEquipTarget() and c:IsFacedown() and not c:IsExtraDeckMonster() and c:GetLeaveFieldDest()==0
 end
 function cm.thfilter(c,tp)
 	return c:IsLocation(LOCATION_HAND) and c:IsControler(1-tp)

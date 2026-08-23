@@ -99,12 +99,13 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	if cm[2] then return end
-	local tg=te:GetTarget() or aux.TRUE
+	local tg=te:GetTarget()
+	local tg1=tg or aux.TRUE
 	local tg2=function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-				if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,1) end
-				if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) end
+				if chkc then return tg1(e,tp,eg,ep,ev,re,r,rp,0,1) end
+				if chk==0 then return tg1(e,tp,eg,ep,ev,re,r,rp,0) end
 				e:SetTarget(tg)
-				tg(e,tp,eg,ep,ev,re,r,rp,1)
+				tg1(e,tp,eg,ep,ev,re,r,rp,1)
 				local thg=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
 				local spg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
 				local sumg=Duel.GetMatchingGroup(Card.IsSummonable,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,true,nil)
@@ -128,12 +129,13 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 						else
 							Duel.Remove(g,POS_FACEUP,REASON_COST)
 						end
-						local op0=e:GetOperation() or (function() end)
+						local op=e:GetOperation()
+						local op0=op or aux.TRUE
 						local prop1,prop2=e:GetProperty()
 						te:SetProperty(prop1|EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_CANNOT_INACTIVATE,prop2)
-						Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,6))
+						Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,6))
 						local op2=function(e,tp,eg,ep,ev,re,r,rp)
-									e:SetOperation(op0)
+									e:SetOperation(op)
 									op0(e,tp,eg,ep,ev,re,r,rp)
 									local thg=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
 									local spg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,nil,e,tp)

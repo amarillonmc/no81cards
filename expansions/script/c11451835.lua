@@ -279,9 +279,10 @@ function cm.efcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local te=e:GetLabelObject()
 	Duel.ConfirmCards(1-tp,e:GetHandler())
-	local op0=te:GetOperation() or (function() end)
+	local op=te:GetOperation()
+	local op0=op or aux.TRUE
 	local op2=function(e,tp,eg,ep,ev,re,r,rp)
-				e:SetOperation(op0)
+				e:SetOperation(op)
 				op0(e,tp,eg,ep,ev,re,r,rp)
 				local c=e:GetHandler()
 				local chkf=tp
@@ -364,9 +365,10 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if res and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.ConfirmCards(1-tp,c)
-		local op0=te:GetOperation() or (function() end)
+		local op=te:GetOperation()
+		local op0=op or aux.TRUE
 		local op2=function(e,tp,eg,ep,ev,re,r,rp)
-					e:SetOperation(op0)
+					e:SetOperation(op)
 					op0(e,tp,eg,ep,ev,re,r,rp)
 					local c=e:GetHandler()
 					local chkf=tp

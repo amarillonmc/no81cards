@@ -215,6 +215,7 @@ function cm.operation23(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 	Duel.Hint(HINT_CARD,0,m)
 	if Duel.Draw(tp,1,REASON_EFFECT)>0 and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>Duel.GetFieldGroupCount(tp,0,LOCATION_HAND) then
+		Duel.ShuffleHand(tp)
 		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
 	end
 	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())

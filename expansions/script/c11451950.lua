@@ -340,7 +340,7 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsType(1<<typ) and (typ>0 or tc:IsAttribute(typ2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,cm.smfilter,tp,LOCATION_DECK,0,1,1,tc)
-		if tc:IsAbleToHand() then g:AddCard(tc) end
+		if Duel.IsPlayerCanSendtoHand(tp,tc) then g:AddCard(tc) end
 		Duel.DisableShuffleCheck()
 		Duel.SendtoHand(g,tp,REASON_EFFECT)
 	else

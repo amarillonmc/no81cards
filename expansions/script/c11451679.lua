@@ -85,14 +85,14 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local tg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
-	if chk==0 then return #tg>1 and c:IsAbleToHand() end
+	local tg=Duel.GetMatchingGroup(function(c) return c:IsAbleToHand() or not c:IsControler(tp) end,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,c)
+	if chk==0 then return #tg>0 or c:IsAbleToHand() end
 	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tg,1,0,0)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tg=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsAbleToHand),tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,c)
+	local tg=Duel.GetMatchingGroup(aux.NecroValleyFilter(function(c) return c:IsAbleToHand() or not c:IsControler(tp) end),tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,c)
 	local res=Duel.TossCoin(tp,1)
 	if res and #tg>0 then
 		local sg=tg:Select(tp,1,1,nil)

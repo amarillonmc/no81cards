@@ -52,10 +52,11 @@ function cm.initial_effect(c)
 			local te=tc:GetActivateEffect()
 			if te then
 				local fid=tc:GetFieldID()
-				local cost=te:GetCost() or aux.TRUE
+				local cost=te:GetCost()
+				local cost1=cost or aux.TRUE
 				local cost2=function(e,tp,eg,ep,ev,re,r,rp,chk)
-								if chk==0 then return cost(e,tp,eg,ep,ev,re,r,rp,0) end
-								cost(e,tp,eg,ep,ev,re,r,rp,1)
+								if chk==0 then return cost1(e,tp,eg,ep,ev,re,r,rp,0) end
+								cost1(e,tp,eg,ep,ev,re,r,rp,1)
 								if fid==tc:GetFieldID() then
 									Duel.RaiseEvent(tc,11451409,te,0,tp,tp,Duel.GetCurrentChain())
 								end
@@ -242,10 +243,10 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		e:SetCategory(te:GetCategory())
 		e:SetProperty(te:GetProperty())
 		Duel.ClearTargetCard()
-		if not tc:IsType(TYPE_EQUIP) then tc:CancelToGrave(false) end
 		tc:CreateEffectRelation(te)
 		if cost then cost(te,tp,ceg,cep,cev,cre,cr,crp,1) end
 		if target then target(te,tp,ceg,cep,cev,cre,cr,crp,1) end
+		if not (tc:IsType(TYPE_EQUIP+TYPE_FIELD+TYPE_CONTINUOUS+TYPE_PENDULUM) or tc:IsHasEffect(EFFECT_REMAIN_FIELD)) then tc:CancelToGrave(false) end
 		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 		if g then
 			for fc in aux.Next(g) do
@@ -337,7 +338,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			e:SetCategory(te:GetCategory())
 			e:SetProperty(te:GetProperty())
 			Duel.ClearTargetCard()
-			if not tc:IsType(TYPE_EQUIP) then tc:CancelToGrave(false) end
+			if not (tc:IsType(TYPE_EQUIP+TYPE_FIELD+TYPE_CONTINUOUS+TYPE_PENDULUM) or tc:IsHasEffect(EFFECT_REMAIN_FIELD)) then tc:CancelToGrave(false) end
 			tc:CreateEffectRelation(te)
 			if cost then cost(te,tp,ceg,cep,cev,cre,cr,crp,1) end
 			if target then target(te,tp,ceg,cep,cev,cre,cr,crp,1) end

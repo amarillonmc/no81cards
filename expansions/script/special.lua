@@ -353,6 +353,33 @@ function Auxiliary.PreloadUds()
 		if ct<=0 then return 0 end
 		return _Draw(p,ct,...)
 	end
+
+	local _ChangeChainOperation=Duel.ChangeChainOperation
+	function Duel.ChangeChainOperation(ev,...)
+		local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
+		local remain=re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsHasEffect(EFFECT_REMAIN_FIELD)
+		local ini=remain and not remain:IsHasProperty(EFFECT_FLAG_OATH)
+		local op=re:GetOperation()
+		local res=_ChangeChainOperation(ev,...)
+		if ini then re:GetHandler():CancelToGrave() end
+		if not op then
+			local ct=ev
+			if ct<=0 then ct=Duel.GetCurrentChain() end
+			local tge=Effect.CreateEffect(re:GetHandler())
+			tge:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			tge:SetCode(EVENT_CHAIN_SOLVED)
+			tge:SetCountLimit(1)
+			tge:SetCondition(function() return Duel.GetCurrentChain()==ct end)
+			tge:SetReset(RESET_CHAIN)
+			Duel.RegisterEffect(tge,0)
+			local tge2=tge:Clone()
+			tge2:SetCode(EVENT_CHAIN_NEGATED)
+			tge:SetOperation(function() re:SetOperation(nil) tge:Reset() tge2:Reset() end)
+			tge2:SetOperation(function() re:SetOperation(nil) tge:Reset() tge2:Reset() end)
+			Duel.RegisterEffect(tge2,0)
+		end
+		return res
+	end
 	
 	--From REIKAI
 	if not Group.ForEach then

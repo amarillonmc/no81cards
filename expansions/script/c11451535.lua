@@ -111,7 +111,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 and e:GetHandler():IsAbleToHand() end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 and Duel.IsPlayerCanSendtoHand(1-tp,Duel.GetDecktopGroup(tp,1):GetFirst()) and e:GetHandler():IsAbleToHand() end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
@@ -119,7 +119,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)>0 then
 		Duel.ConfirmCards(1-tp,c)
-		if tc then
+		if tc and Duel.IsPlayerCanSendtoHand(1-tp,Duel.GetDecktopGroup(tp,1):GetFirst()) then
 			Duel.DisableShuffleCheck()
 			Duel.SendtoHand(tc,1-tp,REASON_EFFECT)
 			Duel.ConfirmCards(tp,tc)

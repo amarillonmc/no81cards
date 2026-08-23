@@ -98,9 +98,10 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(cm.spop)
 	e1:Reset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,tp)
-	local op0=re:GetOperation() or (function() end)
+	local op=re:GetOperation()
+	local op0=op or aux.TRUE
 	local op2=function(e,tp,eg,ep,ev,re,r,rp)
-				e:SetOperation(op0)
+				e:SetOperation(op)
 				op0(e,tp,eg,ep,ev,re,r,rp)
 				local g=Duel.GetMatchingGroup(cm.ffilter,0,LOCATION_MZONE,LOCATION_MZONE,nil)
 				if #g==0 then return end

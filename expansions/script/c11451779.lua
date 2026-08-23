@@ -137,7 +137,8 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	if cm[0] or CONVIATRESS_BUFF[te] then return end
-	local tg=te:GetTarget() or aux.TRUE
+	local tg=te:GetTarget()
+	local tg1=tg or aux.TRUE
 	if te:GetHandler():GetType()&0x20004==0x20004 and te:IsHasType(EFFECT_TYPE_ACTIVATE) and not te:GetCost() and not te:GetTarget() then
 		local extg=Duel.GetMatchingGroup(cm.extfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,nil)
 		if #extg>0 and Duel.SelectYesNo(tp,aux.Stringid(11451779,2)) then
@@ -218,9 +219,9 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 		end
 	else
 		local tg2=function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-					if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,1) end
-					if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) end
-					tg(e,tp,eg,ep,ev,re,r,rp,1)
+					if chkc then return tg1(e,tp,eg,ep,ev,re,r,rp,0,1) end
+					if chk==0 then return tg1(e,tp,eg,ep,ev,re,r,rp,0) end
+					tg1(e,tp,eg,ep,ev,re,r,rp,1)
 					local extg=Duel.GetMatchingGroup(cm.extfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,nil)
 					if #extg>0 and Duel.SelectYesNo(tp,aux.Stringid(11451779,2)) then
 						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

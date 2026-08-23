@@ -90,8 +90,9 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	if cm[3] or cm[te] then return end
-	local tg=te:GetTarget() or aux.TRUE
-	if te:GetHandler():GetType()&0x20004==0x20004 and te:IsHasType(EFFECT_TYPE_ACTIVATE) and not te:GetCost() and not te:GetTarget() and not te:GetOperation() then
+    local tg=te:GetTarget()
+    local tg1=tg or aux.TRUE
+	if te:GetHandler():GetType()&0x20004==0x20004 and te:IsHasType(EFFECT_TYPE_ACTIVATE) and not te:GetCost() and not te:GetTarget() then
 		local extg=Duel.GetMatchingGroup(cm.extfilter,tp,LOCATION_DECK,0,nil)
 		if #extg>0 and cm[tp]<cm[1-tp] and Duel.GetFlagEffect(tp,m)==0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
@@ -101,9 +102,9 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 		end
 	else
 		local tg2=function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-					if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,1) end
-					if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) end
-					tg(e,tp,eg,ep,ev,re,r,rp,1)
+					if chkc then return tg1(e,tp,eg,ep,ev,re,r,rp,0,1) end
+					if chk==0 then return tg1(e,tp,eg,ep,ev,re,r,rp,0) end
+					tg1(e,tp,eg,ep,ev,re,r,rp,1)
 					local extg=Duel.GetMatchingGroup(cm.extfilter,tp,LOCATION_DECK,0,nil)
 					if #extg>0 and cm[tp]<cm[1-tp] and Duel.GetFlagEffect(tp,m)==0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 						Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)

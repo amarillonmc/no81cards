@@ -164,7 +164,7 @@ end
 function s.dsop(e,tp,eg,ep,ev,re,r,rp)
 	local op=re:GetOperation()
 	local opt=op or aux.TRUE
-	local op2=function(e,...) e:SetOperation(op)  opt(e,...) opt(e,...) end
+	local op2=function(e,...) e:SetOperation(op)  opt(e,...) Duel.BreakEffect() opt(e,...) end
 	re:SetOperation(op2)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

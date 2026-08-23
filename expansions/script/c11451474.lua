@@ -46,8 +46,8 @@ end
 function cm.spfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
 end
-function cm.thfilter(c)
-	return c:GetOriginalType()&TYPE_MONSTER>0 and ((c:IsLocation(LOCATION_MZONE) and c:IsRace(RACE_INSECT)) or (not c:IsLocation(LOCATION_MZONE) and c:GetOriginalRace()&RACE_INSECT>0))
+function cm.thfilter(c,sc)
+	return c:GetOriginalType()&TYPE_MONSTER>0 and ((c:IsLocation(LOCATION_MZONE) and c:IsRace(RACE_INSECT)) or (not c:IsLocation(LOCATION_MZONE) and c:GetOriginalRace()&RACE_INSECT>0)) and (c:IsFaceupEx() or c==sc)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
@@ -62,7 +62,7 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_SPELL
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,0,1,nil,e:GetHandler()) end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -83,7 +83,6 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(tp,tc)
 		for _,sumtype in pairs({0,SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ,SUMMON_TYPE_LINK,SUMMON_TYPE_SPECIAL,SUMMON_VALUE_SELF}) do
 			if tc:IsSpecialSummonable(sumtype) then
-				Duel.BreakEffect()
 				Duel.SpecialSummonRule(1-tp,tc,sumtype)
 				break
 			end

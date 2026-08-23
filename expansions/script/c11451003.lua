@@ -107,8 +107,9 @@ function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 	--if re:GetHandler():IsImmuneToEffect(e) then return end
-	local op=re:GetOperation() or aux.TRUE
-	local op2=function(e,...) e:SetOperation(op) op(e,...) Duel.BreakEffect() op(e,...) end
+	local op=re:GetOperation()
+	local opt=op or aux.TRUE
+	local op2=function(e,...) e:SetOperation(op) opt(e,...) Duel.BreakEffect() opt(e,...) end
 	re:SetOperation(op2)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

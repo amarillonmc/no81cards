@@ -150,12 +150,13 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	else
-		local tg=te:GetTarget() or aux.TRUE
+		local tg=te:GetTarget()
+		local tg1=tg or aux.TRUE
 		local tg2=function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-					if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,1) end
-					if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) end
+					if chkc then return tg1(e,tp,eg,ep,ev,re,r,rp,0,1) end
+					if chk==0 then return tg1(e,tp,eg,ep,ev,re,r,rp,0) end
 					e:SetTarget(tg)
-					tg(e,tp,eg,ep,ev,re,r,rp,1)
+					tg1(e,tp,eg,ep,ev,re,r,rp,1)
 					for i=1,1+#{Duel.IsPlayerAffectedByEffect(0,11451973)} do
 						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
 						local g=Duel.SelectMatchingCard(tp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,0x1972,1)

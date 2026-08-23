@@ -123,8 +123,8 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetLabel(0)
 	end
 end
-function cm.thfilter(c)
-	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsAbleToHand()
+function cm.thfilter(c,tp)
+	return c:IsPreviousLocation(LOCATION_ONFIELD) and (c:IsAbleToHand() or not c:IsControler(tp))
 end
 function cm.cffilter(c,tp)
 	return c:IsPreviousPosition(POS_FACEUP) or c:GetOwner()==1-tp
@@ -132,7 +132,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
+		local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil,tp)
 		if e:GetLabel()==1 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

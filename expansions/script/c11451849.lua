@@ -37,9 +37,10 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.DiscardHand(1-tp,nil,1,1,REASON_DISCARD+REASON_EFFECT,nil)
 		Duel.NegateEffect(ev)
 	elseif not ac and bc then
-		local op0=re:GetOperation() or (function() end)
+		local op=re:GetOperation()
+		local op0=op or aux.TRUE
 		local op2=function(e,tp,eg,ep,ev,re,r,rp)
-					e:SetOperation(op0)
+					e:SetOperation(op)
 					op0(e,tp,eg,ep,ev,re,r,rp)
 					local ct=6-Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 					if ct>0 then

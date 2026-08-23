@@ -179,20 +179,22 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	if cm[2] then return end
-	local tg=te:GetTarget() or aux.TRUE
+	local tg=te:GetTarget()
+	local tg1=tg or aux.TRUE
 	local tg2=function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-				if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,1) end
-				if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) end
+				if chkc then return tg1(e,tp,eg,ep,ev,re,r,rp,0,1) end
+				if chk==0 then return tg1(e,tp,eg,ep,ev,re,r,rp,0) end
 				e:SetTarget(tg)
-				tg(e,tp,eg,ep,ev,re,r,rp,1)
+				tg1(e,tp,eg,ep,ev,re,r,rp,1)
 				if not Duel.IsPlayerAffectedByEffect(tp,m) or PNFL_TURN_TOHAND_CHECK[e:GetHandler():GetCode()] then return end
 				local c=e:GetHandler()
 				if c:IsLocation(LOCATION_MZONE) and c:IsAbleToHandAsCost() and Duel.GetFieldGroup(tp,LOCATION_HAND,0):FilterCount(cm.spfilter,nil,e,tp)>0 and Duel.GetMZoneCount(tp,c)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 					Duel.SendtoHand(c,nil,REASON_COST)
 					c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
-					local op0=e:GetOperation() or (function() end)
+					local op=e:GetOperation()
+					local op0=op or aux.TRUE
 					local op2=function(e,tp,eg,ep,ev,re,r,rp)
-								e:SetOperation(op0)
+								e:SetOperation(op)
 								op0(e,tp,eg,ep,ev,re,r,rp)
 								local exc=e:GetHandler()
 								if exc:GetFlagEffect(m)==0 then exc=nil end
