@@ -1,5 +1,5 @@
 -- 绯色贵公子·迪翁
-Duel.LoadScript("c60001511.lua")
+--Duel.LoadScript("c60001511.lua")
 local s,id=GetID()
 function s.initial_effect(c)
 	c:EnableCounterPermit(0x624)
@@ -38,7 +38,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(500)
 	Duel.RegisterEffect(e1,tp)
 	if def>=1700 then
-		byd.AddSummonCount(e,tp)
+		Duel.RegisterFlagEffect(tp,60012063,0,0,1)
 	end
 	if def>=3700 then
 		Duel.Draw(tp,3,REASON_EFFECT)

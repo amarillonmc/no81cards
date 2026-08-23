@@ -39,6 +39,12 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.tdtg)
 	e3:SetOperation(cm.tdop)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,0))
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e4:SetCode(EVENT_TO_HAND)
+	e4:SetCondition(cm.thcon)
+	c:RegisterEffect(e4)
 	if cm[EVENT_TO_DECK]==true then return end
 	cm[EVENT_TO_DECK]=true
 	if not g then g=Group.CreateGroup() end
@@ -52,7 +58,7 @@ function cm.initial_effect(c)
 	Duel.RegisterEffect(ge1,0)
 	local ge2=ge1:Clone()
 	ge2:SetCode(EVENT_TO_HAND)
-	Duel.RegisterEffect(ge2,0)
+	--Duel.RegisterEffect(ge2,0)
 	local ge2=ge1:Clone()
 	ge2:SetCode(EVENT_CHAIN_END)
 	ge2:SetOperation(Auxiliary.MergedDelayEventCheck2)
@@ -60,7 +66,7 @@ function cm.initial_effect(c)
 end
 function cm.MergedDelayEventCheck1(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
-	g:Merge(eg:Filter(Card.IsPreviousPosition,nil,POS_FACEUP))
+	g:Merge(eg:Filter(function(c) return c:IsPreviousPosition(POS_FACEUP) and not c:IsLocation(LOCATION_HAND) end,nil))
 	if Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_END) then
 		local _eg=g:Clone()
 		Duel.RaiseEvent(_eg,EVENT_CUSTOM+e:GetLabel(),re,r,rp,ep,ev)
@@ -128,8 +134,12 @@ function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return eg:IsContains(c)
 end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsPreviousPosition(POS_FACEUP)
+end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x5978) and c:GetOriginalType()&0x1>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and ((not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,c)>0)) and (c:IsLocation(LOCATION_EXTRA) or c:IsFaceupEx())
+	return c:IsSetCard(0x5978) and c:GetOriginalType()&0x1>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and ((not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,c)>0)) and c:IsFaceupEx()
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local locs = LOCATION_HAND | LOCATION_SZONE | LOCATION_EXTRA | LOCATION_GRAVE | LOCATION_REMOVED | LOCATION_DECK
@@ -149,13 +159,13 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_DISABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1,true)
+			--tc:RegisterEffect(e1,true)
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetCode(EFFECT_DISABLE_EFFECT)
 			e2:SetValue(RESET_TURN_SET)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2,true)
+			--tc:RegisterEffect(e2,true)
 			if (prev_loc & (LOCATION_EXTRA | LOCATION_GRAVE)) ~= 0 then
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetDescription(aux.Stringid(m,2))
@@ -166,6 +176,14 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetTarget(cm.reptg)
 				e1:SetValue(aux.TRUE)
 				tc:RegisterEffect(e1,true)
+				if tc:IsType(TYPE_PENDULUM) then
+					tc:RegisterFlagEffect(m+2,RESET_EVENT+RESETS_STANDARD,0,1)
+					local _IsAbleToGraveAsCost=Card.IsAbleToGraveAsCost
+					Card.IsAbleToGraveAsCost=function(c)
+												if c:GetFlagEffect(m+2)>0 and c:GetLeaveFieldDest()==0 then return true end
+												return _IsAbleToGraveAsCost(c)
+											end
+				end
 			else
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)

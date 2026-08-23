@@ -14,9 +14,10 @@ function cm.initial_effect(c)
 						e1:SetOperation(cm.thop)
 						e1:SetReset(RESET_PHASE+PHASE_END)
 						Duel.RegisterEffect(e1,tp)
-						if not e:GetHandler():IsPreviousLocation(LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_REMOVED) then
-							Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m,re,r,rp,ep,ev)
-						end
+						Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m+1,re,r,rp,ep,ev)
+						--if not e:GetHandler():IsPreviousLocation(LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_REMOVED) then
+						Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m,re,r,rp,ep,ev)
+						--end
 					end)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
@@ -64,7 +65,7 @@ function cm.initial_effect(c)
 									end
 									local de = Effect.CreateEffect(e:GetHandler())
 									-- state (1~7) + 5 = (6~12)，完美映射 6-12 号字符串
-									de:SetDescription(aux.Stringid(11452068, 6 + state)) 
+									de:SetDescription(aux.Stringid(11452065, 6 + state)) 
 									de:SetType(EFFECT_TYPE_FIELD)
 									de:SetCode(EFFECT_FLAG_EFFECT)
 									de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
@@ -252,6 +253,11 @@ function cm.thfilter(c,tp)
 	return c:IsSetCard(0x5978) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not is_added
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if Duel.CheckEvent(EVENT_CUSTOM+m+1) then
+		if e:GetLabel()~=0 then return end
+		e:SetLabel(1)
+	end
 	if Duel.GetFlagEffect(tp,m)>0 or not Duel.IsExistingMatchingCard(nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) or not Duel.SelectYesNo(tp,aux.Stringid(m,1)) then return end
 	if GRAVILOID_COUNTER then
 		local te=Duel.GetChainInfo(Duel.GetCurrentChain(),CHAININFO_TRIGGERING_EFFECT)

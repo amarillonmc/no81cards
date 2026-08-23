@@ -6,6 +6,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)
+	
 	-- ①：卡的效果发动时才能在连锁2·3发动。那个效果变成...
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -18,27 +19,44 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.chtg)
 	e2:SetOperation(cm.chop)
 	c:RegisterEffect(e2)
-	-- ②：把场上·墓地的这张卡除外才能发动。进行1只超量怪兽的超量召唤。
+	
+	-- ②：把这张卡从手卡丢弃或从墓地除外才能发动。进行1只2阶怪兽的超量召唤。
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetRange(LOCATION_SZONE+LOCATION_GRAVE)
+	e3:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e3:SetHintTiming(0,TIMING_END_PHASE)
-	e3:SetCondition(function(e) return not e:GetHandler():IsLocation(LOCATION_SZONE) or e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED) end)
 	e3:SetCost(function(e,tp,eg,ep,ev,re,r,rp,chk)
 		local c=e:GetHandler()
-		if chk==0 then return (c:IsOnField() and c:IsAbleToGraveAsCost())or (c:IsLocation(LOCATION_GRAVE) and c:IsAbleToRemoveAsCost()) end
-		if c:IsOnField() then Duel.SendtoGrave(c,REASON_COST)
-		elseif c:IsLocation(LOCATION_GRAVE) then Duel.Remove(c,POS_FACEUP,REASON_COST) end
+		if chk==0 then return (c:IsLocation(LOCATION_HAND) and c:IsDiscardable()) or (c:IsLocation(LOCATION_GRAVE) and c:IsAbleToRemoveAsCost()) end
+		if c:IsLocation(LOCATION_HAND) then
+			Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
+		elseif c:IsLocation(LOCATION_GRAVE) then
+			Duel.Remove(c,POS_FACEUP,REASON_COST)
+		end
 	end)
 	e3:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
-		if chk==0 then return Duel.IsExistingMatchingCard(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,nil,nil) end
+		local c=e:GetHandler()
+		if chk==0 then
+			-- 给自身临时挂上“不能作为超量素材”的限制
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+			e1:SetValue(1)
+			c:RegisterEffect(e1,true)
+			-- 在此限制下进行合法性快照检测
+			local res=Duel.IsExistingMatchingCard(function(tc) return tc:IsRank(2) and tc:IsXyzSummonable(nil) end,tp,LOCATION_EXTRA,0,1,nil)
+			-- 检测完毕，立刻卸载临时限制
+			e1:Reset()
+			return res
+		end
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 	end)
 	e3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-		local g=Duel.GetMatchingGroup(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,nil,nil)
+		local g=Duel.GetMatchingGroup(function(tc) return tc:IsRank(2) and tc:IsXyzSummonable(nil) end,tp,LOCATION_EXTRA,0,nil)
 		if #g>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local tg=g:Select(tp,1,1,nil)

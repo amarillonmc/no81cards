@@ -28,7 +28,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
-	byd.AddSummonCount(e,tp)
+	Duel.RegisterFlagEffect(tp,60012063,0,0,1)
 end
 function s.atkcon(e)
 	return e:GetHandler():GetCounter(0x624)>0

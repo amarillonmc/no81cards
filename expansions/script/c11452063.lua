@@ -41,7 +41,7 @@ function cm.actcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanAddCounter(tp,0x1974,1,c) end
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and c:IsCanAddCounter(0x1974,1) then
 		Duel.HintSelection(Group.FromCards(c))
-		local ct=Duel.AnnounceNumber(tp,1,2,3)
+		local ct=Duel.AnnounceNumber(tp,1,2,3,4)
 		c:AddCounter(0x1974,ct)
 	end
 	--[[if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,0x1974,1) end

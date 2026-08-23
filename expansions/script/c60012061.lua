@@ -1,5 +1,5 @@
 -- 银色清纯·雅尔贞特
-Duel.LoadScript("c60001511.lua")
+--Duel.LoadScript("c60001511.lua")
 local cm,m,o=GetID()
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x624)
@@ -53,7 +53,8 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	c:AddCounter(0x624,1)
 	Duel.RegisterFlagEffect(tp,60002148,0,0,1)
 	if Duel.GetFlagEffect(tp,60012061)>1 then
-		byd.AddSummonCount(e,tp)
+		--byd.AddSummonCount(e,tp)
 		Duel.Draw(tp,3,REASON_EFFECT)
+		Duel.RegisterFlagEffect(tp,60012063,0,0,1)
 	end
 end

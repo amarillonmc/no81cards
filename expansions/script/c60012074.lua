@@ -1,4 +1,4 @@
-Duel.LoadScript("c60001511.lua")
+--Duel.LoadScript("c60001511.lua")
 local s,id=GetID()
 function s.initial_effect(c)
 	c:EnableCounterPermit(0x624)
@@ -16,7 +16,8 @@ function s.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,id)
 	e2:SetCost(s.cost)
-	e2:SetOperation(s.operation)
+	e2:SetTarget(s.sumtg)
+	e2:SetOperation(s.sumop)
 	c:RegisterEffect(e2)
 
 	local e3=Effect.CreateEffect(c)
@@ -49,8 +50,20 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
-function s.operation(e,tp,eg,ep,ev,re,r,rp)
-	byd.AddSummonCount(e,tp)
+function s.sumfilter(c)
+	return c:IsSummonable(true,nil)
+end
+function s.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
+end
+function s.sumop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+	local g=Duel.SelectMatchingCard(tp,s.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.Summon(tp,tc,true,nil)
+	end
 end
 function s.atkcon(e)
 	return e:GetHandler():GetCounter(0x624)>0

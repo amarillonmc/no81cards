@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 	e2:SetCountLimit(1)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,0)
+	--e2:SetCondition(function(e) return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) end)
 	c:RegisterEffect(e2)
 
 	local e3=Effect.CreateEffect(c)

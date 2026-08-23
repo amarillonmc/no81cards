@@ -44,6 +44,14 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.AnXiop)
 	c:RegisterEffect(e1)
 
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SUMMON_SUCCESS)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
 function cm.incon(e)
 	return Card.GetCounter(e:GetHandler(),0x624)>=1
@@ -53,7 +61,7 @@ function cm.efilter(e,te)
 end
 function cm.endeffop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetFlagEffect(tp,60012060)>2 then
+	if Duel.GetFlagEffect(tp,m)>=10 then
 		c:AddCounter(0x624,1)
 		Duel.RegisterFlagEffect(tp,60002148,0,0,1)
 	end
@@ -67,5 +75,12 @@ function cm.AnXiop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		Duel.RegisterFlagEffect(tc:GetSummonPlayer(),m,RESET_PHASE+PHASE_END,0,1)
+		tc=eg:GetNext()
 	end
 end

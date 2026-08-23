@@ -1,5 +1,5 @@
 -- 世界的伙伴·佐伊
-Duel.LoadScript("c60001511.lua")
+--Duel.LoadScript("c60001511.lua")
 local cm,m,o=GetID()
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x624)
@@ -20,7 +20,8 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetOperation(cm.op)
+	e1:SetTarget(c213326.target)
+	e1:SetOperation(c213326.activate)
 	c:RegisterEffect(e1)
 
 	local e1=Effect.CreateEffect(c)
@@ -61,8 +62,20 @@ end
 function cm.incon(e)
 	return Card.GetCounter(e:GetHandler(),0x624)>=1
 end
-function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	byd.AddSummonCount(e,tp)
+function cm.filter(c)
+	return c:IsCode(60012063) and c:IsAbleToHand()
+end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end
 function cm.smcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsDualState()

@@ -31,11 +31,11 @@ function c43990992.cpfilter(c)
 	return c:IsSetCard(0x9510) and c:IsFaceupEx() and c:CheckActivateEffect(false,true,false)~=nil
 end
 function c43990992.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c43990992.cpfilter,tp,LOCATION_HAND+LOCATION_SZONE+LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c43990992.cpfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil) end
 end
 function c43990992.cpop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local tc=Duel.SelectMatchingCard(tp,c43990992.cpfilter,tp,LOCATION_HAND+LOCATION_SZONE+LOCATION_GRAVE,0,1,1,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c43990992.cpfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,1,nil):GetFirst()
 	if tc then
 		--Duel.HintSelection(Group.FromCards(tc))
 		Duel.ConfirmCards(1-tp,tc)

@@ -1,6 +1,6 @@
 -- 冰封的命运·伊什米尔
 local s,id=GetID()
-Duel.LoadScript("c60001511.lua")
+--Duel.LoadScript("c60001511.lua")
 function s.initial_effect(c)
 	c:EnableCounterPermit(0x624)
 
@@ -10,7 +10,6 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(s.con1)
 	e1:SetTarget(s.tg1)
 	e1:SetOperation(s.op1)
 	c:RegisterEffect(e1)
@@ -39,10 +38,23 @@ function s.initial_effect(c)
 	local e3b=e3:Clone()
 	e3b:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3b)
+	
+	if not s.global_check then
+		s.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SUMMON_SUCCESS)
+		ge1:SetOperation(s.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
-function s.con1(e,tp,eg,ep,ev,re,r,rp)
-	local extra=Duel.GetFlagEffect(tp,60012060)
-	return extra+1>=4
+
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		Duel.RegisterFlagEffect(tc:GetSummonPlayer(),id,RESET_PHASE+PHASE_END,0,1)
+		tc=eg:GetNext()
+	end
 end
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanAddCounter(0x624,1) end
@@ -50,7 +62,7 @@ function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsCanAddCounter(0x624,1) then
+	if c:IsRelateToEffect(e) and c:IsCanAddCounter(0x624,1) and Duel.GetFlagEffect(tp,id)>=7 then
 		c:AddCounter(0x624,1)
 		Duel.RegisterFlagEffect(tp,60002148,0,0,1)
 	end

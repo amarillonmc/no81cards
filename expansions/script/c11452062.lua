@@ -87,7 +87,11 @@ function cm.tfilter(c)
 	return c:IsAbleToDeck() and (c:IsLocation(LOCATION_ONFIELD) or c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_REMOVED))
 end
 function cm.m_target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(cm.tfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	local t=0
+	if Duel.IsPlayerAffectedByEffect(tp,11452071) then
+		t=LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED
+	end
+	local g=Duel.GetMatchingGroup(cm.tfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,t,nil)
 	if chk==0 then return #g>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,#g,0,0)
 end
@@ -99,7 +103,7 @@ function cm.m_operation(e,tp,eg,ep,ev,re,r,rp)
 	local t=0
 	if Duel.IsPlayerAffectedByEffect(tp,11452071) then
 		Duel.IsPlayerAffectedByEffect(tp,11452071):UseCountLimit(tp)
-		t=LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_EXTRA
+		t=LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED
 	end
 	local g = Duel.GetMatchingGroup(cm.tfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,t,nil)
 	if aux.NecroValleyNegateCheck(g) then return end
@@ -166,9 +170,9 @@ function cm.m_operation(e,tp,eg,ep,ev,re,r,rp)
 					Duel.RegisterEffect(de, tp)
 				end
 			-- 2. 处理统合版客户端提示（仅当 1~4 张时状态会发生改变）
-			elseif count <= 6 then
+			elseif count <= 7 then
 				-- 组合状态计算 (1~15)
-				for i=5,6 do
+				for i=5,7 do
 					local state = 0
 					if Duel.GetFlagEffect(tp, 114520600 + i) > 0 then state = state | 1 end
 					if Duel.GetFlagEffect(tp, 114520610 + i) > 0 then state = state | 2 end

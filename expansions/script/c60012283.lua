@@ -97,7 +97,7 @@ function s.op2(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if s.get_count(tp)>=10 then
-		byd.AddSummonCount(e,tp)
+		Duel.RegisterFlagEffect(tp,60012063,0,0,1)
 	end
 end
 function s.atkcon(e)
