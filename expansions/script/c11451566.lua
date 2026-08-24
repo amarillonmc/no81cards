@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 			if ns and not c:IsHasEffect(EFFECT_EQUIP_LIMIT) then c:RegisterFlagEffect(11451566,RESET_CHAIN,0,1) c:RegisterFlagEffect(11451566,RESET_CHAIN,0,1) end
 			local res=_Equip(p,c,...)
 			if ns and c:IsHasEffect(EFFECT_EQUIP_LIMIT) then
-				cm.deop2(e,0,Group.FromCards(c),0,0,e,0,0)
+				Duel.RaiseEvent(Group.FromCards(c),EVENT_CUSTOM+11451566,e1,0,0,0,0)
 			end
 			return res
 		end
@@ -33,7 +33,21 @@ function cm.initial_effect(c)
 			local res=_CRegisterEffect(c,e,...)
 			if e:GetCode()==EFFECT_EQUIP_LIMIT and c:GetFlagEffect(11451566)>0 then
 				c:ResetFlagEffect(11451566)
-				cm.deop2(e,0,Group.FromCards(c),0,0,e,0,0)
+				Duel.RaiseEvent(Group.FromCards(c),EVENT_CUSTOM+11451566,e1,0,0,0,0)
+			end
+			return res
+		end
+		local _GetControl=Duel.GetControl
+		function Duel.GetControl(v,p,...)
+			local t=Auxiliary.GetValueType(v)
+			local g=Group.CreateGroup()
+			if t=="Card" then g:AddCard(v) else g=v end
+			local ns=g:IsExists(Card.IsControler,1,nil,1-p)
+			if ns then c:RegisterFlagEffect(11451566,RESET_CHAIN,0,1) c:RegisterFlagEffect(11451566,RESET_CHAIN,0,1) end
+			local res=_GetControl(v,p,...)
+			if ns then
+				c:ResetFlagEffect(11451566)
+				Duel.RaiseEvent(g,EVENT_CUSTOM+11451566,e1,0,0,0,0)
 			end
 			return res
 		end

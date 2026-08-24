@@ -80,7 +80,6 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		if tc:IsPreviousLocation(LOCATION_HAND) then Duel.ShuffleHand(tp) end
 		if not tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA) or not tc:IsControler(1-tp) then return end
 		if tc:IsLocation(LOCATION_HAND) then Duel.ShuffleHand(1-tp) end
-		Duel.ConfirmCards(tp,tc)
 		for _,sumtype in pairs({0,SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ,SUMMON_TYPE_LINK,SUMMON_TYPE_SPECIAL,SUMMON_VALUE_SELF}) do
 			if tc:IsSpecialSummonable(sumtype) then
 				Duel.SpecialSummonRule(1-tp,tc,sumtype)

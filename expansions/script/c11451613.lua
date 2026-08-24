@@ -39,15 +39,10 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge2,0)
 	end
 end
-function cm.cfilter(c)
-	local p,loc,seq=c:GetPreviousControler(),c:GetPreviousLocation(),c:GetPreviousSequence()
-	if loc==LOCATION_MZONE then if seq==5 then seq=1 elseif seq==6 then seq=3 end end
-	return c:IsPreviousLocation(LOCATION_ONFIELD) and seq<5 and Duel.IsExistingMatchingCard(cm.actfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,p,seq) and (not c:IsOnField() or not aux.GetColumn(c,p) or aux.GetColumn(c,p)~=seq)
-end
 function cm.dfilter(c)
 	local p,loc,seq=c:GetPreviousControler(),c:GetPreviousLocation(),c:GetPreviousSequence()
 	if loc==LOCATION_MZONE then if seq==5 then seq=1 elseif seq==6 then seq=3 end end
-	return c:IsOnField() and seq<5 and (loc&LOCATION_ONFIELD==0 or not aux.GetColumn(c,p) or aux.GetColumn(c,p)~=seq) and Duel.IsExistingMatchingCard(cm.actfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,p,aux.GetColumn(c,p))
+	return c:IsOnField() and seq<5 and Duel.IsExistingMatchingCard(cm.actfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,p,aux.GetColumn(c,p)) --and (loc&LOCATION_ONFIELD==0 or not aux.GetColumn(c,p) or aux.GetColumn(c,p)~=seq)
 end
 function cm.actfilter(c,p,seq)
 	return aux.GetColumn(c,p)==seq
