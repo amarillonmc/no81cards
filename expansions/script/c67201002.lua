@@ -54,15 +54,14 @@ function s.pop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)
-		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 		e1:SetValue(s.efilter)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 		tc:RegisterEffect(e1)
 		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,2,0,aux.Stringid(id,2))
 	end
 end
-function s.efilter(e,te)
-	return te:GetOwnerPlayer()~=e:GetHandlerPlayer()
+function s.efilter(e,re)
+	return e:GetHandlerPlayer()~=re:GetOwnerPlayer()
 end
 function s.atklimit(e,c)
 	return c~=e:GetHandler()
