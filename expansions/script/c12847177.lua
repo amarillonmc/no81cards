@@ -105,7 +105,7 @@ function s.initial_effect(c)
 					if not target:IsType(TYPE_TOKEN) then Duel.Hint(HINT_CARD,0,target:GetOriginalCode()) end
 					target:RegisterFlagEffect(id+1,RESET_EVENT+RESETS_STANDARD,0,1)
 					Duel.Hint(HINT_SELECTMSG,sumplayer,HINTMSG_SPSUMMON)
-					local sg=Duel.SelectMatchingCard(tp,s.spfilter,sumplayer,LOCATION_HAND,0,1,1,nil)
+					local sg=Duel.SelectMatchingCard(sumplayer,s.spfilter,sumplayer,LOCATION_HAND,0,1,1,nil)
 					sg:GetFirst():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1)
 					target=sg:GetFirst()
 					table.insert(grandsaber_table,target)

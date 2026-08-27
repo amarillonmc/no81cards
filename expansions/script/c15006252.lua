@@ -23,7 +23,6 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e2:SetCountLimit(1,m)
-	e2:SetCondition(cm.actcon)
 	e2:SetCost(cm.cost)
 	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
@@ -45,10 +44,6 @@ function cm.rkcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.efilter(e,te)
 	return te:GetOwnerPlayer()~=e:GetHandlerPlayer()
-end
-function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
-	local ph=Duel.GetCurrentPhase()
-	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
@@ -96,6 +91,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			local te=tc:GetActivateEffect()
+			te:UseCountLimit(tp,1,true)
 			local tep=tc:GetControler()
 			local cost=te:GetCost()
 			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
