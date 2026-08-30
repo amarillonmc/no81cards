@@ -90,7 +90,7 @@ function s.matfilter(c)
 	return c:IsRace(RACE_INSECT) and c:IsLevelAbove(7)
 end
 function s.costfilter(c)
-	return c:IsRace(RACE_INSECT) and not c:IsLevel(9) and (c:IsAbleToDeckAsCost() or c:IsAbleToExtraAsCost())
+	return c:IsRace(RACE_INSECT) and not c:IsLevel(9) and (c:IsAbleToDeckAsCost() or c:IsAbleToExtraAsCost()) and c:IsFaceup()
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(s.costfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)

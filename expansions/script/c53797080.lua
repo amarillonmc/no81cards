@@ -4,20 +4,37 @@ function s.initial_effect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCode(EVENT_CUSTOM+id)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetHintTiming(TIMINGS_CHECK_MONSTER,0)
 	e1:SetCondition(s.condition)
 	e1:SetCost(s.cost)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.operation)
 	c:RegisterEffect(e1)
+	if not s.global_check then
+		s.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SUMMON_SUCCESS)
+		ge1:SetOperation(s.checkop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(ge2,0)
+	end
+end
+function s.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc and tc:IsFaceup() do
+		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
+		tc=eg:GetNext()
+	end
+	Duel.RaiseEvent(eg,EVENT_CUSTOM+id,re,r,rp,ep,ev)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local res1,teg1=Duel.CheckEvent(EVENT_SUMMON_SUCCESS,true)
-	local res2,teg2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
-	return ((res1 and teg1:IsContains(c)) or (res2 and teg2:IsContains(c))) and c:GetFlagEffect(id+500)==0
+	return eg:IsContains(c) and c:GetFlagEffect(id)>0 and c:GetFlagEffect(id+500)==0
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	for i=1,ev do if Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)~=e then return false end end
