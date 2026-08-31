@@ -1,6 +1,6 @@
 -- 梅格的挚友·玛丽亲
 local s,id=GetID()
-Duel.LoadScript("c60001511.lua")
+--Duel.LoadScript("c60001511.lua")
 function s.initial_effect(c)
 	c:EnableCounterPermit(0x624)
 
@@ -49,7 +49,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.op2(e,tp,eg,ep,ev,re,r,rp)
-	byd.AddSummonCount(e,tp)
+	Duel.RegisterFlagEffect(tp,60012063,0,0,1)
 end
 function s.atkcon(e)
 	return e:GetHandler():GetCounter(0x624)>0

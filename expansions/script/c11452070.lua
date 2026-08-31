@@ -47,7 +47,7 @@ function cm.initial_effect(c)
 			
 			local changed = false 
 			for tc in aux.Next(eg) do
-				if tc:IsLocation(LOCATION_DECK|LOCATION_EXTRA) then
+				if tc:IsLocation(LOCATION_DECK) then
 					local ploc = tc:GetPreviousLocation()
 					if bit.band(ploc, LOCATION_ONFIELD)>0 then 
 						cm.ret_loc_this_turn[turn][LOCATION_ONFIELD] = (cm.ret_loc_this_turn[turn][LOCATION_ONFIELD] or 0) + 1

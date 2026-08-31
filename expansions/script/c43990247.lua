@@ -75,7 +75,7 @@ function c43990247.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local sc=Duel.SelectMatchingCard(tp,c43990247.setfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if sc then Duel.SSet(tp,sc) end
-	local e1=Effect.CreateEffect(e:GetHandler())
+	--[[local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CHANGE_DAMAGE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -87,7 +87,7 @@ function c43990247.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_NO_EFFECT_DAMAGE)
-	Duel.RegisterEffect(e2,tp)
+	Duel.RegisterEffect(e2,tp)]]
 end
 function c43990247.ndcon(e)
 	return Duel.GetTurnCount()~=e:GetLabel()

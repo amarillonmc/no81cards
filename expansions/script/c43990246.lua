@@ -37,7 +37,7 @@ function c43990246.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c43990246.mfilter(c)
-	return c:IsRace(RACE_DINOSAUR) and c:IsFusionType(TYPE_FUSION)
+	return c:IsLevelBelow(8) and c:IsRace(RACE_DINOSAUR) and c:IsFusionType(TYPE_FUSION)
 end
 function c43990246.cfilter(c)
 	return c:IsAbleToExtraAsCost() and (c:IsFaceupEx() or c:IsOnField())

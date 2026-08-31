@@ -20,17 +20,6 @@ function s.initial_effect(c)
 	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
 
-	--②：超量召唤的此卡因对方离场时特召并吸材
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,3))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCode(EVENT_LEAVE_FIELD)
-	e2:SetCondition(s.spcon)
-	e2:SetTarget(s.sptg)
-	e2:SetOperation(s.spop)
-	c:RegisterEffect(e2)
 end
 
 -- === 超量召唤叠加手续 (天霆号标准写法) ===
@@ -160,46 +149,4 @@ end
 -- 离场除外的生效判定：只在发动的“下个回合”生效
 function s.rdcon(e)
 	return Duel.GetTurnCount() == e:GetLabel()
-end
-
--- === 效果②：离场复活与吸材 ===
-function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsSummonType(SUMMON_TYPE_XYZ) 
-		and c:GetReasonPlayer()==1-tp
-end
-
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-	-- 不能对应这个发动把场上的怪兽的效果发动
-	Duel.SetChainLimit(s.chlimit)
-end
-
-function s.chlimit(e,ep,tp)
-	return tp==ep or not (e:IsActiveType(TYPE_MONSTER) and e:GetHandler():IsOnField())
-end
-
-function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		-- 抓取场上所有非衍生物的怪兽
-		local g=Duel.GetMatchingGroup(function(tc) return tc:IsType(TYPE_MONSTER) and not tc:IsType(TYPE_TOKEN) end,tp,LOCATION_MZONE,LOCATION_MZONE,c)
-		if #g>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-			-- 选场上1只怪兽作为这张卡的超量素材
-			local sg=g:Select(tp,1,1,nil)
-			Duel.HintSelection(sg)
-			local tc=sg:GetFirst()
-				if not tc:IsImmuneToEffect(e) then
-   				local og=tc:GetOverlayGroup()
-					if og:GetCount()>0 then
-					Duel.SendtoGrave(og,REASON_RULE)
-					end
-					Duel.Overlay(c,Group.FromCards(tc))
-			end
-		end
-	end
 end

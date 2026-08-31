@@ -13,6 +13,7 @@ function c28355662.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY+CATEGORY_FUSION_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,28355662+EFFECT_COUNT_CODE_OATH)
 	--e1:SetCost(c28355662.cost)
 	e1:SetTarget(c28355662.target)
 	e1:SetOperation(c28355662.activate)
@@ -33,8 +34,9 @@ function c28355662.excondition(e)
 	return Duel.GetLP(e:GetHandlerPlayer())~=4000
 end
 function c28355662.excost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetFlagEffect(tp,28355662)==0 end
 	Duel.SetLP(tp,4000)
+	Duel.RegisterFlagEffect(tp,28355662,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c28355662.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLP(tp)<=3000 or Duel.CheckLPCost(tp,2000) end

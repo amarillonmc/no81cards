@@ -35,7 +35,7 @@ function c43990244.initial_effect(c)
 	e2:SetTargetRange(LOCATION_SZONE,0)
 	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x173))
 	c:RegisterEffect(e2)
-	--immune
+	--[[--immune
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
@@ -44,7 +44,7 @@ function c43990244.initial_effect(c)
 	e3:SetCondition(c43990244.immcon)
 	e3:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x173))
 	e3:SetValue(c43990244.immval)
-	c:RegisterEffect(e3)
+	c:RegisterEffect(e3)]]
 	--negate damage
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_QUICK_O)

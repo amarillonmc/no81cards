@@ -131,7 +131,6 @@ function cm.immval(e,te,c)
 		if KOISHI_CHECK then
 			Duel.DisableActionCheck(true)
 			pcall(Card.RemoveCounter,c,tp,0x1974,1,REASON_EFFECT)
-			--Debug.Message(e:GetHandler():GetLocation())
 			Duel.DisableActionCheck(false)
 		else
 			Duel.Hint(HINT_CARD,0,m)

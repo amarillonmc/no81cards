@@ -25,9 +25,10 @@ function cm.initial_effect(c)
 	
 	-- ①：特殊召唤时适用。超量召唤1只「落渊」超量怪兽。
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetCondition(function(e) return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) end)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(function(e,tp,eg) return eg:IsContains(e:GetHandler()) and e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) end)
 	e2:SetOperation(cm.spsucop)
 	c:RegisterEffect(e2)
 end

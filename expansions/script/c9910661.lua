@@ -1,4 +1,4 @@
---拉尼亚凯亚之符龙
+--拉尼亚凯亚之苍龙
 function c9910661.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,8,3)

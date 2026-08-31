@@ -122,5 +122,5 @@ end
 function cm.sdcon(e)
 	local tp=e:GetHandlerPlayer()
 	local te=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
-	return Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,LOCATION_REMOVED)==0 and e:GetLabel()==0 --(not te or e:GetHandler()~=te:GetHandler() or not Duel.IsChainSolving())
+	return Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,LOCATION_REMOVED)==0 and e:GetLabel()==0 and not e:GetHandler():GetEquipTarget() --(not te or e:GetHandler()~=te:GetHandler() or not Duel.IsChainSolving())
 end
