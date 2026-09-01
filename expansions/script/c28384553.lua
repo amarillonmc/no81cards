@@ -166,7 +166,8 @@ end
 function c28384553.intop(e,tp,eg,ep,ev,re,r,rp)
 	for p in aux.TurnPlayers() do
 		for _,te in pairs({Duel.IsPlayerAffectedByEffect(p,EFFECT_FLAG_EFFECT+28368431)}) do
-			Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,te:GetLabelObject(),0,0,0,0)
+			--Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,te:GetLabelObject(),0,0,0,0)
+			c28384553.process_list[tp][#c28384553.process_list[tp]+1]=te:GetLabelObject()
 		end
 		--if #c28384553.process_list[p]==0 then return end
 		while #c28384553.process_list[p]>1 do
