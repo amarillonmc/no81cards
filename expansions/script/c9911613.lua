@@ -52,6 +52,7 @@ function c9911613.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9911613.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function c9911613.activate1(e,tp,eg,ep,ev,re,r,rp)
@@ -92,6 +93,7 @@ function c9911613.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 			return ct>0 and g:CheckSubGroup(c9911613.gselect2,1,ct,gg)
 		else return false end
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rg=g:SelectSubGroup(tp,c9911613.gselect2,false,1,ct,gg)
 	local rt=Duel.Remove(rg,POS_FACEUP,REASON_COST)
