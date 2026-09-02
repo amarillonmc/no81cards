@@ -6,13 +6,19 @@ function c28315943.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,38315943)
-	e1:SetCondition(c28315943.spcon)
+	e1:SetCountLimit(1,28315943-1)
+	e1:SetCondition(c28315943.icon)
 	e1:SetCost(c28315943.cost)
 	e1:SetTarget(c28315943.sptg)
 	e1:SetOperation(c28315943.spop)
 	e1:SetLabel(1)
 	c:RegisterEffect(e1)
+	local e0=e1:Clone()
+	e0:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e0:SetType(EFFECT_TYPE_QUICK_O)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetCondition(c28315943.qcon)
+	c:RegisterEffect(e0)
 	--recover
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -26,8 +32,11 @@ function c28315943.initial_effect(c)
 	c:RegisterEffect(e2)
 	c28315943.recover_effect=e2
 end
-function c28315943.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(tp)>8000
+function c28315943.icon(e,tp,eg,ep,ev,re,r,rp)
+	return not (Duel.IsPlayerAffectedByEffect(tp,28361833)~=nil and e:GetHandler():IsOriginalSetCard(0x283)) and Duel.GetLP(tp)>8000
+end
+function c28315943.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsPlayerAffectedByEffect(tp,28361833)~=nil and e:GetHandler():IsOriginalSetCard(0x283) and Duel.GetLP(tp)>8000
 end
 function c28315943.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
