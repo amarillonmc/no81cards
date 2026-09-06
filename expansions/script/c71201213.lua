@@ -40,7 +40,7 @@ function c71201213.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c71201213.tgfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsSetCard(0x7121) and c:IsAbleToGrave() and Duel.GetMZoneCount(tp,c)>0
+	return c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsSetCard(0x88A) and c:IsAbleToGrave() and Duel.GetMZoneCount(tp,c)>0
 end
 function c71201213.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
@@ -71,16 +71,16 @@ function c71201213.imcon(e)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL)
 end
 function c71201213.imtg(e,c)
-	return c:IsSetCard(0x7121) and c~=e:GetHandler()
+	return c:IsSetCard(0x88A) and c~=e:GetHandler()
 end
 function c71201213.cfilter(c)
-	return c:IsSetCard(0x7121) and c:IsFaceup()
+	return c:IsSetCard(0x88A) and c:IsFaceup()
 end
 function c71201213.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsReason(REASON_EFFECT) and Duel.IsExistingMatchingCard(c71201213.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c71201213.filter(c)
-	return c:IsSetCard(0x7121) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsAbleToHand() or c:IsAbleToRemove())
+	return c:IsSetCard(0x88A) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsAbleToHand() or c:IsAbleToRemove())
 end
 function c71201213.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71201213.filter,tp,LOCATION_DECK,0,1,nil) end

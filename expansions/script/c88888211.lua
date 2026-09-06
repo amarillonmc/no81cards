@@ -27,7 +27,7 @@ function c88888211.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c88888211.chfilter(c)
-	return c:IsSetCard(0x8908) and not c:IsPublic()
+	return c:IsSetCard(0x886) and not c:IsPublic()
 end
 function c88888211.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88888211.chfilter,tp,LOCATION_EXTRA,0,1,nil) end
@@ -37,7 +37,7 @@ function c88888211.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(g:GetFirst():GetAttribute())
 end
 function c88888211.tgfilter(c,attr)
-	return c:IsSetCard(0x8908) and c:IsAttribute(attr) and c:IsAbleToGrave()
+	return c:IsSetCard(0x886) and c:IsAttribute(attr) and c:IsAbleToGrave()
 end
 function c88888211.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -63,7 +63,7 @@ function c88888211.xcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_TRAP+TYPE_CONTINUOUS
 end
 function c88888211.xfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x8908)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x886)
 end
 function c88888211.xtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -92,5 +92,5 @@ function c88888211.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS)
 end
 function c88888211.cfilter(c)
-	return c:IsSetCard(0x8908) and c:IsAbleToDeck() and c:IsFaceupEx()
+	return c:IsSetCard(0x886) and c:IsAbleToDeck() and c:IsFaceupEx()
 end

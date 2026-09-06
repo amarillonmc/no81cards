@@ -23,7 +23,7 @@ function c71280048.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c71280048.cfilter(c)
-	return c:IsSetCard(0x8911) and c:IsAbleToDeck()
+	return c:IsSetCard(0x889) and c:IsAbleToDeck()
 end
 function c71280048.tgfilter(c)
 	return c:IsFaceup() and c:IsAbleToHand()

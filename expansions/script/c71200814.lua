@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 end
 --e1
 function cm.e1f1(c)
-	return not c:IsType(TYPE_FIELD) and c:IsSetCard(0x899) and c:IsAbleToHand()
+	return not c:IsType(TYPE_FIELD) and c:IsSetCard(0x883) and c:IsAbleToHand()
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local g = Duel.GetMatchingGroup(cm.e1f1,tp,LOCATION_DECK,0,nil)

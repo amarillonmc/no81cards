@@ -41,7 +41,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.spfilter0(c)
-	return c:IsFaceup() and c:IsType(TYPE_FIELD) and c:IsSetCard(0x089d)
+	return c:IsFaceup() and c:IsType(TYPE_FIELD) and c:IsSetCard(0x880)
 end
 function s.spcon(e,c)
 	if c==nil then return true end
@@ -50,7 +50,7 @@ function s.spcon(e,c)
 		and Duel.IsExistingMatchingCard(s.spfilter0,tp,LOCATION_SZONE,0,1,nil)
 end
 function s.atktg(e,c)
-	return c:IsSetCard(0x089d)
+	return c:IsSetCard(0x880)
 end
 function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:GetHandler():IsLocation(LOCATION_ONFIELD) and re:GetHandler():IsRelateToEffect(re)
@@ -77,7 +77,7 @@ function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,re:GetHandler(),1,0,0)
 end
 function s.fieldfilter(c,tp)
-	return c:IsSetCard(0x089d) and c:IsType(TYPE_FIELD)
+	return c:IsSetCard(0x880) and c:IsType(TYPE_FIELD)
 end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()

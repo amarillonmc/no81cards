@@ -23,10 +23,10 @@ function c71200888.initial_effect(c)
 	c:RegisterEffect(e2)
 end 
 function c71200888.spfil(c,e,tp,code)
-	return not c:IsCode(code) and c:IsSetCard(0x895) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return not c:IsCode(code) and c:IsSetCard(0x888) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c71200888.ctfil(c,e,tp)
-	return c:IsSetCard(0x895) and c:IsAbleToGraveAsCost() and Duel.GetMZoneCount(tp,c)>0 and Duel.IsExistingMatchingCard(c71200888.spfil,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
+	return c:IsSetCard(0x888) and c:IsAbleToGraveAsCost() and Duel.GetMZoneCount(tp,c)>0 and Duel.IsExistingMatchingCard(c71200888.spfil,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
 end
 function c71200888.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71200888.ctfil,tp,LOCATION_MZONE,0,1,nil,e,tp) end 
@@ -46,7 +46,7 @@ function c71200888.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71200888.rckfil(c) 
-	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x895)   
+	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x888)   
 end 
 function c71200888.rtdcon(e,tp,eg,ep,ev,re,r,rp) 
 	return Duel.IsExistingMatchingCard(c71200888.rckfil,tp,LOCATION_MZONE,0,1,nil)  

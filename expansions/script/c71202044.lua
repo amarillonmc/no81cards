@@ -41,7 +41,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.spfilter0(c)
-	return c:IsFaceup() and c:IsType(TYPE_FIELD) and c:IsSetCard(0x089d)
+	return c:IsFaceup() and c:IsType(TYPE_FIELD) and c:IsSetCard(0x880)
 end
 function s.spcon(e,c)
 	if c==nil then return true end
@@ -50,7 +50,7 @@ function s.spcon(e,c)
 		and Duel.IsExistingMatchingCard(s.spfilter0,tp,LOCATION_SZONE,0,1,nil)
 end
 function s.atktg(e,c)
-	return c:IsSetCard(0x089d)
+	return c:IsSetCard(0x880)
 end
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:GetHandler():IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
@@ -73,7 +73,7 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x089d) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(TYPE_FIELD) and (c:IsAbleToHand() or c:IsSSetable())
+	return c:IsSetCard(0x880) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(TYPE_FIELD) and (c:IsAbleToHand() or c:IsSSetable())
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end

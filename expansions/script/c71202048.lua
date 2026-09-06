@@ -29,7 +29,7 @@ function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function s.rmcountfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x089d) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x880) and c:IsType(TYPE_MONSTER)
 end
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ct=Duel.GetMatchingGroupCount(s.rmcountfilter,tp,LOCATION_REMOVED,0,nil)

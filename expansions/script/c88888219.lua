@@ -25,13 +25,13 @@ function c88888219.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c88888219.setfilter(c)
-	return c:IsSetCard(0x8908) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0x886) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function c88888219.spfilter(c,e,tp)
-	return c:IsSetCard(0x8908) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return c:IsSetCard(0x886) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c88888219.mfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x8908) and not c:IsType(TYPE_TOKEN)
+	return c:IsFaceup() and c:IsSetCard(0x886) and not c:IsType(TYPE_TOKEN)
 end
 function c88888219.xyzfilter(c,mg)
 	return c:IsXyzSummonable(mg)

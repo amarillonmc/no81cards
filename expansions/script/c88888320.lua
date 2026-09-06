@@ -38,7 +38,7 @@ function c88888320.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c88888320.pfilter(c,tp)
-	return c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0x8907)
+	return c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0x88B)
 		and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function c88888320.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -70,7 +70,7 @@ function c88888320.posop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c88888320.cfilter(c,tp)
-	return c:IsFaceup() and c:IsType(TYPE_FUSION) and c:IsSetCard(0x8907) and c:IsControler(tp)
+	return c:IsFaceup() and c:IsType(TYPE_FUSION) and c:IsSetCard(0x88B) and c:IsControler(tp)
 end
 function c88888320.con(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c88888320.cfilter,1,nil,tp)

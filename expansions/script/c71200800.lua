@@ -53,7 +53,7 @@ function cm.tg2(e,c,sump,sumtype,sumpos,targetp)
 end
 --e3
 function cm.e3f2(c,e,tp,code)
-	return c:IsSetCard(0x899) and c:IsLevel(4) and not c:IsCode(code)
+	return c:IsSetCard(0x883) and c:IsLevel(4) and not c:IsCode(code)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.e3f1(c,e,tp)

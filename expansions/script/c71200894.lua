@@ -28,16 +28,16 @@ function c71200894.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function c71200894.thfil(c,e,tp,code)
-	return not c:IsCode(code) and c:IsSetCard(0x895) and c:IsAbleToHand()
+	return not c:IsCode(code) and c:IsSetCard(0x888) and c:IsAbleToHand()
 end
 function c71200894.ctfil1(c,e,tp)
-	return c:IsSetCard(0x895) and c:IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(c71200894.thfil,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
+	return c:IsSetCard(0x888) and c:IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(c71200894.thfil,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
 end
 function c71200894.spfil(c,e,tp,code)
-	return not c:IsCode(code) and c:IsSetCard(0x895) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return not c:IsCode(code) and c:IsSetCard(0x888) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c71200894.ctfil2(c,e,tp)
-	return c:IsSetCard(0x895) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(c71200894.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,c:GetCode())
+	return c:IsSetCard(0x888) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(c71200894.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,c:GetCode())
 end
 function c71200894.xxtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local b1=Duel.IsExistingMatchingCard(c71200894.ctfil1,tp,LOCATION_HAND,0,1,nil,e,tp)
@@ -81,7 +81,7 @@ function c71200894.xxop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71200894.tgckfil(c,tp) 
-	return c:IsControler(tp) and c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_SYNCHRO) and c:IsSetCard(0x895)  
+	return c:IsControler(tp) and c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_SYNCHRO) and c:IsSetCard(0x888)  
 end 
 function c71200894.tgcon(e,tp,eg,ep,ev,re,r,rp) 
 	return eg:IsExists(c71200894.tgckfil,1,nil,tp)  

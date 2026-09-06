@@ -67,7 +67,9 @@ end
 function c9910263.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		c:AddCounter(0x956,2)
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910142,0))
+		local ct=Duel.AnnounceNumber(tp,1,2,3,4)
+		c:AddCounter(0x956,ct)
 	end
 end
 function c9910263.atktg(e,c)

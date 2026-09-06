@@ -45,7 +45,7 @@ function c71201231.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c71201231.tgfilter(c)
-	return c:IsSetCard(0x7121) and c:IsAbleToGrave()
+	return c:IsSetCard(0x88A) and c:IsAbleToGrave()
 end
 function c71201231.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c71201231.tgfilter(chkc) end
@@ -59,13 +59,13 @@ function c71201231.tgop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 then Duel.Damage(1-tp,500,REASON_EFFECT) end
 end
 function c71201231.cfilter(c)
-	return c:IsSetCard(0x7121) and c:IsFaceup()
+	return c:IsSetCard(0x88A) and c:IsFaceup()
 end
 function c71201231.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c71201231.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c71201231.tdfilter(c)
-	return c:IsSetCard(0x7121) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+	return c:IsSetCard(0x88A) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
 function c71201231.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71201231.tdfilter,tp,LOCATION_GRAVE,0,1,nil) 

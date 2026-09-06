@@ -36,7 +36,7 @@ function c88888289.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c88888289.spfilter,1,nil,tp)
 end
 function c88888289.tdfilter(c)
-	return c:IsSetCard(0x8910) and c:IsAbleToDeck()
+	return c:IsSetCard(0x887) and c:IsAbleToDeck()
 end
 function c88888289.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c88888289.tdfilter(chkc) end
@@ -60,7 +60,7 @@ function c88888289.tdop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c88888289.drfilter(c)
-	return c:IsSetCard(0x8910) and c:IsAbleToDeck()
+	return c:IsSetCard(0x887) and c:IsAbleToDeck()
 end
 function c88888289.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp)

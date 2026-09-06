@@ -1,7 +1,7 @@
 --CAN:D 纷蕾雅
 function c88888216.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x8908),4,2,nil,nil,99)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x886),4,2,nil,nil,99)
 	c:EnableReviveLimit()
 	--to hand
 	local e1=Effect.CreateEffect(c)
@@ -34,7 +34,7 @@ function c88888216.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c88888216.imfilter(c)
-	return c:IsSetCard(0x8908) and c:IsFaceup()
+	return c:IsSetCard(0x886) and c:IsFaceup()
 end
 function c88888216.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

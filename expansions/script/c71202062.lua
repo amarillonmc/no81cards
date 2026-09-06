@@ -52,7 +52,7 @@ function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.mzfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function s.mzfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x089d)
+	return c:IsFaceup() and c:IsSetCard(0x880)
 end
 function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -76,7 +76,7 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 -- ②: GY trigger when 迷失耀斑 banished
 function s.setconfilter(c,tp)
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and c:IsSetCard(0x089d)
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and c:IsSetCard(0x880)
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.setconfilter,1,nil,tp)

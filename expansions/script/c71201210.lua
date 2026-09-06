@@ -25,10 +25,10 @@ function c71201210.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c71201210.costfilter(c,e,tp)
-	return c:IsSetCard(0x7121) and not c:IsPublic()
+	return c:IsSetCard(0x88A) and not c:IsPublic()
 end
 function c71201210.thfilter(c,code)
-	return c:IsSetCard(0x7121) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x88A) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 		and not c:IsCode(code)
 end
 function c71201210.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -75,13 +75,13 @@ function c71201210.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71201210.cfilter(c)
-	return c:IsSetCard(0x7121) and c:IsFaceup()
+	return c:IsSetCard(0x88A) and c:IsFaceup()
 end
 function c71201210.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsReason(REASON_EFFECT) and Duel.IsExistingMatchingCard(c71201210.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c71201210.filter(c)
-	return c:IsSetCard(0x7121) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsAbleToHand() or c:IsAbleToRemove())
+	return c:IsSetCard(0x88A) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsAbleToHand() or c:IsAbleToRemove())
 end
 function c71201210.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71201210.filter,tp,LOCATION_DECK,0,1,nil) end

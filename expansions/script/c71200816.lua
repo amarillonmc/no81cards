@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 end
 --e1
 function cm.e1f1(c,e,tp)
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsSetCard(0x899) 
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsSetCard(0x883) 
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -46,7 +46,7 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 end
 --e2
 function cm.con2(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:GetHandler():IsSetCard(0x899)
+	return re and re:GetHandler():IsSetCard(0x883)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)

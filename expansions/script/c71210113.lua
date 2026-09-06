@@ -22,7 +22,7 @@ function s.set(c)
 end
 function s.setfilter(c,tp,check)
 	local b1=c:IsCode(71210110) and c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)
-	local b2=c:IsSetCard(0x897) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	local b2=c:IsSetCard(0x88C) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 	return b1 or (check and b2)
 end
 function s.checkfilter(c)
@@ -43,7 +43,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_DECK,0,1,1,nil,tp,check)
 	local tc=g:GetFirst()
 	if tc then
-		local b1=tc:IsAbleToHand() and tc:IsSetCard(0x897) and tc:IsType(TYPE_MONSTER)
+		local b1=tc:IsAbleToHand() and tc:IsSetCard(0x88C) and tc:IsType(TYPE_MONSTER)
 		if e:GetLabel()==1 then Duel.RegisterFlagEffect(tp,15248873,RESET_CHAIN,0,1) end
 		local b2=tc:GetActivateEffect():IsActivatable(tp,true,true) and tc:IsCode(71210110) and tc:IsType(TYPE_FIELD) 
 		Duel.ResetFlagEffect(tp,15248873)
@@ -125,8 +125,8 @@ function s.exop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end
 function s.boostg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(2857636,1)) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,0) and Duel.SelectYesNo(tp,aux.Stringid(2857636,1)) end
 end
 function s.boostp(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Draw(tp,1,REASON_EFFECT)
+	Duel.Draw(tp,0,REASON_EFFECT)
 end

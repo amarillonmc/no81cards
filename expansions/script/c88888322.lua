@@ -2,7 +2,7 @@
 function c88888322.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFun2(c,c88888322.matfilter,aux.FilterBoolFunction(Card.IsFusionSetCard,0x8907),true)
+	aux.AddFusionProcFun2(c,c88888322.matfilter,aux.FilterBoolFunction(Card.IsFusionSetCard,0x88B),true)
 	--special summon
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(88888322,0))
@@ -42,10 +42,10 @@ function c88888322.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c88888322.matfilter(c)
-	return c:IsLevelAbove(7) and c:IsFusionSetCard(0x8907)
+	return c:IsLevelAbove(7) and c:IsFusionSetCard(0x88B)
 end
 function c88888322.spfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x8907) and c:GetOriginalType()&TYPE_MONSTER~=0 
+	return c:IsFaceup() and c:IsSetCard(0x88B) and c:GetOriginalType()&TYPE_MONSTER~=0 
 		and (c:IsAbleToHandAsCost() or c:IsAbleToExtraAsCost()) and Duel.GetMZoneCount(tp,c)>0
 end
 function c88888322.spcon(e,c)
@@ -68,7 +68,7 @@ function c88888322.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoHand(g,nil,REASON_SPSUMMON)
 end
 function c88888322.thfilter(c)
-	return c:IsSetCard(0x8907) and c:IsAbleToHand()
+	return c:IsSetCard(0x88B) and c:IsAbleToHand()
 end
 function c88888322.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
@@ -89,7 +89,7 @@ function c88888322.descon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp
 end
 function c88888322.costfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x8907) and c:GetOriginalType()&TYPE_MONSTER~=0 
+	return c:IsFaceup() and c:IsSetCard(0x88B) and c:GetOriginalType()&TYPE_MONSTER~=0 
 		and (c:IsAbleToHandAsCost() or c:IsAbleToExtraAsCost())
 end
 function c88888322.descost(e,tp,eg,ep,ev,re,r,rp,chk)

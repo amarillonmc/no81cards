@@ -36,7 +36,7 @@ function c71201233.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c71201233.drfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsDiscardable(REASON_COST) and c:IsSetCard(0x7121)
+	return c:IsType(TYPE_MONSTER) and c:IsDiscardable(REASON_COST) and c:IsSetCard(0x88A)
 end
 function c71201233.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71201233.drfilter,tp,LOCATION_HAND,0,1,nil) end
@@ -58,15 +58,15 @@ function c71201233.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
 function c71201233.atlimit(e,c)
-	return c:IsFaceup() and c:IsSetCard(0x7121) and c:IsPosition(POS_DEFENSE)
+	return c:IsFaceup() and c:IsSetCard(0x88A) and c:IsPosition(POS_DEFENSE)
 end
 function c71201233.filter(c,e,tp)
 	if not c:IsLevelAbove(1) then return end
-	return c:IsFaceup() and c:IsSetCard(0x7121) and c:IsAbleToGrave() and Duel.GetMZoneCount(tp,c)>0
+	return c:IsFaceup() and c:IsSetCard(0x88A) and c:IsAbleToGrave() and Duel.GetMZoneCount(tp,c)>0
 		and Duel.IsExistingMatchingCard(c71201233.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetLevel())
 end
 function c71201233.spfilter(c,e,tp,lv)
-	return c:IsSetCard(0x7121) and not c:IsLevel(lv) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x88A) and not c:IsLevel(lv) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c71201233.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c71201233.filter(chkc,e,tp) end

@@ -24,7 +24,7 @@ function s.initial_effect(c)
     e3:SetCode(EVENT_FREE_CHAIN)
     e3:SetRange(LOCATION_GRAVE)
     e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
-    e3:SetCountLimit(1,id+o)
+    e3:SetCountLimit(1,id+100)
     e3:SetCondition(s.spcon)
     e3:SetTarget(s.sptg)
     e3:SetOperation(s.spop)
@@ -33,7 +33,7 @@ end
 
 -- 效果①处理函数
 function s.thfilter(c)
-    return c:IsSetCard(0x893) and c:IsAbleToHand() and not c:IsCode(id)
+    return c:IsSetCard(0x884) and c:IsAbleToHand() and not c:IsCode(id)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end

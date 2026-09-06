@@ -22,7 +22,7 @@ function c88888292.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c88888292.cfilter(c)
-	return c:IsSetCard(0x8910) and not c:IsPublic()
+	return c:IsSetCard(0x887) and not c:IsPublic()
 end
 function c88888292.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88888292.cfilter,tp,LOCATION_EXTRA,0,1,nil) end

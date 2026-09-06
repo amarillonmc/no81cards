@@ -86,7 +86,7 @@ end
 --------------------------------------------
 if m ~= 71200802 then return end
 function cm.chkf(c)
-	return not c:IsCode(m) and c:IsSetCard(0x899) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return not c:IsCode(m) and c:IsSetCard(0x883) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function cm.chk(e,tp)
 	return Duel.IsExistingMatchingCard(cm.chkf,tp,LOCATION_DECK,0,1,nil)

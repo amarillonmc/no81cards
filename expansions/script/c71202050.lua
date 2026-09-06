@@ -42,7 +42,7 @@ function s.damcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function s.rmcountfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x089d) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x880) and c:IsType(TYPE_MONSTER)
 end
 function s.damfilter(c)
 	return c:IsAbleToDeck() and (c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_REMOVED))
@@ -72,7 +72,7 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x089d) and c:IsAbleToHand()
+	return c:IsSetCard(0x880) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end

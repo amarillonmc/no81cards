@@ -35,7 +35,7 @@ function c71280039.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c71280039.fcfilter(c,e)
-	return c:IsSetCard(0x8911) and c:IsDestructable(e)
+	return c:IsSetCard(0x889) and c:IsDestructable(e)
 end
 function c71280039.fccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
@@ -80,7 +80,7 @@ function c71280039.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71280039.costfilter(c)
-	return c:IsSetCard(0x8911) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsSetCard(0x889) and c:IsAbleToDeckOrExtraAsCost()
 end
 function c71280039.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

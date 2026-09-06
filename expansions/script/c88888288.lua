@@ -14,7 +14,7 @@ function c88888288.initial_effect(c)
 end
 function c88888288.spfilter(c,e,tp,check)
 	return c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx()
-		and ((check and c:IsAttribute(ATTRIBUTE_WATER)) or c:IsSetCard(0x8910))
+		and ((check and c:IsAttribute(ATTRIBUTE_WATER)) or c:IsSetCard(0x887))
 end
 function c88888288.checkfilter(c)
 	return c:IsType(TYPE_SYNCHRO) and c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER)

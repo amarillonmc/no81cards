@@ -1,7 +1,7 @@
 --归心遗计 祭酒·妄言
 function c88888321.initial_effect(c)
 	--fusion material
-	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x8907),2,true)
+	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x88B),2,true)
 	c:EnableReviveLimit()
 	--special summon
 	local e0=Effect.CreateEffect(c)
@@ -30,7 +30,7 @@ function c88888321.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c88888321.spfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x8907) and c:GetOriginalType()&TYPE_MONSTER~=0 
+	return c:IsFaceup() and c:IsSetCard(0x88B) and c:GetOriginalType()&TYPE_MONSTER~=0 
 		and (c:IsAbleToHandAsCost() or c:IsAbleToExtraAsCost()) and Duel.GetMZoneCount(tp,c)>0
 end
 function c88888321.spcon(e,c)
@@ -57,11 +57,11 @@ function c88888321.setcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c88888321.setfilter(c,tp)
 	return c:IsType(TYPE_CONTINUOUS)
-		and c:IsSetCard(0x8907)
+		and c:IsSetCard(0x88B)
 		and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function c88888321.costfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x8907) and c:GetOriginalType()&TYPE_MONSTER~=0 
+	return c:IsFaceup() and c:IsSetCard(0x88B) and c:GetOriginalType()&TYPE_MONSTER~=0 
 		and (c:IsAbleToHandAsCost() or c:IsAbleToExtraAsCost())
 		and (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or c:IsLocation(LOCATION_SZONE) and not c:IsLocation(LOCATION_FZONE))
 end

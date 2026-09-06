@@ -30,7 +30,7 @@ function c88888209.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c88888209.thfilter(c)
-	return c:IsSetCard(0x8908) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(88888209)
+	return c:IsSetCard(0x886) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(88888209)
 end
 function c88888209.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88888209.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -48,7 +48,7 @@ function c88888209.xcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_TRAP+TYPE_CONTINUOUS
 end
 function c88888209.xfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x8908)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x886)
 end
 function c88888209.xtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -96,5 +96,5 @@ function c88888209.xop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c88888209.setfilter(c)
-	return c:IsSetCard(0x8908) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0x886) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end

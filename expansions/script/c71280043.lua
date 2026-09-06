@@ -1,7 +1,7 @@
 --癔动囚徒 厄泽夫
 function c71280043.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x8911),8,2,nil,nil,99)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x889),8,2,nil,nil,99)
 	c:EnableReviveLimit()
 	--Frenzy Captive
 	local e1=Effect.CreateEffect(c)
@@ -29,7 +29,7 @@ function c71280043.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c71280043.fcfilter(c,e)
-	return c:IsSetCard(0x8911) and c:IsDestructable(e)
+	return c:IsSetCard(0x889) and c:IsDestructable(e)
 end
 function c71280043.fctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 end
@@ -56,7 +56,7 @@ function c71280043.fcop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71280043.cfilter(c,tp)
-	return c:IsSetCard(0x8911) and c:IsControler(tp) and c:IsPreviousControler(tp)
+	return c:IsSetCard(0x889) and c:IsControler(tp) and c:IsPreviousControler(tp)
 end
 function c71280043.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c71280043.cfilter,1,nil,tp)

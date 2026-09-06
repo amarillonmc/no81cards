@@ -48,7 +48,7 @@ function c71280041.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
 end
 function c71280041.fcfilter(c,e)
-	return c:IsSetCard(0x8911) and c:IsDestructable(e)
+	return c:IsSetCard(0x889) and c:IsDestructable(e)
 end
 function c71280041.fctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 end
@@ -75,7 +75,7 @@ function c71280041.fcop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71280041.thfilter(c)
-	if not (c:IsSetCard(0x8911) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
+	if not (c:IsSetCard(0x889) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
 	return c:IsAbleToHand() or c:IsSSetable()
 end
 function c71280041.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

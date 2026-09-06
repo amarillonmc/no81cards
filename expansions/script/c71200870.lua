@@ -76,7 +76,7 @@ function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.spfilter2(c,e,tp)
-    return c:IsSetCard(0x893) and c:IsType(TYPE_MONSTER) and not c:IsCode(id)
+    return c:IsSetCard(0x884) and c:IsType(TYPE_MONSTER) and not c:IsCode(id)
         and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 

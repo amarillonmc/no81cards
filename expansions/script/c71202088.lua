@@ -25,12 +25,12 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.spfilter(c,e,tp)
-	return c:IsFaceupEx() and c:IsSetCard(0x089f) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsFaceupEx() and c:IsSetCard(0x88d) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.plfilter(c,tp)
 	local r=LOCATION_REASON_TOFIELD
 	if not c:IsControler(c:GetOwner()) then r=LOCATION_REASON_CONTROL end
-	return c:IsFaceupEx() and c:IsSetCard(0x089f) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceupEx() and c:IsSetCard(0x88d) and c:IsType(TYPE_MONSTER)
 		and not c:IsForbidden() and c:CheckUniqueOnField(c:GetOwner())
 		and Duel.GetLocationCount(c:GetOwner(),LOCATION_SZONE,tp,r)>0
 end
@@ -119,7 +119,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.ctfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x089f)
+	return c:IsFaceup() and c:IsSetCard(0x88d)
 		and (c:IsType(TYPE_MONSTER) or c:GetOriginalType()&TYPE_MONSTER>0)
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
@@ -146,7 +146,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.actfilter(c)
-	return c:IsSetCard(0x089f) and c:IsFaceup()
+	return c:IsSetCard(0x88d) and c:IsFaceup()
 end
 function s.actcon(e)
 	local tp=e:GetHandlerPlayer()

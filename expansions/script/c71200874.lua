@@ -9,7 +9,7 @@ function s.initial_effect(c)
     e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
-    e1:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
+    e1:SetCountLimit(1,id)
     e1:SetCondition(s.spcon)
     e1:SetTarget(s.sptg)
     e1:SetOperation(s.spop)
@@ -22,7 +22,7 @@ function s.initial_effect(c)
     e2:SetType(EFFECT_TYPE_QUICK_O)
     e2:SetCode(EVENT_FREE_CHAIN)
     e2:SetRange(LOCATION_GRAVE)
-    e2:SetCountLimit(1,id+100,EFFECT_COUNT_CODE_OATH)
+    e2:SetCountLimit(1,id+100)
     e2:SetCost(s.thcost)
     e2:SetTarget(s.thtg)
     e2:SetOperation(s.thop)
@@ -31,7 +31,7 @@ end
 
 -- 效果①条件：同名怪兽检测函数
 function s.spfilter(c,tp)
-    return c:IsSetCard(0x893) and c:IsType(TYPE_MONSTER)
+    return c:IsSetCard(0x884) and c:IsType(TYPE_MONSTER)
         and not Duel.IsExistingMatchingCard(s.namefilter,tp,LOCATION_MZONE,0,1,nil,c:GetCode())
 end
 
@@ -88,7 +88,7 @@ end
 
 -- 效果②目标
 function s.thfilter(c)
-    return c:IsSetCard(0x893) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+    return c:IsSetCard(0x884) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -51,7 +51,7 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_SZONE,0,nil)
 	Duel.ConfirmCards(tp,sg)
 	for tc in aux.Next(sg) do
-		if tc:IsSetCard(0x897) and bit.band(tc:GetType(),0x20004)==0x20004 then
+		if tc:IsSetCard(0x88C) and bit.band(tc:GetType(),0x20004)==0x20004 then
 			Duel.ChangePosition(tc,POS_FACEUP)
 		end
 	end

@@ -36,7 +36,7 @@ function c88888317.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c88888317.setfilter(c)
-	return c:IsSetCard(0x8907) and c:IsType(TYPE_MONSTER) and not c:IsCode(88888317) and not c:IsForbidden()
+	return c:IsSetCard(0x88B) and c:IsType(TYPE_MONSTER) and not c:IsCode(88888317) and not c:IsForbidden()
 end
 function c88888317.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88888317.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
@@ -63,7 +63,7 @@ function c88888317.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsReason(REASON_DRAW)
 end
 function c88888317.tgfilter(c)
-	return c:IsSetCard(0x8907) and c:IsAbleToGrave()
+	return c:IsSetCard(0x88B) and c:IsAbleToGrave()
 end
 function c88888317.rmfilter(c)
 	return c:IsFacedown() and c:IsAbleToRemove()
@@ -98,7 +98,7 @@ function c88888317.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c88888317.cfilter(c,tp)
-	return c:IsFaceup() and c:IsType(TYPE_FUSION) and c:IsSetCard(0x8907) and c:IsControler(tp)
+	return c:IsFaceup() and c:IsType(TYPE_FUSION) and c:IsSetCard(0x88B) and c:IsControler(tp)
 end
 function c88888317.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsFaceupEx() and eg:IsExists(c88888317.cfilter,1,nil,tp)

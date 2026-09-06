@@ -29,7 +29,7 @@ function c88888283.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c88888283.thfilter(c)
-	if not (c:IsSetCard(0x8910) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
+	if not (c:IsSetCard(0x887) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
 	return (c:IsAbleToHand() or c:IsSSetable()) and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,c:GetCode())
 end
 function c88888283.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

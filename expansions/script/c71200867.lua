@@ -7,7 +7,7 @@ function s.initial_effect(c)
     e1:SetCategory(CATEGORY_DESTROY)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
-    e1:SetCountLimit(1,{id,1})
+    e1:SetCountLimit(1,id)
     e1:SetCondition(s.descon)
     e1:SetTarget(s.destg)
     e1:SetOperation(s.desop)
@@ -20,7 +20,7 @@ function s.initial_effect(c)
     e2:SetType(EFFECT_TYPE_QUICK_O)
     e2:SetCode(EVENT_BE_BATTLE_TARGET)
     e2:SetRange(LOCATION_GRAVE)
-    e2:SetCountLimit(1,{id,2})
+    e2:SetCountLimit(1,id+100)
     e2:SetCondition(s.atkcon)
     e2:SetCost(s.atkcost)
     e2:SetTarget(s.atktg)
@@ -30,7 +30,7 @@ end
 
 -- 效果①条件：自己场上有焰速轰鸣怪兽
 function s.desfilter(c)
-    return c:IsFaceup() and c:IsSetCard(0x893)
+    return c:IsFaceup() and c:IsSetCard(0x884)
 end
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
     return Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -53,7 +53,7 @@ end
 
 -- 效果②条件：自己的焰速轰鸣怪兽成为攻击对象
 function s.atkfilter(c,tp)
-    return c:IsFaceup() and c:IsSetCard(0x893) and c:IsControler(tp)
+    return c:IsFaceup() and c:IsSetCard(0x884) and c:IsControler(tp)
 end
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
     return eg:IsExists(s.atkfilter,1,nil,tp)

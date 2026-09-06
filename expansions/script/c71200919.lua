@@ -26,7 +26,7 @@ function c71200919.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function c71200919.thfilter(c)
-	if not (c:IsSetCard(0x895) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
+	if not (c:IsSetCard(0x888) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
 	return c:IsAbleToHand() or c:IsSSetable()
 end
 function c71200919.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -47,7 +47,7 @@ function c71200919.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71200919.imcon(e,tp,eg,ep,ev,re,r,rp) 
 	local te,p=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return te and te:GetHandler():IsSetCard(0x895) and te:IsActiveType(TYPE_MONSTER) and p==tp and rp==1-tp
+	return te and te:GetHandler():IsSetCard(0x888) and te:IsActiveType(TYPE_MONSTER) and p==tp and rp==1-tp
 end 
 function c71200919.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,700) end

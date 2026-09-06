@@ -43,10 +43,10 @@ function c88888325.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c88888325.mfilter1(c)
-	return c:IsFusionSetCard(0x8907) and c:IsFusionType(TYPE_FUSION)
+	return c:IsFusionSetCard(0x88B) and c:IsFusionType(TYPE_FUSION)
 end
 function c88888325.mfilter2(c)
-	return c:IsFusionSetCard(0x8907)
+	return c:IsFusionSetCard(0x88B)
 end
 function c88888325.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)

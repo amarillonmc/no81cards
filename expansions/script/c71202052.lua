@@ -39,11 +39,11 @@ function s.initial_effect(c)
 end
 -- custom activity filter: track 迷失耀斑 Xyz effects
 function s.actfilter(re,tp,cid)
-	return not (re:GetHandler():IsSetCard(0x089d) and re:GetHandler():IsType(TYPE_XYZ))
+	return not (re:GetHandler():IsSetCard(0x880) and re:GetHandler():IsType(TYPE_XYZ))
 end
 -- overlay filter: must be face-up 迷失耀斑 Xyz
 function s.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x089d) and c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and c:IsSetCard(0x880) and c:IsType(TYPE_XYZ)
 end
 -- overlay condition: once per turn, only after 迷失耀斑 Xyz activated effect
 function s.xyzop(e,tp,chk)
@@ -52,7 +52,7 @@ function s.xyzop(e,tp,chk)
 	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function s.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x089d) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x880) and c:IsType(TYPE_MONSTER)
 end
 function s.atkval(e,c)
 	local g=Duel.GetMatchingGroup(s.atkfilter,c:GetControler(),LOCATION_REMOVED,0,nil)

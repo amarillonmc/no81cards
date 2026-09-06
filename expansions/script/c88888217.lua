@@ -33,7 +33,7 @@ function c88888217.cfilter(c,tp)
 	return c:IsAbleToGraveAsCost() and c:GetOriginalType()&TYPE_MONSTER~=0
 end
 function c88888217.spfilter(c,e,tp,attr)
-	return c:IsSetCard(0x8908) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) and not c:IsAttribute(attr)
+	return c:IsSetCard(0x886) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) and not c:IsAttribute(attr)
 end
 function c88888217.filter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP)

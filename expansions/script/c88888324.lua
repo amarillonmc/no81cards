@@ -11,7 +11,7 @@ function c88888324.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x8907))
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x88B))
 	e2:SetValue(c88888324.atkval)
 	c:RegisterEffect(e2)
 	--
@@ -30,7 +30,7 @@ function c88888324.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c88888324.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x8907) and c:GetSequence()<5
+	return c:IsFaceup() and c:IsSetCard(0x88B) and c:GetSequence()<5
 end
 function c88888324.atkval(e,c)
 	return Duel.GetMatchingGroupCount(c88888324.atkfilter,e:GetHandlerPlayer(),LOCATION_SZONE,0,nil)*200
@@ -44,7 +44,7 @@ function c88888324.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function c88888324.spfilter(c,e,tp)
-	return c:IsSetCard(0x8907) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x88B) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c88888324.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

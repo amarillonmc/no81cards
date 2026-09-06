@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.e1f1(c,e,tp)
-	return c:IsCanBeEffectTarget(e) and c:IsSetCard(0x899)
+	return c:IsCanBeEffectTarget(e) and c:IsSetCard(0x883)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -28,7 +28,7 @@ function cm.e1f2(c)
 	return c:IsFaceup() and c:IsCode(71200800)
 end
 function cm.e1f3(c)
-	return c:IsSetCard(0x899) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x883) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

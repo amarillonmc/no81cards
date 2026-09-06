@@ -34,7 +34,7 @@ function c71200885.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(LOCATION_ONFIELD,0)
 	e2:SetTarget(function(e,c) 
-	return c:IsSetCard(0x895) end)
+	return c:IsSetCard(0x888) end)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
 	--SpecialSummon
@@ -58,7 +58,7 @@ function c71200885.slevel(e,c)
 	end 
 end
 function c71200885.ctfil(c) 
-	return c:IsSetCard(0x895) and c:IsAbleToGraveAsCost()  
+	return c:IsSetCard(0x888) and c:IsAbleToGraveAsCost()  
 end 
 function c71200885.discost(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local g=Duel.GetMatchingGroup(c71200885.ctfil,tp,LOCATION_DECK,0,nil)

@@ -26,13 +26,13 @@ function s.initial_effect(c)
 end
 -- ① target
 function s.rmcountfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x089d) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x880) and c:IsType(TYPE_MONSTER)
 end
 function s.op1filter(c)
 	return c:IsFaceup()
 end
 function s.op2filter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x089d) and c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and c:IsSetCard(0x880) and c:IsType(TYPE_XYZ)
 end
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetMatchingGroupCount(s.rmcountfilter,tp,LOCATION_REMOVED,0,nil)
@@ -122,14 +122,14 @@ function s.op2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.matfilter(c)
-	return c:IsSetCard(0x089d) and not c:IsCode(id) and c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
+	return c:IsSetCard(0x880) and not c:IsCode(id) and c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function s.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x089d)
+	return c:IsFaceup() and c:IsSetCard(0x880)
 end
 -- ②: GY trigger when 迷失耀斑 banished
 function s.setconfilter(c,tp)
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and c:IsSetCard(0x089d)
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and c:IsSetCard(0x880)
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.setconfilter,1,nil,tp)

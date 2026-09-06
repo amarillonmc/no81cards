@@ -1,7 +1,7 @@
 --CAN:D 超瑞拉
 function c88888215.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x8908),4,2,nil,nil,99)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x886),4,2,nil,nil,99)
 	c:EnableReviveLimit()
 	--to hand
 	local e1=Effect.CreateEffect(c)

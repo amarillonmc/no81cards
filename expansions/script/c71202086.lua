@@ -30,7 +30,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x089f) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x88d) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -84,14 +84,14 @@ function s.gytg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function s.ctfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x089f)
+	return c:IsFaceup() and c:IsSetCard(0x88d)
 		and (c:IsType(TYPE_MONSTER) or c:GetOriginalType()&TYPE_MONSTER>0)
 		and c:IsCanAddCounter(0x1088,1)
 end
 function s.plfilter(c,tp)
 	local r=LOCATION_REASON_TOFIELD
 	if not c:IsControler(c:GetOwner()) then r=LOCATION_REASON_CONTROL end
-	return c:IsFaceupEx() and c:IsSetCard(0x089f) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceupEx() and c:IsSetCard(0x88d) and c:IsType(TYPE_MONSTER)
 		and not c:IsForbidden() and c:CheckUniqueOnField(c:GetOwner())
 		and Duel.GetLocationCount(c:GetOwner(),LOCATION_SZONE,tp,r)>0
 end

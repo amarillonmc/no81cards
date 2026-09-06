@@ -1,7 +1,5 @@
 --方舟骑士-陈
-c29065508.named_with_Arknight=1
 function c29065508.initial_effect(c)
-	aux.AddCodeList(c,29065500) 
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,6,2)
 	c:EnableReviveLimit()
@@ -39,7 +37,7 @@ function c29065508.tgfilter(c,tp)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsFaceup() and Duel.IsExistingMatchingCard(c29065508.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,c)
 end
 function c29065508.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingTarget(c29065508.tgfilter,tp,LOCATION_MZONE,0,1,e:GetHandler(),tp) end
+	if chk==0 then return Duel.IsExistingTarget(c29065508.tgfilter,tp,LOCATION_MZONE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,c29065508.tgfilter,tp,LOCATION_MZONE,0,1,1,e:GetHandler(),tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)

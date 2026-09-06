@@ -19,8 +19,8 @@ function c88888284.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c88888284.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c88888284.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local t1=Duel.IsPlayerCanSpecialSummonMonster(tp,88888285,0x8910,TYPES_TOKEN_MONSTER,0,0,4,RACE_AQUA,ATTRIBUTE_DARK)
-	local t2=Duel.IsPlayerCanSpecialSummonMonster(tp,88888285,0x8910,TYPES_TOKEN_MONSTER,0,0,6,RACE_AQUA,ATTRIBUTE_DARK)
+	local t1=Duel.IsPlayerCanSpecialSummonMonster(tp,88888285,0x887,TYPES_TOKEN_MONSTER,0,0,4,RACE_AQUA,ATTRIBUTE_DARK)
+	local t2=Duel.IsPlayerCanSpecialSummonMonster(tp,88888285,0x887,TYPES_TOKEN_MONSTER,0,0,6,RACE_AQUA,ATTRIBUTE_DARK)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and
 		(t1 or t2) end
 	local lv=0
@@ -41,7 +41,7 @@ function c88888284.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local lv=e:GetLabel()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,88888285,0x8910,TYPES_TOKEN_MONSTER,0,0,lv,RACE_AQUA,ATTRIBUTE_DARK) then return end
+		or not Duel.IsPlayerCanSpecialSummonMonster(tp,88888285,0x887,TYPES_TOKEN_MONSTER,0,0,lv,RACE_AQUA,ATTRIBUTE_DARK) then return end
 	local token=Duel.CreateToken(tp,88888285)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

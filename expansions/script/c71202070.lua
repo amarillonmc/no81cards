@@ -41,7 +41,7 @@ function s.initial_effect(c)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=eg:GetFirst()
-	return not ec:IsCode(id) and ec:IsControler(tp) and ec:IsSetCard(0x089f)
+	return not ec:IsCode(id) and ec:IsControler(tp) and ec:IsSetCard(0x88d)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -55,7 +55,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function s.thfilter(c)
-	return not c:IsCode(id) and c:IsSetCard(0x089f) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return not c:IsCode(id) and c:IsSetCard(0x88d) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end

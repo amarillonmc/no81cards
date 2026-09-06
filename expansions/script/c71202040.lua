@@ -44,7 +44,7 @@ function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
 function s.fieldfilter(c,tp)
-	return c:IsSetCard(0x089d) and c:IsType(TYPE_FIELD)
+	return c:IsSetCard(0x880) and c:IsType(TYPE_FIELD)
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
@@ -79,7 +79,7 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.revfilter(c,e,tp)
-	return c:IsSetCard(0x089d) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x880) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.revtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

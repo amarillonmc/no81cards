@@ -37,10 +37,10 @@ function c71201221.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c71201221.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x7121)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x88A)
 end
 function c71201221.spfilter(c,e,tp,ft)
-	return c:IsFaceupEx() and c:IsSetCard(0x7121) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceupEx() and c:IsSetCard(0x88A) and c:IsType(TYPE_MONSTER)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c71201221.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -64,13 +64,13 @@ function c71201221.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetMatchingGroupCount(c71201221.atkfilter,e:GetHandlerPlayer(),LOCATION_MZONE,LOCATION_MZONE,nil)>=3
 end
 function c71201221.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x7121)
+	return c:IsFaceup() and c:IsSetCard(0x88A)
 end
 function c71201221.atkval(e,c)
 	return Duel.GetMatchingGroupCount(c71201221.atkfilter,e:GetHandlerPlayer(),LOCATION_MZONE,LOCATION_MZONE,nil)*300
 end
 function c71201221.pfilter(c,tp)
-	return c:IsAllTypes(TYPE_CONTINUOUS+TYPE_SPELL) and c:IsSetCard(0x7121)
+	return c:IsAllTypes(TYPE_CONTINUOUS+TYPE_SPELL) and c:IsSetCard(0x88A)
 		and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function c71201221.settg(e,tp,eg,ep,ev,re,r,rp,chk)

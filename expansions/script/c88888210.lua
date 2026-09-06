@@ -30,7 +30,7 @@ function c88888210.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c88888210.thfilter(c)
-	if not (c:IsSetCard(0x8908) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
+	if not (c:IsSetCard(0x886) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
 	return c:IsAbleToHand() or c:IsSSetable()
 end
 function c88888210.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -53,7 +53,7 @@ function c88888210.xcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_TRAP+TYPE_CONTINUOUS
 end
 function c88888210.xfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x8908)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x886)
 end
 function c88888210.xtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -91,5 +91,5 @@ function c88888210.xop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c88888210.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x8908) and c:GetOwner()==tp and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x886) and c:GetOwner()==tp and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

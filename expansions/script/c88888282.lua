@@ -62,5 +62,5 @@ function c88888282.cfilter(c)
 	return c:IsCode(88888280) and c:IsFaceup()
 end
 function c88888282.setfilter(c)
-	return c:IsSetCard(0x8910) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0x887) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end

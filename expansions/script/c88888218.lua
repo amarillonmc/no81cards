@@ -33,11 +33,11 @@ function c88888218.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c88888218.thfilter(c,e,tp,check)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x8908) and c:IsAbleToHand()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x886) and c:IsAbleToHand()
 		and (check or Duel.IsExistingMatchingCard(c88888218.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp))
 end
 function c88888218.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x8908) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x886) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c88888218.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88888218.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp,true) end
@@ -87,7 +87,7 @@ function c88888218.activate2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c88888218.repfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x8908)
+	return c:IsFaceup() and c:IsSetCard(0x886)
 		and c:IsOnField() and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
 function c88888218.reptg(e,tp,eg,ep,ev,re,r,rp,chk)

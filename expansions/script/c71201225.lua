@@ -22,7 +22,7 @@ function c71201225.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c71201225.costfilter(c)
-	return c:IsSetCard(0x7121) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x88A) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
 end
 function c71201225.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71201225.costfilter,tp,LOCATION_EXTRA+LOCATION_HAND,0,1,nil) end
@@ -41,7 +41,7 @@ function c71201225.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c71201225.spfilter(c,e,tp)
-	return c:IsSetCard(0x7121) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return c:IsSetCard(0x88A) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function c71201225.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(71201225,3)) then return end
@@ -53,7 +53,7 @@ function c71201225.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71201225.filter(c)
-	return c:IsSetCard(0x7121) and c:IsAbleToHand()
+	return c:IsSetCard(0x88A) and c:IsAbleToHand()
 end
 function c71201225.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

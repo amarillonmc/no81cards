@@ -60,7 +60,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x089f) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x88d) and c:IsType(TYPE_MONSTER)
 end
 function s.atkval(e)
 	return Duel.GetMatchingGroupCount(s.atkfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)*(-500)
@@ -69,7 +69,7 @@ function s.defval(e)
 	return Duel.GetMatchingGroupCount(s.atkfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)*(-500)
 end
 function s.spcfilter(c,tp)
-	return not c:IsCode(id) and c:IsFaceup() and c:IsControler(tp) and c:IsSetCard(0x089f)
+	return not c:IsCode(id) and c:IsFaceup() and c:IsControler(tp) and c:IsSetCard(0x88d)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.spcfilter,1,nil,tp)

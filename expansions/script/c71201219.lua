@@ -35,7 +35,7 @@ function c71201219.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c71201219.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x7121)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x88A)
 end
 function c71201219.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and aux.NegateAnyFilter(chkc) end
@@ -78,10 +78,10 @@ function c71201219.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71201219.cfilter(c)
-	return c:IsSetCard(0x7121) and c:IsType(TYPE_LINK) and c:IsFaceup()
+	return c:IsSetCard(0x88A) and c:IsType(TYPE_LINK) and c:IsFaceup()
 end
 function c71201219.thfilter(c)
-	return c:IsSetCard(0x7121) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x88A) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c71201219.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71201219.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -96,7 +96,7 @@ function c71201219.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71201219.pfilter(c,tp)
-	return c:IsAllTypes(TYPE_CONTINUOUS+TYPE_SPELL) and c:IsSetCard(0x7121)
+	return c:IsAllTypes(TYPE_CONTINUOUS+TYPE_SPELL) and c:IsSetCard(0x88A)
 		and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function c71201219.settg(e,tp,eg,ep,ev,re,r,rp,chk)

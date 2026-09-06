@@ -23,13 +23,13 @@ function c71280045.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c71280045.thfilter(c)
-	return c:IsFaceupEx() and c:IsSetCard(0x8911) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsFaceupEx() and c:IsSetCard(0x889) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c71280045.desfilter(c)
-	return c:IsFaceupEx() and c:IsSetCard(0x8911) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceupEx() and c:IsSetCard(0x889) and c:IsType(TYPE_MONSTER)
 end
 function c71280045.spfilter(c,e,tp)
-	return c:IsSetCard(0x8911) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return c:IsSetCard(0x889) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c71280045.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
@@ -100,7 +100,7 @@ function c71280045.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71280045.fcfilter(c,e)
-	return c:IsSetCard(0x8911) and c:IsDestructable(e)
+	return c:IsSetCard(0x889) and c:IsDestructable(e)
 end
 function c71280045.fctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 end

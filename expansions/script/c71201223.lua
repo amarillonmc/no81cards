@@ -1,6 +1,6 @@
 --闪烁初星 藤田琴音·雨后鸢尾花
 function c71201223.initial_effect(c)
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x7121),2,2)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x88A),2,2)
 	c:EnableReviveLimit()
 	--remove
 	local e1=Effect.CreateEffect(c)
@@ -27,7 +27,7 @@ function c71201223.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c71201223.costfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x7121) and c:IsAbleToRemoveAsCost()
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x88A) and c:IsAbleToRemoveAsCost()
 end
 function c71201223.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71201223.costfilter,tp,LOCATION_DECK+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) end
@@ -62,10 +62,10 @@ function c71201223.rmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71201223.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x7121)
+	return c:IsFaceup() and c:IsSetCard(0x88A)
 end
 function c71201223.pfilter(c,tp)
-	return c:IsAllTypes(TYPE_CONTINUOUS+TYPE_SPELL) and c:IsSetCard(0x7121)
+	return c:IsAllTypes(TYPE_CONTINUOUS+TYPE_SPELL) and c:IsSetCard(0x88A)
 		and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function c71201223.settg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -40,7 +40,7 @@ function c88888327.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c88888327.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x8907) and c:GetSequence()<5
+	return c:IsFaceup() and c:IsSetCard(0x88B) and c:GetSequence()<5
 end
 function c88888327.atkval(e,c)
 	return Duel.GetMatchingGroupCount(c88888327.atkfilter,e:GetHandlerPlayer(),LOCATION_SZONE,0,nil)*-200
@@ -67,7 +67,7 @@ function c88888327.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoHand(sg,nil,REASON_EFFECT)
 end
 function c88888327.setfilter(c)
-	return c:IsSetCard(0x8907) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and not c:IsForbidden()
+	return c:IsSetCard(0x88B) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and not c:IsForbidden()
 end
 function c88888327.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88888327.setfilter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,nil)

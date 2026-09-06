@@ -2,7 +2,7 @@
 Duel.LoadScript("c71200802.lua")
 local cm, m = GetID()
 function cm.chkf(c)
-	return c:IsSetCard(0x899) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0x883) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function cm.chk(e,tp)
 	return Duel.IsExistingMatchingCard(cm.chkf,tp,LOCATION_DECK,0,1,nil)

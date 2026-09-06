@@ -1,7 +1,7 @@
 --CAN:D 瑞蕾蒂娅
 function c88888214.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x8908),4,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x886),4,2)
 	c:EnableReviveLimit()
 	--to hand
 	local e1=Effect.CreateEffect(c)
@@ -49,7 +49,7 @@ function c88888214.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if #mg>0 then e:GetHandler():RemoveOverlayCard(tp,#mg,#mg,REASON_COST) end
 end
 function c88888214.thfilter(c)
-	return c:IsSetCard(0x8908) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsFaceupEx()
+	return c:IsSetCard(0x886) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsFaceupEx()
 end
 function c88888214.thop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -120,7 +120,7 @@ function c88888214.acop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c88888214.filter(c)
-	return c:IsSetCard(0x8908) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0x886) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function c88888214.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

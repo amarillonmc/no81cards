@@ -1,7 +1,7 @@
 --CAN:D 辛珂莉娅
 function c88888213.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x8908),4,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x886),4,2)
 	c:EnableReviveLimit()
 	--to hand
 	local e1=Effect.CreateEffect(c)
@@ -50,7 +50,7 @@ function c88888213.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if #mg>0 then e:GetHandler():RemoveOverlayCard(tp,#mg,#mg,REASON_COST) end
 end
 function c88888213.thfilter(c)
-	if not (c:IsSetCard(0x8908) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
+	if not (c:IsSetCard(0x886) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
 	return c:IsAbleToHand() or c:IsSSetable()
 end
 function c88888213.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -84,7 +84,7 @@ function c88888213.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS)
 end
 function c88888213.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x8908) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x886) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c88888213.effcon(e)
 	return e:GetHandler():GetOverlayCount()>0

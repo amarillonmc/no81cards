@@ -64,10 +64,10 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 end
 -- option 1: search 迷失耀斑 monster, optionally place field spell
 function s.filter1(c,tp)
-	return c:IsSetCard(0x089d) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x880) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function s.fieldfilter(c,tp)
-	return c:IsSetCard(0x089d) and c:IsType(TYPE_FIELD)
+	return c:IsSetCard(0x880) and c:IsType(TYPE_FIELD)
 end
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -103,7 +103,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 end
 -- option 2: banish 迷失耀斑 until EP, draw 1
 function s.filter2(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x089d) and c:IsAbleToRemove()
+	return c:IsFaceup() and c:IsSetCard(0x880) and c:IsAbleToRemove()
 end
 function s.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -127,7 +127,7 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 end
 -- ②: GY trigger when 迷失耀斑 banished
 function s.setconfilter(c,tp)
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and c:IsSetCard(0x089d)
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and c:IsSetCard(0x880)
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.setconfilter,1,nil,tp)

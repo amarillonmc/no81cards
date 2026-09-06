@@ -44,7 +44,7 @@ function c88888287.filter1(c,e,tp,lv)
 		and Duel.IsExistingMatchingCard(c88888287.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,lv+clv)
 end
 function c88888287.filter2(c,e,tp,lv)
-	return c:IsLevel(lv) and c:IsSetCard(0x8910) and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false)
+	return c:IsLevel(lv) and c:IsSetCard(0x887) and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false)
 		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c88888287.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -81,7 +81,7 @@ function c88888287.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c88888287.sfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c88888287.spfilter(c,e,tp)
-	return c:IsSetCard(0x8910) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x887) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c88888287.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

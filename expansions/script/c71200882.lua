@@ -36,7 +36,7 @@ function c71200882.initial_effect(c)
 	e2:SetTargetRange(0,LOCATION_MZONE)
 	e2:SetValue(function(e)
 	local tp=e:GetHandlerPlayer()
-	return Duel.GetMatchingGroupCount(function(c) return c:IsSetCard(0x895) end,tp,LOCATION_GRAVE,0,nil)*-200 end)
+	return Duel.GetMatchingGroupCount(function(c) return c:IsSetCard(0x888) end,tp,LOCATION_GRAVE,0,nil)*-200 end)
 	c:RegisterEffect(e2)  
 	--to hand 
 	local e3=Effect.CreateEffect(c) 
@@ -60,7 +60,7 @@ function c71200882.slevel(e,c)
 	end 
 end
 function c71200882.thfilter(c)
-	return c:IsSetCard(0x895) and c:IsType(TYPE_MONSTER) and not c:IsCode(71200882) and c:IsAbleToHand()
+	return c:IsSetCard(0x888) and c:IsType(TYPE_MONSTER) and not c:IsCode(71200882) and c:IsAbleToHand()
 end
 function c71200882.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71200882.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end 
@@ -80,8 +80,8 @@ function c71200882.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71200882.xthtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc) 
 	if chkc then return false end 
-	if chk==0 then return Duel.IsExistingTarget(function(c) return c:IsSetCard(0x895) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() end,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingTarget(nil,tp,0,LOCATION_MZONE,1,nil) end  
-	local g1=Duel.SelectTarget(tp,function(c) return c:IsSetCard(0x895) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() end,tp,LOCATION_GRAVE,0,1,1,nil) 
+	if chk==0 then return Duel.IsExistingTarget(function(c) return c:IsSetCard(0x888) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() end,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingTarget(nil,tp,0,LOCATION_MZONE,1,nil) end  
+	local g1=Duel.SelectTarget(tp,function(c) return c:IsSetCard(0x888) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() end,tp,LOCATION_GRAVE,0,1,1,nil) 
 	local g2=Duel.SelectTarget(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)
 	g1:Merge(g2) 
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,g1:GetCount(),0,0)

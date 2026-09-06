@@ -23,7 +23,7 @@ function c71201227.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c71201227.costfilter(c)
-	return c:IsSetCard(0x7121) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x88A) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
 end
 function c71201227.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71201227.costfilter,tp,LOCATION_EXTRA+LOCATION_HAND,0,1,nil) end
@@ -32,7 +32,7 @@ function c71201227.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c71201227.spfilter(c,e,tp)
-	return c:IsSetCard(0x7121) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x88A) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c71201227.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -50,7 +50,7 @@ function c71201227.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(tp,500,REASON_EFFECT)
 end
 function c71201227.filter(c)
-	return c:IsSetCard(0x7121) and c:IsAbleToHand()
+	return c:IsSetCard(0x88A) and c:IsAbleToHand()
 end
 function c71201227.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

@@ -14,10 +14,10 @@ function c71280040.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c71280040.cfilter(c,tp)
-	return c:IsFaceupEx() and c:IsSetCard(0x8911) and Duel.GetMZoneCount(tp,c)>0
+	return c:IsFaceupEx() and c:IsSetCard(0x889) and Duel.GetMZoneCount(tp,c)>0
 end
 function c71280040.spfilter(c,e,tp)
-	return c:IsSetCard(0x8911) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return c:IsSetCard(0x889) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c71280040.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

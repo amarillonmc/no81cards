@@ -93,7 +93,7 @@ function cm.con3(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
 function cm.e3f1(c)
-	return c:IsSetCard(0x899) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0x883) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function cm.tg3(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g = Duel.GetMatchingGroup(cm.e3f1,tp,LOCATION_GRAVE,0,nil)

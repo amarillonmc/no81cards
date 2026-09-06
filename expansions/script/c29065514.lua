@@ -1,17 +1,9 @@
  --方舟骑士-煌
-c29065514.named_with_Arknight=1
 function c29065514.initial_effect(c)
 	aux.AddCodeList(c,29065500) 
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,6,2)
-	--c:EnableReviveLimit()
-	--local e1=Effect.CreateEffect(c)
-	--e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	--e1:SetCode(EVENT_CHAIN_SOLVING)
-	--e1:SetRange(LOCATION_MZONE)
-	--e1:SetCondition(c29065514.discon)
-	--e1:SetOperation(c29065514.disop)
-	--c:RegisterEffect(e1)
+	c:EnableReviveLimit()
 	--destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(29065514,1))
@@ -32,42 +24,15 @@ function c29065514.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCountLimit(1,29065515)
-	--e3:SetCondition(c29065514.secon)
 	e3:SetTarget(c29065514.thtg)
 	e3:SetOperation(c29065514.thop)
 	c:RegisterEffect(e3)
-end
-function c29065514.mfilter(c,xyzc)
-	local b1=(c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
-	local b2=c:IsXyzLevel(xyzc,5)
-	local b3=c:IsXyzLevel(xyzc,6)
-	return b1 and (b2 or b3)
 end
 function c29065514.decost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function c29065514.ovfilter(c)
-	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
-end
-function c29065514.xyzop(e,tp,chk)
-	if chk==0 then return (Duel.IsCanRemoveCounter(tp,1,0,0x10ae,3,REASON_COST) or (Duel.GetFlagEffect(tp,29096814)==1 and Duel.IsCanRemoveCounter(tp,1,0,0x10ae,2,REASON_COST))) and Duel.GetFlagEffect(tp,29065514)==0 end
-	if Duel.GetFlagEffect(tp,29096814)==1 then
-	Duel.ResetFlagEffect(tp,29096814)
-	Duel.RemoveCounter(tp,1,0,0x10ae,2,REASON_RULE)
-	Duel.RegisterFlagEffect(tp,29065514,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
-	else
-	Duel.RemoveCounter(tp,1,0,0x10ae,3,REASON_RULE)
-	Duel.RegisterFlagEffect(tp,29065514,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
-	end
-end
-function c29065514.discon(e,tp,eg,ep,ev,re,r,rp)
-	local ph=Duel.GetCurrentPhase()
-	return re:GetHandler():GetControler()~=tp and (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)
-end
-function c29065514.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateEffect(ev)
-end
+
 function c29065514.descon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c==Duel.GetAttacker() or c==Duel.GetAttackTarget()
@@ -85,18 +50,20 @@ function c29065514.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(g,REASON_EFFECT)
 	Duel.SetLP(tp,Duel.GetLP(tp)-2000)
 end
-function c29065514.ffilter(c)
-	return c:IsCode(29065500) and c:IsFaceup()
-end
+------
 function c29065514.filter(c,e,tp,ft)
-	return (((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and Duel.IsExistingMatchingCard(c29065514.ffilter,tp,LOCATION_MZONE,0,1,nil)) or c:IsCode(29065500)) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP))
+	return c:IsFaceupEx() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) 
+		and (c:IsAbleToHand() or ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP))
 end
 function c29065514.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c29065514.filter(chkc,e,tp,ft) end
-	if chk==0 then return Duel.IsExistingTarget(c29065514.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp,ft) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c29065514.filter(chkc,e,tp,ft) end
+	if chk==0 then return Duel.IsExistingTarget(c29065514.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp,ft) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,c29065514.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,ft)
+	local tc=Duel.SelectTarget(tp,c29065514.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp,ft):GetFirst()
+	if tc:IsLocation(LOCATION_GRAVE) then
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_ACTION+CATEGORY_GRAVE_SPSUMMON)
+	end
 end
 function c29065514.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

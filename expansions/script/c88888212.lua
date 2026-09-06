@@ -30,10 +30,10 @@ function c88888212.cifilter(c,tp)
 	return c:IsAbleToGraveAsCost() and c:GetOriginalType()&TYPE_MONSTER~=0 and Duel.GetMZoneCount(tp,c)>0
 end
 function c88888212.chfilter(c)
-	return c:IsFacedown() or not c:IsSetCard(0x8908)
+	return c:IsFacedown() or not c:IsSetCard(0x886)
 end
 function c88888212.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x8908) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x886) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c88888212.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88888212.cifilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler(),tp) end
@@ -64,7 +64,7 @@ function c88888212.xcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_TRAP+TYPE_CONTINUOUS
 end
 function c88888212.xfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x8908)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x886)
 end
 function c88888212.xtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -114,5 +114,5 @@ function c88888212.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS)
 end
 function c88888212.cfilter(c)
-	return c:IsSetCard(0x8908) and c:IsAbleToDeck() and c:IsFaceupEx()
+	return c:IsSetCard(0x886) and c:IsAbleToDeck() and c:IsFaceupEx()
 end

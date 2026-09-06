@@ -10,16 +10,16 @@ function c9911715.initial_effect(c)
 	e1:SetTarget(c9911715.sptg)
 	e1:SetOperation(c9911715.spop)
 	c:RegisterEffect(e1)
-	--set
+	--to hand
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SSET+CATEGORY_RELEASE)
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_BECOME_TARGET)
 	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e2:SetCountLimit(1,9911715)
-	e2:SetCondition(c9911715.setcon)
-	e2:SetTarget(c9911715.settg)
-	e2:SetOperation(c9911715.setop)
+	e2:SetCondition(c9911715.thcon)
+	e2:SetTarget(c9911715.thtg)
+	e2:SetOperation(c9911715.thop)
 	c:RegisterEffect(e2)
 	--redirect
 	local e3=Effect.CreateEffect(c)
@@ -89,31 +89,31 @@ function c9911715.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Remove(g,POS_FACEUP,REASON_SPSUMMON)
 	g:DeleteGroup()
 end
-function c9911715.setcon(e,tp,eg,ep,ev,re,r,rp)
+function c9911715.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(e:GetHandler())
 end
-function c9911715.setfilter(c)
-	return c:IsSetCard(0x9957) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+function c9911715.thfilter(c)
+	return not c:IsCode(9911715) and c:IsSetCard(0x9957) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
-function c9911715.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9911715.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+function c9911715.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9911715.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
-function c9911715.setop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9911715.setfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
-	if #g>0 and Duel.SSet(tp,g:GetFirst())>0 then
-		local g1=Duel.GetMatchingGroup(Card.IsReleasableByEffect,tp,LOCATION_MZONE,0,nil)
-		local g2=Duel.GetMatchingGroup(Card.IsReleasableByEffect,tp,0,LOCATION_MZONE,nil)
-		if #g1>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(9911715,0)) then
+function c9911715.rthfilter(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+end
+function c9911715.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9911715.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 and g:GetFirst():IsLocation(LOCATION_HAND) then
+		Duel.ConfirmCards(1-tp,g)
+		if Duel.IsExistingMatchingCard(c9911715.rthfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+			and Duel.SelectYesNo(tp,aux.Stringid(9911715,0)) then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-			local sg1=g1:Select(tp,1,1,nil)
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-			local sg2=g2:Select(tp,1,1,nil)
-			sg1:Merge(sg2)
-			Duel.HintSelection(sg1)
-			Duel.Release(sg1,REASON_EFFECT)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+			local rg=Duel.SelectMatchingCard(tp,c9911715.rthfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+			Duel.HintSelection(rg)
+			Duel.SendtoHand(rg,nil,REASON_EFFECT)
 		end
 	end
 end

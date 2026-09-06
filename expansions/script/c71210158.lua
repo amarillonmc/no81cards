@@ -3,7 +3,7 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x897),1,1)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x88C),1,1)
 	--atklimit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -34,7 +34,7 @@ function s.tgtg(e,c)
 end
 
 function s.thfilter(c)
-	return c:IsFaceupEx() and c:IsSetCard(0x897) and c:IsAbleToHand()
+	return c:IsFaceupEx() and c:IsCode(71210110) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end

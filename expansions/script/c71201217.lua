@@ -29,7 +29,7 @@ function c71201217.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c71201217.tgfilter(c,lv)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x7121) and c:IsAbleToGrave() and c:IsLevelAbove(1) and not c:IsLevel(lv)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x88A) and c:IsAbleToGrave() and c:IsLevelAbove(1) and not c:IsLevel(lv)
 end
 function c71201217.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -56,7 +56,7 @@ function c71201217.lcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c71201217.sumfilter(c,e,tp)
-	return c:IsSetCard(0x7121) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x88A) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c71201217.ltg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71201217.sumfilter,tp,LOCATION_HAND,0,1,e:GetHandler(),e,tp) end

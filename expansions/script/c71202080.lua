@@ -31,17 +31,17 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.mfilter(c,xyzc)
-	return c:IsFaceup() and c:IsSetCard(0x089f) and (c:IsXyzLevel(xyzc,6) or c:IsLevel(4))
+	return c:IsFaceup() and c:IsSetCard(0x88d) and (c:IsXyzLevel(xyzc,6) or c:IsLevel(4))
 end
 function s.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
 end
 function s.tgfilter1(c)
-	return c:IsSetCard(0x089f) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	return c:IsSetCard(0x88d) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function s.tgfilter2(c)
-	return c:IsSetCard(0x089f) and c:IsType(TYPE_SPELL) and c:IsAbleToGrave()
+	return c:IsSetCard(0x88d) and c:IsType(TYPE_SPELL) and c:IsAbleToGrave()
 end
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.tgfilter1,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil)
@@ -65,10 +65,10 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 end
 function s.cfilter(c)
-	return c:IsSetCard(0x089f) and c:IsType(TYPE_MONSTER) and c:IsReleasable()
+	return c:IsSetCard(0x88d) and c:IsType(TYPE_MONSTER) and c:IsReleasable()
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x089f) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_DEFENSE)
+	return c:IsSetCard(0x88d) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_DEFENSE)
 end
 function s.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -79,7 +79,7 @@ end
 function s.plfilter(c,tp)
 	local r=LOCATION_REASON_TOFIELD
 	if not c:IsControler(c:GetOwner()) then r=LOCATION_REASON_CONTROL end
-	return c:IsFaceupEx() and c:IsSetCard(0x089f) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceupEx() and c:IsSetCard(0x88d) and c:IsType(TYPE_MONSTER)
 		and not c:IsForbidden() and c:CheckUniqueOnField(c:GetOwner())
 		and Duel.GetLocationCount(c:GetOwner(),LOCATION_SZONE,tp,r)>0
 end

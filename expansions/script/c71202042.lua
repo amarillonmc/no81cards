@@ -41,7 +41,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.spfilter0(c)
-	return c:IsFaceup() and c:IsType(TYPE_FIELD) and c:IsSetCard(0x089d)
+	return c:IsFaceup() and c:IsType(TYPE_FIELD) and c:IsSetCard(0x880)
 end
 function s.spcon(e,c)
 	if c==nil then return true end
@@ -50,7 +50,7 @@ function s.spcon(e,c)
 		and Duel.IsExistingMatchingCard(s.spfilter0,tp,LOCATION_SZONE,0,1,nil)
 end
 function s.atktg(e,c)
-	return c:IsSetCard(0x089d)
+	return c:IsSetCard(0x880)
 end
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:GetHandler():IsLocation(LOCATION_HAND) and not re:GetHandler():IsCode(id)
@@ -73,7 +73,7 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x089d) and not c:IsCode(id) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x880) and not c:IsCode(id) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

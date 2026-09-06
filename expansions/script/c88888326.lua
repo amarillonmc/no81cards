@@ -32,7 +32,7 @@ function c88888326.cfilter(c,tp)
 	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)
 		and (c:IsLocation(LOCATION_HAND) or (c:IsLocation(LOCATION_EXTRA) and c:IsFacedown()))
 		and c:GetOriginalType()&TYPE_MONSTER~=0
-		and c:IsSetCard(0x8907)
+		and c:IsSetCard(0x88B)
 		and c:IsPreviousPosition(POS_FACEUP)
 end
 function c88888326.rmcon(e,tp,eg,ep,ev,re,r,rp)
@@ -49,7 +49,7 @@ function c88888326.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 end
 function c88888326.repfilter(c,tp)
-	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x8907) and c:IsControler(tp)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x88B) and c:IsControler(tp)
 		and c:IsReason(REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function c88888326.reptg(e,tp,eg,ep,ev,re,r,rp,chk)

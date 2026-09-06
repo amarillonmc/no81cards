@@ -24,7 +24,7 @@ function c71200891.initial_effect(c)
 end 
 function c71200891.ctfil(c,e,tp) 
 	local g=Group.FromCards(c,e:GetHandler())
-	return c:IsSetCard(0x895) and c:IsAbleToGraveAsCost() and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,g)
+	return c:IsSetCard(0x888) and c:IsAbleToGraveAsCost() and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,g)
 end
 function c71200891.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71200891.ctfil,tp,LOCATION_MZONE,0,1,nil,e,tp) end 
@@ -41,7 +41,7 @@ function c71200891.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71200891.rckfil(c) 
-	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x895)   
+	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x888)   
 end 
 function c71200891.rtdcon(e,tp,eg,ep,ev,re,r,rp) 
 	return Duel.IsExistingMatchingCard(c71200891.rckfil,tp,LOCATION_MZONE,0,1,nil)  

@@ -33,10 +33,10 @@ function c88888323.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c88888323.setfilter(c)
-	return c:IsSetCard(0x8907) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0x88B) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function c88888323.thfilter(c,code)
-	return not c:IsCode(code) and c:IsSetCard(0x8907) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return not c:IsCode(code) and c:IsSetCard(0x88B) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c88888323.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88888323.setfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil)
@@ -81,7 +81,7 @@ function c88888323.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end
 function c88888323.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x8907) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x88B) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c88888323.fsptg(e,tp,eg,ep,ev,re,r,rp,chk)

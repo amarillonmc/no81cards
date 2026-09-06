@@ -21,7 +21,7 @@ function s.initial_effect(c)
     e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
     e2:SetCode(EVENT_MOVE)  -- 使用移动事件检测素材取除
     e2:SetProperty(EFFECT_FLAG_DELAY)
-    e2:SetCountLimit(1,id+1)
+    e2:SetCountLimit(1,id+100)
     e2:SetCondition(s.thcon)
     e2:SetTarget(s.thtg)
     e2:SetOperation(s.thop)
@@ -35,7 +35,7 @@ end
 
 -- 效果①目标函数 - 修正版
 function s.xyzfilter(c,e,tp,mc)
-    return c:IsSetCard(0x893) 
+    return c:IsSetCard(0x884) 
         and c:IsType(TYPE_XYZ) 
         and mc:IsCanBeXyzMaterial(c)  -- 检查自身是否可作为素材
         and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)  -- 正确传入效果对象e

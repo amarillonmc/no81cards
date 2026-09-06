@@ -39,7 +39,7 @@ function c88888316.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c88888316.spfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x8907) and c:GetOriginalType()&TYPE_MONSTER~=0 
+	return c:IsFaceup() and c:IsSetCard(0x88B) and c:GetOriginalType()&TYPE_MONSTER~=0 
 		and (c:IsAbleToHandAsCost() or c:IsAbleToExtraAsCost()) and Duel.GetMZoneCount(tp,c)>0
 end
 function c88888316.spcon(e,c)
@@ -65,7 +65,7 @@ function c88888316.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
 function c88888316.thfilter(c)
-	return not c:IsCode(88888316) and c:IsSetCard(0x8907) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return not c:IsCode(88888316) and c:IsSetCard(0x88B) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c88888316.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88888316.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -89,7 +89,7 @@ function c88888316.spgcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==1-tp
 end
 function c88888316.spgfilter(c,e,tp)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x8907)
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x88B)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c88888316.spgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

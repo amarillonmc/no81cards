@@ -25,8 +25,8 @@ function c9911720.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetCountLimit(1)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetCondition(c9911720.rmcon)
 	e3:SetCost(c9911720.rmcost)
 	e3:SetTarget(c9911720.rmtg)
 	e3:SetOperation(c9911720.rmop)
@@ -38,11 +38,21 @@ end
 function c9911720.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e1:SetCountLimit(1)
+	if Duel.GetCurrentPhase()==PHASE_STANDBY then
+		e1:SetLabel(Duel.GetTurnCount())
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY,2)
+	else
+		e1:SetLabel(0)
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY)
+	end
+	e1:SetCondition(c9911720.thcon)
 	e1:SetOperation(c9911720.thop)
-	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+end
+function c9911720.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnCount()~=e:GetLabel()
 end
 function c9911720.thfilter(c)
 	return c:IsSetCard(0x9957) and c:IsAbleToHand()
@@ -55,9 +65,6 @@ function c9911720.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
-end
-function c9911720.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
 end
 function c9911720.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tg=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil,e)

@@ -38,7 +38,7 @@ function c71280042.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c71280042.tdfilter(c)
-	return c:IsSetCard(0x8911) and c:IsAbleToDeck() and c:IsFaceupEx()
+	return c:IsSetCard(0x889) and c:IsAbleToDeck() and c:IsFaceupEx()
 end
 function c71280042.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c71280042.tdfilter(chkc) end
@@ -66,7 +66,7 @@ function c71280042.indtg(e,c)
 	return c==tc or c==tc:GetBattleTarget()
 end
 function c71280042.cfilter(c,tp,se)
-	return c:IsSetCard(0x8911) and c:IsControler(tp) and c:IsPreviousControler(tp) and (se==nil or c:GetReasonEffect()~=se)
+	return c:IsSetCard(0x889) and c:IsControler(tp) and c:IsPreviousControler(tp) and (se==nil or c:GetReasonEffect()~=se)
 end
 function c71280042.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local se=e:GetLabelObject():GetLabelObject()
@@ -89,5 +89,5 @@ function c71280042.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c71280042.atktg(e,c)
-	return c:IsSetCard(0x8911)
+	return c:IsSetCard(0x889)
 end

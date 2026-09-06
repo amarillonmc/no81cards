@@ -58,14 +58,14 @@ function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x897) and c:IsType(TYPE_FUSION)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x88C) and c:IsType(TYPE_FUSION)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	local g=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_EXTRA,0,nil,e,tp)
 	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0	
-		and tc:IsSetCard(0x897) and tc:IsType(TYPE_FUSION) and #g>0 and Duel.SelectYesNo(tp,2) then
+		and tc:IsSetCard(0x88C) and tc:IsType(TYPE_FUSION) and #g>0 and Duel.SelectYesNo(tp,2) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sc=g:Select(tp,1,1,nil):GetFirst()

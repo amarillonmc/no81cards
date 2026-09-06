@@ -27,7 +27,7 @@ function c71200916.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function c71200916.thfilter(c)
-	return c:IsSetCard(0x895) and c:IsType(TYPE_MONSTER) and not c:IsCode(71200916) and c:IsAbleToHand()
+	return c:IsSetCard(0x888) and c:IsType(TYPE_MONSTER) and not c:IsCode(71200916) and c:IsAbleToHand()
 end
 function c71200916.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71200916.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
@@ -43,7 +43,7 @@ function c71200916.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71200916.imcon(e,tp,eg,ep,ev,re,r,rp) 
 	local te,p=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return te and te:GetHandler():IsSetCard(0x895) and te:IsActiveType(TYPE_SPELL+TYPE_TRAP) and te:IsHasType(EFFECT_TYPE_ACTIVATE) and p==tp and rp==1-tp
+	return te and te:GetHandler():IsSetCard(0x888) and te:IsActiveType(TYPE_SPELL+TYPE_TRAP) and te:IsHasType(EFFECT_TYPE_ACTIVATE) and p==tp and rp==1-tp
 end 
 function c71200916.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,700) end

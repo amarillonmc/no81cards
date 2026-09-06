@@ -29,24 +29,6 @@ function cm.initial_effect(c)
 	e3:SetTarget(c29065510.lvtg)
 	e3:SetValue(c29065510.lvval)
 	c:RegisterEffect(e3)
-	--local e3=Effect.CreateEffect(c)
-	--e3:SetDescription(aux.Stringid(m,0))
-	--e3:SetType(EFFECT_TYPE_FIELD)
-	--e3:SetCode(EFFECT_SPSUMMON_PROC)
-	--e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	--e3:SetRange(LOCATION_EXTRA)
-	--e3:SetCountLimit(1,m)
-	--e3:SetCondition(cm.xyzcon)
-	--e3:SetTarget(cm.xyztg)
-	--e3:SetOperation(cm.xyzop)
-	--e3:SetValue(SUMMON_TYPE_XYZ)
-	--local e4=Effect.CreateEffect(c)
-	--e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-	--e4:SetTargetRange(LOCATION_EXTRA,0)
-	--e4:SetRange(LOCATION_FZONE)
-	--e4:SetTarget(cm.eftg)
-	--e4:SetLabelObject(e3)
-	--c:RegisterEffect(e4)
 	--Effect 3 
 	local e12=Effect.CreateEffect(c)
 	e12:SetDescription(aux.Stringid(m,1))
@@ -116,25 +98,29 @@ function cm.xyzop(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 --------------------------------------------------------Effect 3 
-function cm.df(c)
-	return cm.stf(c) and c:IsAbleToDeck()
-end
-function cm.df2(c)
-	return cm.stf(c) and c:IsLocation(LOCATION_DECK+LOCATION_EXTRA)
-end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local gc=Duel.GetMatchingGroupCount(Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,e:GetHandler())
-	local gc2=Duel.GetMatchingGroupCount(cm.df,tp,LOCATION_GRAVE,0,e:GetHandler())
-	if chk==0 then return gc>0 and (gc2<3 or Duel.IsPlayerCanDraw(tp,1)) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
 end
+function cm.tdfilter(c,e)
+	return c:IsFaceupEx() and c:IsAbleToDeck()
+end
+function cm.tdhfilter(c)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToDeck()
+end
+function cm.gcheck(g,tp)
+	return g:IsExists(cm.tdhfilter,1,nil)
+end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_GRAVE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE,0,1,5,nil)
-	if Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)==0 then return end
-	local ct=g:FilterCount(cm.df2,nil)
-	if ct<3 then return false end
-	local dt=math.floor(ct/3) 
-	Duel.BreakEffect()
-	Duel.Draw(tp,dt,REASON_EFFECT)
+	local sg=g:SelectSubGroup(tp,cm.gcheck,false,1,5,tp)
+	if sg then
+		Duel.HintSelection(sg)
+		local ct=aux.PlaceCardsOnDeckBottom(tp,sg)
+		if ct>0 and sg:IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) then
+			Duel.BreakEffect()
+			Duel.Draw(tp,1,REASON_EFFECT)
+		end
+	end
 end

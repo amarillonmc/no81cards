@@ -1,121 +1,86 @@
---静默之戟的"福耳库斯"
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--fusion material
-	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,s.ffilter,2,true)
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SINGLE_RANGE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetRange(LOCATION_EXTRA)
-	e0:SetValue(aux.fuslimit)
-	c:RegisterEffect(e0)
-	--①
+	--①② effects share count
+	--① negate summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCondition(s.placecon)
-	e1:SetOperation(s.placeop)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_SUMMON)
+	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.sumcon)
+	e1:SetTarget(s.sumtg)
+	e1:SetOperation(s.sumop)
 	c:RegisterEffect(e1)
-	--②
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_TOGRAVE+CATEGORY_ATKCHANGE)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1)
-	e2:SetCondition(s.opcon)
-	e2:SetTarget(s.optg)
-	e2:SetOperation(s.opop)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON)
 	c:RegisterEffect(e2)
-end
-function s.ffilter(c)
-	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsRace(RACE_AQUA)
+	--② GY effect
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(id,1))
+	e3:SetCategory(CATEGORY_DESTROY)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetCountLimit(1,id)
+	e3:SetTarget(s.gytg)
+	e3:SetOperation(s.gyop)
+	c:RegisterEffect(e3)
 end
 --①
-function s.placecon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and e:GetHandler():IsLocation(LOCATION_MZONE)
+function s.sumcon(e,tp,eg,ep,ev,re,r,rp)
+	return tp~=ep and Duel.GetCurrentChain()==0
+		and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_ONFIELD,0,1,nil,71202122)
 end
-function s.placeop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-	if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-		c:RegisterEffect(e1)
+function s.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
+end
+function s.cfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_FUSION)
+end
+function s.desfilter(c)
+	return c:IsFacedown() or not c:IsRace(RACE_AQUA)
+end
+function s.sumop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateSummon(eg)
+	if Duel.Destroy(eg,REASON_EFFECT)==0 then return end
+	if Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+		and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+		Duel.BreakEffect()
+		local g=Duel.GetMatchingGroup(s.desfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		if g:GetCount()>0 then
+			Duel.Destroy(g,REASON_EFFECT)
+		end
 	end
 end
 --②
-function s.opcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsType(TYPE_SPELL) and e:GetHandler():IsType(TYPE_CONTINUOUS)
+function s.gyfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x88f) and c:IsType(TYPE_MONSTER)
 end
-function s.handfilter(c,e,tp)
-	return c:IsSetCard(0x88f) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function s.gytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local g1=Duel.GetMatchingGroup(s.gyfilter,tp,LOCATION_MZONE,0,nil)
+	local g2=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_ONFIELD,nil)
+	if chkc then return false end
+	if chk==0 then return e:GetHandler():IsAbleToDeck()
+		and #g1>0 and #g2>0 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local sg=aux.SelectSameCount(tp,g1,g2)
+	Duel.SetTargetCard(sg)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,tp,0)
 end
-function s.deckfilter(c)
-	return c:IsSetCard(0x88f) and c:IsAbleToHand()
-end
-function s.atkfilter(c)
-	return c:IsSetCard(0x88f) and c:IsFaceup()
-end
-function s.optg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(s.handfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
-	local b2=Duel.IsExistingMatchingCard(s.deckfilter,tp,LOCATION_DECK,0,1,nil)
-	local b3=Duel.IsExistingMatchingCard(s.atkfilter,tp,LOCATION_MZONE,0,1,nil)
-	if chk==0 then return b1 or b2 or b3 end
-	local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(id,0),1},
-		{b2,aux.Stringid(id,1),2},
-		{b3,aux.Stringid(id,2),3})
-	e:SetLabel(op)
-	if op==1 then
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
-	elseif op==2 then
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+function s.gyop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
+	if tg:GetCount()>0 then
+		Duel.Destroy(tg,REASON_EFFECT)
 	end
-end
-function s.opop(e,tp,eg,ep,ev,re,r,rp)
-	local op=e:GetLabel()
-	if op==1 then
-		--special summon from hand
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,s.handfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-		if #g>0 then
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-		end
-	elseif op==2 then
-		--search or send to grave from deck
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,s.deckfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if #g>0 then
-			local tc=g:GetFirst()
-			if Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-				Duel.SendtoHand(tc,nil,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,tc)
-			else
-				Duel.SendtoGrave(tc,REASON_EFFECT)
-			end
-		end
-	elseif op==3 then
-		--atk boost
-		local g=Duel.GetMatchingGroup(function(c) return c:IsFaceup() and c:IsSetCard(0x88f) end,tp,LOCATION_MZONE,0,nil)
-		for tc in aux.Next(g) do
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetValue(500)
-			e1:SetReset(RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
-		end
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsAbleToDeck() then
+		Duel.BreakEffect()
+		Duel.SendtoDeck(c,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
 	end
 end

@@ -6,7 +6,7 @@ function s.initial_effect(c)
     e1:SetCategory(CATEGORY_TOHAND+CATEGORY_DAMAGE)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
-    e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
+    e1:SetCountLimit(1,id)
     e1:SetTarget(s.thtg)
     e1:SetOperation(s.thop)
     c:RegisterEffect(e1)
@@ -18,7 +18,7 @@ function s.initial_effect(c)
     e2:SetType(EFFECT_TYPE_IGNITION)
     e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
     e2:SetRange(LOCATION_GRAVE)
-    e2:SetCountLimit(1,id+o)
+    e2:SetCountLimit(1,id+100)
     e2:SetCost(aux.bfgcost)
     e2:SetTarget(s.mattg)
     e2:SetOperation(s.matop)
@@ -27,7 +27,7 @@ end
 
 -- ①效果过滤函数
 function s.thfilter(c)
-    return c:IsSetCard(0x893) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+    return c:IsSetCard(0x884) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 
 -- ①效果目标函数

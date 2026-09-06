@@ -48,17 +48,17 @@ function s.initial_effect(c)
 end
 -- ①
 function s.thfilter(c,race)
-	return c:IsSetCard(0x089d) and c:IsType(TYPE_MONSTER) and not c:IsRace(race) and c:IsAbleToHand()
+	return c:IsSetCard(0x880) and c:IsType(TYPE_MONSTER) and not c:IsRace(race) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and chkc:IsFaceup() and chkc:IsSetCard(0x089d) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and chkc:IsFaceup() and chkc:IsSetCard(0x880) end
 	if chk==0 then return Duel.IsExistingTarget(s.thtargetfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,s.thtargetfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function s.thtargetfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x089d)
+	return c:IsFaceup() and c:IsSetCard(0x880)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -73,7 +73,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 -- ②: track activation of 迷失耀斑 effect this turn
 function s.actfilter(re,tp,cid)
-	return not re:GetHandler():IsSetCard(0x089d)
+	return not re:GetHandler():IsSetCard(0x880)
 end
 function s.scfilter(c,sp)
 	return c:IsSummonPlayer(sp)
@@ -82,7 +82,7 @@ function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.scfilter,1,nil,1-tp) and Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)>0
 end
 function s.xyzfilter(c,e,tp)
-	return c:IsSetCard(0x089d) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
+	return c:IsSetCard(0x880) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCountFromEx(tp)>0

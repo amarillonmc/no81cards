@@ -32,7 +32,7 @@ function c71200921.initial_effect(c)
 	c:RegisterEffect(e3) 
 end
 function c71200921.spfilter(c,e,tp)
-	return c:IsSetCard(0x895) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return c:IsSetCard(0x888) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function c71200921.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c71200921.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
@@ -59,7 +59,7 @@ function c71200921.spop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end 
 function c71200921.xdckfil(c) 
-	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x895) 
+	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x888) 
 end 
 function c71200921.xdescon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==1-tp and Duel.IsExistingMatchingCard(c71200921.xdckfil,tp,LOCATION_MZONE,0,1,nil) 

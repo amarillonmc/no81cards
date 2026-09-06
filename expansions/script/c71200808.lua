@@ -2,7 +2,7 @@
 Duel.LoadScript("c71200802.lua")
 local cm, m = GetID()
 function cm.chkf(c,e,tp)
-	return c:IsSetCard(0x899) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() 
+	return c:IsSetCard(0x883) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() 
 		or Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP))
 end
 function cm.chk(e,tp)

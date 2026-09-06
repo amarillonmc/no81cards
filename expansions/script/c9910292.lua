@@ -29,7 +29,7 @@ function c9910292.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910292.cfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_LINK) and c:IsSetCard(0x3957)
+	return c:IsFaceup() and c:IsSetCard(0x3957) and c:IsType(TYPE_LINK)
 end
 function c9910292.condition(e)
 	return Duel.IsExistingMatchingCard(c9910292.cfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
@@ -51,16 +51,18 @@ function c9910292.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(g:GetFirst():GetCode())
 	Duel.Release(g,REASON_COST)
 end
+function c9910292.recfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x3957)
+end
 function c9910292.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local rec=Duel.GetMatchingGroupCount(c9910292.recfilter,tp,LOCATION_MZONE,0,nil)*1000
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,rec)
 	Duel.SetChainLimit(c9910292.chainlm)
 end
 function c9910292.chainlm(e,rp,tp)
 	return not e:GetHandler():IsType(TYPE_MONSTER) or e:GetHandler():IsType(TYPE_PENDULUM)
-end
-function c9910292.recfilter(c)
-	return c:IsSetCard(0x3957) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
 function c9910292.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
@@ -69,9 +71,9 @@ function c9910292.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c9910292.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,code)
 	if g:GetCount()==0 or Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)==0 then return end
-	local ct=Duel.GetMatchingGroupCount(c9910292.recfilter,tp,LOCATION_ONFIELD,0,nil)
-	if ct>0 then
+	local rec=Duel.GetMatchingGroupCount(c9910292.recfilter,tp,LOCATION_MZONE,0,nil)*1000
+	if rec>0 then
 		Duel.BreakEffect()
-		Duel.Recover(tp,ct*1000,REASON_EFFECT)
+		Duel.Recover(tp,rec,REASON_EFFECT)
 	end
 end

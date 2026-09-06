@@ -37,7 +37,7 @@ end
 
 -- 超量素材检测
 function s.mfilter(c,xyzc)
-    return c:IsSetCard(0x893) or c:IsLevel(5)  -- 焰速轰鸣或任意5星怪兽
+    return c:IsSetCard(0x884) or c:IsLevel(5)  -- 焰速轰鸣或任意5星怪兽
 end
 
 -- 注册超量召唤标志
@@ -59,7 +59,7 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function s.spfilter(c,e,tp)
-    return c:IsSetCard(0x893) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+    return c:IsSetCard(0x884) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -81,7 +81,7 @@ end
 
 -- 效果②条件：成为超量素材
 function s.efcon(e,tp,eg,ep,ev,re,r,rp)
-    return r==REASON_XYZ and e:GetHandler():GetReasonCard():IsSetCard(0x893)
+    return r==REASON_XYZ and e:GetHandler():GetReasonCard():IsSetCard(0x884)
 end
 
 -- 效果②操作：赋予宿主两个效果

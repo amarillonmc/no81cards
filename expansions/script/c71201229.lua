@@ -37,7 +37,7 @@ function c71201229.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c71201229.thfilter(c,tp)
-	return c:IsSetCard(0x7121) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x88A) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 		and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,c:GetCode())
 end
 function c71201229.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -53,7 +53,7 @@ function c71201229.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71201229.cfilter(c)
-	return c:IsSetCard(0x7121) and c:IsSummonLocation(LOCATION_EXTRA)
+	return c:IsSetCard(0x88A) and c:IsSummonLocation(LOCATION_EXTRA)
 end
 function c71201229.reccon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c71201229.cfilter,1,nil)
@@ -66,7 +66,7 @@ function c71201229.lkfilter(c,mg)
 	return c:IsLinkSummonable(mg,nil,1,mg:GetCount())
 end
 function c71201229.lkmfilter(c)
-	return c:IsSetCard(0x7121) and c:IsFaceup() and c:IsCanBeLinkMaterial(nil)
+	return c:IsSetCard(0x88A) and c:IsFaceup() and c:IsCanBeLinkMaterial(nil)
 end
 function c71201229.lktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mg=Duel.GetMatchingGroup(c71201229.lkmfilter,tp,LOCATION_MZONE,0,nil)

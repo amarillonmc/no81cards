@@ -63,7 +63,7 @@ function c71200879.spop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end
 function c71200879.xdckfil(c) 
-	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x895) 
+	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x888) 
 end 
 function c71200879.xdiscon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==1-tp and Duel.IsExistingMatchingCard(c71200879.xdckfil,tp,LOCATION_MZONE,0,1,nil) 

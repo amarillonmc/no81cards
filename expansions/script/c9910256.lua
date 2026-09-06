@@ -11,9 +11,9 @@ function c9910256.initial_effect(c)
 	e1:SetCondition(c9910256.spcon)
 	e1:SetOperation(c9910256.spop)
 	c:RegisterEffect(e1)
-	--add counter / counter
+	--spsummon / search
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_COUNTER+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_COUNTER)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
@@ -32,35 +32,44 @@ end
 function c9910256.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.RemoveCounter(tp,1,0,0x956,2,REASON_COST)
 end
+function c9910256.spfilter(c,e,tp)
+	return not c:IsLevel(4) and c:IsSetCard(0xa956) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
 function c9910256.thfilter(c)
-	return c:IsSetCard(0xa956) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(9910256)
+	return c:IsSetCard(0xa956) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c9910256.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local b1=c:IsCanAddCounter(0x956,3) and Duel.GetFlagEffect(tp,9910256)==0
+	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9910256.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,9910256)==0
 	local b2=Duel.IsExistingMatchingCard(c9910256.thfilter,tp,LOCATION_DECK,0,1,nil)
-		and Duel.GetFlagEffect(tp,9910257)==0
+		and c:IsCanAddCounter(0x956,3) and Duel.GetFlagEffect(tp,9910257)==0
 	if chk==0 then return b1 or b2 end
 end
 function c9910256.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local b1=c:IsRelateToEffect(e) and c:IsCanAddCounter(0x956,3) and Duel.GetFlagEffect(tp,9910256)==0
+	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9910256.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,9910256)==0
 	local b2=Duel.IsExistingMatchingCard(c9910256.thfilter,tp,LOCATION_DECK,0,1,nil)
-		and Duel.GetFlagEffect(tp,9910257)==0
+		and c:IsRelateToChain() and c:IsCanAddCounter(0x956,3) and Duel.GetFlagEffect(tp,9910257)==0
 	local op=0
 	if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(9910256,0),aux.Stringid(9910256,1))
 	elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(9910256,0))
 	elseif b2 then op=Duel.SelectOption(tp,aux.Stringid(9910256,1))+1
 	else return end
 	if op==0 then
-		c:AddCounter(0x956,3)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=Duel.SelectMatchingCard(tp,c9910256.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+		if #sg>0 then
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		end
 		Duel.RegisterFlagEffect(tp,9910256,RESET_PHASE+PHASE_END,0,1)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c9910256.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
+		local tg=Duel.SelectMatchingCard(tp,c9910256.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		if #tg>0 and Duel.SendtoHand(tg,nil,REASON_EFFECT)>0 and tg:GetFirst():IsLocation(LOCATION_HAND) then
+			Duel.ConfirmCards(1-tp,tg)
+			if c:IsRelateToChain() then c:AddCounter(0x956,3) end
 		end
 		Duel.RegisterFlagEffect(tp,9910257,RESET_PHASE+PHASE_END,0,1)
 	end

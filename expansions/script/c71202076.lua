@@ -28,7 +28,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x089f) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:IsSetCard(0x88d) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -51,7 +51,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.atktg(e,c)
-	return c:IsSetCard(0x089f)
+	return c:IsSetCard(0x88d)
 end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) end

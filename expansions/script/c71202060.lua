@@ -46,7 +46,7 @@ end
 -- ①: recover LP on 迷失耀斑 Xyz summoned
 function s.reccon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
-	return tc:IsControler(tp) and tc:IsSetCard(0x089d) and tc:IsType(TYPE_XYZ) and tc:IsSummonType(SUMMON_TYPE_XYZ)
+	return tc:IsControler(tp) and tc:IsSetCard(0x880) and tc:IsType(TYPE_XYZ) and tc:IsSummonType(SUMMON_TYPE_XYZ)
 end
 function s.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=eg:GetFirst()
@@ -66,7 +66,7 @@ function s.recop(e,tp,eg,ep,ev,re,r,rp)
 end
 -- ②: Xyz Summon using 迷失耀斑 monsters + others
 function s.actfilter(re,tp,cid)
-	return not re:GetHandler():IsSetCard(0x089d)
+	return not re:GetHandler():IsSetCard(0x880)
 end
 function s.xyzcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep==1-tp and Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)>0
@@ -84,7 +84,7 @@ function s.xyzmatfilter(c)
 	return c:IsFaceup() and c:IsCanBeXyzMaterial(nil)
 end
 function s.gselect(sg,c)
-	return sg:IsExists(Card.IsSetCard,1,nil,0x089d) and c:IsXyzSummonable(sg,#sg,#sg)
+	return sg:IsExists(Card.IsSetCard,1,nil,0x880) and c:IsXyzSummonable(sg,#sg,#sg)
 end
 function s.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetMatchingGroup(s.xyzmatfilter,tp,LOCATION_MZONE,0,nil)

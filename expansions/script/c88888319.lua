@@ -45,7 +45,7 @@ function c88888319.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end
 function c88888319.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x8907) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x88B) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c88888319.fsptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -101,7 +101,7 @@ function c88888319.fspop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c88888319.spfilter(c,e,tp)
-	return c:IsSetCard(0x8907) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x88B) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c88888319.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsReason(REASON_DRAW)
@@ -120,7 +120,7 @@ function c88888319.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c88888319.cfilter(c,tp)
-	return c:IsFaceup() and c:IsType(TYPE_FUSION) and c:IsSetCard(0x8907) and c:IsControler(tp)
+	return c:IsFaceup() and c:IsType(TYPE_FUSION) and c:IsSetCard(0x88B) and c:IsControler(tp)
 end
 function c88888319.con(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c88888319.cfilter,1,nil,tp)

@@ -34,7 +34,7 @@ function c71200897.smcon(e,tp,eg,ep,ev,re,r,rp)
 	return (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) and Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil)  
 end 
 function c71200897.smfilter(c)
-	return (c:IsSummonable(true,nil) or c:IsMSetable(true,nil)) and c:IsSetCard(0x895)
+	return (c:IsSummonable(true,nil) or c:IsMSetable(true,nil)) and c:IsSetCard(0x888)
 end
 function c71200897.smtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

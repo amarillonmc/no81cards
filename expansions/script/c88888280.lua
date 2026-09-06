@@ -37,7 +37,7 @@ function c88888280.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c88888280.thfilter(c)
-	return c:IsSetCard(0x8910) and c:IsAbleToHand()
+	return c:IsSetCard(0x887) and c:IsAbleToHand()
 end
 function c88888280.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88888280.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -53,7 +53,7 @@ function c88888280.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c88888280.tdfilter(c)
-	return c:IsSetCard(0x8910) and c:IsType(TYPE_MONSTER) and c:GetLevel()>0
+	return c:IsSetCard(0x887) and c:IsType(TYPE_MONSTER) and c:GetLevel()>0
 		and c:IsAbleToDeckOrExtraAsCost()
 		and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
 end
@@ -62,7 +62,7 @@ function c88888280.fselect(g,e,tp)
 		and Duel.IsExistingMatchingCard(c88888280.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,g:GetSum(Card.GetLevel))
 end
 function c88888280.spfilter(c,e,tp,lv)
-	return c:IsSetCard(0x8910) and c:IsType(TYPE_SYNCHRO) and c:IsLevel(lv)
+	return c:IsSetCard(0x887) and c:IsType(TYPE_SYNCHRO) and c:IsLevel(lv)
 		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false)
 end

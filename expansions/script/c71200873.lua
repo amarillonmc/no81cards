@@ -29,7 +29,7 @@ end
 
 -- 超量素材检测
 function s.mfilter(c,xyzc)
-    return c:IsSetCard(0x893) and c:IsType(TYPE_XYZ)  -- 焰速轰鸣超量怪兽
+    return c:IsSetCard(0x884) and c:IsType(TYPE_XYZ)  -- 焰速轰鸣超量怪兽
         or (c:IsRank(6) and c:IsType(TYPE_XYZ))      -- 或任意6阶超量怪兽
 end
 
@@ -70,7 +70,7 @@ end
 
 -- 效果②条件：成为超量素材
 function s.efcon(e,tp,eg,ep,ev,re,r,rp)
-    return r==REASON_XYZ and e:GetHandler():GetReasonCard():IsSetCard(0x893)
+    return r==REASON_XYZ and e:GetHandler():GetReasonCard():IsSetCard(0x884)
 end
 
 -- 效果②操作：赋予宿主超量召唤效果

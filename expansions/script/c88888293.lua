@@ -28,7 +28,7 @@ function c88888293.posfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()
 end
 function c88888293.thfilter(c)
-	return c:IsFaceupEx() and c:IsSetCard(0x8910) and c:IsAbleToHand()
+	return c:IsFaceupEx() and c:IsSetCard(0x887) and c:IsAbleToHand()
 end
 function c88888293.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g1=Duel.IsExistingTarget(c88888293.posfilter,tp,0,LOCATION_MZONE,1,nil)

@@ -18,7 +18,7 @@ function c88888220.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c88888220.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x8908) and c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and c:IsSetCard(0x886) and c:IsType(TYPE_XYZ)
 end
 function c88888220.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c88888220.cfilter,tp,LOCATION_MZONE,0,1,nil)
