@@ -26,16 +26,7 @@ function c9910258.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xa956)
 end
 function c9910258.condition(e,tp,eg,ep,ev,re,r,rp)
-	local res=false
-	for i=1,ev do
-		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-		local tc=te:GetHandler()
-		if tgp~=tp and tc:IsRelateToEffect(te) and tc:IsFaceup() and tc:IsStatus(STATUS_EFFECT_ENABLED)
-			and not tc:IsStatus(STATUS_LEAVE_CONFIRMED) then
-			res=true
-		end
-	end
-	return res and Duel.IsExistingMatchingCard(c9910258.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	return Duel.IsExistingMatchingCard(c9910258.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c9910258.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
