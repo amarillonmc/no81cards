@@ -78,8 +78,8 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.sfilter(c,e,tp)
 	local b1=(Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,0)) and not c:IsForbidden()
-	local b2=c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsLocation(LOCATION_DECK))
-	or (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLocation(LOCATION_EXTRA))
+	local b2=c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (Duel.GetMZoneCount(tp,e:GetHandler())>0 and c:IsLocation(LOCATION_DECK))
+	or (Duel.GetLocationCountFromEx(tp,tp,e:GetHandler(),c)>0 and c:IsLocation(LOCATION_EXTRA))
 	return c:IsSetCard(0x667a) and c:IsType(TYPE_MONSTER) and (b1 or b2) and c:IsFaceupEx()
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
