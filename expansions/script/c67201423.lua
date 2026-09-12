@@ -9,7 +9,7 @@ function c67201423.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,67201423)
+	--e2:SetCountLimit(1,67201423)
 	e2:SetCondition(c67201423.drcon)
 	e2:SetTarget(c67201423.drtg)
 	e2:SetOperation(c67201423.drop)
@@ -27,6 +27,7 @@ function c67201423.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_LEAVE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,67201423)
 	e1:SetCondition(c67201423.spcon)
 	e1:SetTarget(c67201423.sptg)
 	e1:SetOperation(c67201423.spop)
@@ -38,22 +39,21 @@ end
 --
 function c67201423.valcheck(e,c)
 	local mg=c:GetMaterial()
-	local mg1=mg:Filter(Card.IsLocation,nil,LOCATION_HAND)
 	local mg2=mg:Filter(Card.IsLocation,nil,LOCATION_ONFIELD)
-	e:GetLabelObject():SetLabel(#mg1,#mg2)
+	e:GetLabelObject():SetLabel(#mg2)
 end
 function c67201423.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return re and re:GetHandler():IsSetCard(0x3675) and c:IsSummonType(SUMMON_TYPE_FUSION)
 end
 function c67201423.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local dr,des=e:GetLabel()
+	local des=e:GetLabel()
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
-	if chk==0 then return des and #g>=des end
+	if chk==0 then return des and #g<=des end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c67201423.drop(e,tp,eg,ep,ev,re,r,rp)
-	local dr,des=e:GetLabel()
+	local des=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,des,des,nil)
 	if #g==des then
