@@ -24,23 +24,84 @@ function c28322413.initial_effect(c)
 	e1:SetTarget(c28322413.tdtg)
 	e1:SetOperation(c28322413.tdop)
 	c:RegisterEffect(e1)
-	--rank up
-	local e2=Effect.CreateEffect(c)
-	--e2:SetCategory(CATEGORY_TODECK)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetCost(c28322413.rucost)
-	--e2:SetTarget(c28322413.rutg)
-	e2:SetOperation(c28322413.ruop)
-	c:RegisterEffect(e2)
+end
+function c28322413.tdcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
+end
+function c28322413.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local mt,rt=c:GetOverlayCount(),math.floor(c:GetRank()/3)
+	local g=Duel.GetMatchingGroup(c28322413.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil,e)
+	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) and (g:IsExists(Card.IsOnField,1,nil) and mt>1 or g:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) and rt>0 or g:IsExists(Card.IsOnField,1,nil) and mt>0 and Duel.IsExistingMatchingCard(Card.CheckRemoveOverlayCard,tp,LOCATION_MZONE,0,1,c,tp,1,REASON_COST)) end
+	if g:IsExists(Card.IsOnField,1,nil) and mt>1 or g:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) and rt>0 then
+		Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_COST)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DEATTACHFROM)
+		local tc=Duel.SelectMatchingCard(tp,Card.CheckRemoveOverlayCard,tp,LOCATION_MZONE,0,1,1,c,tp,1,REASON_COST):GetFirst()
+		tc:RemoveOverlayCard(tp,1,1,REASON_COST)
+	end
+end
+function c28322413.tdfilter(c,e)
+	return c:IsAbleToDeck() and c:IsCanBeEffectTarget(e)
+end
+function c28322413.gcheck(g,mt,rt)
+	return g:FilterCount(Card.IsOnField,nil)<=mt and g:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)<=rt
+end
+function c28322413.xfilter(c)
+	return c:IsType(TYPE_XYZ) and c:IsFaceup()
+end
+function c28322413.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and chkc:IsAbleToDeck() end
+	local c=e:GetHandler()
+	local mt,rt=c:GetOverlayCount(),math.floor(c:GetRank()/3)
+	local g=Duel.GetMatchingGroup(c28322413.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil,e)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28322413.xfilter,tp,LOCATION_MZONE,0,1,nil) and (e:IsCostChecked() or g:IsExists(Card.IsOnField,1,nil) and mt>0 or g:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) and rt>0) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local sg=g:SelectSubGroup(tp,c28322413.gcheck,false,1,mt+rt,mt,rt)
+	Duel.SetTargetCard(sg)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,#sg,0,0)
+end
+function c28322413.tdop(e,tp,eg,ep,ev,re,r,rp)
+	local tg=Duel.GetTargetsRelateToChain()
+	if Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)==0 then return end
+	local g=Duel.GetMatchingGroup(c28322413.xfilter,tp,LOCATION_MZONE,0,nil)
+	local ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+	if #g==0 or ct==0 then return end
+	local tc=g:GetFirst()
+	if #g>1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		tc=g:Select(tp,1,1,nil):GetFirst()
+	end
+	Duel.HintSelection(Group.FromCards(tc))
+	local t={}
+	for i=1,ct do table.insert(t,i) end
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(28322413,0))
+	local ac=Duel.AnnounceNumber(tp,table.unpack(t))
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_UPDATE_RANK)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetValue(ac)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e1)
 end
 --xyz↓
-function Auxiliary.XyzLevelFreeGoal(g,tp,xyzc,gf)
-	return (not gf or gf(g,xyzc)) and Duel.GetLocationCountFromEx(tp,tp,g,xyzc)>0
-end
 function c28322413.xyzcheck(g,xyzc)
-	for lv=1,100 do
+	--GetXyzLevel is not allowed
+	local t={}
+	for tc in aux.Next(g) do
+		if not tc:IsHasEffect(EFFECT_XYZ_LEVEL) then
+			table.insert(t,tc:GetLevel())
+		else
+			for _,te in pairs({tc:IsHasEffect(EFFECT_XYZ_LEVEL)}) do
+				local val=te:GetValue()
+				local xlv=aux.GetValueType(val)=="Function" and val(te,tc,xyzc) or val
+				table.insert(t,xlv&0xffff)
+				if xlv>0xffff then table.insert(t,(xlv>>16)&0xffff) end
+			end
+		end
+	end
+	for _,lv in pairs(t) do--for lv=1,100 do
 		if not g:IsExists(function(c) return not c:IsXyzLevel(xyzc,lv) end,1,nil) then return true end
 	end
 	return false
@@ -111,73 +172,28 @@ function c28322413.rscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c28322413.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
+	local e0=Effect.CreateEffect(e:GetHandler())
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_CHANGE_RANK)
+	--e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetValue(e:GetLabel())
+	e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+	tc:RegisterEffect(e0)
+	--atk
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CHANGE_RANK)
-	--e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetValue(e:GetLabel())
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetValue(c28322413.atkval)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	tc:RegisterEffect(e1)
-	--atk
-	local e3=Effect.CreateEffect(e:GetHandler())
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetValue(c28322413.atkval)
-	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-	tc:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EFFECT_UPDATE_DEFENSE)
-	tc:RegisterEffect(e4)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_UPDATE_DEFENSE)
+	tc:RegisterEffect(e2)
 	e:Reset()
-end
---xyz↑
-function c28322413.tdcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
-end
-function c28322413.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) end
-	if e:GetHandler():GetOverlayCount()>1 then
-		Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_COST)
-	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DEATTACHFROM)
-		local tc=Duel.SelectMatchingCard(tp,Card.CheckRemoveOverlayCard,tp,LOCATION_MZONE,0,1,1,e:GetHandler(),tp,1,REASON_COST):GetFirst()
-		tc:RemoveOverlayCard(tp,1,1,REASON_COST)
-	end
-end
-function c28322413.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and chkc:IsAbleToDeck() end
-	if chk==0 then return e:GetHandler():GetOverlayCount()>=1 and Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end
-	local g=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,e:GetHandler():GetOverlayCount(),nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,#g,0,0)
-end
-function c28322413.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetTargetsRelateToChain()
-	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-end
-function c28322413.tdfilter(c)
-	return c:IsSetCard(0x284) and c:IsAbleToDeckOrExtraAsCost() and c:IsFaceupEx()-- and aux.NecroValleyFilter()(c)
-end
-function c28322413.rucost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28322413.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c28322413.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,99,nil)
-	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
-	e:SetLabel(#g)
-end
-function c28322413.ruop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=e:GetLabel()
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsFaceup() then
-		local e0=Effect.CreateEffect(c)
-		e0:SetType(EFFECT_TYPE_SINGLE)
-		e0:SetCode(EFFECT_UPDATE_RANK)
-		e0:SetValue(ct)
-		e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		c:RegisterEffect(e0)
-	end
 end
 function c28322413.atkval(e,c)
 	return c:GetRank()*100
 end
+--xyz↑

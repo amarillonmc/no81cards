@@ -8,18 +8,18 @@ function c28321714.initial_effect(c)
 	e1:SetTarget(c28321714.target)
 	e1:SetOperation(c28321714.activate)
 	c:RegisterEffect(e1)
-	--to grave
+	--copy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28321714,1))
-	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+	--e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCondition(c28321714.tgcon)
+	e2:SetCondition(c28321714.cpcon)
 	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(c28321714.tgtg)
-	e2:SetOperation(c28321714.tgop)
+	e2:SetTarget(c28321714.cptg)
+	e2:SetOperation(c28321714.cpop)
 	c:RegisterEffect(e2)
 	if not c28321714.global_check then
 		c28321714.global_check=true
@@ -31,8 +31,9 @@ function c28321714.initial_effect(c)
 			ge1:SetTarget(aux.TargetBoolFunction(Card.IsAttribute,1<<i))
 			ge1:SetLabel(1<<i)
 			ge1:SetValue(c28321714.immval)
-			Duel.RegisterEffect(ge1,tp)
+			Duel.RegisterEffect(ge1,0)
 		end
+		c28321714.effect_list={}
 	end
 end
 function c28321714.immval(e,te,c)
@@ -149,8 +150,56 @@ function c28321714.immval(e,te,c)
 	end
 	return res
 end]]
-function c28321714.tgcon(e,tp,eg,ep,ev,re,r,rp)
+function c28321714.cpcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_MZONE)
+end
+function c28321714.efilter(e)
+	local ct=#c28321714.effect_list
+	if e:IsHasRange(LOCATION_HAND) and e:IsActivated() then c28321714.effect_list[ct+1]=e end
+	return false
+end
+function c28321714.cfilter(c,e,tp,eg,ep,ev,re,r,rp)
+	if not (c:IsSetCard(0x286) and c:IsType(TYPE_MONSTER)) then return false end
+	c28321714.effect_list={}
+	c:IsOriginalEffectProperty(c28321714.efilter)
+	for _,te in ipairs(c28321714.effect_list) do
+		local tg=te:GetTarget()
+		if not tg or tg(e,tp,eg,ep,ev,re,r,rp,0) then return true end
+	end
+	return false
+end
+function c28321714.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28321714.cfilter,tp,LOCATION_HAND,0,1,nil,e,tp,eg,ep,ev,re,r,rp) end
+end
+function c28321714.cpop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local tc=Duel.SelectMatchingCard(tp,c28321714.cfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp):GetFirst()
+	if not tc then return end
+	Duel.ConfirmCards(1-tp,tc)
+	c28321714.effect_list={}
+	tc:IsOriginalEffectProperty(c28321714.efilter)
+	local e_list={}
+	for _,te in ipairs(c28321714.effect_list) do
+		local tg=te:GetTarget()
+		if not tg or tg(e,tp,eg,ep,ev,re,r,rp,0) then table.insert(e_list,te) end--if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then table.remove(c28321714.effect_list,i) end
+	end
+	local te=e_list[1]
+	if #e_list>1 then
+		local des_list={}
+		for _,te in ipairs(e_list) do table.insert(des_list,te:GetDescription()) end
+		local op=Duel.SelectOption(tp,table.unpack(des_list))
+		te=e_list[op+1]
+	end
+	c28321714.effect_list={}
+	--copy
+	e:SetProperty(te:GetProperty())
+	tc:CreateEffectRelation(e)--Card.IsRelateToChain
+	tc:CreateEffectRelation(te)--Card.IsRelateToEffect
+	local tg=te:GetTarget()
+	if tg then tg(te,tp,eg,ep,ev,re,r,rp,1) end
+	local op=te:GetOperation()
+	if op then op(te,tp,eg,ep,ev,re,r,rp) end
+	e:SetProperty(EFFECT_FLAG_DELAY)--Original Property
 end
 function c28321714.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28321714.tgfilter,tp,LOCATION_DECK,0,1,nil) end

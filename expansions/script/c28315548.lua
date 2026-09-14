@@ -43,7 +43,7 @@ function c28315548.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c28315548.tdfilter(c)
-	return c:IsSetCard(0x283) and c:IsAbleToDeck() and c:IsFaceupEx()
+	return c:IsType(TYPE_MONSTER+TYPE_SPELL) and c:IsFaceupEx() and c:IsAbleToDeck()
 end
 function c28315548.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(0x30) and chkc:IsControler(tp) and c28315548.tdfilter(chkc) end

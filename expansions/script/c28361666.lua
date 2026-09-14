@@ -13,7 +13,7 @@ function c28361666.initial_effect(c)
 	e2:SetDescription(aux.Stringid(28361666,1))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_CHAINING)
+	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCondition(c28361666.spcon)
@@ -38,14 +38,14 @@ function c28361666.activate(e,tp,eg,ep,ev,re,r,rp)
 	local sc=Duel.SelectMatchingCard(tp,c28361666.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,LOCATION_MZONE,nil)
 	g:AddCard(sc)
-	if sc and Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) and aux.GetAttributeCount(g)<=3 then
+	if sc and Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) and aux.GetAttributeCount(g)>=3 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(28361666,0))
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CANNOT_TRIGGER)
-		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-		--e1:SetCondition(c28361666.accon)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
+		e1:SetValue(LOCATION_HAND)
+		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
 		sc:RegisterEffect(e1)
 	end
 	Duel.SpecialSummonComplete()
@@ -55,7 +55,7 @@ function c28361666.accon(e)
 	return aux.GetAttributeCount(g)<3
 end
 function c28361666.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE
+	return eg:IsExists(Card.IsType,1,nil,TYPE_MONSTER) and not eg:IsContains(e:GetHandler())
 end
 function c28361666.tgfilter(c,e,tp,chk)
 	return (chk~=0 or Duel.GetMZoneCount(tp,c)>0) and (c:IsAbleToHand() and (chk~=0 or Duel.IsExistingMatchingCard(c28361666.gspfilter,tp,LOCATION_HAND,0,1,nil,e,tp)) or c:IsAbleToGrave() and (chk~=0 or Duel.IsExistingMatchingCard(c28361666.gspfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)))

@@ -14,17 +14,12 @@ function c9911157.initial_effect(c)
 	e1:SetTarget(c9911157.thtg)
 	e1:SetOperation(c9911157.thop)
 	c:RegisterEffect(e1)
-	Duel.AddCustomActivityCounter(9911157,ACTIVITY_CHAIN,c9911157.chainfilter)
-end
-function c9911157.chainfilter(re,tp,cid)
-	return not re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function c9911157.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3958)
 end
 function c9911157.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,9911157)==0
-		and Duel.GetCustomActivityCount(9911157,1-tp,ACTIVITY_CHAIN)>0 end
+	if chk==0 then return Duel.GetFlagEffect(tp,9911157)==0 end
 	Duel.RegisterFlagEffect(tp,9911157,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c9911157.cfilter(c,tp)
@@ -34,7 +29,7 @@ function c9911157.ofilter(c)
 	return c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT)
 end
 function c9911157.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(c9911157.cfilter,tp,LOCATION_ONFIELD,0,nil,tp)
+	local g=Duel.GetMatchingGroup(c9911157.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,tp)
 	if chk==0 then return #g>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local costg=g:Select(tp,1,1,nil)
@@ -49,10 +44,11 @@ end
 function c9911157.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_EFFECT)
 		and Duel.IsExistingMatchingCard(c9911157.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	if e:GetLabel()==1 then
 		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_POSITION+CATEGORY_MSET)
+	else
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	end
 end
 function c9911157.thop(e,tp,eg,ep,ev,re,r,rp)

@@ -1,5 +1,11 @@
 --溯雪拨情的音乐会
 function c9911163.initial_effect(c)
+	--flag
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_TO_GRAVE)
+	e0:SetOperation(c9911163.TgOperation)
+	c:RegisterEffect(e0)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -11,7 +17,7 @@ function c9911163.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetCode(9911163)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(2)
 	e2:SetTargetRange(1,0)
 	c:RegisterEffect(e2)
 	--draw
@@ -41,6 +47,9 @@ function c9911163.initial_effect(c)
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e5)
 end
+function c9911163.TgOperation(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():RegisterFlagEffect(9911165,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9911165,2))
+end
 function c9911163.costfilter1(c)
 	return c:IsSetCard(0x3958) and c:IsDiscardable()
 end
@@ -49,10 +58,10 @@ function c9911163.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,c9911163.costfilter1,1,1,REASON_DISCARD+REASON_COST)
 end
 function c9911163.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetTargetParam(2)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
 end
 function c9911163.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

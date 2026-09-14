@@ -1,6 +1,7 @@
 --源于黑影 螺旋
 local s,id,o=GetID()
 function s.initial_effect(c)
+	-- ① 尽可能支付2000LP，增加本家○效果使用次数（最多10次）
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -9,136 +10,23 @@ function s.initial_effect(c)
 	e1:SetTarget(s.damtg)
 	e1:SetOperation(s.rmop)
 	c:RegisterEffect(e1)
+
+	-- ② 墓地：本家让自己LP脱离0的场合，除外自身，从卡组盖放1张本家魔法
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_CUSTOM+65820000)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCost(s.spcost)
-	e2:SetTarget(s.sptg)
-	e2:SetOperation(s.spop)
+	e2:SetCondition(s.setcon)
+	e2:SetCost(s.setcost)
+	e2:SetTarget(s.settg)
+	e2:SetOperation(s.setop)
 	c:RegisterEffect(e2)
-	if not s.global_check then
-		s.global_check=true
-		local ge0=Effect.GlobalEffect()
-		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge0:SetCode(EVENT_ADJUST)
-		ge0:SetOperation(s.geop)
-		Duel.RegisterEffect(ge0,0)
-		s.OAe={}
-	end
-end
-function s.IsInTable(value, tbl)
-	for k,v in ipairs(tbl) do
-		if v == value then
-		return true
-		end
-	end
-	return false
-end
-function s.Act(c,e)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_ACTIVATE_COST)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetLabelObject(e)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(s.HTAfactarget)
-	e1:SetOperation(s.BaseActOp)
-	return e1
-end
-function s.BaseActOp(e,tp,eg,ep,ev,re,r,rp)
-	local te=e:GetLabelObject()
-	local c=te:GetHandler()
-	if c:IsType(TYPE_FIELD) then
-		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
-		if fc then
-			Duel.SendtoGrave(fc,REASON_RULE)
-			Duel.BreakEffect()
-		end
-		Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-	else
-		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-	end
-	c:CreateEffectRelation(te)
-	local ev0=Duel.GetCurrentChain()+1
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
-	e1:SetCountLimit(1)
-	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return ev==ev0 end)
-	e1:SetOperation(s.BaseActReset)
-	e1:SetReset(RESET_CHAIN)
-	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_CHAIN_NEGATED)
-	Duel.RegisterEffect(e2,tp)
-end
-function s.BaseActReset(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
-		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
-		if not rc:IsType(TYPE_CONTINUOUS+TYPE_EQUIP+TYPE_PENDULUM+TYPE_FIELD) and not rc:IsHasEffect(EFFECT_REMAIN_FIELD) then rc:CancelToGrave(false) end
-	end
-	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
-		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
-		rc:CancelToGrave(false)
-	end
-end
-function s.HTAfactarget(e,te,tp)
-	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject()
-end
-function s.geop(e,tp,eg,ep,ev,re,r,rp)
-	if s.geop_lock then return end
-  	s.geop_lock = true
-
-	local g=Duel.GetMatchingGroup(function(c)return c:IsSetCard(0x3a32) and c:IsType(TYPE_SPELL) and c:GetActivateEffect()end,0,LOCATION_DECK,LOCATION_DECK,nil)
-	for tc in aux.Next(g) do
-		local le={tc:GetActivateEffect()}
-		for _,v in pairs(le) do
-			if v:IsHasRange(0xa) and not s.IsInTable(v,s.OAe) then
-				table.insert(s.OAe,v)
-				local e1=v:Clone()
-				e1:SetRange(LOCATION_DECK)
-				e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-				tc:RegisterEffect(e1,true)
-				local e2=s.Act(tc,e1)
-				e2:SetRange(LOCATION_DECK)
-				e2:SetCost(s.costchk)
-				e2:SetOperation(s.costop)
-				tc:RegisterEffect(e2,true)
-				local e3=Effect.CreateEffect(tc)
-				e3:SetType(EFFECT_TYPE_FIELD)
-				e3:SetCode(EFFECT_SPSUMMON_PROC_G)
-				e3:SetRange(LOCATION_DECK)
-				e3:SetCondition(s.hintcon)
-				tc:RegisterEffect(e3,true)
-			end
-		end
-	end
-
-	s.geop_lock = false
-end
-function s.hintcon(e,c)
-	if c==nil then return true end
-	local ct=Duel.GetFlagEffectLabel(c:GetControler(),id) or 0
-	return ct>0
-end
-function s.costchk(e,te_or_c,tp)
-	local ct=Duel.GetFlagEffectLabel(tp,id) or 0
-	return ct>0
-end
-function s.costop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetFlagEffectLabel(tp,id)
-	Duel.SetFlagEffectLabel(tp,id,ct-1)
-	s.BaseActOp(e,tp,eg,ep,ev,re,r,rp)
-end
-function s.actfilter(c)
-	return c:IsSetCard(0x3a32) and c:IsType(TYPE_SPELL) and not c:IsForbidden()
 end
 
+-- ① cost：尽可能支付2000LP；支付后LP为0则变4000并触发EVENT_CUSTOM
 function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local lp=Duel.GetLP(tp)
@@ -153,11 +41,13 @@ function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 
+-- ① target：使用次数未满10次
 function s.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,65820099)<10 end
 	Duel.SetTargetPlayer(tp)
 end
 
+-- ① operation：使用次数+1，并刷新 client hint 显示
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	local count=Duel.GetFlagEffect(p,65820099)
@@ -176,17 +66,33 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(te,p)
 end
 
-function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+-- ② 触发条件：本家卡让自己LP脱离0
+function s.setcon(e,tp,eg,ep,ev,re,r,rp)
+	return re and re:GetHandler():IsSetCard(0x3a32)
+end
+
+-- ② cost：除外自身
+function s.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,0) end
 	aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,1)
 end
 
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+-- ② filter：本家魔法且可盖放
+function s.setfilter(c)
+	return c:IsSetCard(0x3a32) and c:IsType(TYPE_SPELL) and c:IsSSetable()
 end
 
-function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,id)==0 then Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1) end
-	local ct=Duel.GetFlagEffectLabel(tp,id)
-	Duel.SetFlagEffectLabel(tp,id,ct+1)
+-- ② target
+function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SSET,nil,1,tp,LOCATION_DECK)
+end
+
+-- ② operation：选1张本家魔法在自己场上盖放
+function s.setop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if #g>0 then
+		Duel.SSet(tp,g)
+	end
 end

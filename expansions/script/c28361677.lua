@@ -18,14 +18,14 @@ function c28361677.initial_effect(c)
 	e2:SetTarget(c28361677.reptg)
 	e2:SetValue(c28361677.repval)
 	c:RegisterEffect(e2)
-	--illumination SetCode
+	--[[--illumination SetCode
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_ADD_SETCODE)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
 	e3:SetValue(0x283)
-	c:RegisterEffect(e3)
+	c:RegisterEffect(e3)]]
 end
 function c28361677.chkfilter(c)
 	return c:IsSetCard(0x284) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
@@ -44,7 +44,7 @@ function c28361677.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		if e:GetLabel()==0 then return false end
 		e:SetLabel(0)
 		return #g>0 and ct>0 end
-	if ct>#g then ct=#g end
+	--if ct>#g then ct=#g end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local cg=g:SelectSubGroup(tp,aux.dabcheck,false,1,ct)
 	Duel.ConfirmCards(1-tp,cg)
@@ -100,7 +100,7 @@ function c28361677.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_LEVEL)
-		e1:SetValue(1)
+		e1:SetValue(3)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 		rc:RegisterEffect(e1)
 		local e2=e1:Clone()

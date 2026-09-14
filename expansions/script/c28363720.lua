@@ -28,9 +28,9 @@ function c28363720.initial_effect(c)
 		c28363720.global_check=true
 		c28363720.summon_code={}
 		local ge0=Effect.CreateEffect(c)
-		ge0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge0:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+		ge0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 		ge0:SetOperation(c28363720.clear)
 		Duel.RegisterEffect(ge0,0)
 		local ge1=Effect.CreateEffect(c)
@@ -94,11 +94,11 @@ function c28363720.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKTOP,REASON_COST)
 end
 function c28363720.thfilter(c)
-	if not (c:IsSetCard(0x286) and c:IsAbleToHand()) then return false end
-	for _,code in pairs(c28363720.summon_code) do
+	if not (c:IsSetCard(0x286) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()) then return false end
+	--[[for _,code in pairs(c28363720.summon_code) do
 		if c:IsCode(code) then return true end
-	end
-	return false
+	end]]
+	return true
 end
 function c28363720.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28363720.thfilter,tp,LOCATION_GRAVE,0,1,nil) end

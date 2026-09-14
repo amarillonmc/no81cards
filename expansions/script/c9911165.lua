@@ -21,13 +21,11 @@ function c9911165.initial_effect(c)
 	c:RegisterEffect(e2)
 	--to grave
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(9911165,1))
 	e3:SetCategory(CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,9911165)
-	e3:SetCondition(c9911165.tgcon)
 	e3:SetTarget(c9911165.tgtg)
 	e3:SetOperation(c9911165.tgop)
 	c:RegisterEffect(e3)
@@ -50,9 +48,6 @@ function c9911165.initial_effect(c)
 end
 function c9911165.TgOperation(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(9911165,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9911165,2))
-end
-function c9911165.tgcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c9911165.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsAbleToGrave() end

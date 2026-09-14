@@ -8,9 +8,9 @@ function c28318749.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
-	e0:SetCondition(Auxiliary.XyzLevelFreeCondition(c28318749.mfilter,c28318749.xyzcheck,2,99))
-	e0:SetTarget(Auxiliary.XyzLevelFreeTarget(c28318749.mfilter,c28318749.xyzcheck,2,99))
-	e0:SetOperation(c28318749.Operation(c28318749.mfilter,c28318749.xyzcheck,2,99))
+	e0:SetCondition(Auxiliary.XyzLevelFreeCondition(c28318749.mfilter,c28318749.xyzcheck,2,283))
+	e0:SetTarget(Auxiliary.XyzLevelFreeTarget(c28318749.mfilter,c28318749.xyzcheck,2,283))
+	e0:SetOperation(c28318749.Operation(c28318749.mfilter,c28318749.xyzcheck,2,283))
 	e0:SetValue(SUMMON_TYPE_XYZ)
 	c:RegisterEffect(e0)
 	--to deck
@@ -21,12 +21,12 @@ function c28318749.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
-	--e1:SetCost(c28318749.tdcost)
+	--e1:SetCountLimit(1)
+	e1:SetCost(c28318749.tdcost)
 	e1:SetTarget(c28318749.tdtg)
 	e1:SetOperation(c28318749.tdop)
 	c:RegisterEffect(e1)
-	--destroy replace
+	--[[--destroy replace
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EFFECT_DESTROY_REPLACE)
@@ -34,7 +34,7 @@ function c28318749.initial_effect(c)
 	e2:SetTarget(c28318749.reptg)
 	e2:SetValue(c28318749.repval)
 	e2:SetOperation(c28318749.repop)
-	c:RegisterEffect(e2)
+	c:RegisterEffect(e2)]]
 	if not ILLUMINA_EFFECT_HINT then
 		ILLUMINA_EFFECT_HINT = true
 		local ge1=Effect.CreateEffect(c)
@@ -43,6 +43,69 @@ function c28318749.initial_effect(c)
 		ge1:SetOperation(c28318749.checkop)
 		Duel.RegisterEffect(ge1,0)
 	end
+end
+function c28318749.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+end
+function c28318749.tdfilter(c)
+	return c:IsAbleToDeck() and c:IsFaceupEx()
+end
+function c28318749.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and c28318749.tdfilter(chkc) end
+	local c=e:GetHandler()
+	local ct=c:GetFlagEffectLabel(28318749) or 0
+	local rt=math.floor(c:GetRank()/3)
+	if chk==0 then return Duel.IsExistingTarget(c28318749.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) and ct<rt end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectTarget(tp,c28318749.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
+	--sign
+	if ct==0 then
+		c:RegisterFlagEffect(28318749,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(28318749,3))
+	else
+		local fe=c:IsHasEffect(EFFECT_FLAG_EFFECT+28318749)
+		local te=fe:Clone()
+		te:SetDescription(aux.Stringid(28318749,ct+3))
+		te:SetLabel(ct+1)
+		fe:Reset()
+		c:RegisterEffect(te)
+	end
+end
+function c28318749.tdop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetTargetsRelateToChain()
+	if #g>0 then
+		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	end
+	local c=e:GetHandler()
+	if c:IsRelateToChain() and c:IsFaceup() then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetCountLimit(1)
+		e1:SetValue(c28318749.indval)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e1)
+	end
+end
+function c28318749.indval(e,re,r,rp)
+	return bit.band(r,REASON_EFFECT)~=0
+end
+function c28318749.repfilter(c,tp)
+	return c:IsControler(tp) and c:IsOnField() and c:IsSummonType(SUMMON_TYPE_XYZ) and c:IsRace(RACE_FAIRY) and c:IsFaceup() and c:IsReason(REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+end
+function c28318749.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return eg:IsExists(c28318749.repfilter,1,nil,tp)
+		and Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_EFFECT) end
+	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+end
+function c28318749.repval(e,c)
+	return c28318749.repfilter(c,e:GetHandlerPlayer())
+end
+function c28318749.repop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_EFFECT)
+	Duel.Hint(HINT_CARD,0,28318749)
 end
 --xyz↓
 function c28318749.mfilter(c,xyzc)
@@ -139,40 +202,6 @@ function c28318749.rsop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 --xyz↑
-function c28318749.tdfilter(c)
-	return c:IsFaceup() and c:IsAbleToDeck()
-end
-function c28318749.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and Duel.IsExistingTarget(c28318749.tdfilter,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local tg=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c28318749.tdfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
-	tg:Merge(g)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,tg,2,0,0)
-end
-function c28318749.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetTargetsRelateToChain()
-	if #g>0 then
-		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	end
-end
-function c28318749.repfilter(c,tp)
-	return c:IsControler(tp) and c:IsOnField() and c:IsSummonType(SUMMON_TYPE_XYZ) and c:IsRace(RACE_FAIRY) and c:IsFaceup() and c:IsReason(REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
-end
-function c28318749.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(c28318749.repfilter,1,nil,tp)
-		and Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_EFFECT) end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
-end
-function c28318749.repval(e,c)
-	return c28318749.repfilter(c,e:GetHandlerPlayer())
-end
-function c28318749.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_EFFECT)
-	Duel.Hint(HINT_CARD,0,28318749)
-end
 function c28318749.atkval(e,c)
 	return c:GetRank()*100
 end
