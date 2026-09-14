@@ -1,6 +1,7 @@
 --邪龙升华
 local s,id,o=GetID()
 function c75000919.initial_effect(c)
+	aux.AddCodeList(c,75000901)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))

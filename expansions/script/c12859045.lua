@@ -65,7 +65,7 @@ function s.sphop(e,tp,eg,ep,ev,re,r,rp)
 		if not (tc:IsType(TYPE_QUICKPLAY) or tc:IsType(TYPE_TRAP)) then return end
 		if Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+			local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,tc)
 			if #dg>0 then
 				if dg:GetFirst():IsLocation(LOCATION_ONFIELD) then Duel.HintSelection(dg) end
 				if Duel.Destroy(dg,REASON_EFFECT)>0 then
