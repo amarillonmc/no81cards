@@ -13,7 +13,7 @@ function c40009443.initial_effect(c)
 	c:RegisterEffect(e2)  
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SUMMON)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
