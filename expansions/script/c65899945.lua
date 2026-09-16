@@ -77,6 +77,9 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 
+local A=1103515245
+local B=12345
+local M=2147483648
 function s.roll(min,max)
 	if not s.random then
 		local g=Duel.GetFieldGroup(0,0xff,0xff):RandomSelect(2,1)
@@ -84,7 +87,7 @@ function s.roll(min,max)
 	end
 	min=tonumber(min)
 	max=tonumber(max)
-	s.random=((s.random*1103515245+12345)%32767)/32767
+	s.random=((s.random*A+B)%M)/M
 	if min~=nil then
 		if max==nil then
 			return math.floor(s.random*min)+1
