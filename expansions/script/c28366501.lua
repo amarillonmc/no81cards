@@ -19,13 +19,13 @@ function c28366501.initial_effect(c)
 	e2:SetValue(c28366501.repval)
 	c:RegisterEffect(e2)
 	--illumination SetCode
-	local e3=Effect.CreateEffect(c)
+	--[[local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_ADD_SETCODE)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
 	e3:SetValue(0x283)
-	c:RegisterEffect(e3)
+	c:RegisterEffect(e3)]]
 end
 function c28366501.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)

@@ -13,7 +13,7 @@ function c28318606.initial_effect(c)
 	c:RegisterEffect(e1)
 	--grave effect
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
+	--e2:SetCategory(CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
@@ -88,7 +88,7 @@ function c28318606.confilter(c,tp)
 		and c:GetReasonPlayer()==1-tp and not c:IsReason(REASON_RULE)
 end
 function c28318606.con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c28318606.confilter,1,nil,tp)
+	return eg:IsExists(c28318606.confilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function c28318606.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
