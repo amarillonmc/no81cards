@@ -151,7 +151,7 @@ function c28321714.immval(e,te,c)
 	return res
 end]]
 function c28321714.cpcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_MZONE)
+	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_MZONE) and not eg:IsContains(e:GetHandler())
 end
 function c28321714.efilter(e)
 	local ct=#c28321714.effect_list
@@ -164,7 +164,7 @@ function c28321714.cfilter(c,e,tp,eg,ep,ev,re,r,rp)
 	c:IsOriginalEffectProperty(c28321714.efilter)
 	for _,te in ipairs(c28321714.effect_list) do
 		local tg=te:GetTarget()
-		if not tg or tg(e,tp,eg,ep,ev,re,r,rp,0) then return true end
+		if not tg or tg(te,tp,eg,ep,ev,re,r,rp,0) then return true end
 	end
 	return false
 end
@@ -181,7 +181,7 @@ function c28321714.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local e_list={}
 	for _,te in ipairs(c28321714.effect_list) do
 		local tg=te:GetTarget()
-		if not tg or tg(e,tp,eg,ep,ev,re,r,rp,0) then table.insert(e_list,te) end--if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then table.remove(c28321714.effect_list,i) end
+		if not tg or tg(te,tp,eg,ep,ev,re,r,rp,0) then table.insert(e_list,te) end--if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then table.remove(c28321714.effect_list,i) end
 	end
 	local te=e_list[1]
 	if #e_list>1 then
