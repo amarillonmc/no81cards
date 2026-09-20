@@ -47,7 +47,8 @@ function c9911466.activate(e,tp,eg,ep,ev,re,r,rp)
 	local te=tc.morfonica_summon_effect
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
-	Duel.RegisterFlagEffect(tp,tc:GetOriginalCode()+10000,0,0,1)
+	Duel.RegisterFlagEffect(tp,tc:GetOriginalCode()+12,0,0,1)
+	Duel.RegisterFlagEffect(1-tp,tc:GetOriginalCode()+12,0,0,1)
 end
 function c9911466.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local cont,loc,attr=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_ATTRIBUTE)

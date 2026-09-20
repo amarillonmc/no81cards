@@ -32,7 +32,7 @@ function c98500330.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c98500330.cfilter(c)
-	return c:IsFaceup() and c:IsCode(98500309,98500311)
+	return (c:IsCode(98500311) or c:IsCode(98500320)) and c:IsFaceup()
 end
 function c98500330.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c98500330.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
@@ -41,7 +41,7 @@ function c98500330.spfilter(c,e,tp)
 	return c:IsCode(10000000,10000010,10000020) and c:IsLevel(10) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function c98500330.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c98500330.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c98500330.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,nil,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
 end
 function c98500330.cfilter2(c)
