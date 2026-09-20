@@ -1,57 +1,56 @@
 --狡伏的柯妮沃拉
 function c9910882.initial_effect(c)
 	aux.AddCodeList(c,9910871)
-	--spsummon
+	--spsummon rule
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,9910882)
-	e1:SetCondition(c9910882.spcon)
-	e1:SetTarget(c9910882.sptg)
-	e1:SetOperation(c9910882.spop)
+	e1:SetCondition(c9910882.sprcon)
 	c:RegisterEffect(e1)
-	--negate
+	--search
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_HANDES_SELF+CATEGORY_NEGATE+CATEGORY_REMOVE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e2:SetCountLimit(1,9910883)
-	e2:SetCondition(c9910882.negcon)
-	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(c9910882.negtg)
-	e2:SetOperation(c9910882.negop)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,9910882)
+	e2:SetTarget(c9910882.thtg)
+	e2:SetOperation(c9910882.thop)
 	c:RegisterEffect(e2)
+	--negate
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_HANDES_SELF+CATEGORY_NEGATE+CATEGORY_REMOVE)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetCountLimit(1,9910883)
+	e3:SetCondition(c9910882.negcon)
+	e3:SetCost(aux.bfgcost)
+	e3:SetTarget(c9910882.negtg)
+	e3:SetOperation(c9910882.negop)
+	c:RegisterEffect(e3)
 end
-function c9910882.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE)
+function c9910882.sprcon(e,c)
+	if c==nil then return true end
+	local g=Duel.GetFieldGroup(0,LOCATION_MZONE,LOCATION_MZONE)
 	local sg=g:Filter(Card.IsFaceup,nil)
-	return sg and sg:GetClassCount(Card.GetRace)>=2
-end
-function c9910882.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-end
-function c9910882.cfilter(c)
-	return c:GetColumnGroupCount()>1
+	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and sg and sg:GetClassCount(Card.GetRace)>=2
 end
 function c9910882.thfilter(c,e,tp)
 	return aux.IsCodeListed(c,9910871) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
-function c9910882.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
-	local g=Duel.GetMatchingGroup(c9910882.thfilter,tp,LOCATION_DECK,0,nil)
-	if Duel.IsExistingMatchingCard(c9910882.cfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
-		and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910882,0)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,sg)
+function c9910882.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910882.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c9910882.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9910882.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if #g>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function c9910882.cfilter2(c)

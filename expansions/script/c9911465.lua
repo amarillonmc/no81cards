@@ -90,11 +90,10 @@ function c9911465.costfilter(c)
 	return c:IsSetCard(0x3952) and c:IsAbleToGraveAsCost()
 end
 function c9911465.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(c9911465.costfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
-	if chk==0 then return g:CheckSubGroup(aux.gffcheck,2,2,Card.IsLocation,LOCATION_HAND,Card.IsLocation,LOCATION_DECK) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9911465.costfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local sg=g:SelectSubGroup(tp,aux.gffcheck,false,2,2,Card.IsLocation,LOCATION_HAND,Card.IsLocation,LOCATION_DECK)
-	Duel.SendtoGrave(sg,REASON_COST)
+	local g=Duel.SelectMatchingCard(tp,c9911465.costfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c9911465.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

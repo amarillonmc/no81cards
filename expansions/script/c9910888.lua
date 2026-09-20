@@ -1,83 +1,54 @@
 --失落的俄蒂多法
 function c9910888.initial_effect(c)
 	aux.AddCodeList(c,9910871)
-	--spsummon
+	--spsummon rule
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,9910888)
-	e1:SetCondition(c9910888.spcon)
-	e1:SetTarget(c9910888.sptg)
-	e1:SetOperation(c9910888.spop)
+	e1:SetCondition(c9910888.sprcon)
 	c:RegisterEffect(e1)
-	--remove
+	--indes
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910888,1))
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,9910889)
-	e2:SetCondition(c9910888.limcon)
-	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(c9910888.limtg)
-	e2:SetOperation(c9910888.limop)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetCondition(c9910888.indcon)
+	e2:SetTarget(c9910888.indtg)
+	e2:SetValue(1)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	--limit
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1,9910888)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCondition(c9910888.limcon)
+	e3:SetCost(aux.bfgcost)
+	e3:SetTarget(c9910888.limtg)
+	e3:SetOperation(c9910888.limop)
 	c:RegisterEffect(e3)
 end
-function c9910888.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE)
+function c9910888.sprcon(e,c)
+	if c==nil then return true end
+	local g=Duel.GetFieldGroup(0,LOCATION_MZONE,LOCATION_MZONE)
 	local sg=g:Filter(Card.IsFaceup,nil)
-	return sg and sg:GetClassCount(Card.GetRace)>=2
+	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and sg and sg:GetClassCount(Card.GetRace)>=2
 end
-function c9910888.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+function c9910888.indcon(e)
+	return Duel.GetTurnPlayer()==1-e:GetHandlerPlayer()
 end
-function c9910888.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	end
-	local ct=Duel.GetTurnCount()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetCondition(function() return Duel.GetTurnCount()==ct+1 end)
-	e1:SetTarget(c9910888.bdtg)
-	e1:SetReset(RESET_PHASE+PHASE_END,2)
-	e1:SetValue(1)
-	Duel.RegisterEffect(e1,tp)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-	e2:SetOperation(c9910888.hintop)
-	e2:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e2,tp)
-end
-function c9910888.bdtg(e,c)
-	return c:IsFaceup() and aux.IsCodeListed(c,9910871)
-end
-function c9910888.hintop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetDescription(aux.Stringid(9910888,0))
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
-	e1:SetTargetRange(1,0)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+function c9910888.indtg(e,c)
+	return aux.IsCodeListed(c,9910871)
 end
 function c9910888.cfilter2(c)
 	return c:IsSummonLocation(LOCATION_EXTRA) and c:IsFaceup() and c:IsRace(RACE_FAIRY)
 end
 function c9910888.limcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c9910888.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	return #g-eg:FilterCount(c9910888.cfilter2,nil)>0
+	return Duel.IsExistingMatchingCard(c9910888.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
 function c9910888.limtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end

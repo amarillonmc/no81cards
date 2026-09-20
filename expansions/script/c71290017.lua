@@ -1,124 +1,90 @@
---半融冰晶 伊薇特
-Duel.LoadScript("c60010000.lua")
-local cm,m,o=GetID()
-function cm.initial_effect(c)
-	MTC.StrinovaPUS(c)
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e0:SetCode(EVENT_ADJUST)
-	e0:SetRange(LOCATION_MZONE+LOCATION_SZONE)
-	e0:SetCondition(cm.con)
-	e0:SetOperation(cm.op)
-	c:RegisterEffect(e0)
-	--summon limit
+--当她决定看到
+local s,id=GetID()
+function s.initial_effect(c)
+	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_MZONE+LOCATION_SZONE)
-	e1:SetCode(EFFECT_CANNOT_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(0,1)
-	e1:SetCondition(cm.con1)
-	e1:SetTarget(cm.sumlimit)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_CANNOT_MSET)
+
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_DRAW)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_TOSS_DICE)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e2:SetCondition(s.drcon)
+	e2:SetTarget(s.drtg)
+	e2:SetOperation(s.drop)
 	c:RegisterEffect(e2)
-	--activate limit
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e4:SetRange(LOCATION_MZONE+LOCATION_SZONE)
-	e4:SetTargetRange(0,1)
-	e4:SetCondition(cm.con2)
-	e4:SetValue(cm.alimit)
-	c:RegisterEffect(e4)
-	--
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e4:SetCode(EFFECT_TO_GRAVE_REDIRECT)
-	e4:SetRange(LOCATION_MZONE+LOCATION_SZONE)
-	e4:SetCondition(cm.con3)
-	e4:SetTarget(cm.rmlimit)
-	e4:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
-	e4:SetValue(LOCATION_REMOVED)
-	c:RegisterEffect(e4)
-	--summon,flip
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
-	e1:SetCondition(cm.con4)
-	e1:SetOperation(cm.handes)
-	c:RegisterEffect(e1)
-	
-	MTC.StrinovaChangeZone(c,cm.czop)
-end
-function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:GetFlagEffect(m)==0 and c:GetFlagEffect(m+10000000)==0 and c:GetFlagEffect(m+20000000)==0 and c:GetFlagEffect(m+30000000)==0
-end
-function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local op=aux.SelectFromOptions(tp,{true,aux.Stringid(m,1)},{true,aux.Stringid(m,2)},{true,aux.Stringid(m,3)},{true,aux.Stringid(m,4)})
-	if op~=0 then c:RegisterFlagEffect(m+op*10000000,RESET_EVENT+RESETS_REDIRECT,0,1) end
-end
-function cm.con1(e)
-	local c=e:GetHandler()
-	return c:GetFlagEffect(m)+Duel.GetFlagEffect(tp,m)>0
-end
-function cm.con2(e)
-	local c=e:GetHandler()
-	return c:GetFlagEffect(m+10000000)+Duel.GetFlagEffect(tp,m+10000000)>0
-end
-function cm.con3(e)
-	local c=e:GetHandler()
-	return c:GetFlagEffect(m+20000000)+Duel.GetFlagEffect(tp,m+20000000)>0
-end
-function cm.con4(e)
-	local c=e:GetHandler()
-	return c:GetFlagEffect(m+30000000)+Duel.GetFlagEffect(tp,m+30000000)>0
-end
-function cm.sumlimit(e,c,tp,sumtp)
-	return bit.band(sumtp,SUMMON_TYPE_ADVANCE)==SUMMON_TYPE_ADVANCE
-end
-function cm.alimit(e,te,tp)
-	return te:IsHasType(EFFECT_TYPE_ACTIVATE)
-end
-function cm.rmlimit(e,c)
-	return c:GetOriginalType()&(TYPE_SPELL+TYPE_TRAP)~=0 and c:GetOwner()~=e:GetHandlerPlayer()
-end
 
-cm[0]=0
-function cm.handes(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local loc,id=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_CHAIN_ID)
-	if ep==tp or loc~=LOCATION_MZONE or id==cm[0] or not re:IsActiveType(TYPE_MONSTER) then return end
-	cm[0]=id
-	if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 and Duel.SelectYesNo(1-tp,aux.Stringid(m,0)) then
-		Duel.DiscardHand(1-tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD,nil)
-		Duel.BreakEffect()
-		if c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
-			Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(id,2))
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCountLimit(1,id)
+	e3:SetCondition(s.plcon)
+	e3:SetTarget(s.pltg)
+	e3:SetOperation(s.plop)
+	c:RegisterEffect(e3)
+end
+if not s.galaxycity then
+	s.galaxycity=true
+	s._tossdice=Duel.TossDice
+	Duel.TossDice=function (tp,a,b)
+		if Duel.GetFlagEffect(tp,71290005)~=0 then
+			local rt={}
+			local c=a
+			if b then
+				c=c+b
+			end
+			for i=1,c do
+				table.insert(rt,99)
+			end
+			Duel.ResetFlagEffect(tp,71290005)
+			return table.unpack(rt)
 		else
-			Duel.SendtoGrave(c,REASON_RULE)
+			return s._tossdice(tp,a,b)
+		end   
+	end
+end
+function s.schfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsCode(71290016) and c:IsAbleToHand()
+end
+function s.activate(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(s.schfilter,tp,LOCATION_DECK,0,nil)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		if Duel.SendtoHand(sg,nil,REASON_EFFECT)~=0 then
+			Duel.ConfirmCards(1-tp,sg)
+			Duel.RegisterFlagEffect(tp,71290005,0,0,1)
 		end
-	else Duel.NegateEffect(ev) end
+	end
 end
-
-function cm.czop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,m)
-	local b1,b2,b3,b4=false
-	if Duel.GetFlagEffect(tp,m)==0 then b1=true end
-	if Duel.GetFlagEffect(tp,m+10000000)==0 then b2=true end
-	if Duel.GetFlagEffect(tp,m+20000000)==0 then b3=true end
-	if Duel.GetFlagEffect(tp,m+30000000)==0 then b4=true end
-	local op=aux.SelectFromOptions(tp,
-		{true,aux.Stringid(m,1)},
-		{true,aux.Stringid(m,2)},
-		{true,aux.Stringid(m,3)},
-		{true,aux.Stringid(m,4)})
-	if op~=0 then Duel.RegisterFlagEffect(tp,m+op*10000000,RESET_PHASE+PHASE_END,0,1) end
+function s.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==tp
 end
-
+function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function s.drop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Draw(tp,1,REASON_EFFECT)
+end
+function s.plcon(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+end
+function s.pltg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+end
+function s.plop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	end
+end

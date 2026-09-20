@@ -1,16 +1,24 @@
 --斩灵的德涅芙拉
 function c9910903.initial_effect(c)
 	aux.AddCodeList(c,9910871)
-	--spsummon
+	--spsummon rule
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,9910903)
-	e1:SetCondition(c9910903.spcon)
-	e1:SetTarget(c9910903.sptg)
-	e1:SetOperation(c9910903.spop)
+	e1:SetCondition(c9910903.sprcon)
 	c:RegisterEffect(e1)
+	--search
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,9910903)
+	e2:SetCost(c9910903.descost)
+	e2:SetTarget(c9910903.destg)
+	e2:SetOperation(c9910903.desop)
+	c:RegisterEffect(e2)
 	--atk
 	local e2=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
@@ -23,37 +31,31 @@ function c9910903.initial_effect(c)
 	e2:SetCost(aux.bfgcost)
 	e2:SetOperation(c9910903.atkop)
 	c:RegisterEffect(e2)
-	Duel.AddCustomActivityCounter(9910903,ACTIVITY_CHAIN,aux.FALSE)
 end
-function c9910903.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE)
+function c9910903.sprcon(e,c)
+	if c==nil then return true end
+	local g=Duel.GetFieldGroup(0,LOCATION_MZONE,LOCATION_MZONE)
 	local sg=g:Filter(Card.IsFaceup,nil)
-	return sg and sg:GetClassCount(Card.GetRace)>=2
+	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and sg and sg:GetClassCount(Card.GetRace)>=2
 end
-function c9910903.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+function c9910903.cfilter1(c)
+	return aux.IsCodeListed(c,9910871) and not c:IsPublic()
 end
-function c9910903.desfilter(c)
-	return aux.IsCodeListed(c,9910871)
+function c9910903.descost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910903.cfilter1,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g=Duel.SelectMatchingCard(tp,c9910903.cfilter1,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.ConfirmCards(1-tp,g)
+	Duel.ShuffleHand(tp)
 end
-function c9910903.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
-	local g1=Duel.GetMatchingGroup(c9910903.desfilter,tp,LOCATION_HAND,0,nil)
-	local g2=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if Duel.GetCustomActivityCount(9910903,1-tp,ACTIVITY_CHAIN)~=0
-		and g1:GetCount()>0 and g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910903,0)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local sg1=g1:Select(tp,1,1,nil)
-		local sg2=g2:Select(tp,1,1,nil)
-		sg1:Merge(sg2)
-		if sg1:GetCount()~=2 then return end
-		Duel.HintSelection(sg1)
-		Duel.Destroy(sg1,REASON_EFFECT)
-	end
+function c9910903.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_ONFIELD,1,nil,TYPE_SPELL+TYPE_TRAP) end
+	local sg=Duel.GetMatchingGroup(Card.IsType,tp,0,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:GetCount(),0,0)
+end
+function c9910903.desop(e,tp,eg,ep,ev,re,r,rp)
+	local sg=Duel.GetMatchingGroup(Card.IsType,tp,0,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
+	Duel.Destroy(sg,REASON_EFFECT)
 end
 function c9910903.cfilter2(c)
 	return c:IsSummonLocation(LOCATION_EXTRA) and c:IsFaceup() and c:IsRace(RACE_FIEND)

@@ -1,55 +1,56 @@
 --洞察的欧妮塞瑞
 function c9910875.initial_effect(c)
 	aux.AddCodeList(c,9910871)
-	--spsummon
+	--spsummon rule
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,9910875)
-	e1:SetCondition(c9910875.spcon)
-	e1:SetTarget(c9910875.sptg)
-	e1:SetOperation(c9910875.spop)
+	e1:SetCondition(c9910875.sprcon)
 	c:RegisterEffect(e1)
-	--turn set
+	--search
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_HANDES_SELF+CATEGORY_POSITION+CATEGORY_MSET)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,9910876)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetCondition(c9910875.poscon)
-	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(c9910875.postg)
-	e2:SetOperation(c9910875.posop)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,9910875)
+	e2:SetTarget(c9910875.thtg)
+	e2:SetOperation(c9910875.thop)
 	c:RegisterEffect(e2)
+	--turn set
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_HANDES_SELF+CATEGORY_POSITION+CATEGORY_MSET)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1,9910876)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCondition(c9910875.poscon)
+	e3:SetCost(aux.bfgcost)
+	e3:SetTarget(c9910875.postg)
+	e3:SetOperation(c9910875.posop)
+	c:RegisterEffect(e3)
 end
-function c9910875.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE)
+function c9910875.sprcon(e,c)
+	if c==nil then return true end
+	local g=Duel.GetFieldGroup(0,LOCATION_MZONE,LOCATION_MZONE)
 	local sg=g:Filter(Card.IsFaceup,nil)
-	return sg and sg:GetClassCount(Card.GetRace)>=2
-end
-function c9910875.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and sg and sg:GetClassCount(Card.GetRace)>=2
 end
 function c9910875.thfilter(c,e,tp)
 	return aux.IsCodeListed(c,9910871) and c:IsLevel(4) and c:IsAbleToHand()
 end
-function c9910875.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
-	local g0=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	local ct=math.floor(#g0/2)
-	local g=Duel.GetMatchingGroup(c9910875.thfilter,tp,LOCATION_DECK,0,nil)
-	if ct>0 and #g>=ct and Duel.SelectYesNo(tp,aux.Stringid(9910875,0)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=g:Select(tp,ct,ct,nil)
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,sg)
+function c9910875.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910875.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c9910875.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9910875.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if #g>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function c9910875.cfilter2(c)

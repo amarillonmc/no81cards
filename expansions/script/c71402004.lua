@@ -39,8 +39,11 @@ end
 function c71402004.lcheck(g)
 	return g:GetClassCount(Card.GetLinkRace)==g:GetCount() and g:GetClassCount(Card.GetLinkAttribute)==g:GetCount()
 end
+function c71402004.filter1(c)
+	return c:IsType(TYPE_FIELD) and c:IsFaceupEx()
+end
 function c71402004.atkval(e,c)
-	local g=Duel.GetMatchingGroup(Card.IsType,0,LOCATION_FZONE+LOCATION_GRAVE,LOCATION_FZONE+LOCATION_GRAVE,nil,TYPE_FIELD)
+	local g=Duel.GetMatchingGroup(c71402004.filter1,0,LOCATION_FZONE+LOCATION_GRAVE,LOCATION_FZONE+LOCATION_GRAVE,nil)
 	return g:GetClassCount(Card.GetCode)*500
 end
 --[[
