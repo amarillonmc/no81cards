@@ -73,11 +73,12 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
     local op=Duel.SelectOption(tp,table.unpack(ops))
     local sel=opval[op]
     if sel==3 then
-        Duel.Hint(24,0,aux.Stringid(id,4))
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
         local tc=Duel.SelectMatchingCard(tp,s.gojofilter,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
         if tc then
             Duel.HintSelection(Group.FromCards(tc))
+            Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(id,4))
+	        Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(id,4))
             tc:RegisterFlagEffect(65823000,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(65823000,1))
         end
     end

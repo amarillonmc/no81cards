@@ -71,7 +71,8 @@ function s.reop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Destroy(fc,REASON_RULE)
 		end
 		Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true) 
-		Duel.Hint(24,0,aux.Stringid(id,1))
+		Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(id,1))
+    Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(id,1))
 	end
 end
 

@@ -99,11 +99,14 @@ function cm.xyzop(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 end
 --------------------------------------------------------Effect 3 
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(cm.tdfilter2,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
 end
 function cm.tdfilter(c,e)
 	return c:IsFaceupEx() and c:IsAbleToDeck()
+end
+function cm.tdfilter2(c,e)
+	return c:IsSetCard(0x87af) and c:IsAbleToDeck()
 end
 function cm.tdhfilter(c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToDeck()

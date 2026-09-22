@@ -26,8 +26,10 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
         local b2=Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,KYOSHIKI_MURASAKI)
         return b1 and b2
     end
-    Duel.Hint(24,0,aux.Stringid(id,0))
-	Duel.Hint(24,0,aux.Stringid(id,1))
+    Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(id,0))
+    Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(id,0))
+    Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(id,1))
+    Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(id,1))
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 
