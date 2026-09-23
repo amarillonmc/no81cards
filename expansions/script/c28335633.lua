@@ -111,7 +111,7 @@ function c28335633.efilter(e)
 	return false--e:IsHasRange(LOCATION_ONFIELD) and e:IsActivated()
 end
 function c28335633.cpfilter(c,e,tp,eg,ep,ev,re,r,rp)
-	if not (c:IsSetCard(0x285) and c:IsSummonableCard() and c:IsAbleToDeckAsCost()) then return false end--and c:IsFaceupEx()
+	if not (c:IsSetCard(0x286) and c:IsSummonableCard() and c:IsAbleToDeckAsCost()) then return false end--and c:IsFaceupEx()
 	c28335633.effect_list={}
 	c:IsOriginalEffectProperty(c28335633.efilter)
 	for _,te in ipairs(c28335633.effect_list) do
