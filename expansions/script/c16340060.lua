@@ -218,6 +218,7 @@ function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 
 
+	--选择对方场上1张卡
 	local g=Duel.SelectMatchingCard(
 		tp,
 		aux.TRUE,
@@ -228,6 +229,10 @@ function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 		1,
 		nil
 	)
+
+
+	--登记选择对象
+	Duel.SetTargetCard(g)
 
 
 	Duel.SetOperationInfo(
@@ -243,7 +248,12 @@ end
 
 
 
+---------------------------------
+--② 墓地铺设过滤
+---------------------------------
+
 --只允许深海舰队怪兽
+--不能选择Link怪兽
 function s.grfilter(c)
 
 	return c:IsSetCard(0x3dce)
@@ -254,21 +264,31 @@ end
 
 
 
+---------------------------------
+--② 效果处理
+---------------------------------
+
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 
-	local g=Duel.GetChainInfo(
-		0,
-		CHAININFO_TARGET_CARDS
-	)
+	---------------------------------
+	--先破坏选择的对方卡
+	---------------------------------
 
+	local tc=Duel.GetFirstTarget()
 
-	if g then
+	if tc and tc:IsRelateToEffect(e) then
+
 		Duel.Destroy(
-			g,
+			tc,
 			REASON_EFFECT
 		)
+
 	end
 
+
+	---------------------------------
+	--再从墓地铺设1只
+	---------------------------------
 
 	if Duel.GetLocationCount(
 		tp,

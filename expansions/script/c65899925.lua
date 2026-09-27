@@ -90,39 +90,49 @@ end
 ---------------- ②效果：回复与连缀操作 ----------------
 function s.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return true end
+    e:SetLabel(1000)                    -- 用 Label 冗余存储
     Duel.SetTargetPlayer(tp)
     Duel.SetTargetParam(1000)
     Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
 function s.recop(e,tp,eg,ep,ev,re,r,rp)
-    local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-    -- 1. 回复1000
-    if Duel.Recover(p,d,REASON_EFFECT)>0 then
-        -- 2. 那之后，除外区回手
-        local g1=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_REMOVED,0,nil)
-        if #g1>0 then
-            Duel.BreakEffect()
-            Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-            local sg1=g1:Select(tp,1,1,nil)
-            if Duel.SendtoHand(sg1,nil,REASON_EFFECT)>0 and sg1:GetFirst():IsLocation(LOCATION_HAND) then
-                -- 3. 那之后，手卡送去墓地
-                local g2=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
-                if #g2>0 then
-                    Duel.BreakEffect()
-                    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-                    local sg2=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_HAND,0,1,1,nil)
-                    if #sg2>0 and Duel.SendtoGrave(sg2,REASON_EFFECT)>0 and sg2:GetFirst():IsLocation(LOCATION_GRAVE) then
-                        -- 4. 那之后，墓地除外
-                        local g3=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,nil)
-                        if #g3>0 then
-                            Duel.BreakEffect()
-                            Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-                            local sg3=g3:Select(tp,1,1,nil)
-                            Duel.Remove(sg3,POS_FACEUP,REASON_EFFECT)
-                        end
-                    end
-                end
-            end
-        end
-    end
+    -- 双重来源：优先 label，其次 chain info，最后兜底 1000
+    local d = e:GetLabel() or 1000
+    local p = tp
+    local cip, cid = Duel.GetChainInfo(0, CHAININFO_TARGET_PLAYER, CHAININFO_TARGET_PARAM)
+    if cip ~= nil then p = cip end
+    if cid ~= nil then d = cid end
+
+    -- 1. 回复 1000，防御返回 nil
+    local recovered = Duel.Recover(p, d, REASON_EFFECT)
+    if not recovered or recovered <= 0 then return end
+
+    -- 2. 那之后，除外区回手
+    local g1 = Duel.GetMatchingGroup(Card.IsAbleToHand, tp, LOCATION_REMOVED, 0, nil)
+    if #g1 == 0 then return end
+    Duel.BreakEffect()
+    Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_ATOHAND)
+    local sg1 = g1:Select(tp, 1, 1, nil)
+    if #sg1 == 0 then return end
+    if Duel.SendtoHand(sg1, nil, REASON_EFFECT) == 0 then return end
+    if not sg1:GetFirst():IsLocation(LOCATION_HAND) then return end
+
+    -- 3. 那之后，手卡送墓
+    local g2 = Duel.GetFieldGroup(tp, LOCATION_HAND, 0)
+    if #g2 == 0 then return end
+    Duel.BreakEffect()
+    Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOGRAVE)
+    local sg2 = Duel.SelectMatchingCard(tp, Card.IsAbleToGrave, tp, LOCATION_HAND, 0, 1, 1, nil)
+    if #sg2 == 0 then return end
+    if Duel.SendtoGrave(sg2, REASON_EFFECT) == 0 then return end
+    if not sg2:GetFirst():IsLocation(LOCATION_GRAVE) then return end
+
+    -- 4. 那之后，墓地除外
+    local g3 = Duel.GetMatchingGroup(Card.IsAbleToRemove, tp, LOCATION_GRAVE, 0, nil)
+    if #g3 == 0 then return end
+    Duel.BreakEffect()
+    Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_REMOVE)
+    local sg3 = g3:Select(tp, 1, 1, nil)
+    if #sg3 == 0 then return end
+    Duel.Remove(sg3, POS_FACEUP, REASON_EFFECT)
 end

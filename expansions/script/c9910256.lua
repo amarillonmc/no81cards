@@ -26,6 +26,7 @@ function c9910256.initial_effect(c)
 end
 function c9910256.spcon(e,c)
 	if c==nil then return true end
+	if c:IsHasEffect(EFFECT_NECRO_VALLEY) then return false end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 		and Duel.IsCanRemoveCounter(c:GetControler(),1,0,0x956,2,REASON_COST)
 end
