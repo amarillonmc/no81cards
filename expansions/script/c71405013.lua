@@ -8,6 +8,9 @@ function s.initial_effect(c)
 		yume.import_flag=false
 	end
 	yume.prism.addCounter()
+	--same effect send this card to grave or banishment check
+	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
+	local e0a=yume.AddThisCardBanishedAlreadyCheck(c)
 	--①attack declaration or monster banished: negate same-name effects
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -38,14 +41,19 @@ function s.initial_effect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_LEAVE_FIELD)
-	e2:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	e2:SetRange(LOCATION_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,id+100000)
 	e2:SetCondition(s.con2)
+	e2:SetLabelObject(e0)
 	e2:SetCost(yume.prism.Cost)
 	e2:SetTarget(s.tg2)
 	e2:SetOperation(s.op2)
 	c:RegisterEffect(e2)
+	local e2a=e2:Clone()
+	e2a:SetRange(LOCATION_REMOVED)
+	e2a:SetLabelObject(e0a)
+	c:RegisterEffect(e2a)
 end
 --①
 function s.tg1filter(c)
@@ -100,10 +108,12 @@ end
 --②
 function s.con2(e,tp,eg,ep,ev,re,r,rp)
 	-- triggered card must have been face-up and controlled by tp, left due to opponent
-	return rp==1-tp and eg:IsExists(s.con2filter,1,e:GetHandler(),tp)
+	local se=e:GetLabelObject():GetLabelObject()
+	return rp==1-tp and eg:IsExists(s.con2filter,1,nil,tp,se)
 end
-function s.con2filter(c,tp)
-	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)
+function s.con2filter(c,tp,se)
+	return (se==nil or c:GetReasonEffect()~=se)
+		and c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)
 		and c:IsPreviousPosition(POS_FACEUP) and c:GetReasonPlayer()==1-tp
 end
 function s.filter2sp(c,e,tp)
