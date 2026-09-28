@@ -12,35 +12,29 @@ function c9910015.initial_effect(c)
 	e1:SetTarget(c9910015.rptg)
 	e1:SetOperation(c9910015.rpop)
 	c:RegisterEffect(e1)
-	--cannot be material
+	--special summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e2:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
-	e2:SetValue(c9910015.splimit)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_SPSUMMON_PROC)
+	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e2:SetRange(LOCATION_HAND)
+	e2:SetCondition(c9910015.spcon)
+	e2:SetTarget(c9910015.sptg)
+	e2:SetOperation(c9910015.spop)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
-	c:RegisterEffect(e3)
-	local e4=e2:Clone()
-	e4:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
-	c:RegisterEffect(e4)
-	local e5=e2:Clone()
-	e5:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-	c:RegisterEffect(e5)
 	--search
-	local e6=Effect.CreateEffect(c)
-	e6:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e6:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e6:SetCode(EVENT_SUMMON_SUCCESS)
-	e6:SetProperty(EFFECT_FLAG_DELAY)
-	e6:SetCountLimit(1,9910016)
-	e6:SetTarget(c9910015.thtg)
-	e6:SetOperation(c9910015.thop)
-	c:RegisterEffect(e6)
-	local e7=e6:Clone()
-	e7:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e7)
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
+	e3:SetCode(EVENT_SUMMON_SUCCESS)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCountLimit(1,9910016)
+	e3:SetTarget(c9910015.thtg)
+	e3:SetOperation(c9910015.thop)
+	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e4)
 end
 function c9910015.rpcon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler())
@@ -75,9 +69,27 @@ function c9910015.rpop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c9910015.splimit(e,c)
-	if not c then return false end
-	return not c:IsSetCard(0x3950)
+function c9910015.spcfilter(c,tp)
+	return c:IsFaceupEx() and c:IsType(TYPE_PENDULUM) and c:IsAbleToDeckAsCost() and Duel.GetMZoneCount(tp,c)>0
+end
+function c9910015.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return Duel.IsExistingMatchingCard(c9910015.spcfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,tp)
+end
+function c9910015.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetMatchingGroup(c9910015.spcfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
+	if tc then
+		e:SetLabelObject(tc)
+		return true
+	else return false end
+end
+function c9910015.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	local tc=e:GetLabelObject()
+	Duel.HintSelection(Group.FromCards(tc))
+	Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c9910015.thfilter(c)
 	return c:IsSetCard(0x3950) and c:IsType(TYPE_MONSTER) and c:IsAttackBelow(2000) and c:IsDefenseBelow(2000) and c:IsAbleToHand()

@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c)
-	return aux.IsCodeListed(c,71290105) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return  c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and (aux.IsCodeListed(c,71290105) or c:IsCode(60010045))
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil)

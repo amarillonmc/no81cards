@@ -50,8 +50,11 @@ function s.filter2(c)
 		and c:IsRace(RACE_SPELLCASTER) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsFaceup() and not c:IsForbidden()
 end
 function s.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_REMOVED,0,1,nil) end
+	if chk==0 then
+		local ct=math.min(Duel.GetLocationCount(tp,LOCATION_SZONE),
+			Duel.GetMatchingGroupCount(s.filter2,tp,LOCATION_REMOVED,0,nil))
+		return ct>0
+	end
 end
 function s.cspellfilter(c)
 	return c:IsFaceup() and c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS
@@ -60,10 +63,15 @@ function s.fdownfilter(c)
 	return c:IsFacedown()
 end
 function s.op2(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<1 then return end
+	local ct=math.min(Duel.GetLocationCount(tp,LOCATION_SZONE),
+		Duel.GetMatchingGroupCount(s.filter2,tp,LOCATION_REMOVED,0,nil))
+	if ct<1 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local tc=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_REMOVED,0,1,1,nil):GetFirst()
-	if tc and Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
+	local g=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_REMOVED,0,1,ct,nil)
+	local moved=Group.CreateGroup()
+	for tc in aux.Next(g) do
+		if Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
+			moved:AddCard(tc)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -71,12 +79,13 @@ function s.op2(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
 		tc:RegisterEffect(e1)
-		if Duel.IsExistingMatchingCard(s.cspellfilter,tp,LOCATION_ONFIELD,0,1,nil) then
-			local g=Duel.GetMatchingGroup(s.fdownfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-			if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-				Duel.BreakEffect()
-				Duel.SendtoHand(g,nil,REASON_EFFECT)
-			end
+		end
+	end
+	if moved:GetCount()>0 and Duel.IsExistingMatchingCard(s.cspellfilter,tp,LOCATION_ONFIELD,0,1,nil) then
+		local rg=Duel.GetMatchingGroup(s.fdownfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+		if #rg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+			Duel.BreakEffect()
+			Duel.SendtoHand(rg,nil,REASON_EFFECT)
 		end
 	end
 end

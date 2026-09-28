@@ -60,9 +60,9 @@ function c71401018.filterc2(c)
 end
 function c71401018.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local tg=Duel.GetDecktopGroup(1-tp,2)
-	if chk==0 then return tg:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEUP)==2 end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,1-tp,LOCATION_DECK)
+	local tg=Duel.GetDecktopGroup(1-tp,5)
+	if chk==0 then return tg:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEUP)==5 end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,5,1-tp,LOCATION_DECK)
 end
 function c71401018.filter2a(c)
 	return c:IsFaceup() and c:GetType() & 0x20004==0x20004
@@ -74,7 +74,7 @@ function c71401018.op2(e,tp,eg,ep,ev,re,r,rp)
 	local check=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	--有bug，两个操作缺少判断格子
 	local c=e:GetHandler()
-	local tg=Duel.GetDecktopGroup(1-tp,2)
+	local tg=Duel.GetDecktopGroup(1-tp,5)
 	if #tg==0 then return end
 	Duel.DisableShuffleCheck()
 	local og=Duel.GetMatchingGroup(aux.NecroValleyFilter(c71401018.filter2b),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e,tp)

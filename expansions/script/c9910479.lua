@@ -79,6 +79,8 @@ function c9910479.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.CheckLocation(tp,LOCATION_PZONE,0) and Duel.CheckLocation(tp,LOCATION_PZONE,1) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local sg=g:SelectSubGroup(tp,c9910479.fselect,false,2,2,tp)
+	local cg=sg:Filter(Card.IsFacedown,nil)
+	Duel.ConfirmCards(1-tp,cg)
 	for tc in aux.Next(sg) do
 		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
@@ -90,8 +92,8 @@ end
 function c9910479.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) then
-		local g1=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,0,nil)
-		local g2=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
+		local g1=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,0,c)
+		local g2=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,c)
 		if #g1>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(9910479,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELF)

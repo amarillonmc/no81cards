@@ -19,7 +19,6 @@ function c9910018.initial_effect(c)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,9910019)
-	e2:SetCost(c9910018.thcost)
 	e2:SetTarget(c9910018.thtg)
 	e2:SetOperation(c9910018.thop)
 	c:RegisterEffect(e2)
@@ -34,21 +33,9 @@ function c9910018.initial_effect(c)
 	e4:SetCode(EVENT_DESTROYED)
 	e4:SetCountLimit(1,9910047)
 	e4:SetCondition(c9910018.thcon2)
-	e4:SetCost(c9910018.thcost)
 	e4:SetTarget(c9910018.thtg2)
 	e4:SetOperation(c9910018.thop2)
 	c:RegisterEffect(e4)
-	if not c9910018.global_check then
-		c9910018.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_SSET)
-		ge1:SetOperation(c9910018.checkop)
-		Duel.RegisterEffect(ge1,0)
-	end
-end
-function c9910018.checkop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(rp,9910018,RESET_PHASE+PHASE_END,0,1)
 end
 function c9910018.rpcon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler())
@@ -82,16 +69,6 @@ function c9910018.rpop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.MoveToField(fc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 		end
 	end
-end
-function c9910018.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,9910018)==0 end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SSET)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTargetRange(1,0)
-	Duel.RegisterEffect(e1,tp)
 end
 function c9910018.thfilter(c)
 	return c:IsSetCard(0x5950) and c:IsAbleToHand()

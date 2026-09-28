@@ -4,7 +4,7 @@ function c9910482.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	--draw
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW+CATEGORY_HANDES_SELF)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCountLimit(1,9910482)
@@ -50,16 +50,12 @@ function c9910482.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
-	Duel.SetOperationInfo(0,CATEGORY_HANDES_SELF,nil,0,tp,1)
 end
 function c9910482.penop(e,tp,eg,ep,ev,re,r,rp)
 	local dg=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
 	if #dg==0 or Duel.Destroy(dg,REASON_EFFECT)==0 then return end
-	if Duel.Draw(tp,2,REASON_EFFECT)==2 then
-		Duel.ShuffleHand(tp)
-		Duel.BreakEffect()
-		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
-	end
+	Duel.BreakEffect()
+	Duel.Draw(tp,2,REASON_EFFECT)
 end
 function c9910482.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

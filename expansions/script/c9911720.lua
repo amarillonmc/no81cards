@@ -16,24 +16,22 @@ function c9911720.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,9911720)
 	e2:SetOperation(c9911720.regop)
 	c:RegisterEffect(e2)
-	--remove
+	--not special summon
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(1,9911721)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetCost(c9911720.rmcost)
-	e3:SetTarget(c9911720.rmtg)
-	e3:SetOperation(c9911720.rmop)
+	e3:SetTarget(c9911720.nstg)
+	e3:SetOperation(c9911720.nsop)
 	c:RegisterEffect(e3)
 end
 function c9911720.mfilter(c)
-	return c:IsLevelBelow(9) and c:IsFusionSetCard(0x9957)
+	return (c:IsLevelBelow(10)  or c:IsRankBelow(10)) and c:IsFusionSetCard(0x9957)
 end
 function c9911720.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -59,44 +57,57 @@ function c9911720.thfilter(c)
 end
 function c9911720.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9911720)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9911720.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if #g>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	local g=Duel.GetMatchingGroup(c9911720.thfilter,tp,LOCATION_DECK,0,nil)
+	if g:GetCount()>=2 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,2,2,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
 	end
 end
-function c9911720.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local tg=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil,e)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,aux.TRUE,1,nil) end
-	local rg=Duel.SelectReleaseGroup(tp,aux.TRUE,2,#tg,nil)
-	e:SetLabel(rg:GetCount())
-	Duel.Release(rg,REASON_COST)
+function c9911720.nstg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+		and Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_GRAVE,0,1,nil) end
+	local ng=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local ct=ng:GetCount()
+	if ct>3 then ct=3 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_GRAVE,0,1,ct,nil)
+	Duel.Remove(rg,POS_FACEUP,REASON_COST)
+	Duel.SetTargetParam(rg:GetCount())
 end
-function c9911720.rmfilter(c,tp)
-	return c:IsAbleToRemove(1-tp,POS_FACEDOWN,REASON_RULE) and Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,c)
-end
-function c9911720.fselect(g,tp)
-	return g:IsExists(Card.IsAbleToRemove,1,nil,1-tp,POS_FACEDOWN,REASON_RULE)
-end
-function c9911720.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(c9911720.rmfilter,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil,tp) end
-	local ct=e:GetLabel()
-	local tg=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil,e)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=tg:SelectSubGroup(tp,c9911720.fselect,false,ct,ct,tp)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,ct-1,0,0)
-end
-function c9911720.rmfilter2(c,tp)
-	return c:IsRelateToChain() and c:IsControler(tp)
-end
-function c9911720.rmop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(c9911720.rmfilter2,nil,1-tp)
-	if #g>1 then
-		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
-		local sg=g:FilterSelect(1-tp,Card.IsAbleToRemove,#g-1,#g-1,nil,1-tp,POS_FACEDOWN,REASON_RULE)
-		Duel.Remove(sg,POS_FACEDOWN,REASON_RULE,1-tp)
+function c9911720.nsop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ct=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if g:GetCount()>=ct then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		local sg=g:Select(tp,ct,ct,nil)
+		Duel.HintSelection(sg)
+		for tc in aux.Next(sg) do
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+			e1:SetRange(LOCATION_MZONE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			e1:SetValue(1)
+			tc:RegisterEffect(e1)
+			local e3=e1:Clone()
+			e3:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+			e3:SetValue(c9911720.fuslimit)
+			tc:RegisterEffect(e3)
+			local e4=e1:Clone()
+			e4:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+			tc:RegisterEffect(e4)
+			local e5=e1:Clone()
+			e5:SetDescription(aux.Stringid(9911720,0))
+			e5:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+			e5:SetProperty(EFFECT_FLAG_SET_AVAILABLE|EFFECT_FLAG_CLIENT_HINT)
+			tc:RegisterEffect(e5)
+		end
 	end
+end
+function c9911720.fuslimit(e,c,sumtype)
+	return sumtype==SUMMON_TYPE_FUSION
 end

@@ -7,56 +7,63 @@ function c9910028.initial_effect(c)
 	c:RegisterEffect(e1)
 	--destroy
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_TOGRAVE+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_TOGRAVE+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(3)
+	e2:SetCountLimit(1)
 	e2:SetTarget(c9910028.destg)
 	e2:SetOperation(c9910028.desop)
 	c:RegisterEffect(e2)
 	if not c9910028.global_check then
 		c9910028.global_check=true
+		LSZZ_DESTROY_CHECK={}
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_DESTROYED)
 		ge1:SetOperation(c9910028.checkop)
 		Duel.RegisterEffect(ge1,0)
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+		ge2:SetOperation(c9910028.clear)
+		Duel.RegisterEffect(ge2,0)
 	end
 end
 function c9910028.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) then
-			tc:RegisterFlagEffect(9910028,RESET_EVENT+0x1f20000+RESET_PHASE+PHASE_END,0,1)
-		elseif tc:IsLocation(LOCATION_EXTRA) then
-			tc:RegisterFlagEffect(9910028,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-		end
+		local code,code2=tc:GetCode()
+		table.insert(LSZZ_DESTROY_CHECK,code)
+		if code2 then table.insert(LSZZ_DESTROY_CHECK,code2) end
 		tc=eg:GetNext()
 	end
 end
-function c9910028.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) end
-	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
+function c9910028.clear(e,tp,eg,ep,ev,re,r,rp)
+	LSZZ_DESTROY_CHECK={}
+end
+function c9910028.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
-function c9910028.thfilter1(c,tp,id)
-	return c:IsType(TYPE_PENDULUM) and c:GetFlagEffect(9910028)~=0
-		and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
-		and Duel.IsExistingMatchingCard(c9910028.thfilter2,tp,LOCATION_DECK,0,1,nil,c:GetCode())
-end
-function c9910028.thfilter2(c,code)
-	return c:IsCode(code) and c:IsAbleToHand()
+function c9910028.thfilter(c)
+	if not c:IsAbleToHand() then return false end
+	if c:IsSetCard(0x3950) then return true end
+	if not c:IsType(TYPE_PENDULUM) then return false end
+	for i=1,#LSZZ_DESTROY_CHECK do
+		local code=LSZZ_DESTROY_CHECK[i]
+		if c:IsCode(code) then return true end
+	end
+	return false
 end
 function c9910028.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) or Duel.Destroy(tc,REASON_EFFECT)==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+	if g:GetCount()==0 or Duel.Destroy(g,REASON_EFFECT)==0 then return end
 	local lab=Duel.GetFlagEffectLabel(tp,9910048)
 	local g1=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
 	local g2=Duel.GetMatchingGroup(nil,tp,LOCATION_REMOVED,0,nil)
-	local g3=Duel.GetMatchingGroup(c9910028.thfilter1,tp,0x70,0x70,nil,tp,Duel.GetTurnCount())
+	local g3=Duel.GetMatchingGroup(c9910028.thfilter,tp,LOCATION_DECK,0,nil)
 	local off=1
 	local ops={}
 	local opval={}
@@ -107,13 +114,10 @@ function c9910028.desop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	elseif opval[op]==3 then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910028,4))
-		local sg3=g3:Select(tp,1,1,nil)
-		Duel.HintSelection(sg3)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tg=Duel.SelectMatchingCard(tp,c9910028.thfilter2,tp,LOCATION_DECK,0,1,1,nil,sg3:GetFirst():GetCode())
-		Duel.SendtoHand(tg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tg)
+		local sg3=g3:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg3,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg3)
 		if not lab then
 			lab=4
 			Duel.RegisterFlagEffect(tp,9910048,RESET_PHASE+PHASE_END,0,1,4)

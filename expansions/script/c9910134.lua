@@ -6,62 +6,55 @@ function c9910134.initial_effect(c)
 	c:EnableReviveLimit()
 	--material
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910134,1))
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetDescription(aux.Stringid(9910134,0))
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
-	e1:SetTarget(c9910134.target)
-	e1:SetOperation(c9910134.operation)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCost(c9910134.matcost)
+	e1:SetTarget(c9910134.mattg)
+	e1:SetOperation(c9910134.matop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e2:SetCondition(c9910134.condition)
-	e2:SetCost(c9910134.cost)
-	c:RegisterEffect(e2)
 end
 function c9910134.xyzfilter(c,xyzc)
 	return (c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x9958) and c:IsFaceup()))
 		and c:IsRace(RACE_MACHINE)
 end
-function c9910134.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
-		and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
-end
-function c9910134.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-end
-function c9910134.xfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:IsType(TYPE_XYZ)
-end
 function c9910134.xfilter2(c,e)
 	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:IsType(TYPE_XYZ) and not c:IsImmuneToEffect(e)
 end
-function c9910134.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local c=e:GetHandler()
-	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and chkc:IsCanOverlay() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,1,nil)
-		and Duel.IsExistingMatchingCard(c9910134.xfilter,tp,LOCATION_MZONE,0,1,c) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	Duel.SelectTarget(tp,Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,1,1,nil)
+function c9910134.matcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function c9910134.operation(e,tp,eg,ep,ev,re,r,rp)
+function c9910134.mfilter(c,tp,mc)
+	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:IsType(TYPE_XYZ) and (Duel.GetTurnPlayer()==tp or c~=mc)
+end
+function c9910134.mattg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e)
-		and Duel.IsExistingMatchingCard(c9910134.xfilter2,tp,LOCATION_MZONE,0,1,c,e) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-		local sg=Duel.SelectMatchingCard(tp,c9910134.xfilter2,tp,LOCATION_MZONE,0,1,1,c,e)
-		local sc=sg:GetFirst()
+	if chkc then return false end
+	if chk==0 then return Duel.IsExistingTarget(c9910134.mfilter,tp,LOCATION_MZONE,0,1,nil,tp,c)
+		and Duel.IsExistingTarget(Card.IsCanOverlay,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local g1=Duel.SelectTarget(tp,c9910134.mfilter,tp,LOCATION_MZONE,0,1,1,nil,tp,c)
+	e:SetLabelObject(g1:GetFirst())
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	local g2=Duel.SelectTarget(tp,Card.IsCanOverlay,tp,0,LOCATION_MZONE,1,1,nil)
+end
+function c9910134.matop(e,tp,eg,ep,ev,re,r,rp)
+	local hc=e:GetLabelObject()
+	local tg=Duel.GetTargetsRelateToChain()
+	if #tg~=2 then return end
+	local tc=tg:GetFirst()
+	if tc==hc then tc=tg:GetNext() end
+	if hc:IsControler(tp) and not hc:IsImmuneToEffect(e) and tc:IsControler(1-tp) and not tc:IsImmuneToEffect(e) then
 		local og=tc:GetOverlayGroup()
 		if og:GetCount()>0 then
 			Duel.SendtoGrave(og,REASON_RULE)
 		end
-		tc:CancelToGrave()
-		Duel.Overlay(sc,Group.FromCards(tc))
+		Duel.Overlay(hc,Group.FromCards(tc))
 	end
 end

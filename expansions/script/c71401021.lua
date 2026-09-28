@@ -80,6 +80,12 @@ end
 function c71401021.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
+function c71401021.bottomfilter(c,tp)
+	return c:GetSequence()==0 and c:IsAbleToRemove(tp,POS_FACEDOWN)
+end
+function c71401021.filter2imtg(c)
+	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER)
+end
 function c71401021.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and not c:IsImmuneToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
@@ -89,65 +95,48 @@ function c71401021.op2(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-			e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
+			e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 			c:RegisterEffect(e1)
-			local ct=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)
-			local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
-			if ct==0 or g:GetCount()<ct then return end
-			local bg=Group.FromCards(g:GetFirst())
-			for i=2,ct do
-				bg:AddCard(g:GetNext())
-			end
-			if bg:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN,REASON_EFFECT)==ct and Duel.SelectYesNo(tp,aux.Stringid(71401021,0)) then
+			local bg=Duel.GetMatchingGroup(c71401021.bottomfilter,tp,LOCATION_DECK,0,nil,tp)
+			if bg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401021,0)) then
 				Duel.BreakEffect()
 				Duel.DisableShuffleCheck()
 				if Duel.Remove(bg,POS_FACEDOWN,REASON_EFFECT)==0 then return end
 				local e2=Effect.CreateEffect(c)
 				e2:SetType(EFFECT_TYPE_FIELD)
-				e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+				e2:SetCode(EFFECT_IMMUNE_EFFECT)
 				e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-				e2:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
-				e2:SetValue(c71401021.tglimit)
+				e2:SetTargetRange(LOCATION_MZONE,0)
+				e2:SetTarget(c71401021.filter2imtg)
+				e2:SetValue(c71401021.immune)
 				e2:SetReset(RESET_PHASE+PHASE_END)
 				Duel.RegisterEffect(e2,tp)
 			end
 		end
 	end
 end
-function c71401021.tglimit(e,re,rp)
-	return true
-	--return Duel.IsExistingMatchingCard(Card.IsCode,0,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil,re:GetHandler():GetCode())
+function c71401021.immune(e,re)
+	return re:GetOwner()~=e:GetOwner()
 end
 function c71401021.con3(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS
 end
 function c71401021.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)
 	if chk==0 then
-		local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
-		if ct==0 or g:GetCount()<ct then return false end
-		local bg=Group.FromCards(g:GetFirst())
-		for i=2,ct do
-			bg:AddCard(g:GetNext())
-		end
-		return bg:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN,REASON_EFFECT)==ct
+		return Duel.IsExistingMatchingCard(c71401021.bottomfilter,tp,LOCATION_DECK,0,1,nil,tp)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,ct,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
 function c71401021.op3(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)
-	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
-	if ct==0 or g:GetCount()<ct then return end
+	local g=Duel.GetMatchingGroup(c71401021.bottomfilter,tp,LOCATION_DECK,0,nil,tp)
+	if g:GetCount()==0 then return end
 	local bg=Group.FromCards(g:GetFirst())
-	for i=2,ct do
-		bg:AddCard(g:GetNext())
-	end
 	Duel.DisableShuffleCheck()
 	if Duel.Remove(bg,POS_FACEDOWN,REASON_EFFECT)==0 then return end
-	local e1=Effect.CreateEffect(c)
+	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e1:SetTargetRange(1,1)
+	e1:SetTargetRange(0,LOCATION_ONFIELD)
 	e1:SetValue(c71401021.aclimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)

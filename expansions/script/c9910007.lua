@@ -58,9 +58,7 @@ function c9910007.rpop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910007.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return (c:IsReason(REASON_BATTLE) or (c:IsReason(REASON_EFFECT) and not re:GetHandler():IsCode(9910007)))
-		and c:IsPreviousLocation(LOCATION_ONFIELD)
+	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c9910007.spfilter(c,e,tp)
 	return c:IsSetCard(0x3950) and c:IsType(TYPE_PENDULUM) and c:IsAttackBelow(2000) and c:IsDefenseBelow(2000)

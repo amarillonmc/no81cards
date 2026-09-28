@@ -53,11 +53,15 @@ end
 function c9910476.penop(e,tp,eg,ep,ev,re,r,rp)
 	local dg=Duel.GetFieldGroup(tp,LOCATION_PZONE,0)
 	if #dg==0 or Duel.Destroy(dg,REASON_EFFECT)==0 then return end
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ft<=0 then return end
+	if ft>2 then ft=2 end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	local g=Duel.GetMatchingGroup(c9910476.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g:Select(tp,1,1,nil)
+		local sg=g:Select(tp,1,ft,nil)
 		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

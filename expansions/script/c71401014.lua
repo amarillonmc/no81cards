@@ -90,26 +90,71 @@ end
 function c71401014.con3(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_TRAP+TYPE_CONTINUOUS
 end
-function c71401014.filter3(c,tp,ac)
+function c71401014.filter3(c,tp)
 	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsFaceup() and c:IsAbleToRemove(tp,POS_FACEDOWN)
-		and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,Group.FromCards(c,ac),tp,POS_FACEDOWN)
+end
+function c71401014.filter3b(c,tp,bg,ag)
+	if not c71401014.filter3(c,tp) then
+		return false
+	end
+	local ag2=ag:Clone()
+	ag2:RemoveCard(c)
+	return ag2:FilterCount(c71401014.filter3e,nil,bg,c)>0
+end
+function c71401014.filter3e(c,bg,fc)
+	local bg2=bg:Clone()
+	bg2:RemoveCard(fc)
+	bg2:RemoveCard(c)
+	return bg2:GetCount()>0
+end
+function c71401014.filter3c(c,tp,bg,fc)
+	if not c71401014.filter3(c,tp) then
+		return false
+	end
+	local bg2=bg:Clone()
+	bg2:RemoveCard(fc)
+	bg2:RemoveCard(c)
+	return bg2:GetCount()>0 and c:IsAbleToRemove(tp,POS_FACEDOWN)
+end
+function c71401014.filter3d(c,tp,ag)
+	return not ag:IsContains(c) and c:IsAbleToRemove(tp,POS_FACEDOWN)
 end
 function c71401014.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local c=e:GetHandler()
-		return Duel.IsExistingMatchingCard(c71401014.filter3,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,tp,c)
+		local mg=Duel.GetMatchingGroup(c71401014.filter3,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c,tp)
+		if mg:GetCount()<2 then
+			return false
+		end
+		local bg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND+LOCATION_ONFIELD,0,c,tp,POS_FACEDOWN)
+		local ag=mg:FilterCount(c71401014.filter3b,nil,tp,bg,mg)
+		return ag>0
 	end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,0,LOCATION_ONFIELD+LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,3,0,LOCATION_ONFIELD+LOCATION_HAND)
 end
 function c71401014.op3(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local mg=Duel.GetMatchingGroup(c71401014.filter3,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c,tp)
+	if mg:GetCount()<2 then
+		return
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c71401014.filter3,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,tp,c)
-	if g:GetCount()>0 then
-		local tc=g:GetFirst()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,Group.FromCards(tc,c),tp,POS_FACEDOWN)
-		rg:AddCard(tc)
-		Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
+	local bg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND+LOCATION_ONFIELD,0,c,tp,POS_FACEDOWN)
+	local g1=Duel.SelectMatchingCard(tp,c71401014.filter3b,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,tp,bg,mg)
+	if g1:GetCount()==0 then
+		return
+	end
+	local fc=g1:GetFirst()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g2=Duel.SelectMatchingCard(tp,c71401014.filter3c,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,Group.FromCards(c,fc),tp,bg,fc)
+	if g2:GetCount()==0 then
+		return
+	end
+	local ag=Group.FromCards(fc,g2:GetFirst())
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g3=Duel.SelectMatchingCard(tp,c71401014.filter3d,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,c,tp,ag)
+	if g3:GetCount()>0 then
+		ag:Merge(g3)
+		Duel.Remove(ag,POS_FACEDOWN,REASON_EFFECT)
 	end
 end

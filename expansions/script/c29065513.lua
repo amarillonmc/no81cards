@@ -1,5 +1,4 @@
 --方舟骑士-阿米娅·青色怒火
-c29065513.named_with_Arknight=1
 function c29065513.initial_effect(c)
 	aux.AddCodeList(c,29065500,29065508)
 	--fusion material
@@ -8,6 +7,7 @@ function c29065513.initial_effect(c)
 	--attack
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29065513,1))
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,29065513+EFFECT_COUNT_CODE_DUEL)
@@ -27,9 +27,9 @@ function c29065513.initial_effect(c)
 end
 function c29065513.atkval(e,c)
 	if Duel.GetFlagEffect(tp,29065513)==1 then 
-		return 1400 
+		return 1200 
 	else
-		return 700
+		return 600
 	end
 end
 function c29065513.branded_fusion_check(tp,sg,fc)
@@ -77,8 +77,25 @@ function c29065513.btop(e,tp,eg,ep,ev,re,r,rp)
 			local minatk=tc:GetAttack()
 			local dam=atk-minatk
 			if Duel.Destroy(dg,REASON_EFFECT)>0 then
-				Duel.Damage(1-tp,dam,REASON_EFFECT)
+				if Duel.Damage(1-tp,dam,REASON_EFFECT)>0 then
+					c:RegisterFlagEffect(29065513,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(29065513,1))
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+					e1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					e1:SetOperation(c29065513.llop)
+					c:RegisterEffect(e1)
+				end
 			end
 		end
 	end
+end
+function c29065513.llop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local id=c:GetOriginalCode()
+	Duel.Hint(HINT_CARD,0,id)
+	local c=e:GetHandler()
+	local atk=c:GetAttack()
+	local lp=Duel.GetLP(1-tp)
+	Duel.SetLP(1-tp,lp-atk)
 end

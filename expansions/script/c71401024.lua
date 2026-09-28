@@ -60,7 +60,7 @@ function c71401024.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c71401024.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,c71401024.filter2a,tp,LOCATION_REMOVED,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c71401024.filter2a,tp,LOCATION_REMOVED,0,1,2,nil)
 	if #g>0 then
 		local cg=g:Filter(c71401024.filter2b,nil)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)

@@ -24,14 +24,12 @@ function c9910034.initial_effect(c)
 	c:RegisterEffect(e2)
 	--to hand
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(9910034,0))
 	e3:SetCategory(CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
-	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetCondition(c9910034.thcon)
 	e3:SetTarget(c9910034.thtg)
 	e3:SetOperation(c9910034.thop)
 	c:RegisterEffect(e3)
@@ -50,22 +48,21 @@ end
 function c9910034.efilter(e,te)
 	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and te:IsActiveType(TYPE_MONSTER)
 end
-function c9910034.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
-end
 function c9910034.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,0)
 end
-function c9910034.thfilter1(c,g)
-	return c:IsAbleToHand() and g:IsContains(c)
+function c9910034.cfilter(c,tp)
+	return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsSetCard(0x3950)
+end
+function c9910034.thfilter1(c,tp)
+	return (c9910034.cfilter(c,tp) or c:GetColumnGroup():IsExists(c9910034.cfilter,1,nil,tp)) and c:IsAbleToHand()
 end
 function c9910034.thfilter2(c)
-	return c:IsFaceup() and c:IsSetCard(0x3950) and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
 end
 function c9910034.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or c:IsControler(1-tp) or c:IsImmuneToEffect(e) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	if not c:IsRelateToChain() or c:IsControler(1-tp) or Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 	local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
 	local nseq=math.log(s,2)
@@ -73,7 +70,7 @@ function c9910034.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=c:GetColumnGroup()
 	tg:AddCard(c)
 	local g=Group.CreateGroup()
-	local g1=Duel.GetMatchingGroup(c9910034.thfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tg)
+	local g1=Duel.GetMatchingGroup(c9910034.thfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp)
 	g:Merge(g1)
 	local g2=Duel.GetMatchingGroup(c9910034.thfilter2,tp,LOCATION_EXTRA,0,nil)
 	g:Merge(g2)

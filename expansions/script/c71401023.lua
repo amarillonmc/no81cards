@@ -64,16 +64,17 @@ end
 function c71401023.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and chkc~=c and chkc:IsAbleToRemove() end
-	if chk==0 then return c:IsAbleToRemove() and Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,c) end
+	if chk==0 then return c:IsAbleToRemove() and Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,2,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,c)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,2,2,c)
 	g:AddCard(c)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,2,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,3,0,0)
 end
 function c71401023.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToChain() and tc:IsRelateToChain() then
-		Duel.Remove(Group.FromCards(c,tc),POS_FACEUP,REASON_EFFECT)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToChain,nil)
+	if c:IsRelateToChain() and g:GetCount()>0 then
+		g:AddCard(c)
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	end
 end
