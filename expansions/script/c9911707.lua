@@ -71,30 +71,36 @@ function c9911707.hdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
 	return true
 end
-function c9911707.filter(c)
-	return c:IsFaceup() and c:GetAttack()>0
+function c9911707.filter(c,atk)
+	return c:IsFaceup() and c:GetAttack()>atk
 end
-function c9911707.costfilter(c,tp)
-	return c:IsSetCard(0x9957) and Duel.IsExistingTarget(c9911707.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
+function c9911707.costfilter(c,tp,atk)
+	return c:IsSetCard(0x9957) and Duel.IsExistingTarget(c9911707.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c,atk)
 end
 function c9911707.hdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9911707.filter(chkc) end
+	local atk=0
+	local hg=Duel.GetMatchingGroup(Card.IsPublic,tp,0,LOCATION_HAND,nil)
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>=2 and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)==#hg then
+		local hg2,atk2=hg:GetMinGroup(Card.GetAttack)
+		atk=atk2
+	end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9911707.filter(chkc,atk) end
 	if chk==0 then
 		if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)<2 then return false end
 		if e:GetLabel()==1 then
 			e:SetLabel(0)
-			return Duel.CheckReleaseGroup(tp,c9911707.costfilter,1,nil,tp)
+			return Duel.CheckReleaseGroup(tp,c9911707.costfilter,1,nil,tp,atk)
 		else
-			return Duel.IsExistingTarget(c9911707.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+			return Duel.IsExistingTarget(c9911707.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,atk)
 		end
 	end
 	if e:GetLabel()==1 then
 		e:SetLabel(0)
-		local sg=Duel.SelectReleaseGroup(tp,c9911707.costfilter,1,1,nil,tp)
+		local sg=Duel.SelectReleaseGroup(tp,c9911707.costfilter,1,1,nil,tp,atk)
 		Duel.Release(sg,REASON_COST)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c9911707.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	Duel.SelectTarget(tp,c9911707.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,atk)
 end
 function c9911707.hdfilter(c,atk)
 	return c:IsType(TYPE_MONSTER) and c:GetAttack()<atk
