@@ -1,8 +1,9 @@
 --深海舰队 轻型航空母舰 Ryūjō
+--16340065
+
 local s,id=GetID()
 
 function s.initial_effect(c)
-
 
 	---------------------------------
 	--连接召唤
@@ -18,7 +19,6 @@ function s.initial_effect(c)
 	c:EnableReviveLimit()
 
 
-
 	---------------------------------
 	--① 连接召唤检索
 	---------------------------------
@@ -28,30 +28,28 @@ function s.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCondition(s.lkcon)
 	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.lkcon)
 	e1:SetTarget(s.thtg)
 	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
 
 
-
 	---------------------------------
-	--② 永续陷阱破坏替代
+	--② 永续陷阱破坏代替
 	---------------------------------
 
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,2))
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_DESTROYED)
+	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_DESTROY_REPLACE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,id+1)
-	e2:SetCondition(s.repcon)
-	e2:SetOperation(s.repop)
+	e2:SetTarget(s.desreptg)
+	e2:SetValue(s.desrepval)
+	e2:SetOperation(s.desrepop)
 	c:RegisterEffect(e2)
 
 end
-
 
 
 ---------------------------------
@@ -65,9 +63,8 @@ function s.matfilter(c)
 end
 
 
-
 ---------------------------------
---①
+--① 连接召唤条件
 ---------------------------------
 
 function s.lkcon(e,tp,eg,ep,ev,re,r,rp)
@@ -77,6 +74,9 @@ function s.lkcon(e,tp,eg,ep,ev,re,r,rp)
 end
 
 
+---------------------------------
+--① 检索对象
+---------------------------------
 
 function s.thfilter(c)
 
@@ -86,11 +86,13 @@ function s.thfilter(c)
 end
 
 
+---------------------------------
+--① 发动条件
+---------------------------------
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 
 	if chk==0 then
-
 		return Duel.IsExistingMatchingCard(
 			s.thfilter,
 			tp,
@@ -99,9 +101,7 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 			1,
 			nil
 		)
-
 	end
-
 
 	Duel.SetOperationInfo(
 		0,
@@ -115,8 +115,21 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 
+---------------------------------
+--① 检索
+---------------------------------
 
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
+
+	---------------------------------
+	--从卡组·墓地加入手卡
+	---------------------------------
+
+	Duel.Hint(
+		HINT_SELECTMSG,
+		tp,
+		HINTMSG_ATOHAND
+	)
 
 	local g=Duel.SelectMatchingCard(
 		tp,
@@ -128,7 +141,6 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		1,
 		nil
 	)
-
 
 	if #g>0 then
 
@@ -146,6 +158,9 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 
 
+	---------------------------------
+	--之后，可以把自己以及对方场上的卡各1张破坏
+	---------------------------------
 
 	if Duel.SelectYesNo(
 		tp,
@@ -153,6 +168,15 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	)
 	then
 
+		---------------------------------
+		--自己场上的卡
+		---------------------------------
+
+		Duel.Hint(
+			HINT_SELECTMSG,
+			tp,
+			HINTMSG_DESTROY
+		)
 
 		local g1=Duel.SelectMatchingCard(
 			tp,
@@ -166,6 +190,16 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		)
 
 
+		---------------------------------
+		--对方场上的卡
+		---------------------------------
+
+		Duel.Hint(
+			HINT_SELECTMSG,
+			tp,
+			HINTMSG_DESTROY
+		)
+
 		local g2=Duel.SelectMatchingCard(
 			tp,
 			aux.TRUE,
@@ -178,8 +212,11 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		)
 
 
-		g1:Merge(g2)
+		---------------------------------
+		--合并破坏
+		---------------------------------
 
+		g1:Merge(g2)
 
 		if #g1>0 then
 
@@ -195,71 +232,117 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 
-
 ---------------------------------
---②
+--② 被破坏的「永续陷阱」判定
 ---------------------------------
-
-function s.repcon(e,tp,eg,ep,ev,re,r,rp)
-
-	local c=e:GetHandler()
-
-
-	if not eg:IsExists(
-		s.repfilter,
-		1,
-		nil,
-		tp
-	)
-	then
-		return false
-	end
-
-
-	return Duel.IsExistingMatchingCard(
-		aux.TRUE,
-		1-tp,
-		LOCATION_ONFIELD,
-		0,
-		1,
-		nil
-	)
-
-end
-
-
 
 function s.repfilter(c,tp)
 
-	return c:IsPreviousLocation(LOCATION_SZONE)
-		and c:IsPreviousControler(tp)
+	return c:IsControler(tp)
+		and c:IsOnField()
 		and c:IsType(TYPE_TRAP)
 		and c:IsType(TYPE_CONTINUOUS)
+		and c:IsReason(REASON_BATTLE+REASON_EFFECT)
+		and not c:IsReason(REASON_REPLACE)
 
 end
 
 
+---------------------------------
+--② 破坏代替发动条件
+---------------------------------
 
-function s.repop(e,tp,eg,ep,ev,re,r,rp)
+function s.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 
-	local g=Duel.SelectMatchingCard(
+	local c=e:GetHandler()
+
+	if chk==0 then
+
+		return eg:IsExists(
+			s.repfilter,
+			1,
+			nil,
+			tp
+		)
+		and Duel.IsExistingMatchingCard(
+			aux.TRUE,
+			tp,
+			0,
+			LOCATION_ONFIELD,
+			1,
+			nil
+		)
+
+	end
+
+	---------------------------------
+	--选择是否使用②
+	---------------------------------
+
+	return Duel.SelectEffectYesNo(
 		tp,
+		c,
+		96
+	)
+
+end
+
+
+---------------------------------
+--② 指定哪些卡可以被代替
+---------------------------------
+
+function s.desrepval(e,c)
+
+	return s.repfilter(
+		c,
+		e:GetHandlerPlayer()
+	)
+
+end
+
+
+---------------------------------
+--② 代替处理
+---------------------------------
+
+function s.desrepop(e,tp,eg,ep,ev,re,r,rp)
+
+	---------------------------------
+	--选择对方场上1张卡
+	---------------------------------
+
+	Duel.Hint(
+		HINT_SELECTMSG,
+		tp,
+		HINTMSG_DESREPLACE
+	)
+
+	local g=Duel.GetMatchingGroup(
 		aux.TRUE,
-		1-tp,
-		LOCATION_ONFIELD,
+		tp,
 		0,
-		1,
-		1,
+		LOCATION_ONFIELD,
 		nil
 	)
 
-
 	if #g>0 then
 
-		Duel.Destroy(
-			g,
-			REASON_EFFECT
+		g=g:Select(
+			tp,
+			1,
+			1,
+			nil
 		)
+
+		if #g>0 then
+
+			Duel.Destroy(
+				g,
+				REASON_REPLACE+REASON_EFFECT
+			)
+
+		end
 
 	end
 
