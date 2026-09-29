@@ -62,8 +62,9 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToChain() then return end
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
-function s.filter2(c)
-	return c:IsSetCard(0x716) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsAbleToHand() or c:IsSSetable())
+function s.filter2(c,tp)
+	return c:IsSetCard(0x716) and c:IsType(TYPE_SPELL+TYPE_TRAP)
+		and (c:IsAbleToHand() or c:IsSSetable() and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0))
 end
 function s.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -71,13 +72,15 @@ function s.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_DECK,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if tc then
-		if tc:IsAbleToHand() and (not tc:IsSSetable() or Duel.SelectOption(tp,1190,1153)==0) then
+		local b1=tc:IsAbleToHand()
+		local b2=tc:IsSSetable() and (tc:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
+		if b1 and (not b2 or Duel.SelectOption(tp,1190,1153)==0) then
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)
-		else
+		elseif b2 then
 			Duel.SSet(tp,tc)
 		end
 	end
