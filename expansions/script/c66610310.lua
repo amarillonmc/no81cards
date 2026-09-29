@@ -39,8 +39,7 @@ end
 
 -- 对方把魔法·陷阱卡发动时，支付1000基本分才能发动，场上的那张卡作为这张卡的超量素材
 function s.matcon(e,tp,eg,ep,ev,re,r,rp)
-    return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
-		and ep==1-tp and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+	return ep==1-tp and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 
 function s.matcost(e,tp,eg,ep,ev,re,r,rp,chk)
