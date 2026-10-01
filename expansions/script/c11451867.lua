@@ -5,6 +5,7 @@ function cm.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	--overseer
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_DRAW+CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCost(cm.descost)
@@ -156,6 +157,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and e:GetHandler():GetOriginalType()&TYPE_PENDULUM~=0 and Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
 		--overseer+
 		local e1=Effect.CreateEffect(c)
+		e1:SetCategory(CATEGORY_DRAW+CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
 		local sid=0
 		if loc==LOCATION_HAND then sid=1 elseif loc==LOCATION_ONFIELD then sid=2 elseif loc==LOCATION_GRAVE then sid=3 end
 		e1:SetDescription(aux.Stringid(m,sid))
