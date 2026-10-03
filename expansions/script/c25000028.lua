@@ -10,7 +10,6 @@ function s.initial_effect(c)
 	e2:SetDescription(aux.Stringid(id,0))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	--e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1,id)
 	e2:SetCost(s.spcost)
@@ -28,44 +27,38 @@ function s.initial_effect(c)
 	e3:SetOperation(s.thop)
 	c:RegisterEffect(e3)
 end
-function s.cfilter1(c,tp)
-	return aux.IsCodeListed(c,id) and c:IsType(TYPE_MONSTER)
+function s.cfilter1(c)
+	return aux.IsCodeListed(c,id)
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,s.cfilter1,1,nil,tp) end
-	local g=Duel.SelectReleaseGroup(tp,s.cfilter1,1,1,nil,tp)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,s.cfilter1,1,nil) end
+	local g=Duel.SelectReleaseGroup(tp,s.cfilter1,1,1,nil)
 	Duel.Release(g,REASON_COST)
-end
-function s.spfilter(c,e,tp)
-	return c:IsReleasableByEffect()
-		and (aux.IsCodeListed(c,id) or c:IsFaceup() and c:GetFlagEffect(id)~=0)
-		and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=c:GetLevel()
-		and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_DECK,0,1,nil,e,tp)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,5) end
 end
 function s.spfilter(c,e,tp)
-	return c:IsAbleToHand() or (Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
+	return c:IsType(TYPE_MONSTER)
+		and (c:IsAbleToHand() or (Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,5)
 	local g=Duel.GetDecktopGroup(tp,5)
 	if g:GetCount()>0 then
 		Duel.DisableShuffleCheck()
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
-		local sg=g:FilterSelect(tp,s.spfilter,0,1,nil,e,tp)
-		if sg:GetCount()>0 then
-			local sc=sg:GetFirst()
-			if Duel.GetLocationCount(sc,LOCATION_MZONE)>0 and sc:IsCanBeSpecialSummoned(e,0,tp,false,false)
-				and (not sc:IsAbleToHand() or Duel.SelectOption(tp,1190,1152)==1) then
-				Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
+		local tg=g:Filter(s.spfilter,nil,e,tp)
+		if #tg>0 and Duel.SelectYesNo(tp,aux.Stringid(61027400,1)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			local sg=tg:Select(tp,1,1,nil)
+			local tc=sg:GetFirst()
+			if tc:IsAbleToHand() and (Duel.GetMZoneCount(tp)<=0 or not tc:IsCanBeSpecialSummoned(e,0,tp,false,false) or Duel.SelectOption(tp,1190,1152)==0) then
+				Duel.SendtoHand(tc,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,tc)
 			else
-				Duel.SendtoHand(sc,nil,REASON_EFFECT)
+				Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 			end
 			g:Sub(sg)
-		else
-			return
 		end
 	end
 	Duel.SendtoGrave(g,REASON_EFFECT+REASON_REVEAL)
