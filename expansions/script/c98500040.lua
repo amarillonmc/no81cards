@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	c:SetUniqueOnField(1,0,m)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCode3(c,6007213,32491822,69890967,cm.mfilter,1,true,true)
+	aux.AddFusionProcCode4(c,6007213,32491822,69890967,cm.mfilter,1,true,true)
 	--code
 	aux.EnableChangeCode(c,69890967,LOCATION_GRAVE)
 	--spsummon condition
@@ -89,7 +89,7 @@ end
 function cm.check3(c,tp,tc)
 	return (c:IsCode(6007213,32491822,69890967)
 		or ((aux.IsCodeListed(c,6007213) or aux.IsCodeListed(c,32491822) or aux.IsCodeListed(c,69890967)) or (c:IsSetCard(0x144))
-		and c:IsLevelAbove(10) and not c:IsCode(m))) and tc:GetFlagEffect(c:GetOriginalCodeRule())==0 and not Duel.IsExistingMatchingCard(cm.check4,tp,LOCATION_ONFIELD,0,1,nil,c)
+		and c:IsLevelAbove(10) and not c:IsCode(m))) and c:IsType(TYPE_MONSTER) and tc:GetFlagEffect(c:GetOriginalCodeRule())==0 and not Duel.IsExistingMatchingCard(cm.check4,tp,LOCATION_ONFIELD,0,1,nil,c)
 end
 function cm.check4(c,tc)
 	return c:IsFaceup() and c:IsCode(tc:GetCode())
