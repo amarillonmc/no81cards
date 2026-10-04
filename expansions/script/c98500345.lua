@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
-	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW+CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE+CATEGORY_DEFCHANGE+CATEGORY_DISABLE+CATEGORY_RECOVER)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW+CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE+CATEGORY_DISABLE+CATEGORY_RECOVER)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
@@ -239,8 +239,8 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		e2:SetCondition(cm.atkcon1)
 		e2:SetCost(cm.atkcost1)
-		e2:SetTarget(cm.atktg1)
-		e2:SetOperation(cm.atkop1)
+		e2:SetTarget(cm.atktg2)
+		e2:SetOperation(cm.atkop2)
 		tc:RegisterEffect(e2)
 		local e3=Effect.CreateEffect(tc)
 		e3:SetCategory(CATEGORY_TOGRAVE)
@@ -282,7 +282,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		local e3=Effect.CreateEffect(tc)
 		e3:SetDescription(aux.Stringid(m,1))
 		e3:SetCategory(CATEGORY_ATKCHANGE)
-		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 		e3:SetCode(EVENT_SUMMON_SUCCESS)
 		e3:SetRange(LOCATION_MZONE)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
@@ -292,13 +292,27 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		local e4=e3:Clone()
 		e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 		tc:RegisterEffect(e4)
-		if not tc:IsType(TYPE_EFFECT) then
+		if tc:IsLevelAbove(11) then
+		local e5=Effect.CreateEffect(tc)
+		e5:SetCategory(CATEGORY_ATKCHANGE)
+		e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+		e5:SetCode(EVENT_SUMMON_SUCCESS)
+		e5:SetRange(LOCATION_MZONE)
+		e5:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e5:SetTarget(cm.deftg1)
+		e5:SetOperation(cm.defop1)
+		tc:RegisterEffect(e5)
+		local e6=e3:Clone()
+		e6:SetCode(EVENT_SPSUMMON_SUCCESS)
+		tc:RegisterEffect(e6)
+			if not tc:IsType(TYPE_EFFECT) then
 			local e4=Effect.CreateEffect(e:GetHandler())
 			e4:SetType(EFFECT_TYPE_SINGLE)
 			e4:SetCode(EFFECT_ADD_TYPE)
 			e4:SetValue(TYPE_EFFECT)
 			e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e4)
+		end
 		end
 		tc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,10))
 	end
@@ -419,7 +433,7 @@ function cm.atkcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local atk=rg:GetSum(Card.GetTextAttack)
 	e:SetLabel(100,atk)
 end
-function cm.atktg1(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.atktg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local label,atk=e:GetLabel()
 	if chk==0 then
 		e:SetLabel(0,0)
@@ -429,7 +443,7 @@ function cm.atktg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(0,0)
 	Duel.SetTargetParam(atk)
 end
-function cm.atkop1(e,tp,eg,ep,ev,re,r,rp)
+function cm.atkop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsFaceup() and c:IsRelateToEffect(e) then
 		local atk=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
@@ -460,6 +474,9 @@ end
 function cm.atkfilter1(c,tp)
 	return c:IsControler(tp) and c:IsPosition(POS_FACEUP_DEFENSE)
 end
+function cm.atkfilter2(c,tp)
+	return c:IsControler(tp) and c:IsPosition(POS_FACEUP_ATTACK)
+end
 function cm.atktg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(cm.atkfilter1,1,e:GetHandler(),1-tp) end
 	local g=eg:Filter(cm.atkfilter1,e:GetHandler(),1-tp)
@@ -479,6 +496,29 @@ function cm.atkop1(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
 		if predef~=0 and tc:IsDefense(0) then dg:AddCard(tc) end
+		tc=g:GetNext()
+	end
+	Duel.Destroy(dg,REASON_EFFECT)
+end
+function cm.deftg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return eg:IsExists(cm.atkfilter2,1,e:GetHandler(),1-tp) end
+	local g=eg:Filter(cm.atkfilter2,e:GetHandler(),1-tp)
+	Duel.SetTargetCard(g)
+end
+function cm.defop1(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetTargetsRelateToChain():Filter(Card.IsFaceup,nil)
+	local dg=Group.CreateGroup()
+	local c=e:GetHandler()
+	local tc=g:GetFirst()
+	while tc do
+		local predef=tc:GetAttack()
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(-2000)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		if predef~=0 and tc:IsAttack(0) then dg:AddCard(tc) end
 		tc=g:GetNext()
 	end
 	Duel.Destroy(dg,REASON_EFFECT)
