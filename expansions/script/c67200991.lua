@@ -56,10 +56,7 @@ function c67200991.aclimit(e,re,tp)
 end
 --
 function c67200991.filter1(c,e,tp)
-	local b1=not c:IsForbidden()
-	local b2=c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsLocation(LOCATION_HAND)
-	local b3=Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLocation(LOCATION_EXTRA)
-	return c:IsSetCard(0xc67a) and c:IsType(TYPE_PENDULUM) and (b1 or b2 or b3)
+	return c:IsSetCard(0xc67a) and c:IsType(TYPE_PENDULUM) and ((Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) or (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsLocation(LOCATION_HAND)) or (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLocation(LOCATION_EXTRA))))
 end
 function c67200991.pspcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
@@ -73,10 +70,18 @@ end
 function c67200991.cfilter1(c,e,tp,g)
 	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsLocation(LOCATION_HAND)
 	local b2=Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLocation(LOCATION_EXTRA)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (b1 or b2) and g:IsExists(c67200991.cfilter2,1,c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (b1 or b2) and g:IsExists(c67200991.cfilter2,1,c)
 end
 function c67200991.cfilter2(c)
 	return not c:IsForbidden()
+end
+function c67200991.cfilter3(c,e,tp)
+	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsLocation(LOCATION_HAND)
+	local b2=Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLocation(LOCATION_EXTRA)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (b1 or b2)
+end
+function c67200991.cfilter4(c,e,tp,g)
+	return not c:IsForbidden() and g:IsExists(c67200991.cfilter3,1,c,e,tp)
 end
 function c67200991.pstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -92,7 +97,7 @@ function c67200991.psop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:SelectSubGroup(tp,c67200991.check1,false,2,2,e,tp)
 		if #sg==2 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-			local tc=sg:FilterSelect(tp,c67200991.cfilter2,1,1,nil):GetFirst()
+			local tc=sg:FilterSelect(tp,c67200991.cfilter4,1,1,nil,e,tp,sg):GetFirst()
 			Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 			sg:RemoveCard(tc)
 			if #sg>0 then

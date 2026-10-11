@@ -103,8 +103,8 @@ function c9911754.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_HANDES_SELF,nil,0,tp,2)
 end
 function c9911754.drop(e,tp,eg,ep,ev,re,r,rp)
-	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	if Duel.Draw(p,3,REASON_EFFECT)==3 then
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	if Duel.Draw(p,d,REASON_EFFECT)==3 then
 		Duel.ShuffleHand(p)
 		Duel.BreakEffect()
 		Duel.DiscardHand(p,nil,2,2,REASON_EFFECT+REASON_DISCARD)

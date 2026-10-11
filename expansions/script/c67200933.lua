@@ -107,7 +107,7 @@ end
 function c67200933.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local label,count=e:GetLabel()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	local g=Duel.SelectMatchingCard(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,count,count,nil)
 	if g:GetCount()==count then
 		local tc=g:GetFirst()

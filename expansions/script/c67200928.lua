@@ -40,8 +40,9 @@ function c67200928.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,e:GetHandler(),1,0,0)
 end
 function c67200928.negop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) then
-		Duel.SendtoExtraP(e:GetHandler(),nil,REASON_EFFECT)
+	local c=e:GetHandler()
+	if Duel.NegateActivation(ev) and c:IsRelateToChain() then
+		Duel.SendtoExtraP(c,nil,REASON_EFFECT)
 	end
 end
 --
