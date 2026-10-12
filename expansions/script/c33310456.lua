@@ -13,6 +13,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.spcon2)
 	e1:SetCost(s.spcost)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
@@ -22,6 +23,7 @@ function s.initial_effect(c)
 	local e1b=e1:Clone()
 	e1b:SetType(EFFECT_TYPE_QUICK_O)
 	e1b:SetCode(EVENT_FREE_CHAIN)
+	e1b:SetRange(LOCATION_GRAVE+LOCATION_HAND)
 	e1b:SetCondition(s.spcon)
 	c:RegisterEffect(e1b)
 
@@ -58,10 +60,11 @@ function s.fatherfilter(c)
 end
 
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
-		and Duel.IsExistingMatchingCard(s.fatherfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(s.fatherfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
 end
-
+function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	return not Duel.IsExistingMatchingCard(s.fatherfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
+end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,200) end
 	Duel.PayLPCost(tp,200)

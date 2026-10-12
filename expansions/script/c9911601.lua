@@ -1,5 +1,6 @@
 --荒秽窠巢
 function c9911601.initial_effect(c)
+	aux.AddCodeList(c,9911614)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -58,7 +59,8 @@ function c9911601.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9911601.cfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_TUNER) and c:IsPreviousLocation(LOCATION_HAND+LOCATION_GRAVE)
+	return c:IsFaceup() and (c:IsType(TYPE_TUNER) or aux.IsCodeListed(c,9911614))
+		and c:IsPreviousLocation(LOCATION_HAND+LOCATION_GRAVE)
 end
 function c9911601.tkcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c9911601.cfilter,1,nil)

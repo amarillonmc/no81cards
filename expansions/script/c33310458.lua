@@ -27,7 +27,7 @@ function s.initial_effect(c)
 	--②：对方场上攻击力最高的怪兽发动效果时回收
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
-	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_DESTROY)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_GRAVE)
@@ -90,9 +90,10 @@ end
 
 function s.selftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToHand() end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	e:SetLabelObject(re:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,c,1,tp,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,re:GetHandler(),1,0,0)
 end
 
@@ -103,8 +104,9 @@ end
 function s.selfop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=e:GetLabelObject()
-	if not c:IsRelateToEffect(e) or Duel.SendtoHand(c,nil,REASON_EFFECT)==0 or not c:IsLocation(LOCATION_HAND) then return end
-	if not Duel.IsExistingMatchingCard(s.hufilter,tp,LOCATION_MZONE,0,1,nil) then return end
+	if not c:IsRelateToEffect(e) or 
+	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	if not Duel.IsExistingMatchingCard(s.hufilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) then return end
 	if rc and rc:IsRelateToEffect(re) and rc:IsLocation(LOCATION_MZONE) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 		Duel.Destroy(rc,REASON_EFFECT)
 	end

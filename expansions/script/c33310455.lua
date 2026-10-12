@@ -62,14 +62,14 @@ end
 
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then
-		return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and s.tgfilter(chkc,e)
+		return  chkc:IsLocation(LOCATION_MZONE) and s.tgfilter(chkc,e) -- and chkc:IsControler(1-tp) 
 	end
 	local maxct=s.getmaxct(tp)
 	if chk==0 then
-		return Duel.IsExistingTarget(s.tgfilter,tp,0,LOCATION_MZONE,1,nil,e)
+		return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,s.tgfilter,tp,0,LOCATION_MZONE,1,maxct,nil,e)
+	local g=Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,maxct,nil,e)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,#g,0,0)
 
 	local ct=Duel.GetFlagEffect(tp,id)

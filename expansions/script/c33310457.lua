@@ -82,27 +82,27 @@ end
 --②
 function s.tdfilter(c,e)
 	return c~=e:GetHandler()
-		and c:IsType(TYPE_MONSTER)
 		and s.is_set_card(c)
 		and c:IsAbleToDeck()
+		and c:IsFaceup()
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then
 		return chkc:IsControler(tp)
-			and chkc:IsLocation(LOCATION_GRAVE)
+			and (chkc:IsLocation(LOCATION_GRAVE) or chkc:IsLocation(LOCATION_REMOVED))
 			and s.tdfilter(chkc,e)
 	end
 	if chk==0 then
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 			and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 			and Duel.IsExistingTarget(
-				s.tdfilter,tp,LOCATION_GRAVE,0,1,nil,e
+				s.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e
 			)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,s.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil,e   )
+	local g=Duel.SelectTarget(tp,s.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e   )
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,tp,LOCATION_GRAVE)
 end

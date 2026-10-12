@@ -61,7 +61,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function s.filter2(c,e,tp)
-	return c:IsFaceupEx() and c:IsSetCard(0x716)
+	return c:IsFaceupEx() and c:IsSetCard(0x716) and c:IsRace(RACE_CYBERSE)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

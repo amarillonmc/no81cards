@@ -26,6 +26,7 @@ function s.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCondition(s.con3)
 	e3:SetCost(s.cost3)
 	e3:SetTarget(s.tg3)
 	e3:SetOperation(s.op3)
@@ -64,6 +65,9 @@ function s.op2(e,tp,eg,ep,ev,re,r,rp)
 			Duel.NegateEffect(ev)
 		end
 	end
+end
+function s.con3(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetHandler():IsPreviousLocation(LOCATION_EXTRA)
 end
 function s.filter3(c)
 	return c:IsFaceup() and c:IsSetCard(0x716)
