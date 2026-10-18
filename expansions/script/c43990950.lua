@@ -35,11 +35,11 @@ function c43990950.initial_effect(c)
 end
 function c43990950.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return (#eg==1 and not eg:IsContains(c)) and (c:IsOnField() or Duel.IsPlayerAffectedByEffect(tp,43990948)~=nil and c:IsOriginalSetCard(0x7a10) and c:IsSummonableCard())
+	return (#eg==1 and not eg:IsContains(c)) and (c:IsOnField() or Duel.IsPlayerAffectedByEffect(tp,43990948)~=nil and c:IsOriginalSetCard(0x3511) and c:IsSummonableCard())
 end
 function c43990950.effcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return re:GetHandler()~=c and (c:IsOnField() or Duel.IsPlayerAffectedByEffect(tp,43990948)~=nil and c:IsOriginalSetCard(0x7a10) and c:IsSummonableCard())
+	return re:GetHandler()~=c and (c:IsOnField() or Duel.IsPlayerAffectedByEffect(tp,43990948)~=nil and c:IsOriginalSetCard(0x3511) and c:IsSummonableCard())
 end
 function c43990950.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end

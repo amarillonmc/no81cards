@@ -1,7 +1,7 @@
 --女仆议会 变装
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--盖放回合发动
+	--
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(id,0))
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -34,10 +34,13 @@ function s.actcon(e)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_MZONE,0)==0
 end
 function s.relfilter1(c,e,tp)
+	local check=false
+	if c:IsControler(tp) then check=true end
 	return c:IsFaceup() and c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0
-		and Duel.IsExistingMatchingCard(s.spfilter1,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp,c:GetAttack())
+		and Duel.IsExistingMatchingCard(s.spfilter1,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp,c:GetBaseAttack(),check)
 end
-function s.spfilter1(c,e,tp,atk)
+function s.spfilter1(c,e,tp,atk,check)
+	if not check and c:IsLocation(LOCATION_DECK) then return false end
 	return c:IsSetCard(0x3A71) and c:IsType(TYPE_MONSTER) and c:GetAttack()<atk
 		and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
@@ -45,32 +48,25 @@ function s.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.relfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local tc=Duel.SelectMatchingCard(tp,s.relfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp):GetFirst()
-	local atk=tc:GetAttack()
+	local atk=tc:GetBaseAttack()
+	local rd=0
+	if tc:IsControler(tp) then rd=1 end
 	Duel.Release(tc,REASON_COST)
-	e:SetLabel(atk)
+	e:SetLabel(atk,rd)
 end
 function s.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:IsCostChecked() end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function s.spop1(e,tp,eg,ep,ev,re,r,rp)
-	local atk=e:GetLabel()
+	local atk,rd=e:GetLabel()
+	local check=false
+	if rd==1 then check=true end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,s.spfilter1,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp,atk)
+	local g=Duel.SelectMatchingCard(tp,s.spfilter1,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp,atk,check)
 	if #g>0 then
 		Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(s.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e1,tp)
-end
-function s.splimit(e,c)
-	return not c:IsSetCard(0xA71)
 end
 function s.filter(c)
 	return c:IsSetCard(0x3A71) and c:GetType()==TYPE_TRAP and c:CheckActivateEffect(false,true,false)~=nil and c:IsFaceup()

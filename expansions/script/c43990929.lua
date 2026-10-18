@@ -35,7 +35,7 @@ function c43990929.lfcon(e,tp,eg,ep,ev,re,r,rp)
 	return c==re:GetHandler() and (not c:IsOnField() or not c:IsRelateToEffect(re))-- and re:IsActivated()
 end
 function c43990929.tgfilter(c)
-	return c:IsSetCard(0x7a10) and c:IsAbleToGrave()
+	return c:IsSetCard(0x3511) and c:IsAbleToGrave()
 end
 function c43990929.lfop(e,tp,eg,ep,ev,re,r,rp)
 	--if not Duel.SelectYesNo(tp,aux.Stringid(43990929,2)) then return end
@@ -47,7 +47,7 @@ function c43990929.lfop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c43990929.spfilter(c,e,tp)
-	return c:IsSetCard(0x7a10) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3511) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c43990929.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp)>0 and Duel.IsExistingMatchingCard(c43990929.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
@@ -60,7 +60,7 @@ function c43990929.activate(e,tp,eg,ep,ev,re,r,rp)
 	if sc then Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP) end
 end
 function c43990929.repfilter(c,tp)
-	return c:IsSetCard(0x7a10) and c:IsControler(tp) and c:IsOnField() and c:IsFaceup() and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+	return c:IsSetCard(0x3511) and c:IsControler(tp) and c:IsOnField() and c:IsFaceup() and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function c43990929.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeck() and eg:IsExists(c43990929.repfilter,1,nil,tp) end

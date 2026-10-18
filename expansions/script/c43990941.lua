@@ -19,7 +19,7 @@ function c43990941.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x7a10))
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3511))
 	e1:SetValue(aux.tgoval)
 	c:RegisterEffect(e1)
 	--spsummon
@@ -36,7 +36,7 @@ function c43990941.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c43990941.hcfilter(c)
-	return c:IsSetCard(0x7a10) and c:IsFaceupEx()
+	return c:IsSetCard(0x3511) and c:IsFaceupEx()
 end
 function c43990941.handcon(e)
 	return Duel.IsExistingMatchingCard(c43990941.hcfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil)

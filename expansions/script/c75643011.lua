@@ -1,79 +1,63 @@
---星旅秘纹 因缘而聚
-local s,id,o=GetID()
+--摘星征途 密涅瓦
+local s,id=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,75643010)
-	--activate
+	aux.AddCodeList(c,75643002)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
-	e1:SetCost(s.efcost)
-	e1:SetTarget(s.target)
-	e1:SetOperation(s.activate)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.spcon)
+	e1:SetCost(s.spcost)
+	e1:SetTarget(s.sptg)
+	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-	--atk/def up
+	--
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_EQUIP)
+	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
-	e2:SetValue(500)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x52c6))
+	e2:SetValue(s.atkval)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e3)
-	--atk/def down
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_UPDATE_ATTACK)
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetTargetRange(0,LOCATION_MZONE)
-	e4:SetCondition(s.adcon)
-	e4:SetValue(-500)
-	c:RegisterEffect(e4)
-	local e5=e4:Clone()
-	e5:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e5)
 end
-function s.efcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,800) end
-	Duel.PayLPCost(tp,800)
+function s.stfilter(c)
+	return c:IsCode(75643002) and c:IsFaceup()
 end
-function s.spfilter(c,e,tp)
-	return c:IsCode(75643013,75643014,75643015) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
-end
-function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_XMATERIAL)
-		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
-end
-function s.eqlimit(e,c)
-	return e:GetOwner()==c
-end
-function s.activate(e,tp,eg,ep,ev,re,r,rp)  
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	if not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_XMATERIAL) then return end
+function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tc=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp):GetFirst()
-	if tc then
-		tc:SetMaterial(nil)
-		if Duel.SpecialSummon(tc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)>0 and Duel.Equip(tp,c,tc) then
-			tc:CompleteProcedure()
-			--Add Equip limit
-			local e1=Effect.CreateEffect(tc)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_EQUIP_LIMIT)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetValue(s.eqlimit)
-			c:RegisterEffect(e1)
-		end
+	if c:IsLocation(LOCATION_GRAVE) then
+		return Duel.IsExistingMatchingCard(s.stfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	else
+		return true
 	end
 end
 function s.cfilter(c)
-	return c:IsFaceup() and c:IsCode(75643010)
+	return c:IsFaceup() and c:IsSetCard(0x52c6) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
-function s.adcon(e)
-	return Duel.IsExistingMatchingCard(s.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)
+function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SendtoHand(g,nil,REASON_COST)
+end
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+end
+function s.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+end
+function s.atkfilter(c)
+	return aux.IsCodeListed(c,75643002) and c:IsFaceup()
+end
+function s.atkval(e,c)
+	return Duel.GetMatchingGroupCount(s.atkfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,nil)*200
 end

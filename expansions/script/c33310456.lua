@@ -49,7 +49,8 @@ function s.initial_effect(c)
 	e3:SetTargetRange(LOCATION_MZONE,0)
 	e3:SetCondition(s.grcon)
 	e3:SetTarget(s.indtg)
-	e3:SetValue(s.indct)
+	--e3:SetValue(s.indct)
+	e3:SetValue(aux.tgoval)--更改为不被对方破坏
 	c:RegisterEffect(e3)
 
 end
@@ -151,5 +152,5 @@ function s.flag(c)
 	return true
 end
 function s.indct(e,re,r,rp)
-	return (r&(REASON_BATTLE+REASON_EFFECT))~=0
+	return (r&(REASON_BATTLE+REASON_EFFECT))~=0 
 end

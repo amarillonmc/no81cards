@@ -14,7 +14,7 @@ function s.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_LEAVE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.spcon1)
@@ -50,7 +50,7 @@ function s.leavefilter1(c,tp)
 		and c:IsPreviousPosition(POS_FACEUP) and c:GetReasonPlayer()==1-tp
 end
 function s.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and eg:IsExists(s.leavefilter1,1,nil,tp)
+	return eg:IsExists(s.leavefilter1,1,nil,tp)
 end
 function s.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) end
@@ -58,6 +58,7 @@ function s.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)
 		c:CompleteProcedure()

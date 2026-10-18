@@ -1,73 +1,62 @@
---星旅秘纹 一二三，跳！
+--星旅秘纹 “空白”的序章
 local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,75643010)
-	--activate
+	aux.AddCodeList(c,75643002,75643004,75643005,75643006)
+	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
-	e1:SetCost(s.efcost)
-	e1:SetTarget(s.target)
-	e1:SetOperation(s.activate)
+	e1:SetTarget(s.thtg)
+	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
-	--atk/def
+	-- special summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_EQUIP)
-	e2:SetCode(EFFECT_UPDATE_ATTACK)
-	e2:SetValue(500)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCondition(s.spcon)
+	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(s.sptg)
+	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e3)
-	--pierce
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_EQUIP)
-	e4:SetCondition(s.piecon)
-	e4:SetCode(EFFECT_PIERCE)
-	c:RegisterEffect(e4)
 end
-function s.efcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,800) end
-	Duel.PayLPCost(tp,800)
+function s.thfilter(c)
+	return c:IsCode(75643004,75643005,75643006) and c:IsAbleToHand()
 end
-function s.spfilter(c,e,tp)
-	return c:IsCode(75643004,75643005,75643006) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_XMATERIAL)
-		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
-end
-function s.eqlimit(e,c)
-	return e:GetOwner()==c
-end
-function s.activate(e,tp,eg,ep,ev,re,r,rp)  
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	if not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_XMATERIAL) then return end
-	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tc=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp):GetFirst()
-	if tc then
-		tc:SetMaterial(nil)
-		if Duel.SpecialSummon(tc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)>0 and Duel.Equip(tp,c,tc) then
-			tc:CompleteProcedure()
-			--Add Equip limit
-			local e1=Effect.CreateEffect(tc)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_EQUIP_LIMIT)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetValue(s.eqlimit)
-			c:RegisterEffect(e1)
-		end
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function s.cfilter(c)
-	return c:IsFaceup() and c:IsCode(75643010)
+	return c:IsFaceup() and c:IsCode(75643002)
 end
-function s.piecon(e)
-	return Duel.IsExistingMatchingCard(s.cfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)
+function s.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
+end
+function s.spfilter(c,e,tp)
+	return c:IsSetCard(0x52c6) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+end
+function s.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
 end

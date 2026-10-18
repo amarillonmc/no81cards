@@ -18,17 +18,20 @@ function s.initial_effect(c)
 	-- e1:SetCondition(s.statcon)
 	-- e1:SetOperation(s.statop)
 	-- c:RegisterEffect(e1)
-	--special summon
+	--①：召唤·特殊召唤成功时检索
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
-	e1:SetCode(EVENT_TO_GRAVE)
-	e1:SetCondition(s.spcon)
-	e1:SetTarget(s.sptarget)
-	e1:SetOperation(s.spoperation)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetCountLimit(1,id)
+	e1:SetTarget(s.thtg)
+	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e2)
 
 	--②：根据表示形式适用效果
 	local e2=Effect.CreateEffect(c)
@@ -38,7 +41,7 @@ function s.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e2:SetCountLimit(1,id)
+	e2:SetCountLimit(1,id+1000)
 	e2:SetCondition(s.maincon)
 	e2:SetTarget(s.efftg)
 	e2:SetOperation(s.effop)
@@ -62,42 +65,42 @@ end
 
 -- --①
 -- function s.statcon(e,tp,eg,ep,ev,re,r,rp)
--- 	return e:GetHandler():IsFaceup()
+--  return e:GetHandler():IsFaceup()
 -- end
 
 -- function s.statop(e,tp,eg,ep,ev,re,r,rp)
--- 	local c=e:GetHandler()
--- 	if not c:IsRelateToEffect(e) or not c:IsFaceup() then return end
--- 	local e1=Effect.CreateEffect(c)
--- 	e1:SetType(EFFECT_TYPE_SINGLE)
--- 	e1:SetCode(EFFECT_UPDATE_ATTACK)
--- 	e1:SetValue(500)
--- 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
--- 	c:RegisterEffect(e1)
--- 	local e2=e1:Clone()
--- 	e2:SetCode(EFFECT_UPDATE_DEFENSE)
--- 	c:RegisterEffect(e2)
+--  local c=e:GetHandler()
+--  if not c:IsRelateToEffect(e) or not c:IsFaceup() then return end
+--  local e1=Effect.CreateEffect(c)
+--  e1:SetType(EFFECT_TYPE_SINGLE)
+--  e1:SetCode(EFFECT_UPDATE_ATTACK)
+--  e1:SetValue(500)
+--  e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+--  c:RegisterEffect(e1)
+--  local e2=e1:Clone()
+--  e2:SetCode(EFFECT_UPDATE_DEFENSE)
+--  c:RegisterEffect(e2)
 -- end
 
---1
-function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0
+function s.is_set_card(c)
+	return c.VHisc_WEAVENEST or c.VHisc_XIAOZHI
 end
-function s.sptarget(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+--①
+function s.thfilter(c)
+	return c:IsType(TYPE_MONSTER) and s.is_set_card(c) and not c:IsCode(id) and c:IsAbleToHand()
 end
-function s.handspfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and (c.VHisc_WEAVENEST or c.VHisc_XIAOZHI) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(id)
+
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function s.spoperation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,s.handspfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if #g>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 

@@ -1,7 +1,7 @@
 --女仆议会 作战
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--手卡发动（丢弃1张手卡）
+	--
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(id,0))
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -11,7 +11,7 @@ function s.initial_effect(c)
 	--①
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1190)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_ACTION)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,id)
@@ -35,7 +35,7 @@ function s.handcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function s.thfilter1(c)
-	return c:IsSetCard(0x3A71) and c:IsAbleToHand() and c:IsFaceup()
+	return c:IsSetCard(0xA71) and c:IsAbleToHand() and c:IsFaceup() and not c:IsCode(id)
 end
 function s.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
@@ -46,15 +46,8 @@ function s.thop1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfilter1),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 	if #g==0 then return end
 	Duel.HintSelection(g)
-	local tc=g:GetFirst()
-	if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) then
-		Duel.ConfirmCards(1-tp,tc)
-		if tc:IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-			and tc:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-			Duel.BreakEffect()
-			Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
-		end
-	end
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,g)
 end
 function s.cfilter(c)
 	return c:IsSetCard(0xA71) and c:IsDiscardable(REASON_EFFECT)

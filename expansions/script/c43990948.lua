@@ -21,7 +21,7 @@ function c43990948.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetTargetRange(LOCATION_GRAVE+LOCATION_REMOVED,0)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x7a10))
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3511))
 	e2:SetValue(aux.tgoval)
 	c:RegisterEffect(e2)
 	--change effect type
@@ -34,7 +34,7 @@ function c43990948.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c43990948.thfilter(c,chk)
-	return c:IsSetCard(0x7a10) and c:IsAbleToHand()
+	return c:IsSetCard(0x3511) and c:IsAbleToHand()
 end
 function c43990948.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c43990948.thfilter,tp,LOCATION_DECK,0,1,nil,0) end

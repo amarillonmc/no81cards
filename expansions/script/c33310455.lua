@@ -4,14 +4,14 @@ local CARD_RYOSHU=33310451
 s.VHisc_WEAVENEST=true
 
 function s.initial_effect(c)
-	--这个卡名的卡1回合只能发动1张
+	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_TOGRAVE+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_TOGRAVE+CATEGORY_REMOVE+CATEGORY_TODECK+CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
+	--e1:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
 	e1:SetCost(s.ctcost)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
@@ -57,60 +57,91 @@ end
 
 --对方场上可以成为对象的怪兽
 function s.tgfilter(c,e)
-	return c:IsType(TYPE_MONSTER) and c:IsCanBeEffectTarget(e)
+	return  c:IsCanBeEffectTarget(e) --and c:IsType(TYPE_MONSTER) 
 end
 
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then
-		return  chkc:IsLocation(LOCATION_MZONE) and s.tgfilter(chkc,e) -- and chkc:IsControler(1-tp) 
+		return  chkc:IsLocation(LOCATION_ONFIELD) and s.tgfilter(chkc,e) -- and chkc:IsControler(1-tp) 
 	end
+	local c=e:GetHandler()
 	local maxct=s.getmaxct(tp)
 	if chk==0 then
-		return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e)
+		return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,e)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,maxct,nil,e)
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,#g,0,0)
-
+	local g=Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,maxct,c,e)
 	local ct=Duel.GetFlagEffect(tp,id)
-	if ct==2 then
+	if ct>1 then
+		Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,#g,0,0)
+	end
+	if ct>2 then
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,g,#g,0,0)
+	end
+	if ct>3 then
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,#g,0,0)
-	elseif ct>=3 then
+	end
+	if ct>4 then
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,#g,0,0)
 	end
 end
 
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	if #g==0 then return end
 
-	--1次以上：那些怪兽的效果无效化
 	local ng=g:Filter(Card.IsFaceup,nil)
-	for tc in aux.Next(ng) do
-		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetValue(RESET_TURN_SET)
-		tc:RegisterEffect(e2)
-	end
-
 	local ct=Duel.GetFlagEffect(tp,id)
-
-	--2次：那些怪兽送去墓地
-	if ct==2 then
+	
+	aux.SelectFromOptions(tp,{true,aux.Stringid(id,1)})
+	for tc in aux.Next(ng) do
+		if tc:IsFaceup() and tc:IsRelateToEffect(e) then
+		--1次以上：怪兽的攻守变为0
+			if tc:IsType(TYPE_MONSTER) then
+				local e0=Effect.CreateEffect(c)
+				e0:SetType(EFFECT_TYPE_SINGLE)
+				e0:SetCode(EFFECT_SET_ATTACK_FINAL)
+				e0:SetValue(0)
+				e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+				tc:RegisterEffect(e0)
+				local e1=e0:Clone()
+				e1:SetCode(EFFECT_SET_DEFENSE_FINAL)
+				tc:RegisterEffect(e1)
+			end
+			--2次以上：那些卡的效果无效化
+			if ct>1 then
+				Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+				local e2=Effect.CreateEffect(e:GetHandler())
+				e2:SetType(EFFECT_TYPE_SINGLE)
+				e2:SetCode(EFFECT_DISABLE)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+				tc:RegisterEffect(e2)
+				local e3=e2:Clone()
+				e3:SetCode(EFFECT_DISABLE_EFFECT)
+				e3:SetValue(RESET_TURN_SET)
+				tc:RegisterEffect(e3)
+			end
+		end
+	end
+	
+	--3次以上：适用解场效果
+	if ct>=3 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		if #ng>0 then Duel.BreakEffect() end
-		Duel.SendtoGrave(g,REASON_EFFECT)
-
-	--3次以上：那些怪兽里侧表示除外
-	elseif ct>=3 then
-		if #ng>0 then Duel.BreakEffect() end
-		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
+		local sc=0--记录选择哪项解场效果
+		if ct ==3 then
+			sc=aux.SelectFromOptions(tp,{true,aux.Stringid(id,3)})
+		elseif ct==4  then  
+			sc=aux.SelectFromOptions(tp,{true,aux.Stringid(id,3)},{true,aux.Stringid(id,4)})
+		elseif ct>=5 then
+			sc=aux.SelectFromOptions(tp,{true,aux.Stringid(id,3)},{true,aux.Stringid(id,4)},{true,aux.Stringid(id,5)})
+		end
+		if sc==1 then
+			Duel.SendtoGrave(g,REASON_EFFECT)
+		elseif sc==2 then
+			Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+		elseif sc==3 then
+			Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
+		end
 	end
 end

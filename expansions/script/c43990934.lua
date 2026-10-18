@@ -39,9 +39,6 @@ function c43990934.lfop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,43990934)
 	Duel.Draw(rp,1,REASON_EFFECT)
 end
-function c43990934.spfilter(c,e,tp)
-	return c:IsSetCard(0x7a10) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
 function c43990934.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,e:GetHandler())
 	if chk==0 then return #g>0 end
@@ -64,7 +61,7 @@ function c43990934.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c43990934.repfilter(c,tp)
-	return c:IsSetCard(0x7a10) and c:IsControler(tp) and c:IsOnField() and c:IsFaceup() and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+	return c:IsSetCard(0x3511) and c:IsControler(tp) and c:IsOnField() and c:IsFaceup() and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function c43990934.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeck() and eg:IsExists(c43990934.repfilter,1,nil,tp) end

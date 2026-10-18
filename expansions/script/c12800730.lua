@@ -1,7 +1,7 @@
 --女仆议会 准备
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--盖放回合发动条件
+	--
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(id,0))
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -29,7 +29,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.cfilter(c)
-	return c:IsFacedown() or not c:IsSetCard(0x3A71)
+	return c:IsFacedown() or not c:IsSetCard(0xA71)
 end
 function s.actcon(e)
 	local tp=e:GetHandlerPlayer()
@@ -73,7 +73,14 @@ function s.op2(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetTarget(s.rmlimit)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
-	c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
+	--
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(id,3))
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	e3:SetTargetRange(1,0)
+	Duel.RegisterEffect(e3,tp)
 end
 function s.rmlimit(e,c,rp,r,re)
 	local tp=e:GetHandlerPlayer()

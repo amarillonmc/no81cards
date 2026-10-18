@@ -34,12 +34,12 @@ s.listed_series={SET_WEAVENEST}
 
 --①：可以从手卡·卡组破坏的送去墓地的织巢卡
 function s.tgfilter(c)
-	return c.VHisc_WEAVENEST
+	return c.VHisc_WEAVENEST and c:IsType(TYPE_MONSTER)
 end
 
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	if Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) then	
+	if Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) then  
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 	end
@@ -66,12 +66,12 @@ end
 
 --自己场上·额外卡组中可以破坏的「织巢」怪兽
 function s.desfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsType(TYPE_MONSTER) and c:IsDestructable()
+	return  c.VHisc_WEAVENEST and c:IsType(TYPE_MONSTER) and c:IsDestructable()
 end
 
 --自己墓地的「织巢」连接怪兽
 function s.linkfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_LINK)
+	return  c.VHisc_WEAVENEST and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_LINK)
 end
 
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)

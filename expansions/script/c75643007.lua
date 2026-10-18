@@ -1,7 +1,7 @@
 --恩赐印章 国王
 local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,75643010)
+	aux.AddCodeList(c,75643000,75643002)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -24,7 +24,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.thfilter(c,check)
-	return c:IsAbleToHand() and ((check and aux.IsCodeListed(c,75643010)) or c:IsCode(75643000,75643010))
+	return c:IsAbleToHand() and ((check and aux.IsCodeListed(c,75643002)) or aux.IsCodeListed(c,75643000)) and not c:IsCode(id)
 end
 function s.checkfilter(c)
 	return c:IsCode(75643000,75643010) and c:IsFaceup()

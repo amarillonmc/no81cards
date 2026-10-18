@@ -45,7 +45,7 @@ function c43990938.lfop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(sg,REASON_EFFECT)
 end
 function c43990938.spfilter(c,e,tp)
-	return c:IsSetCard(0x7a10) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3511) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c43990938.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
@@ -63,7 +63,7 @@ function c43990938.activate(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
 	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x7a10))
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3511))
 	e2:SetValue(c43990938.sumlimit)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
@@ -99,7 +99,7 @@ function c43990938.sumlimit(e,c,sumtype)
 	return not c:IsControler(e:GetHandlerPlayer()) and (e:GetCode()~=EFFECT_CANNOT_BE_FUSION_MATERIAL or sumtype==SUMMON_TYPE_FUSION)
 end
 function c43990938.repfilter(c,tp)
-	return c:IsSetCard(0x7a10) and c:IsControler(tp) and c:IsOnField() and c:IsFaceup() and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+	return c:IsSetCard(0x3511) and c:IsControler(tp) and c:IsOnField() and c:IsFaceup() and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function c43990938.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeck() and eg:IsExists(c43990938.repfilter,1,nil,tp) end

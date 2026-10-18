@@ -35,11 +35,11 @@ function c43990949.initial_effect(c)
 end
 function c43990949.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return (#eg==1 and not eg:IsContains(c)) and (c:IsOnField() or Duel.IsPlayerAffectedByEffect(tp,43990948)~=nil and c:IsOriginalSetCard(0x7a10) and c:IsSummonableCard())
+	return (#eg==1 and not eg:IsContains(c)) and (c:IsOnField() or Duel.IsPlayerAffectedByEffect(tp,43990948)~=nil and c:IsOriginalSetCard(0x3511) and c:IsSummonableCard())
 end
 function c43990949.effcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return re:GetHandler()~=c and (c:IsOnField() or Duel.IsPlayerAffectedByEffect(tp,43990948)~=nil and c:IsOriginalSetCard(0x7a10) and c:IsSummonableCard())
+	return re:GetHandler()~=c and (c:IsOnField() or Duel.IsPlayerAffectedByEffect(tp,43990948)~=nil and c:IsOriginalSetCard(0x3511) and c:IsSummonableCard())
 end
 function c43990949.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
@@ -51,7 +51,7 @@ function c43990949.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
 end
 function c43990949.thfilter(c,chk)
-	return c:IsSetCard(0x7a10) and c:IsAbleToHand() and (chk==0 or aux.NecroValleyFilter()(c))-- and c:IsFaceupEx() and c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return c:IsSetCard(0x3511) and c:IsAbleToHand() and (chk==0 or aux.NecroValleyFilter()(c))-- and c:IsFaceupEx() and c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function c43990949.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

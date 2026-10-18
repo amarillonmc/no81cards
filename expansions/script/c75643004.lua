@@ -1,93 +1,84 @@
 --摘星征途 琥珀
-local s,id,o=GetID()
+local s,id=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,75643010)
-	--xyz summon
-	aux.AddXyzProcedure(c,nil,4,4)
-	c:EnableReviveLimit()
-	--material
+	aux.AddCodeList(c,75643002)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,id)
-	e1:SetCondition(s.mtcon)
-	e1:SetTarget(s.mttg)
-	e1:SetOperation(s.mtop)
+	e1:SetTarget(s.sptg1)
+	e1:SetOperation(s.spop1)
 	c:RegisterEffect(e1)
-	--effect
+	local e1b=e1:Clone()
+	e1b:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e1b)
+	--
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DAMAGE)
 	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_MZONE)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,id-70000000)
-	e2:SetCondition(s.efcon)
-	e2:SetCost(s.efcost)
-	e2:SetTarget(s.eftg)
-	e2:SetOperation(s.efop)
+	e2:SetCondition(s.spcon2)
+	e2:SetTarget(s.sptg2)
+	e2:SetOperation(s.spop2)
 	c:RegisterEffect(e2)
-	--get effect
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(id,4))
-	e3:SetType(EFFECT_TYPE_XMATERIAL)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetValue(1500)
-	e3:SetCondition(s.gfcon)
-	c:RegisterEffect(e3)
+	local e2b=e2:Clone()
+	e2b:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e2b)
 end
-function s.mtcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
+function s.spfilter(c,e,tp)
+	return c:IsSetCard(0x52c6) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function s.mtfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x52c6) and c:IsCanOverlay() and not c:IsCode(id)
+function s.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
-function s.mcfilter(c)
-	return c:IsFaceup() and c:IsCode(75643000)
+function s.spop1(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	if #g>0 then Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP) end
 end
-function s.mttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(s.mtfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,nil)
-	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ) and g:GetClassCount(Card.GetCode)>=1 end
+function s.cfilter(c,tp)
+	return c:IsFaceup() and c:IsSetCard(0x52c6) and c:IsControler(tp)
 end
-function s.mtop(e,tp,eg,ep,ev,re,r,rp)
+function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(s.cfilter,1,nil,tp)
+end
+function s.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local ft=1
-	if Duel.IsExistingMatchingCard(s.mcfilter,tp,LOCATION_ONFIELD,0,1,nil) then ft=2 end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+end
+function s.stfilter(c)
+	return c:IsCode(75643002) and c:IsFaceup()
+end
+function s.thfilter(c)
+	return aux.IsCodeListed(c,75643002) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+end
+function s.spop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.mtfilter),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,nil)
-	if g:GetClassCount(Card.GetCode)<ft then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g1=g:SelectSubGroup(tp,aux.dncheck,false,1,ft)
-	if g1:GetCount()>0 then
-		Duel.Overlay(c,g1)
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		if Duel.IsExistingMatchingCard(s.stfilter,tp,LOCATION_ONFIELD,0,1,nil)
+			and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE,0,1,nil)
+			and Duel.CheckLPCost(tp,400)
+			and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+			Duel.PayLPCost(tp,400)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfilter),tp,LOCATION_GRAVE,0,1,1,nil)
+			if #g>0 then
+				Duel.SendtoHand(g,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,g)
+			end
+		end
 	end
-end
-function s.cfilter(c)
-	return c:IsFaceup() and c:IsCode(75643010)
-end
-function s.efcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
-end
-function s.efcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,800) end
-	Duel.PayLPCost(tp,800)
-end
-function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
-	Duel.SetTargetPlayer(1-tp)
-	local dam=Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0)*500
-	Duel.SetTargetParam(dam)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,dam)
-end
-function s.efop(e,tp,eg,ep,ev,re,r,rp)
-	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local dam=Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0)*500
-	Duel.Damage(p,dam,REASON_EFFECT)
-end
-function s.gfcon(e)
-	local c=e:GetHandler()
-	return c:IsSetCard(0x52c6) and c:IsType(TYPE_XYZ)
 end

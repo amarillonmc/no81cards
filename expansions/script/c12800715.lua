@@ -32,20 +32,20 @@ function s.initial_effect(c)
 	e2:SetOperation(s.setop2)
 	c:RegisterEffect(e2)
 end
-function s.rfilter1(c)
-	return c:IsSetCard(0xA71) and (c:IsAbleToHand() or c:IsAbleToExtraAsCost()) and c:IsFaceup()
+function s.rfilter1(c,tp)
+	return c:IsSetCard(0xA71) and (c:IsAbleToHand() or c:IsAbleToExtraAsCost()) and c:IsFaceup() and Duel.GetMZoneCount(tp,c)>0
 end
 function s.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.rfilter1,tp,LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.rfilter1,tp,LOCATION_ONFIELD,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,s.rfilter1,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.rfilter1,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
 	if #g>0 then
+		Duel.HintSelection(g)
 		Duel.SendtoHand(g,nil,REASON_COST)
-		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function s.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) end
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,LOCATION_GRAVE)
 end
 function s.spop1(e,tp,eg,ep,ev,re,r,rp)

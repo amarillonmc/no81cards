@@ -23,7 +23,7 @@ function c43990940.lfcon(e,tp,eg,ep,ev,re,r,rp)
 	return c==re:GetHandler() and (not c:IsOnField() or not c:IsRelateToEffect(re))-- and re:IsActivated()
 end
 function c43990940.spfilter(c,e,tp)
-	return c:IsSetCard(0x7a10) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and aux.NecroValleyFilter()(c) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x3511) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and aux.NecroValleyFilter()(c) and c:IsType(TYPE_MONSTER)
 end
 function c43990940.lfop(e,tp,eg,ep,ev,re,r,rp)
 	--if not Duel.SelectYesNo(tp,aux.Stringid(43990940,2)) then return end
@@ -53,7 +53,7 @@ function c43990940.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c43990940.cfilter(c)
-	return c:IsPreviousSetCard(0x7a10) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP)
+	return c:IsPreviousSetCard(0x3511) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP)
 end
 function c43990940.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c43990940.cfilter,1,nil)
@@ -68,5 +68,5 @@ function c43990940.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end
 function c43990940.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0x7a10) and c:IsLocation(LOCATION_HAND+LOCATION_GRAVE)
+	return not c:IsSetCard(0x3511) and c:IsLocation(LOCATION_HAND+LOCATION_GRAVE)
 end

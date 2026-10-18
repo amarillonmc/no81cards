@@ -10,26 +10,25 @@ s.listed_series={SET_ZHICHAO,SET_ZHONGZHI}
 s.listed_names={CARD_RYOSHU,CARD_HUFU}
 
 function s.initial_effect(c)
-	--①：召唤·特殊召唤成功时检索
+	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetCode(EVENT_DESTROYED)
 	e1:SetCountLimit(1,id)
-	e1:SetTarget(s.thtg)
-	e1:SetOperation(s.thop)
+	e1:SetCondition(s.spcon)
+	e1:SetTarget(s.sptarget)
+	e1:SetOperation(s.spoperation)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e2)
 	--②：对方场上攻击力最高的怪兽发动效果时回收
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
+	e3:SetProperty(EFFECT_FLAG_DELAY) 
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCountLimit(1,id+10000)
 	e3:SetCondition(s.selfcon)
@@ -53,28 +52,28 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 
-function s.is_set_card(c)
-	return c.VHisc_WEAVENEST or c.VHisc_ZHONGZHI
+--1
+function s.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0
 end
-
---①
-function s.thfilter(c)
-	return c:IsType(TYPE_MONSTER) and s.is_set_card(c) and not c:IsCode(id) and c:IsAbleToHand()
+function s.sptarget(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
-
-function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+function s.handspfilter(c,e,tp)
+	return c:IsType(TYPE_MONSTER) and (c.VHisc_WEAVENEST or c.VHisc_ZHONGZHI) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(id)
 end
-
-function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if #g>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+function s.spoperation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,s.handspfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
+
 
 --②
 function s.highatkfilter(c,atk)
@@ -103,12 +102,24 @@ end
 
 function s.selfop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local rc=e:GetLabelObject()
+	--local rc=e:GetLabelObject()
 	if not c:IsRelateToEffect(e) or 
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	if not Duel.IsExistingMatchingCard(s.hufilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) then return end
-	if rc and rc:IsRelateToEffect(re) and rc:IsLocation(LOCATION_MZONE) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-		Duel.Destroy(rc,REASON_EFFECT)
+	--if rc and rc:IsRelateToEffect(re) and rc:IsLocation(LOCATION_MZONE) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+	--	Duel.Destroy(rc,REASON_EFFECT)
+	--end
+	if Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil)
+		and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+		Duel.BreakEffect()
+		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+		local tg=g:GetMaxGroup(Card.GetAttack)
+		if #tg>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local sg=tg:Select(tp,1,1,nil)
+			Duel.HintSelection(sg)
+			Duel.Destroy(sg,REASON_EFFECT)
+		else Duel.Destroy(tg,REASON_EFFECT) end
 	end
 end
 
