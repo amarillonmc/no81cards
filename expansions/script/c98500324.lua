@@ -20,6 +20,7 @@ function c98500324.initial_effect(c)
 	c:RegisterEffect(e0)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(98500324,4))
+	e1:SetCategory(CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
@@ -206,20 +207,26 @@ function c98500324.stfil(c)
 	return ((c:GetType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and not c:IsType(TYPE_CONTINUOUS+TYPE_FIELD)) and (aux.IsCodeListed(c,10000020) or c:IsCode(10000040,42469671,59094601,74875003,10000020)) and c:IsSSetable() 
 end 
 function c98500324.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98500324.stfil,tp,LOCATION_DECK,0,1,nil) end 
+	if chk==0 then return Duel.IsExistingMatchingCard(c98500324.stfil,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end 
 end 
 function c98500324.stop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,c98500324.stfil,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c98500324.stfil,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc and Duel.SSet(tp,tc)~=0 then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
+	  local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetDescription(aux.Stringid(98500324,4))
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			if tc:IsType(TYPE_QUICKPLAY) then
+				e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+			end
+			if tc:IsType(TYPE_TRAP) then
+				e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+			end
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
 	end
 	if c:IsRelateToEffect(e) then
 		c:RegisterFlagEffect(98501324,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)

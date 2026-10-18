@@ -197,7 +197,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			local sg=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_ONFIELD,nil)
 			if #sg>0 and Duel.GetTurnPlayer()==tp
 				and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
-				and Duel.SelectYesNo(tp,aux.Stringid(cm,7)) then
+				and Duel.SelectYesNo(tp,aux.Stringid(m,7)) then
 				Duel.BreakEffect()
 				Duel.Destroy(sg,REASON_EFFECT)
 			end

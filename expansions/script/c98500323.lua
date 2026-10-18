@@ -21,6 +21,7 @@ function c98500323.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(98500323,0))
+	e1:SetCategory(CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
@@ -51,7 +52,7 @@ function c98500323.initial_effect(c)
 	 --token
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(98500323,2))
-	e5:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
+	e5:SetCategory(CATEGORY_SSET+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCountLimit(1,98500423)
@@ -149,22 +150,28 @@ function c98500323.stfil(c)
 	return ((c:GetType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and not c:IsType(TYPE_CONTINUOUS+TYPE_FIELD)) and (aux.IsCodeListed(c,10000000) or c:IsCode(10000040,74875003,79339613,79868386,85182315,85758066,98500323,10000000)) and c:IsSSetable() 
 end 
 function c98500323.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98500323.stfil,tp,LOCATION_DECK,0,1,nil) end 
+	if chk==0 then return Duel.IsExistingMatchingCard(c98500323.stfil,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end 
 end 
 function c98500323.stop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,c98500323.stfil,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c98500323.stfil,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc and Duel.SSet(tp,tc)~=0 then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
+	  local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetDescription(aux.Stringid(98500323,1))
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			if tc:IsType(TYPE_QUICKPLAY) then
+				e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+			end
+			if tc:IsType(TYPE_TRAP) then
+				e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+			end
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
 	end
-   if c:IsRelateToEffect(e) then
+	if  c:IsRelateToEffect(e) then
 		c:RegisterFlagEffect(98501323,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
 	end
 end 
@@ -177,12 +184,18 @@ function c98500323.xspop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c98500323.upfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc and Duel.SSet(tp,tc)~=0 then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
+	  local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetDescription(aux.Stringid(98500323,1))
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			if tc:IsType(TYPE_QUICKPLAY) then
+				e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+			end
+			if tc:IsType(TYPE_TRAP) then
+				e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+			end
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
 	end
 	Duel.BreakEffect()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(98500323,5)) then 
@@ -200,7 +213,7 @@ function c98500323.xspop(e,tp,eg,ep,ev,re,r,rp)
 			local e6=e5:Clone()
 			e6:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
 			token:RegisterEffect(e6,true)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(98500323,5)) then
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.SelectYesNo(tp,aux.Stringid(98500323,5)) then
 		local token=Duel.CreateToken(tp,98500325)
 		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 		local e1=Effect.CreateEffect(e:GetHandler())
@@ -237,5 +250,5 @@ function c98500323.regop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(98500323,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
 end
 function c98500323.upfilter(c)
-	return c.IsCode(c,79868386,79339613) and c:IsSSetable()
+	return c:IsCode(c,79868386,79339613) and c:IsSSetable()
 end

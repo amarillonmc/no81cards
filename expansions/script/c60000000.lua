@@ -384,7 +384,43 @@ end
 function MerlinTC.lc5(e)
 	return e:GetHandler():GetSequence()==4
 end
-
+function MerlinTC.ChessBack(c,num)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetCountLimit(1,70002113)
+	e4:SetLabel(num)
+	e4:SetCondition(MerlinTC.ChessBackcon)
+	e4:SetTarget(MerlinTC.ChessBacktg)
+	e4:SetOperation(MerlinTC.ChessBackop)
+	c:RegisterEffect(e4)
+end
+function MerlinTC.ChessBackcon(e,tp,eg,ep,ev,re,r,rp)
+	local num=Duel.GetMatchingGroupCount(Card.IsCode,e:GetHandlerPlayer(),LOCATION_GRAVE,0,nil,60002113)
+	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE and num>=8
+end
+function MerlinTC.ChessBacktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function MerlinTC.ChessBackop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+function MerlinTc.ChessSTCost(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetCustomActivityCount(e:GetHandler():GetCode(),tp,ACTIVITY_CHAIN)<3 then
+		return true
+	else
+		return false
+	end
+	if Duel.GetCustomActivityCount(e:GetHandler():GetCode,tp,ACTIVITY_CHAIN)==3 then
+		
+	end
+end
 --卡召唤/特殊召唤/发动时，给这张卡放置x个kind指示物
 function MerlinTC.SAPlaceCounter(c)
 	--summon success
