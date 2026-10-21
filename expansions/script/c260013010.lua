@@ -89,8 +89,7 @@ function c260013010.chcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return g and g:IsExists(c260013010.cfilter,1,nil,c,tp) and Duel.IsChainNegatable(ev) and re:GetHandler():IsRelateToEffect(re)
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
+	return g and g:IsExists(c260013010.cfilter,1,nil,c,tp) and Duel.IsChainNegatable(ev) and re:GetHandler():IsRelateToEffect(re) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
 end
 function c260013010.xyzfilter(c,e,tp,xyzc)
 	return not c:IsType(TYPE_TOKEN) and (c:IsCanBeXyzMaterial(xyzc) or not c:IsType(TYPE_MONSTER))
@@ -103,8 +102,7 @@ function c260013010.chop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(c260013010.xyzfilter,nil,e,tp,c)
 	local g2=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(c260013010.xyzfilter2,nil,e,tp)
-	if Duel.GetFlagEffect(tp,260013010)==0 and g:GetCount()>0 and g:GetCount()==g2:GetCount() and rc:IsRelateToEffect(re)
-		and Duel.IsChainNegatable(ev) and Duel.GetLocationCountFromEx(tp,tp,g,c)>0 and Duel.SelectYesNo(tp,aux.Stringid(260013010,0)) then
+	if Duel.GetFlagEffect(tp,260013010)==0 and g:GetCount()>0 and g:GetCount()==g2:GetCount() and rc:IsRelateToEffect(re) and Duel.IsChainNegatable(ev) and not Duel.IsChainDisabled(ev) and Duel.GetLocationCountFromEx(tp,tp,g,c)>0 and Duel.SelectYesNo(tp,aux.Stringid(260013010,0)) then
 		if Duel.NegateEffect(ev) then
 			Duel.ConfirmCards(1-tp,c)
 			Duel.RegisterFlagEffect(tp,260013010,RESET_PHASE+PHASE_END,0,1)
