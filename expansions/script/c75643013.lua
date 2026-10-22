@@ -8,6 +8,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_TO_GRAVE)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.con1)
 	e1:SetTarget(s.tg1)
@@ -32,7 +33,7 @@ function s.tgfilter(c,tp)
 	return c:IsSetCard(0x52c6) and c:IsType(TYPE_MONSTER) and c:IsControler(tp)
 end
 function s.con1(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(s.tgfilter,1,nil,tp) and e:GetHandler():IsFaceup()
+	return eg:IsExists(s.tgfilter,1,nil,tp)
 end
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
