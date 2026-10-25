@@ -6,7 +6,7 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_COUNTER)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetType(EFFECT_TYPE_IGNITION)	-- 卡文没有「自己·对方回合」，是自己主要阶段起动（不是二速）
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(s.spcon)
@@ -45,8 +45,13 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
+-- 自己场上「有进化指示物」的怪兽
+-- 注意：本核心没有 Card.HasCounter 这个 API（传进去会是 nil，等于「无条件通过」），只能用 GetCounter 判断
+function s.evfil(c)
+	return c:GetCounter(0x624)>0
+end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.HasCounter,tp,LOCATION_MZONE,0,1,nil,0x624)
+	return Duel.IsExistingMatchingCard(s.evfil,tp,LOCATION_MZONE,0,1,nil)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

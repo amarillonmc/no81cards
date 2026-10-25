@@ -379,7 +379,7 @@ function byd.EarthRite(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if X<=0 then return false end
 		local counter_count=0
-		local g=Duel.GetMatchingGroup(Card.HasCounter,tp,LOCATION_ONFIELD,0,nil,0x62c)
+		local g=Duel.GetMatchingGroup(byd.has62c,tp,LOCATION_ONFIELD,0,nil)
 		for tc in aux.Next(g) do
 			counter_count=counter_count+tc:GetCounter(0x62c)
 		end
@@ -387,14 +387,14 @@ function byd.EarthRite(e,tp,eg,ep,ev,re,r,rp,chk)
 		return counter_count+magic_count>=X
 	end
 	for i=1,X do
-		local can_remove_counter=Duel.IsExistingMatchingCard(Card.HasCounter,tp,LOCATION_ONFIELD,0,1,nil,0x62c)
+		local can_remove_counter=Duel.IsExistingMatchingCard(byd.has62c,tp,LOCATION_ONFIELD,0,1,nil)
 		local can_send_magic=Duel.IsExistingMatchingCard(byd.earth_rite_filter,tp,LOCATION_ONFIELD,0,1,nil)
 		if not (can_remove_counter or can_send_magic) then break end
 		if can_remove_counter and can_send_magic then
 			local opt=Duel.SelectOption(tp,aux.Stringid(60001511,0),aux.Stringid(60001511,1))
 			if opt==0 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-				local g=Duel.SelectMatchingCard(tp,Card.HasCounter,tp,LOCATION_ONFIELD,0,1,1,nil,0x62c)
+				local g=Duel.SelectMatchingCard(tp,byd.has62c,tp,LOCATION_ONFIELD,0,1,1,nil)
 				if #g>0 then
 					g:GetFirst():RemoveCounter(tp,0x62c,1,REASON_COST)
 				end
@@ -407,7 +407,7 @@ function byd.EarthRite(e,tp,eg,ep,ev,re,r,rp,chk)
 			end
 		elseif can_remove_counter then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local g=Duel.SelectMatchingCard(tp,Card.HasCounter,tp,LOCATION_ONFIELD,0,1,1,nil,0x62c)
+			local g=Duel.SelectMatchingCard(tp,byd.has62c,tp,LOCATION_ONFIELD,0,1,1,nil)
 			if #g>0 then
 				g:GetFirst():RemoveCounter(tp,0x62c,1,REASON_COST)
 			end
@@ -422,4 +422,8 @@ function byd.EarthRite(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function byd.earth_rite_filter(c)
 	return c:IsCode(60012048) and c:GetCounter(0x62c)==0
+end
+-- 场上有 0x62c 指示物的卡（本核心没有 Card.HasCounter，传进去等于 nil，会变成「任意卡都通过」）
+function byd.has62c(c)
+	return c:GetCounter(0x62c)>0
 end

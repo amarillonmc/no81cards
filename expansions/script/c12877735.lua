@@ -48,7 +48,7 @@ function s.getatt(tp)
 	return 0
 end
 function s.e4val(e,re,tp)
-	local attr=s.getatt(tp)
+	local attr=s.getatt(e:GetHandlerPlayer())
 	local rc=re:GetHandler()
 	return re:IsActiveType(TYPE_MONSTER) and rc:GetOriginalAttribute()&attr~=0
 end
