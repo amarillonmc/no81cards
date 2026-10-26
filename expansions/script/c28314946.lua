@@ -27,7 +27,7 @@ function c28314946.initial_effect(c)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,38314946)
+	e2:SetCountLimit(1,28314946+1)
 	e2:SetCondition(c28314946.reccon)
 	e2:SetCost(c28314946.cost)
 	e2:SetTarget(c28314946.rectg)
@@ -64,13 +64,14 @@ function c28314946.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28314946.efilter(e)
 	local ct=#c28314946.effect_list
-	if e:IsHasRange(LOCATION_ONFIELD) and e:IsActivated() then c28314946.effect_list[ct+1]=e end
+	if (e:IsHasRange(LOCATION_ONFIELD) or (e:GetCode()==EVENT_SUMMON_SUCCESS or e:GetCode()==EVENT_SPSUMMON_SUCCESS or e:GetCode()==EVENT_FLIP) and (e:GetType()&EFFECT_TYPE_SINGLE)~=0) and e:IsActivated() then c28314946.effect_list[ct+1]=e end
 	return false--e:IsHasRange(LOCATION_ONFIELD) and e:IsActivated()
 end
 function c28314946.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToChain() or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	local tc=e:GetLabelObject()
+	e:SetLabelObject(nil)
 	if not tc then return end
 	c28314946.effect_list={}
 	tc:IsOriginalEffectProperty(c28314946.efilter)
