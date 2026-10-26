@@ -66,6 +66,7 @@ function s.rtcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.Remove(c,0,REASON_COST+REASON_TEMPORARY)~=0 and c:GetOriginalCode()==id then
 		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
 		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(id,5))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetReset(RESET_PHASE+PHASE_END)
@@ -99,7 +100,7 @@ function s.rtop(e,tp,eg,ep,ev,re,r,rp)
 	if #sg>0 then
 		Duel.HintSelection(sg)
 		local tc=sg:GetFirst()
-		if not Duel.ReturnToField(tc) then Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,POS_FACEUP,true) end
+		if not Duel.ReturnToField(tc) then Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,tc:GetPreviousPosition(),true) end
 		if tc:IsFaceup() and tc:IsLocation(LOCATION_MZONE) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)

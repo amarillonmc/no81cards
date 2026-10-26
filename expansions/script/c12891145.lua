@@ -58,6 +58,7 @@ function s.rfilter(c,tp)
 	if not c:IsLocation(LOCATION_REMOVED) then return false end
 	if not (c:IsReason(REASON_TEMPORARY) and c:IsPreviousLocation(LOCATION_MZONE)) then return false end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return false end
+	if c:IsControler(1-tp) and not c:IsAbleToChangeControler() then return false end
 	return c:IsFaceup() and c:IsType(TYPE_MONSTER)
 end
 function s.rtcon(e,tp,eg,ep,ev,re,r,rp)
@@ -91,6 +92,6 @@ function s.rtop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetTarget(function(se,sc) return sc:GetFlagEffect(id)>0 and se:GetLabel()==sc:GetFlagEffectLabel(id) end)
 		e3:SetValue(tp)
 		Duel.RegisterEffect(e3,tp)
-		Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,POS_FACEUP,true)
+		Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,tc:GetPreviousPosition(),true)
 	end
 end

@@ -35,7 +35,7 @@ function s.initial_effect(c)
 end
 function s.ctfiler(c,e,tp,res)
 	local b1=c:IsLocation(LOCATION_MZONE) and ((res and res:GetOwner()==e:GetHandler() and res:GetValue()==id) or Duel.GetLocationCount(tp,LOCATION_MZONE)>0)
-	local b2=c:IsLocation(LOCATION_SZONE) and not c:IsLocation(LOCATION_FZONE) 
+	local b2=c:IsLocation(LOCATION_SZONE) and not c:IsLocation(LOCATION_FZONE) and c:IsStatus(STATUS_EFFECT_ENABLED)
 		and (Duel.GetLocationCount(tp,LOCATION_SZONE-LOCATION_FZONE)>1 and e:GetHandler():IsLocation(LOCATION_SZONE)
 		or Duel.GetLocationCount(tp,LOCATION_SZONE-LOCATION_FZONE)>0)
 	local b3=c:IsLocation(LOCATION_FZONE)
@@ -74,6 +74,7 @@ function s.ctop(e,tp,eg,ep,ev,re,r,rp)
 		local fid=e:GetHandler():GetFieldID()
 		tc:RegisterFlagEffect(id+o,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(id,4))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetCountLimit(1)
@@ -117,6 +118,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.Remove(tc,0,REASON_COST+REASON_TEMPORARY)~=0 then
 		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
 		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(id,5))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetReset(RESET_PHASE+PHASE_END)
@@ -136,6 +138,7 @@ end
 function s.rtfilter(c,tp)
 	if not c:IsLocation(LOCATION_REMOVED) then return false end
 	if not (c:IsReason(REASON_TEMPORARY) and c:IsPreviousLocation(LOCATION_MZONE)) then return false end
+	if c:IsControler(1-tp) and not c:IsAbleToChangeControler() then return false end
 	return c:IsFaceup() and c:IsType(TYPE_MONSTER)
 end
 function s.rttg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -158,6 +161,6 @@ function s.rtop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetTarget(function(se,sc) return sc:GetFlagEffect(id+o)>0 and se:GetLabel()==sc:GetFlagEffectLabel(id+o) end)
 		e3:SetValue(tp)
 		Duel.RegisterEffect(e3,tp)
-		Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,POS_FACEUP,true)
+		Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,tc:GetPreviousPosition(),true)
 	end
 end
