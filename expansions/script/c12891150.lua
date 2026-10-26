@@ -31,7 +31,7 @@ function s.initial_effect(c)
 	e2:SetLabelObject(e3)
 end
 function s.filter(c)
-	return (c:IsSetCard(0x6A7D) or c:IsLevelAbove(5) and c:IsAttribute(ATTRIBUTE_DARK)) and c:IsType(TYPE_MONSTER)
+	return (c:IsSetCard(0x6A73) or c:IsLevelAbove(5) and c:IsAttribute(ATTRIBUTE_DARK)) and c:IsType(TYPE_MONSTER)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end
