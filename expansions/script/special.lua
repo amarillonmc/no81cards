@@ -361,7 +361,7 @@ function Auxiliary.PreloadUds()
 		local ini=remain and not remain:IsHasProperty(EFFECT_FLAG_OATH)
 		local op=re:GetOperation()
 		local res=_ChangeChainOperation(ev,...)
-		if ini then re:GetHandler():CancelToGrave() end
+		if ini and re:GetHandler():IsOnField() then re:GetHandler():CancelToGrave() end
 		if not op then
 			local ct=ev
 			if ct<=0 then ct=Duel.GetCurrentChain() end
@@ -379,6 +379,13 @@ function Auxiliary.PreloadUds()
 			Duel.RegisterEffect(tge2,0)
 		end
 		return res
+	end
+
+	local _MoveSequence=Duel.MoveSequence
+	Duel.MoveSequence=function(c,seq)
+		if aux.GetValueType(c)~="Card" then return _MoveSequence(c,seq) end
+		if c:IsOnField() and (seq==c:GetSequence() or not Duel.CheckLocation(c:GetControler(),c:GetLocation(),seq)) then return end
+		return _MoveSequence(c,seq)
 	end
 	
 	--From REIKAI

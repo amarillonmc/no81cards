@@ -130,5 +130,5 @@ function c98990002.tgop(e,tp,eg,ep,ev,re,r,rp)
 	else
 		g=sg
 	end
-	Duel.SSet(tp,sg)
+	Duel.SSet(tp,g)
 end

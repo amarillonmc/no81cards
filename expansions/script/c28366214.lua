@@ -7,27 +7,32 @@ function c28366214.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
-	e1:SetCountLimit(1,28366214+EFFECT_COUNT_CODE_OATH)
+	--e1:SetCountLimit(1,28366214+EFFECT_COUNT_CODE_OATH)
 	--e1:SetCondition(c28366214.condition)
 	e1:SetTarget(c28366214.target)
 	e1:SetOperation(c28366214.activate)
 	c:RegisterEffect(e1)
 	--illumination maho
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EFFECT_SEND_REPLACE)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetTarget(c28366214.reptg)
-	e2:SetValue(c28366214.repval)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CUSTOM+28322511)
+	e2:SetOperation(c28366214.repop)
 	c:RegisterEffect(e2)
-	--[[--illumination SetCode
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_ADD_SETCODE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
-	e3:SetValue(0x283)
-	c:RegisterEffect(e3)]]
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(28322511)
+	e0:SetRange(LOCATION_GRAVE)
+	c:RegisterEffect(e0)
+	--global
+	if not ILLUMINA_REPLACE_GLOBAL then
+		ILLUMINA_REPLACE_GLOBAL = true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EFFECT_SEND_REPLACE)
+		ge1:SetTarget(c28366214.reptg)
+		ge1:SetValue(aux.FALSE)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
 function c28366214.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
@@ -72,43 +77,34 @@ function c28366214.efilter(e,te)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	return not g or not g:IsContains(e:GetHandler())
 end
-function c28366214.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return bit.band(r,REASON_EFFECT)~=0 and re and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsSetCard(0x284) and eg:IsContains(c) and (c:IsAbleToHand() or (re:GetHandler():IsFaceupEx() and (re:GetHandler():IsLevelAbove(1) or re:GetHandler():IsRankAbove(1)))) end
-	if c:IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(28366214,0)) then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_TO_DECK_REDIRECT)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetValue(LOCATION_HAND)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		c:RegisterEffect(e1)
-		--c:RegisterFlagEffect(28366214,RESET_EVENT+0x1de0000+RESET_PHASE+PHASE_END,0,1)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e2:SetCode(EVENT_TO_HAND)
-		e2:SetCountLimit(1)
-		e2:SetOperation(c28366214.chkop)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOHAND+RESET_PHASE+PHASE_END)
-		c:RegisterEffect(e2)
-		return true
-	else
-		local rc=re:GetHandler()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_LEVEL)
-		e1:SetValue(3)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
-		rc:RegisterEffect(e1)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_UPDATE_RANK)
-		rc:RegisterEffect(e2)
-	return false end
+function c28366214.repfilter(c)
+	return c:IsHasEffect(28322511) and c:GetDestination()==LOCATION_DECK --and c:IsLocation(LOCATION_GRAVE)
 end
-function c28366214.repval(e,c)
+function c28366214.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tg=eg:Filter(c28366214.repfilter,nil)
+	if chk==0 then return #tg>0 and bit.band(r,REASON_EFFECT)~=0 and re and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsSetCard(0x284) end
+	for p in aux.TurnPlayers() do
+		local g=tg:Filter(Card.IsControler,nil,p)
+		local ops,t={aux.Stringid(28384553,3)},{}
+		for tc in aux.Next(g) do table.insert(ops,aux.Stringid(tc:GetOriginalCode(),0)) table.insert(t,tc) end
+		if #g>1 then
+			while #t>1 do
+				Duel.Hint(HINT_SELECTMSG,p,HINTMSG_RESOLVEEFFECT)
+				local sel=Duel.SelectOption(p,table.unpack(ops))
+				if sel~=0 then
+					local tc=t[sel]
+					Duel.RaiseSingleEvent(tc,EVENT_CUSTOM+28322511,re,REASON_EFFECT,p,p,0)
+					--tc.replace_operation(e,p,eg,ep,ev,re,r,rp)
+					table.remove(ops,sel+1)
+					table.remove(t,sel)
+				else break end
+			end
+		end
+		for _,tc in ipairs(t) do Duel.RaiseSingleEvent(tc,EVENT_CUSTOM+28322511,re,REASON_EFFECT,p,p,0) end
+	end
 	return false
 end
-function c28366214.chkop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ConfirmCards(1-tp,e:GetHandler())
-	Duel.ShuffleHand(tp)
+function c28366214.repop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,28366214)
+	Duel.DiscardDeck(tp,Duel.GetFieldGroupCount(tp,LOCATION_HAND,0),REASON_EFFECT)
 end

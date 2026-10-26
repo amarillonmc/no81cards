@@ -13,43 +13,29 @@ function c28315746.initial_effect(c)
 	e1:SetOperation(c28315746.spop)
 	e1:SetLabel(1)
 	c:RegisterEffect(e1)
-	--lvchange
+	--spsummon-tuner
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28315746,1))
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_MZONE)
-	--e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1)
-	e2:SetTarget(c28315746.lvtg)
-	e2:SetOperation(c28315746.lvop)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	--e2:SetCountLimit(1,28315746+1)
+	e2:SetTarget(c28315746.spttg)
+	e2:SetOperation(c28315746.sptop)
 	c:RegisterEffect(e2)
-	--atk
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(c28315746.atkcon)
-	e3:SetValue(c28315746.atkval)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
-	--indes
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(c28315746.atkcon)
-	e4:SetValue(aux.tgoval)
-	c:RegisterEffect(e4)
 end
 function c28315746.tdfilter(c)
 	return c:IsType(TYPE_MONSTER+TYPE_SPELL) and c:IsFaceupEx() and c:IsAbleToDeck()
 end
 function c28315746.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_REMOVED+LOCATION_GRAVE) and chkc:IsControler(tp) and c28315746.tdfilter(chkc) end
-	if chk==0 then return Duel.GetMZoneCount(tp)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c28315746.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	if chkc then return chkc:IsLocation(LOCATION_REMOVED+LOCATION_GRAVE) and c28315746.tdfilter(chkc) end
+	if chk==0 then return Duel.GetMZoneCount(tp)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c28315746.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_REMOVED+LOCATION_GRAVE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c28315746.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,3,nil)
+	local g=Duel.SelectTarget(tp,c28315746.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_REMOVED+LOCATION_GRAVE,1,3,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 end
@@ -59,54 +45,35 @@ function c28315746.spop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=0
 	if g:GetCount()>0 then
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		local og=Duel.GetOperatedGroup()
-		ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+		ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 	end
-	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and ct>0 then
+	if c:IsRelateToChain() and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and ct>0 then
 		local e0=Effect.CreateEffect(c)
 		e0:SetType(EFFECT_TYPE_SINGLE)
 		e0:SetCode(EFFECT_UPDATE_LEVEL)
-		e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		e0:SetValue(ct)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e0)
 	end
 end
-function c28315746.lvfilter(c,lv)
-	return c:IsRace(RACE_FAIRY) and c:IsFaceup() and not c:IsLevel(lv) and c:IsLevelAbove(1)
+function c28315746.spfilter(c,e,tp,chk)
+	return c:IsSetCard(0x283) and c:IsType(TYPE_TUNER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (chk==0 or aux.NecroValleyFilter()(c))-- and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsType(TYPE_MONSTER)
 end
-function c28315746.lvtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28315746.lvfilter,tp,LOCATION_MZONE,0,1,nil,e:GetHandler():GetLevel()) and e:GetHandler():IsLevelAbove(1) end
+function c28315746.spttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetMZoneCount(tp)>0
+		and Duel.IsExistingMatchingCard(c28315746.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,0)
+	end--Duel.IsPlayerAffectedByEffect(tp,59822133)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
-function c28315746.lvop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
-	local g=Duel.GetMatchingGroup(c28315746.lvfilter,tp,LOCATION_MZONE,0,nil,c:GetLevel())
-	if #g==0 then return end
-	local tc=g:GetFirst()
-	if #g>1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-		tc=g:Select(tp,1,1,nil):GetFirst()
+function c28315746.sptop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetMZoneCount(tp)<=0 then return end
+	--local ft=Duel.IsPlayerAffectedByEffect(tp,59822133) and 1 or Duel.GetMZoneCount(tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sc=Duel.SelectMatchingCard(tp,c28315746.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp,1):GetFirst()
+	if sc and Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 and sc:IsSummonLocation(LOCATION_HAND) and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(28315746,2)) then
+		Duel.BreakEffect()
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
-	Duel.HintSelection(Group.FromCards(tc))
-	local op=Duel.SelectOption(tp,aux.Stringid(28315746,2),aux.Stringid(28315746,3))
-	local lv=op==0 and tc:GetLevel() or tc:GetLevel()+1
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_CHANGE_LEVEL)
-	e0:SetValue(lv)
-	e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-	c:RegisterEffect(e0)
-end
-function c28315746.atkfilter(c,seq)
-	return c:IsAttribute(ATTRIBUTE_FIRE) and c:IsFaceup() and c:GetSequence()==seq-1
-end
-function c28315746.atkcon(e)
-	local c=e:GetHandler()
-	return Duel.IsExistingMatchingCard(c28315746.atkfilter,c:GetControler(),LOCATION_MZONE,0,1,nil,c:GetSequence())
-end
-function c28315746.atkval(e,c)
-	return c:GetLevel()*100
 end
 function c28315746.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

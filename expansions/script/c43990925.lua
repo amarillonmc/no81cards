@@ -109,16 +109,16 @@ function c43990925.activate(e,tp,eg,ep,ev,re,r,rp)
 	aux.FCheckAdditional=nil
 end
 function c43990925.efilter(e,te)
-	return te:GetOwner()~=e:GetOwner()
+	return te:GetOwner()~=e:GetHandler()
 end
 function c43990925.tgfilter(c)
 	return c:IsSetCard(0x3511) and c:IsFaceupEx() and c:IsAbleToGrave()
 end
 function c43990925.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,2)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
 		and Duel.IsExistingMatchingCard(c43990925.tgfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler()) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c43990925.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -126,6 +126,6 @@ function c43990925.drop(e,tp,eg,ep,ev,re,r,rp)
 	if not tc then return end
 	Duel.HintSelection(Group.FromCards(tc))
 	if Duel.SendtoGrave(tc,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_GRAVE) then
-		Duel.Draw(tp,2,REASON_EFFECT)
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end

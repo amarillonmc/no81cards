@@ -113,12 +113,11 @@ function c43990944.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function c43990944.tgfilter(c)
-	return c:IsSetCard(0x3511) and c:IsAbleToGrave()
+	return c:IsSetCard(0x3511) and c:IsFaceup() and c:IsAbleToGrave()
 end
 function c43990944.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c43990944.tgfilter,tp,LOCATION_DECK,0,1,nil) end--Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and 
-	--Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(c43990944.tgfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_ONFIELD)
 end
 function c43990944.tgop(e,tp,eg,ep,ev,re,r,rp)
 	--[[if not (Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(c43990944.tgfilter,tp,LOCATION_DECK,0,1,nil)) then return end
@@ -126,8 +125,8 @@ function c43990944.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
 	Duel.HintSelection(g1)]]
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c43990944.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if #g>0 then Duel.SendtoGrave(g,REASON_EFFECT) end
+	local g=Duel.SelectMatchingCard(tp,c43990944.tgfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	if #g>0 then Duel.HintSelection(g) Duel.SendtoGrave(g,REASON_EFFECT) end
 end
 function c43990944.atkval(e,c)
 	return c43990944.leave_count*50

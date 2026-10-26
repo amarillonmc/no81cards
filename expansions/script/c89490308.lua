@@ -102,13 +102,16 @@ function s.poscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,10,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,10,10,REASON_COST)
 end
+function s.ovfilter(c,e)
+	return c:IsCanOverlay() and not c:IsImmuneToEffect(e)
+end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.ovfilter,tp,0,LOCATION_ONFIELD,1,nil,e) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,nil)
+	local g=Duel.GetMatchingGroup(s.ovfilter,tp,0,LOCATION_ONFIELD,nil,e)
 	if c:IsRelateToEffect(e) then
 		for tc in aux.Next(g) do
 			tc:CancelToGrave()

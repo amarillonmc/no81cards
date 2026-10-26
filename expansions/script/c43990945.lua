@@ -15,6 +15,8 @@ function c43990945.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,43990942)
+	e1:SetCost(c43990945.cost)
 	e1:SetTarget(c43990945.target)
 	e1:SetOperation(c43990945.activate)
 	c:RegisterEffect(e1)
@@ -31,6 +33,25 @@ function c43990945.initial_effect(c)
 	e2:SetTarget(c43990945.thtg)
 	e2:SetOperation(c43990945.thop)
 	c:RegisterEffect(e2)
+	--counter
+	Duel.AddCustomActivityCounter(43990945,ACTIVITY_SPSUMMON,c43990945.counterfilter)
+end
+function c43990945.counterfilter(c)
+	return c:IsSetCard(0x3511)
+end
+function c43990945.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetCustomActivityCount(43990945,tp,ACTIVITY_SPSUMMON)==0 end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c43990945.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c43990945.splimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return not c:IsSetCard(0x3511)
 end
 function c43990945.lfcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -59,18 +80,18 @@ function c43990945.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local s2=Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,aux.FilterBoolFunction(Card.IsCode,43990944),e,tp,mg1,mg2,Card.GetOriginalLevel,"Greater")
 	aux.RCheckAdditional=nil
 	aux.RGCheckAdditional=nil
-	local b1=s1 and Duel.GetFlagEffect(tp,43990943)==0
-	local b2=s2 and Duel.GetFlagEffect(tp,43990942)==0
+	local b1=s1-- and Duel.GetFlagEffect(tp,43990943)==0
+	local b2=s2-- and Duel.GetFlagEffect(tp,43990942)==0
 	if chk==0 then return b1 or b2 end
 	local op=aux.SelectFromOptions(tp,
 		{b1,aux.Stringid(43990945,0)},
 		{b2,aux.Stringid(43990945,1)})
 	e:SetLabel(op)
 	if op==1 then
-		Duel.RegisterFlagEffect(tp,43990943,RESET_PHASE+PHASE_END,0,1)
+		--Duel.RegisterFlagEffect(tp,43990943,RESET_PHASE+PHASE_END,0,1)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 	elseif op==2 then
-		Duel.RegisterFlagEffect(tp,43990942,RESET_PHASE+PHASE_END,0,1)
+		--Duel.RegisterFlagEffect(tp,43990942,RESET_PHASE+PHASE_END,0,1)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 	end
 end
