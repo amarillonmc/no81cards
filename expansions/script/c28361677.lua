@@ -115,7 +115,7 @@ function c28361677.repop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_UPDATE_RANK)
 	rc:RegisterEffect(e2)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local tc=Duel.SelectMatchingCard(tp,c28361677.lvfilter,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c28361677.lvfilter,tp,LOCATION_MZONE,0,1,1,rc):GetFirst()
 	if not tc then return end
 	Duel.HintSelection(Group.FromCards(tc))
 	local e3=e1:Clone()

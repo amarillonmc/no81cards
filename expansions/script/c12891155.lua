@@ -35,11 +35,12 @@ function s.initial_effect(c)
 end
 function s.ctfiler(c,e,tp,res)
 	local b1=c:IsLocation(LOCATION_MZONE) and ((res and res:GetOwner()==e:GetHandler() and res:GetValue()==id) or Duel.GetLocationCount(tp,LOCATION_MZONE)>0)
-	local b2=c:IsLocation(LOCATION_SZONE) and not c:IsLocation(LOCATION_FZONE) and c:IsStatus(STATUS_EFFECT_ENABLED)
-		and (Duel.GetLocationCount(tp,LOCATION_SZONE-LOCATION_FZONE)>1 and e:GetHandler():IsLocation(LOCATION_SZONE)
-		or Duel.GetLocationCount(tp,LOCATION_SZONE-LOCATION_FZONE)>0)
+	local check1=c:IsType(TYPE_CONTINUOUS) or c:IsFacedown() or (c:IsHasEffect(EFFECT_REMAIN_FIELD) and c:IsFaceup())
+	local check2=Duel.GetLocationCount(tp,LOCATION_SZONE-LOCATION_FZONE)>0 and e:GetHandler():IsLocation(LOCATION_SZONE)
+	local check3=Duel.GetLocationCount(tp,LOCATION_SZONE-LOCATION_FZONE)>1
+	local b2=c:IsLocation(LOCATION_SZONE) and not c:IsLocation(LOCATION_FZONE) and check1 and (check2 or check3)
 	local b3=c:IsLocation(LOCATION_FZONE)
-	return c:IsAbleToChangeControler() and (b1 or b2)
+	return c:IsAbleToChangeControler() and (b1 or b2 or b3)
 end
 function s.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local res=e:GetHandler():IsHasEffect(EFFECT_TRAP_ACT_IN_SET_TURN,tp)
@@ -139,6 +140,7 @@ function s.rtfilter(c,tp)
 	if not c:IsLocation(LOCATION_REMOVED) then return false end
 	if not (c:IsReason(REASON_TEMPORARY) and c:IsPreviousLocation(LOCATION_MZONE)) then return false end
 	if c:IsControler(1-tp) and not c:IsAbleToChangeControler() then return false end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return false end
 	return c:IsFaceup() and c:IsType(TYPE_MONSTER)
 end
 function s.rttg(e,tp,eg,ep,ev,re,r,rp,chk)

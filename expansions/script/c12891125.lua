@@ -88,9 +88,6 @@ end
 function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
 end
-function s.rmfilter(c)
-	return c:IsFaceup() and c:IsAbleToGrave()
-end
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(1-tp)
@@ -103,7 +100,7 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetFieldGroup(tp,LOCATION_REMOVED,LOCATION_REMOVED)
 		if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local sg=g:FilterSelect(tp,s.rmfilter,1,3,nil)
+			local sg=g:Select(tp,1,3,nil)
 			if #sg>0 then
 				Duel.SendtoGrave(sg,REASON_EFFECT+REASON_RETURN)
 			end

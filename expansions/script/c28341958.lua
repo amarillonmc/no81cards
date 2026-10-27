@@ -100,7 +100,7 @@ end
 function c28341958.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,28341958)
 	local g=Duel.GetMatchingGroup(c28341958.lvfilter,tp,LOCATION_MZONE,0,nil)
-	if g<2 or g:GetClassCount(Card.GetLevel)==1 then return end
+	if #g<2 or g:GetClassCount(Card.GetLevel)==1 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local sg=g:SelectSubGroup(tp,aux.dlvcheck,false,2,2)
 	Duel.HintSelection(sg)
