@@ -60,7 +60,7 @@ function c28316345.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28316345.efilter(e)
 	local ct=#c28316345.effect_list
-	if e:IsHasRange(LOCATION_HAND) and e:IsActivated() then c28316345.effect_list[ct+1]=e end
+	if (e:IsHasRange(LOCATION_HAND) or e:GetCode()==EVENT_TO_HAND and (e:GetType()&EFFECT_TYPE_SINGLE)~=0) and e:IsActivated() then c28316345.effect_list[ct+1]=e end
 	return false--e:IsHasRange(LOCATION_HAND) and e:IsActivated()
 end
 function c28316345.spfilter(c,e,tp)
@@ -91,10 +91,24 @@ function c28316345.spop(e,tp,eg,ep,ev,re,r,rp)
 	--copy
 	tc:CreateEffectRelation(e)--Card.IsRelateToChain
 	tc:CreateEffectRelation(te)--Card.IsRelateToEffect
+	local tg,op=te:GetTarget(),te:GetOperation()
+	local e1=Effect.CreateEffect(tc)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CUSTOM+28316345)
+	e1:SetProperty(te:GetProperty())
+	e1:SetRange(LOCATION_HAND)
+	e1:SetTarget(tg)
+	e1:SetOperation(op)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e1)
+	Duel.RaiseSingleEvent(tc,EVENT_CUSTOM+28316345,e,REASON_EFFECT,tp,tp,0)
+	if e1 then e1:Reset() end
+	--[[tc:CreateEffectRelation(e)--Card.IsRelateToChain
+	tc:CreateEffectRelation(te)--Card.IsRelateToEffect
 	local tg=te:GetTarget()
 	if tg then tg(te,tp,eg,ep,ev,re,r,rp,1) end
 	local op=te:GetOperation()
-	if op then op(te,tp,eg,ep,ev,re,r,rp) end
+	if op then op(te,tp,eg,ep,ev,re,r,rp) end]]
 end
 function c28316345.reccon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsSummonLocation,1,nil,LOCATION_HAND+LOCATION_EXTRA) and #eg==1 and not eg:IsContains(e:GetHandler())
@@ -102,8 +116,8 @@ end
 function c28316345.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x283)
 end
-function c28316345.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil) end
+function c28316345.rectg(e,tp,eg,ep,ev,re,r,rp,chk,chkc,exc)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,exc) end
 end
 function c28316345.recop(e,tp,eg,ep,ev,re,r,rp)
 	local ag=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
