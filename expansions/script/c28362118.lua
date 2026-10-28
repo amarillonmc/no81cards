@@ -34,7 +34,7 @@ function c28362118.initial_effect(c)
 	e2:SetTarget(c28362118.sptg)
 	e2:SetOperation(c28362118.spop)
 	c:RegisterEffect(e2)
-	--control
+	--[[--control
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(28362118,1))
 	e3:SetCategory(CATEGORY_CONTROL)
@@ -46,7 +46,7 @@ function c28362118.initial_effect(c)
 	e3:SetCondition(c28362118.ctcon)
 	e3:SetTarget(c28362118.cttg)
 	e3:SetOperation(c28362118.ctop)
-	c:RegisterEffect(e3)
+	c:RegisterEffect(e3)]]
 	if not HOKURA_EFFECT_HINT then
 		HOKURA_EFFECT_HINT = true
 		local ge1=Effect.CreateEffect(c)
@@ -204,7 +204,7 @@ function c28362118.checkop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function c28362118.hintop(e,tp,eg,ep,ev,re,r,rp)
-	--if rp~=tp then return end
+	if rp~=tp then return end
 	local member_list={28315544,28314946,28316345,28316048,28316849}
 	local code_ascver={28314946,28315544,28316048,28316345,28316849}--ascending order
 	for _,te in pairs({Duel.IsPlayerAffectedByEffect(rp,EFFECT_FLAG_EFFECT+28362118)}) do te:Reset() end
