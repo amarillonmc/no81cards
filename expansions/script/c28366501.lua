@@ -141,7 +141,7 @@ function c28366501.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 				else break end
 			end
 		end
-		for _,tc in ipairs(t) do Duel.RaiseSingleEvent(tc,EVENT_CUSTOM+28366501,re,REASON_EFFECT,p,p,0) end
+		for _,tc in ipairs(t) do Duel.RaiseSingleEvent(tc,EVENT_CUSTOM+28322511,re,REASON_EFFECT,p,p,0) end
 	end
 	return false
 end
