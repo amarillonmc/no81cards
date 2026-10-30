@@ -89,8 +89,6 @@ function c28316345.spop(e,tp,eg,ep,ev,re,r,rp)
 	end]]--
 	c28316345.effect_list={}
 	--copy
-	tc:CreateEffectRelation(e)--Card.IsRelateToChain
-	tc:CreateEffectRelation(te)--Card.IsRelateToEffect
 	local tg,op=te:GetTarget(),te:GetOperation()
 	local e1=Effect.CreateEffect(tc)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -101,6 +99,8 @@ function c28316345.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(op)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	tc:RegisterEffect(e1)
+	tc:CreateEffectRelation(e)--Card.IsRelateToChain
+	tc:CreateEffectRelation(e1)--Card.IsRelateToEffect
 	Duel.RaiseSingleEvent(tc,EVENT_CUSTOM+28316345,e,REASON_EFFECT,tp,tp,0)
 	if e1 then e1:Reset() end
 	--[[tc:CreateEffectRelation(e)--Card.IsRelateToChain

@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
-	--赋予神之进化
+	--
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
@@ -59,7 +59,7 @@ function cm.tgfilter2(c)
 	return c:IsAbleToGrave() and c:IsRace(RACE_DIVINE) and c:IsReleasable()
 end
 function cm.srfilter(c)
-	return (aux.IsCodeListed(c,10000000) or aux.IsCodeListed(c,10000010) or aux.IsCodeListed(c,10000020) or c:IsCode(5253985,7373632,59094601,39913299,79339613,42469671,85758066,85182315,79868386,32247099,269012,10000000,10000010,10000020,79387392)) and c:IsAbleToHand()
+	return (aux.IsCodeListed(c,10000000) or aux.IsCodeListed(c,10000010) or aux.IsCodeListed(c,10000020) or c:IsCode(5253985,7373632,59094601,39913299,79339613,42469671,85758066,85182315,79868386,32247099,269012,10000000,10000010,10000020)) and c:IsAbleToHand()
 	
 end
 function cm.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -81,6 +81,7 @@ function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.srfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 and g:GetFirst():IsLocation(LOCATION_HAND) and Duel.IsExistingMatchingCard(cm.tgfilter2,tp,LOCATION_MZONE,0,1,nil) then
+		Duel.ConfirmCards(1-tp,g)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 		local sg=Duel.SelectMatchingCard(tp,cm.tgfilter2,tp,LOCATION_MZONE,0,1,1,nil)
 		if sg:GetCount()>0 then

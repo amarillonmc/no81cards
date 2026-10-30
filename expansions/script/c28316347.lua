@@ -45,7 +45,7 @@ function c28316347.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28316347.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	if c:IsRelateToChain() then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
@@ -57,6 +57,7 @@ function c28316347.recop(e,tp,eg,ep,ev,re,r,rp)
 	local b1=true
 	local b2=Duel.IsPlayerCanDraw(tp,1)
 	local b3=Duel.IsExistingMatchingCard(Card.IsReleasableByEffect,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	--if not (b1 or b2 or b3) then return end
 	local op=aux.SelectFromOptions(tp,
 		{b1,aux.Stringid(28316347,0)},
 		{b2,aux.Stringid(28316347,1)},
