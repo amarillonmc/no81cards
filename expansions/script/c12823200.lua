@@ -10,25 +10,6 @@ function s.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetOperation(s.lsop)
 	c:RegisterEffect(e1)
-	--Activate
-	local e2=Effect.CreateEffect(c)
-	e2:SetRange(LOCATION_EXTRA)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCondition(s.spcon)
-	e2:SetCost(s.spcost)
-	e2:SetOperation(s.spop)
-	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_ACTIVATE_COST)
-	e3:SetRange(LOCATION_EXTRA)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetLabelObject(e2)
-	e3:SetTargetRange(1,0)
-	e3:SetTarget(s.costtg)
-	e3:SetOperation(s.costop)
-	c:RegisterEffect(e3)
 	--to hand
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id,1))
@@ -42,6 +23,12 @@ function s.initial_effect(c)
 	if not s.global_check then
 		s.global_check=true
 		record_tab2={}
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAINING)
+		ge1:SetCondition(s.spcon)
+		ge1:SetOperation(s.spop)
+		Duel.RegisterEffect(ge1,0)
 	end
 end
 function s.lsop(e,tp,eg,ep,ev,re,r,rp)
@@ -57,25 +44,42 @@ end
 function s.splimit(e,c)
 	return not c:IsSetCard(0xaa70)
 end
-function s.spcon(e,c,tp)
-	local c=e:GetHandler()
-	local tp=c:GetControler()
-	local chain=Duel.GetCurrentChain()
+function s.spfilter(c,tp)
 	local flag=false
+	local chain=Duel.GetCurrentChain()
 	for i=1,chain do
-		local re=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
-		if re:GetHandlerPlayer()==tp and re:GetHandler():IsSetCard(0xca70) then
+		local re,rp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+		if rp==tp and re:GetHandler():IsSetCard(0xca70) then
 			flag=true
 		end 
 	end
-	return flag
+	return flag and (c:IsOriginalCodeRule(id) or c:IsHasEffect(id)) 
+		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.IsPlayerCanSpecialSummon(tp,0,POS_FACEUP,tp,c)
 end
-function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
-	and Duel.IsPlayerCanSpecialSummon(tp,0,POS_FACEUP,tp,c) end
+function s.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(s.spfilter,re:GetHandlerPlayer(),LOCATION_EXTRA,0,1,nil,re:GetHandlerPlayer())
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
+	local p=re:GetHandlerPlayer()
+	if Duel.SelectYesNo(p,aux.Stringid(id,2)) then
+		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
+		local sg=Duel.SelectMatchingCard(p,s.spfilter,p,LOCATION_EXTRA,0,1,1,nil,p)
+		if #sg>0 then
+			local tc=sg:GetFirst()
+			Duel.SpecialSummon(tc,0,p,p,false,false,POS_FACEUP)
+			local e2=Effect.CreateEffect(tc)
+			e2:SetDescription(aux.Stringid(id,0))
+			e2:SetType(EFFECT_TYPE_QUICK_F)
+			e2:SetCode(id)
+			e2:SetReset(RESET_EVENT+RESET_TODECK)
+			e2:SetRange(LOCATION_MZONE)
+			e2:SetOperation(s.op)
+			tc:RegisterEffect(e2)
+			Duel.RaiseEvent(eg,id,re,r,rp,ep,ev)
+		end
+	end
+end
+function s.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)

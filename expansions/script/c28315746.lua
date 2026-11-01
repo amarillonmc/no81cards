@@ -29,31 +29,37 @@ function c28315746.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c28315746.tdfilter(c)
-	return c:IsType(TYPE_MONSTER+TYPE_SPELL) and c:IsFaceupEx() and c:IsAbleToDeck()
+	return c:IsFaceupEx() and c:IsAbleToDeck()--c:IsType(TYPE_MONSTER+TYPE_SPELL) and 
 end
 function c28315746.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_REMOVED+LOCATION_GRAVE) and c28315746.tdfilter(chkc) end
-	if chk==0 then return Duel.GetMZoneCount(tp)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c28315746.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_REMOVED+LOCATION_GRAVE,1,nil) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and c28315746.tdfilter(chkc) end
+	if chk==0 then return Duel.GetMZoneCount(tp)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c28315746.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c28315746.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_REMOVED+LOCATION_GRAVE,1,3,nil)
+	local g=Duel.SelectTarget(tp,c28315746.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,3,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 end
 function c28315746.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetTargetsRelateToChain()
-	local ct=0
-	if g:GetCount()>0 then
-		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-	end
-	if c:IsRelateToChain() and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and ct>0 then
+	local tg=Duel.GetTargetsRelateToChain()
+	if c:IsRelateToChain() and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 then
+		local ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil):Filter(Card.IsRace,nil,RACE_FAIRY)
+		if ct==0 or #g==0 or not Duel.SelectYesNo(tp,aux.Stringid(28315746,3)) then return end
+		Duel.BreakEffect()
+		local tc=g:GetFirst()
+		if #g>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+			tc=g:Select(tp,1,1,nil):GetFirst()
+		end
+		Duel.HintSelection(Group.FromCards(tc))
 		local e0=Effect.CreateEffect(c)
 		e0:SetType(EFFECT_TYPE_SINGLE)
 		e0:SetCode(EFFECT_UPDATE_LEVEL)
+		e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e0:SetValue(ct)
-		e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		c:RegisterEffect(e0)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e0)
 	end
 end
 function c28315746.spfilter(c,e,tp,chk)

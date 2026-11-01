@@ -29,7 +29,7 @@ function c28315443.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c28315443.tdfilter(c)
-	return c:IsType(TYPE_MONSTER+TYPE_SPELL) and c:IsFaceupEx() and c:IsAbleToDeck()
+	return c:IsFaceupEx() and c:IsAbleToDeck()--c:IsType(TYPE_MONSTER+TYPE_SPELL) and 
 end
 function c28315443.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and c28315443.tdfilter(chkc) end
@@ -41,19 +41,25 @@ function c28315443.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c28315443.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetTargetsRelateToChain()
-	local ct=0
-	if g:GetCount()>0 then
-		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-	end
-	if c:IsRelateToChain() and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and ct>0 then
+	local tg=Duel.GetTargetsRelateToChain()
+	if c:IsRelateToChain() and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 then
+		local ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil):Filter(Card.IsRace,nil,RACE_FAIRY)
+		if ct==0 or #g==0 or not Duel.SelectYesNo(tp,aux.Stringid(28315443,3)) then return end
+		Duel.BreakEffect()
+		local tc=g:GetFirst()
+		if #g>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+			tc=g:Select(tp,1,1,nil):GetFirst()
+		end
+		Duel.HintSelection(Group.FromCards(tc))
 		local e0=Effect.CreateEffect(c)
 		e0:SetType(EFFECT_TYPE_SINGLE)
 		e0:SetCode(EFFECT_UPDATE_LEVEL)
+		e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e0:SetValue(ct)
-		e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		c:RegisterEffect(e0)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e0)
 	end
 end
 function c28315443.setfilter(c,e,tp)
@@ -75,7 +81,7 @@ function c28315443.setop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 		Duel.ConfirmCards(1-tp,tc)
 	end
-	if Duel.IsExistingMatchingCard(c28315443.cfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsPlayerCanDiscardDeck(tp,3) and Duel.SelectYesNo(tp,aux.Stringid(28315443,2)) then
+	if Duel.IsExistingMatchingCard(c28315443.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.IsPlayerCanDiscardDeck(tp,3) and Duel.SelectYesNo(tp,aux.Stringid(28315443,2)) then
 		Duel.BreakEffect()
 		Duel.DiscardDeck(tp,3,REASON_EFFECT)
 	end

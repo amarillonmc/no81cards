@@ -80,6 +80,7 @@ function s.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.Remove(c,0,REASON_COST+REASON_TEMPORARY)~=0 and c:GetOriginalCode()==id then
 		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
 		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(id,5))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetReset(RESET_PHASE+PHASE_END)
@@ -105,7 +106,8 @@ function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(s.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
-function s.sfilter(c)
+function s.sfilter(c,tp)
+	if c:IsControler(1-tp) and not c:IsAbleToChangeControler() then return false end
 	return c:IsFaceup() and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
@@ -114,7 +116,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		Duel.HintSelection(g)
 		if Duel.Destroy(g,REASON_EFFECT,LOCATION_REMOVED)>0 and g:GetFirst():IsLocation(LOCATION_REMOVED) then
-			local sg=Duel.GetMatchingGroup(s.sfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
+			local sg=Duel.GetMatchingGroup(s.sfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil,tp)
 			if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

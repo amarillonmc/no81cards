@@ -47,7 +47,7 @@ function s.ritualfilter(c,e,tp)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,true)
 end
 function s.ritualcostfilter(c,e,tp)
-	return c:IsFaceup() and c:GetOriginalType()&(TYPE_RITUAL+TYPE_MONSTER)~=0 and c:IsAbleToRemove(tp)
+	return c:IsFaceupEx() and c:GetOriginalType()&(TYPE_RITUAL+TYPE_MONSTER)~=0 and c:IsAbleToRemove(tp)
 		and Duel.IsExistingMatchingCard(s.linkfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)
 end
 function s.linkfilter(c,e,tp,mc)
@@ -60,7 +60,7 @@ function s.checkop1(e,tp)
 	return Duel.IsExistingMatchingCard(s.linkcostfilter,tp,LOCATION_ONFIELD,0,1,nil,e,tp)
 end
 function s.checkop2(e,tp)
-	return Duel.IsExistingMatchingCard(s.ritualcostfilter,tp,LOCATION_ONFIELD,0,1,nil,e,tp)
+	return Duel.IsExistingMatchingCard(s.ritualcostfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil,e,tp)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return s.checkop1(e,tp) or s.checkop2(e,tp) end

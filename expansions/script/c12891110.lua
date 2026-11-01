@@ -80,6 +80,7 @@ function s.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.Remove(c,0,REASON_COST+REASON_TEMPORARY)~=0 and c:GetOriginalCode()==id then
 		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,4))
 		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(id,5))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetReset(RESET_PHASE+PHASE_END)
@@ -98,7 +99,7 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
 end
 function s.tgfilter(c)
-	return c:IsSetCard(0x6A73) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGrave()
+	return c:IsSetCard(0x6A73) and c:IsAbleToGrave()
 end
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
@@ -112,10 +113,13 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 		local rg=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 		if #rg==0 then return end
 		if Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+			Duel.BreakEffect()
 			local tc=rg:Select(tp,1,1,nil):GetFirst()
+			Duel.HintSelection(Group.FromCards(tc))
 			if Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
 				tc:RegisterFlagEffect(id+o,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,2,0,aux.Stringid(id,2))
 				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetDescription(aux.Stringid(id,6))
 				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 				e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
 				if Duel.GetCurrentPhase()==PHASE_STANDBY then

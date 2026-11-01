@@ -1,51 +1,58 @@
 --授冠之时
+local s,id,o=GetID()
 function c75081102.initial_effect(c)
-	--activate
-	local e0=aux.AddRitualProcGreater2(c,c75081102.spfilter,LOCATION_HAND+LOCATION_DECK,nil,c75081102.mfilter)
-	e0:SetCountLimit(1,75081102+EFFECT_COUNT_CODE_OATH)
-	c:RegisterEffect(e0)  
-	--spsummon
+	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(75081102,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_TO_HAND)
-	--e1:SetCountLimit(1,id)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(c75081102.spcon)
-	e1:SetTarget(c75081102.sptg)
-	e1:SetOperation(c75081102.spop)
-	c:RegisterEffect(e1)  
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
+	e1:SetOperation(s.activate)
+	c:RegisterEffect(e1)
+	--synchro summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_SUMMON+CATEGORY_MSET)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e2:SetCondition(s.sccon)
+	e2:SetTarget(s.sctg)
+	e2:SetOperation(s.scop)
+	c:RegisterEffect(e2)
 end
-function c75081102.spfilter(c)
-	return c:IsSetCard(0xc754)
+function s.filter(c)
+	return c:IsSetCard(0xc754) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
-function c75081102.mfilter(c)
-	return c:IsSetCard(0xc754)
-end
---
-function c75081102.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsReason(REASON_DRAW)
-end
-function c75081102.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local c=e:GetHandler()
-	if chkc then
-		local te=e:GetLabelObject()
-		local tg=te:GetTarget()
-		return tg(e,tp,eg,ep,ev,re,r,rp,0,chkc)
+function s.activate(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(s.filter,tp,LOCATION_DECK,0,nil)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
 	end
-	if chk==0 then return true end
-	e:SetLabel(0)
-	local te=c:CheckActivateEffect(true,true,false)
-	e:SetLabelObject(te)
-	e:SetProperty(te:GetProperty())
-	local tg=te:GetTarget()
-	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
-	Duel.ClearOperationInfo(0)
 end
-function c75081102.spop(e,tp,eg,ep,ev,re,r,rp)
-	local te=e:GetLabelObject()
-	if not te then return end
-	local op=te:GetOperation()
-	if op then op(e,tp,eg,ep,ev,re,r,rp) end
+function s.scfilter(c,tp)
+	return c:IsSetCard(0xc754) and c:IsFaceup() and c:IsControler(tp)
+end
+function s.sccon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(s.scfilter,1,nil,tp)
+end
+function s.sumfilter(c)
+	return c:IsSetCard(0xc754) and c:IsSummonable(true,nil) 
+end
+function s.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
+end
+function s.scop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+	local g=Duel.SelectMatchingCard(tp,s.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.Summon(tp,tc,true,nil)
+	end
 end

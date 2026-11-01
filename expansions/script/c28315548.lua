@@ -22,6 +22,7 @@ function c28315548.initial_effect(c)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	--e2:SetCountLimit(1,28315548+1)
+	e2:SetCost(c28315548.thcost)
 	e2:SetTarget(c28315548.thtg)
 	e2:SetOperation(c28315548.thop)
 	c:RegisterEffect(e2)
@@ -30,7 +31,7 @@ function c28315548.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c28315548.tdfilter(c)
-	return c:IsType(TYPE_MONSTER+TYPE_SPELL) and c:IsFaceupEx() and c:IsAbleToDeck()
+	return c:IsFaceupEx() and c:IsAbleToDeck()--c:IsType(TYPE_MONSTER+TYPE_SPELL) and 
 end
 function c28315548.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and c28315548.tdfilter(chkc) end
@@ -40,23 +41,43 @@ function c28315548.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 end
+function c28315548.lvfilter(c)
+	return c:IsRace(RACE_FAIRY) and c:IsLevelAbove(1) and c:IsFaceup()
+end
 function c28315548.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetTargetsRelateToChain()
-	local ct=0
-	if g:GetCount()>0 then
-		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-		if Duel.GetOperatedGroup():IsExists(Card.IsCode,1,nil,28335405) then ct=ct+1 end
-	end
-	if c:IsRelateToChain() and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and ct>0 then
+	local tg=Duel.GetTargetsRelateToChain()
+	if c:IsRelateToChain() and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 then
+		local lg=Duel.GetMatchingGroup(c28315548.lvfilter,tp,LOCATION_MZONE,0,nil)
+		if not Duel.GetOperatedGroup():IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) or lg:GetClassCount(Card.GetLevel)==1 or not Duel.SelectYesNo(tp,aux.Stringid(28315548,3)) then return end
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(28315548,4))
+		local tc=lg:Select(tp,1,1,nil):GetFirst()
+		Duel.HintSelection(Group.FromCards(tc))
+		local g=lg:Filter(aux.NOT(Card.IsLevel),nil,tc:GetLevel())
+		local lv=g:GetFirst():GetLevel()
+		if g:GetClassCount(Card.GetLevel)>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(28315548,7))
+			local sc=g:Select(tp,1,1,nil):GetFirst()
+			lv=sc:GetLevel()
+		end
 		local e0=Effect.CreateEffect(c)
 		e0:SetType(EFFECT_TYPE_SINGLE)
-		e0:SetCode(EFFECT_UPDATE_LEVEL)
-		e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		e0:SetValue(ct)
-		c:RegisterEffect(e0)
+		e0:SetCode(EFFECT_CHANGE_LEVEL)
+		e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e0:SetValue(lv)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e0)
 	end
+end
+function c28315548.costfilter(c)
+	return c:IsCode(28335405) and c:IsAbleToGraveAsCost()
+end
+function c28315548.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28315548.costfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c28315548.costfilter,tp,LOCATION_DECK,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c28315548.thfilter(c)
 	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

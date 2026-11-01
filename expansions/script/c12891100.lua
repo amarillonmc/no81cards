@@ -86,6 +86,7 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.Remove(c,POS_FACEUP,REASON_COST+REASON_TEMPORARY)~=0 and c:GetOriginalCode()==id then
 		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
 		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(id,5))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetReset(RESET_PHASE+PHASE_END)

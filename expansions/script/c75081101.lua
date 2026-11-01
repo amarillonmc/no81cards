@@ -1,59 +1,71 @@
 --告别之黑鹫 艾黛尔贾特
+local s,id,o=GetID()
 function c75081101.initial_effect(c)
-	--to hand
+	--summon proc
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(id,0))
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e4:SetCode(EFFECT_LIMIT_SUMMON_PROC)
+	e4:SetCondition(s.sumrcon)
+	e4:SetOperation(s.sumrop)
+	e4:SetValue(SUMMON_TYPE_NORMAL)
+	c:RegisterEffect(e4)   
+	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,75081101)
-	e1:SetCondition(c75081101.thcon)
-	e1:SetTarget(c75081101.thtg)
-	e1:SetOperation(c75081101.thop)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetDescription(aux.Stringid(id,1))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1)
+	e1:SetCondition(s.condition)
+	e1:SetTarget(s.target)
+	e1:SetOperation(s.operation)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_SUMMON_SUCCESS)
-	c:RegisterEffect(e2)
-	--ritual level
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_RITUAL_LEVEL)
-	e3:SetValue(c75081101.rlevel)
-	c:RegisterEffect(e3)
+	if not s.global_check then
+		s.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SUMMON_SUCCESS)
+		ge1:SetLabel(id)
+		ge1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		ge1:SetOperation(aux.sumreg)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
-function c75081101.rlevel(e,c)
-	local lv=aux.GetCappedLevel(e:GetHandler())
-	if c:IsSetCard(0xc754) then
-		local clv=c:GetLevel()
-		return (lv<<16)+clv
-	else return lv end
+function s.dualfilter(c)
+	return c:IsSetCard(0xc754) and c:IsAbleToGrave()
+end
+function s.sumrcon(e,c,minc)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local mg=Duel.GetMatchingGroup(s.dualfilter,tp,LOCATION_DECK,0,nil)
+	--local res=(aux.DualNormalCondition(e) and mg:GetCount()>0)
+	return mg:GetCount()>0 
+end
+function s.sumrop(e,tp,eg,ep,ev,re,r,rp,c)
+	local mg=Duel.GetMatchingGroup(s.dualfilter,tp,LOCATION_DECK,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local tg=mg:Select(tp,1,1,nil)
+	Duel.SendtoGrave(tg,REASON_SUMMON)
 end
 --
-function c75081101.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+function s.condition(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(id)>0
 end
-function c75081101.filter(c)
-	return c:IsSetCard(0xc754) and c:IsAbleToHand()
+function s.filter(c,e,tp)
+	return c:IsSetCard(0xc754) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c75081101.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c75081101.filter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_HAND)
 end
-function c75081101.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c75081101.filter,tp,LOCATION_DECK,0,1,1,nil)
+function s.operation(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.filter),tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-		if not g:GetFirst():IsLocation(LOCATION_HAND) then return end
-		Duel.BreakEffect()
-		Duel.SkipPhase(tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetTargetRange(1,0)
-		e1:SetCode(EFFECT_CANNOT_BP)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
