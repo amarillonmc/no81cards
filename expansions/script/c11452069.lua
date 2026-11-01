@@ -92,7 +92,7 @@ function cm.initial_effect(c)
 	if not pnfl_mvfix then
 		pnfl_mvfix={}
 		pnfl_mvfix_selfdes={}
-		--EVENT_MOVE_PNFL = EVENT_CUSTOM+11452085 and not pnfl_mvfix[c]
+		--EVENT_MOVE_PNFL = EVENT_CUSTOM+11452085
 		--EVENT_MOVE_DELAY_PNFL = EVENT_CUSTOM+11452086
 		--GetFlagEffect(11452085) = NOT_TRIGGER_SUMMON_EVENT
 		--pnfl_mvdelay[0] = SUMMONING_MONSTERS
@@ -180,10 +180,12 @@ function cm.initial_effect(c)
 			return res
 		end
 		local _Equip=Duel.Equip
-		Duel.Equip=function(p,c,ec,up,step,...)
+		Duel.Equip=function(p,c,ec,...)
+			local ext_params={...}
+			local step=#ext_params>1 and ext_params[2] or false
 			pnfl_mvfix_selfdes_fun(c)
 			pnfl_mvfix[c]={c:GetControler(),c:GetLocation(),c:GetSequence(),not step and "Equip" or "EquipStep"}
-			local res=_Equip(p,c,ec,up,step,...)
+			local res=_Equip(p,c,ec,...)
 			if not step and (not res or c:IsHasEffect(EFFECT_EQUIP_LIMIT)) then
 				if not c:IsLocation(pnfl_mvfix[c][2]) or not c:IsControler(pnfl_mvfix[c][1]) or pnfl_mvfix[c][3]~=c:GetSequence() then Duel.RaiseEvent(Group.FromCards(c),EVENT_CUSTOM+11452084,nil,0,0,0,0) end
 				pnfl_mvfix[c]=nil
