@@ -75,15 +75,15 @@ function s.ctop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.GetControl(tc,tp,PHASE_END,1)
 	end
 end
-function s.costfilter(c)
-	return c:IsRace(RACE_FAIRY) and c:IsType(TYPE_MONSTER) and not c:IsCode(id)
+function s.costfilter(c,e)
+	return c:IsRace(RACE_FAIRY) and c:IsType(TYPE_MONSTER) and c~=e:GetHandler()
 		and c:IsAbleToDeckOrExtraAsCost()
 end
 function s.attcheck(g)
 	return g:GetClassCount(Card.GetAttribute)==g:GetCount()
 end
 function s.rvcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(s.costfilter,tp,LOCATION_GRAVE,0,nil)
+	local g=Duel.GetMatchingGroup(s.costfilter,tp,LOCATION_GRAVE,0,nil,e)
 	if chk==0 then return g:CheckSubGroup(s.attcheck,2,2) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local sg=g:SelectSubGroup(tp,s.attcheck,false,2,2)
