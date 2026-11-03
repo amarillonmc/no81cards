@@ -37,7 +37,7 @@ end
 function c28328484.costfilter(c)
 	return c:IsSetCard(0x284) and c:IsAbleToGraveAsCost()
 end
-function c28328484.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c28328484.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28328484.costfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c28328484.costfilter,tp,LOCATION_DECK,0,1,1,nil)
