@@ -18,7 +18,7 @@ function c28323516.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28323516.mfilter(c,e)
-	return c:IsType(TYPE_MONSTER) and (c:IsLocation(LOCATION_DECK) or c:IsFacedown()) and c:IsAbleToHand() and c:IsCanBeFusionMaterial() and (not e or not c:IsImmuneToEffect(e))
+	return c:IsType(TYPE_MONSTER) and (c:IsFacedown() or c:IsLocation(LOCATION_DECK)) and c:IsAbleToHand() and c:IsCanBeFusionMaterial() and (not e or not c:IsImmuneToEffect(e))
 end
 function c28323516.ffilter(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:CheckFusionMaterial(m,nil,chkf) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false)
@@ -29,7 +29,11 @@ end
 function c28323516.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
-		local mg1=Duel.GetMatchingGroup(c28323516.mfilter,tp,LOCATION_MZONE+LOCATION_DECK,0,nil)
+		local mg1=Duel.GetMatchingGroup(c28323516.mfilter,tp,LOCATION_MZONE,0,nil)
+		local mg2=Duel.GetMatchingGroup(c28323516.mfilter,tp,LOCATION_DECK,0,nil)
+		for tc in aux.Next(mg1) do
+			mg1:Merge(mg2:Filter(Card.IsCode,nil,tc:GetCode()))
+		end
 		aux.FGoalCheckAdditional=c28323516.fcheck
 		local res=Duel.IsExistingMatchingCard(c28323516.ffilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
 		if not res then
@@ -48,7 +52,11 @@ function c28323516.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28323516.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
-	local mg1=Duel.GetMatchingGroup(c28323516.mfilter,tp,LOCATION_MZONE+LOCATION_DECK,0,nil,e)
+	local mg1=Duel.GetMatchingGroup(c28323516.mfilter,tp,LOCATION_MZONE,0,nil,e)
+	local mg2=Duel.GetMatchingGroup(c28323516.mfilter,tp,LOCATION_DECK,0,nil,e)
+	for tc in aux.Next(mg1) do
+		mg1:Merge(mg2:Filter(Card.IsCode,nil,tc:GetCode()))
+	end
 	aux.FGoalCheckAdditional=c28323516.fcheck
 	local sg1=Duel.GetMatchingGroup(c28323516.ffilter,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 	local mg3=nil
