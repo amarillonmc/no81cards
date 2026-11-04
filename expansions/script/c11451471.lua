@@ -72,7 +72,7 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 	rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 end
 function cm.filter(c,e,tp)
-	return c:IsSetCard(0x97a) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsFaceup() and c:IsSetCard(0x97a) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.chtg(e,c)
 	if c then return c:GetFlagEffect(m-10)>0 end

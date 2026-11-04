@@ -37,13 +37,13 @@ function cm.initial_effect(c)
 	aux.RegisterMergedDelayedEvent(c,m,EVENT_SPSUMMON_SUCCESS)
 end
 function cm.filter(c,tp)
-	return c:IsSetCard(0x9977) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil,c)
+	return c:IsFaceup() and c:IsSetCard(0x9977) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil,c)
 end
 function cm.filter2(c,tc)
 	return c:IsCode(tc:GetCode()) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.filter(chkc,tp) end
+	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and cm.filter(chkc,tp) end
 	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_REMOVED,0,1,nil,tp) end
 	Duel.SelectTarget(tp,cm.filter,tp,LOCATION_REMOVED,0,1,1,nil,tp)
 	Duel.RegisterFlagEffect(0,11451760,RESET_CHAIN,0,1)
