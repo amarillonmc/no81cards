@@ -53,12 +53,12 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function s.cfilter(c,tp,rp)
-	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp) 
-		and c:IsPreviousSetCard(0xa77) and (c:IsReason(REASON_BATTLE) or (rp==1-tp and c:IsReason(REASON_EFFECT)))
+function s.cfilter(c,tp)
+	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousSetCard(0xa77) and c:IsPreviousLocation(LOCATION_MZONE)
+		and c:IsPreviousControler(tp) and c:GetReasonPlayer()==1-tp
 end
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(s.cfilter,1,nil,tp,rp) and not eg:IsContains(e:GetHandler())
+	return eg:IsExists(s.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function s.spfilter2(c,e,tp)
 	return c:IsSetCard(0xa77) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(id)
