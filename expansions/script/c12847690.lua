@@ -20,8 +20,11 @@ end
 function s.filter2(c)
 	return c:IsRace(RACE_ZOMBIE) and c:IsAttribute(ATTRIBUTE_FIRE)
 end
+function s.thfilter2(c,g)
+	return c:IsAbleToGrave() and g:FilterCount(Card.IsAbleToHand,c)==1
+end
 function s.check(g)
-	return aux.gffcheck(g,s.filter1,nil,s.filter2,nil)
+	return aux.gffcheck(g,s.filter1,nil,s.filter2,nil) and g:FilterCount(s.thfilter2,nil,g)~=0
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(s.filter0,tp,LOCATION_DECK,0,nil)
