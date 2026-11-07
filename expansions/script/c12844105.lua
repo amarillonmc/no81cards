@@ -69,7 +69,7 @@ function s.espop(e,tp,eg,ep,ev,re,r,rp,c)
 	g:DeleteGroup()
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() end
+	if chk==0 then return e:GetHandler():IsReleasable() and Duel.GetMZoneCount(tp,e:GetHandler())>1 end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function s.spfilter(c,e,tp)
@@ -77,7 +77,6 @@ function s.spfilter(c,e,tp)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
 		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,2,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
