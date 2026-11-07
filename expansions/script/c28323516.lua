@@ -31,7 +31,7 @@ function c28323516.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local chkf=tp
 		local mg1=Duel.GetMatchingGroup(c28323516.mfilter,tp,LOCATION_MZONE,0,nil)
 		local mg2=Duel.GetMatchingGroup(c28323516.mfilter,tp,LOCATION_DECK,0,nil)
-		for tc in aux.Next(mg1) do
+		for tc in aux.Next(mg1:Clone()) do
 			mg1:Merge(mg2:Filter(Card.IsCode,nil,tc:GetCode()))
 		end
 		aux.FGoalCheckAdditional=c28323516.fcheck
@@ -54,7 +54,7 @@ function c28323516.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg1=Duel.GetMatchingGroup(c28323516.mfilter,tp,LOCATION_MZONE,0,nil,e)
 	local mg2=Duel.GetMatchingGroup(c28323516.mfilter,tp,LOCATION_DECK,0,nil,e)
-	for tc in aux.Next(mg1) do
+	for tc in aux.Next(mg1:Clone()) do
 		mg1:Merge(mg2:Filter(Card.IsCode,nil,tc:GetCode()))
 	end
 	aux.FGoalCheckAdditional=c28323516.fcheck
