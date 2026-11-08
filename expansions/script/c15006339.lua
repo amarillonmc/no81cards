@@ -59,7 +59,9 @@ end
 function cm.posop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e) then return end
-	if tc:IsPosition(POS_ATTACK) then Duel.ChangePosition(tc,POS_DEFENSE)
+	if tc:IsPosition(POS_ATTACK) then
+		local pos=Duel.SelectPosition(tp,tc,POS_FACEUP_DEFENSE+POS_FACEDOWN_DEFENSE)
+		Duel.ChangePosition(tc,pos)
 	elseif tc:IsPosition(POS_FACEUP_DEFENSE) then Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
 	elseif tc:IsPosition(POS_FACEDOWN_DEFENSE) then Duel.ChangePosition(tc,POS_FACEUP_DEFENSE)
 	end
