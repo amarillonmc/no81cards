@@ -1,0 +1,136 @@
+--Double Holiday Spirit
+function c33741111.initial_effect(c)
+	--Activate
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_ACTIVATE)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e0)
+	--spsummon limit
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetRange(LOCATION_SZONE)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c33741111.sumlimit)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	c:RegisterEffect(e2)
+	local e3=e1:Clone()
+	e3:SetCode(EFFECT_CANNOT_MSET)
+	c:RegisterEffect(e3)
+	--token
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_TO_GRAVE)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetOperation(c33741111.tkop)
+	c:RegisterEffect(e4)
+end
+function c33741111.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return e:GetHandler()~=se:GetHandler()
+end
+function c33741111.GetLevel(c)
+	if c:IsType(TYPE_LINK) then return c:GetLink()
+	elseif c:IsType(TYPE_XYZ) then return c:GetRank()
+	else return c:GetLevel() end
+end
+function c33741111.cfilter(c,tp)
+	if not (c:IsType(TYPE_MONSTER) and c:IsControler(tp)) then return false end
+	return Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),0,TYPES_TOKEN_MONSTER,c:GetAttack(),c:GetDefense(),c33741111.GetLevel(c),c:GetRace(),c:GetAttribute())
+end
+function c33741111.tkop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetCurrentChain()==0 then
+		local g=eg:Filter(c33741111.cfilter,nil,tp)
+		g:KeepAlive()
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+		e1:SetCountLimit(1)
+		e1:SetOperation(c33741111.regop)
+		e1:SetLabelObject(g)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+	else
+		c33741111.regop(e,tp,eg,ep,ev,re,r,rp)
+	end
+end
+function c33741111.regop(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject() or eg:Filter(c33741111.cfilter,nil,tp)
+	local ft=Duel.IsPlayerAffectedByEffect(tp,59822133) and 1 or Duel.GetMZoneCount(tp)
+	if #g==0 or Duel.GetMZoneCount(tp)<=0 or #g>ft then return end
+	Duel.HintSelection(g)
+	local op=aux.SelectFromOptions(tp,
+		{true,aux.Stringid(33741111,0)},
+		{true,aux.Stringid(33741111,1)},
+		{true,aux.Stringid(33741111,2)})
+	if op==1 then
+		Duel.Hint(HINT_CARD,0,33741111)
+		for tc in aux.Next(g) do
+			Duel.HintSelection(Group.FromCards(tc))
+			local token=Duel.CreateToken(tp,33741078)
+			local e0=Effect.CreateEffect(e:GetHandler())
+			e0:SetType(EFFECT_TYPE_SINGLE)
+			e0:SetCode(EFFECT_CHANGE_CODE)
+			e0:SetValue(tc:GetCode())
+			e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+			token:RegisterEffect(e0)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_SET_ATTACK)
+			e1:SetValue(tc:GetAttack())
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+			token:RegisterEffect(e1)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_SET_DEFENSE)
+			e2:SetValue(tc:GetDefense())
+			token:RegisterEffect(e2)
+			local e3=e1:Clone()
+			e3:SetCode(EFFECT_CHANGE_LEVEL)
+			e3:SetValue(tc:GetLevel())
+			token:RegisterEffect(e3)
+			local e4=e1:Clone()
+			e4:SetCode(EFFECT_CHANGE_RACE)
+			e4:SetValue(tc:GetRace())
+			token:RegisterEffect(e4)
+			local e5=e1:Clone()
+			e5:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+			e5:SetValue(tc:GetAttribute())
+			token:RegisterEffect(e5)
+			Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
+			local e6=Effect.CreateEffect(e:GetHandler())
+			e6:SetType(EFFECT_TYPE_SINGLE)
+			e6:SetCode(EFFECT_UNRELEASABLE_SUM)
+			e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+			e6:SetRange(LOCATION_MZONE)
+			e6:SetValue(1)
+			e6:SetReset(RESET_EVENT+RESETS_STANDARD)
+			token:RegisterEffect(e6)
+			local e7=e6:Clone()
+			e7:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+			token:RegisterEffect(e7)
+			local e8=e6:Clone()
+			e8:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+			e8:SetValue(c33741111.fuslimit)
+			token:RegisterEffect(e8)
+			local e9=e6:Clone()
+			e9:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+			token:RegisterEffect(e9)
+			local e10=e6:Clone()
+			e10:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+			token:RegisterEffect(e10)
+			local e11=e6:Clone()
+			e11:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+			token:RegisterEffect(e11)
+		end
+		Duel.SpecialSummonComplete()
+	else
+		Duel.Hint(HINT_CARD,0,33741111)
+		Duel.Recover(tp,#g*2000,REASON_EFFECT)
+	end
+end
+function c33741111.fuslimit(e,c,st)
+	return st==SUMMON_TYPE_FUSION
+end

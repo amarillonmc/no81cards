@@ -61,7 +61,7 @@ end
 function s.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_REMOVED,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=g:Select(tp,4,4,nil)
+	local sg=g:SelectSubGroup(tp,aux.TRUE,true,4,4)
 	if sg then
 		sg:KeepAlive()
 		e:SetLabelObject(sg)

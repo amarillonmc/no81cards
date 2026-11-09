@@ -24,34 +24,33 @@ function s.initial_effect(c)
 	e3:SetCode(EVENT_REMOVE)
 	c:RegisterEffect(e3)
 end
+function s.filter(c,e,tp)
+	local zone=c:GetLinkedZone(tp)
+	return c:IsType(TYPE_LINK) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,zone)
+end
+function s.spfilter(c,e,tp,zone)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone) and c:IsSetCard(0x6A70) and c:IsType(TYPE_MONSTER)
+	and not Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil,c:GetCode())
+end
+function s.cfilter(c,code)
+	return c:IsFaceup() and c:IsCode(code)
+end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsType(TYPE_LINK) and chkc:IsControler(tp) end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsType,tp,LOCATION_MZONE,0,1,nil,TYPE_LINK) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.filter(chkc,e,tp) end
+	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,Card.IsType,tp,LOCATION_MZONE,0,1,1,nil,TYPE_LINK)
+	local g=Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e) then
-		--link as level
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_SYNCHRO_LEVEL_EX)
-		e2:SetLabelObject(tc)
-		e2:SetValue(function(e,c)
-			local tc=e:GetLabelObject()
-			return tc:GetLink()
-		end)
-		tc:RegisterEffect(e2)
-		--add tuner type
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetCode(EFFECT_TUNER)
-		e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e3:SetRange(LOCATION_MZONE) 
-		e3:SetValue(1)
-		tc:RegisterEffect(e3)
+		local zone=tc:GetLinkedZone(tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,zone)
+		if #sg>0 then
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP,zone)
+		end
 	end
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
@@ -59,21 +58,11 @@ function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local b1=c:IsSSetable()
-	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,12869000,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_WATER)
-	if chk==0 then return b1 or b2 end
+	if chk==0 then return c:IsSSetable() end
 end
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local b1=c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c)
-	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,12869000,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_WATER)
-	if not (b1 or b2) then return end
-	local op=aux.SelectFromOptions(tp,{b1,1153},{b2,1119})
-	if op==1 then
-		Duel.SSet(tp,c)
-	end
-	if op==2 then
-		local token=Duel.CreateToken(tp,12869000)
-		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
+	if c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c) then
+		Duel.SSet(tp,c) 
 	end
 end

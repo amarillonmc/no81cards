@@ -6,7 +6,7 @@ function s.initial_effect(c)
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkCode,12844106,12844107),1,1)
 	--SpecialSummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(13117073,0))
+	e1:SetDescription(1118)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
