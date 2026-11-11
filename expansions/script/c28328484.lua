@@ -13,7 +13,7 @@ function c28328484.initial_effect(c)
 	e1:SetRange(LOCATION_FZONE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x284))
-	e1:SetValue(500)
+	e1:SetValue(c28328484.atkval)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_UPDATE_DEFENSE)
@@ -85,8 +85,6 @@ function c28328484.cpop(e,tp,eg,ep,ev,re,r,rp)
 	end]]--
 	c28328484.effect_list={}
 	--copy
-	tc:CreateEffectRelation(e)--Card.IsRelateToChain
-	tc:CreateEffectRelation(te)--Card.IsRelateToEffect
 	local tg,op=te:GetTarget(),te:GetOperation()
 	local e1=Effect.CreateEffect(tc)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -94,10 +92,20 @@ function c28328484.cpop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(te:GetProperty())
 	e1:SetRange(LOCATION_HAND)
 	e1:SetTarget(tg)
-	e1:SetOperation(op)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+		for tc in aux.Next(g) do tc:CreateEffectRelation(e) tc:CreateEffectRelation(e1) end
+		op(e,tp,eg,ep,ev,re,r,rp)
+		for tc in aux.Next(g) do tc:ReleaseEffectRelation(e) tc:ReleaseEffectRelation(e1) end
+		end)
+	--e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	tc:RegisterEffect(e1)
+	tc:CreateEffectRelation(e)--Card.IsRelateToChain
+	tc:CreateEffectRelation(e1)--Card.IsRelateToEffect
 	Duel.RaiseSingleEvent(tc,EVENT_CUSTOM+28328484,e,REASON_EFFECT,tp,tp,0)
+	tc:ReleaseEffectRelation(e)
+	tc:ReleaseEffectRelation(e1)
+	if e1 then e1:Reset() end
 	--[[tc:CreateEffectRelation(e)--Card.IsRelateToChain
 	tc:CreateEffectRelation(te)--Card.IsRelateToEffect
 	local tg=te:GetTarget()
