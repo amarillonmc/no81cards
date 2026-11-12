@@ -98,7 +98,7 @@ function c28316345.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetTarget(tg)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS) or Group.CreateGroup()
 		for tc in aux.Next(g) do tc:CreateEffectRelation(e) tc:CreateEffectRelation(e1) end
 		op(e,tp,eg,ep,ev,re,r,rp)
 		for tc in aux.Next(g) do tc:ReleaseEffectRelation(e) tc:ReleaseEffectRelation(e1) end
