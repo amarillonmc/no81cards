@@ -76,6 +76,9 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function cm.mchkfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsType(TYPE_FLIP) and c:IsLinkSetCard(0x10b) and c:IsPosition(POS_FACEDOWN)
+end
+function cm.mchkfilter2(c)
 	return c:IsType(TYPE_MONSTER) and c:IsType(TYPE_FLIP) and c:IsLinkSetCard(0x10b) and c:IsPreviousPosition(POS_FACEDOWN)
 end
 function cm.valcheck(e,c)
@@ -90,7 +93,7 @@ function cm.cycon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and e:GetLabel()==1
 end
 function cm.efffilter(c,e,tp,eg,ep,ev,re,r,rp)
-	if not (cm.mchkfilter(c) and c:IsCanBeEffectTarget(e)) then return false end
+	if not (cm.mchkfilter2(c) and c:IsCanBeEffectTarget(e)) then return false end
 	local te=cm[c:GetOriginalCode()]
 	if not te then return false end
 	local tg=te:GetTarget()
