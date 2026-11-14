@@ -1,15 +1,6 @@
 --禁钉迹观随行
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--mark fairies discarded for their own effect
-	if not s.global_check then
-		s.global_check=true
-		local ge=Effect.CreateEffect(c)
-		ge:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge:SetCode(EVENT_TO_GRAVE)
-		ge:SetOperation(s.markop)
-		Duel.RegisterEffect(ge,0)
-	end
 	--add to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -31,17 +22,6 @@ function s.initial_effect(c)
 	e2:SetValue(aux.TargetBoolFunction(s.repfilter,e2))
 	c:RegisterEffect(e2)
 end
-function s.markfilter(c,re)
-	return c:IsPreviousLocation(LOCATION_HAND) and c:IsReason(REASON_COST)
-		and c:IsRace(RACE_FAIRY) and c:IsType(TYPE_MONSTER) and c==re:GetHandler()
-end
-function s.markop(e,tp,eg,ep,ev,re,r,rp)
-	if not re then return end
-	local g=eg:Filter(s.markfilter,nil,re)
-	for tc in aux.Next(g) do
-		tc:RegisterFlagEffect(20257791,RESET_EVENT+RESETS_STANDARD,0,1)
-	end
-end
 function s.thfilter(c)
 	return c:IsSetCard(0x54a) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
@@ -50,7 +30,11 @@ function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function s.disfilter(c,e,tp)
-	return c:IsRace(RACE_FAIRY) and c:IsType(TYPE_MONSTER) and c:GetFlagEffect(20257791)>0
+	if not (c:IsRace(RACE_FAIRY) and c:IsType(TYPE_MONSTER)
+		and c:IsPreviousLocation(LOCATION_HAND)
+		and c:IsReason(REASON_COST) and c:IsReason(REASON_DISCARD)) then return false end
+	local re=c:GetReasonEffect()
+	return re~=nil and re:GetHandler()==c
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
