@@ -30,7 +30,7 @@ function s.stfilter(c)
 	return c:IsCode(75643002) and c:IsFaceup()
 end
 function s.lvfilter(c)
-	return c:IsFaceup() and aux.IsCodeListed(c,75643002)
+	return c:IsFaceup() and c:IsLevelAbove(0) and aux.IsCodeListed(c,75643002)
 end
 function s.xyzfilter(c)
 	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_XYZ) and c:IsXyzSummonable(nil)
@@ -45,12 +45,15 @@ function s.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if not (c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsFaceup()) then return end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CHANGE_LEVEL)
-	e1:SetValue(tc:GetLevel())
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e1)
+	local lv=tc:GetLevel()
+	if lv>0 then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CHANGE_LEVEL)
+		e1:SetValue(lv)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e1)
+	end
 	if not Duel.IsExistingMatchingCard(s.stfilter,tp,LOCATION_ONFIELD,0,1,nil) then return end
 	if not Duel.CheckLPCost(tp,400) then return end
 	if not Duel.IsExistingMatchingCard(s.xyzfilter,tp,LOCATION_EXTRA,0,1,nil) then return end

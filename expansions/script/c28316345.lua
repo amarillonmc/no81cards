@@ -77,17 +77,21 @@ function c28316345.spop(e,tp,eg,ep,ev,re,r,rp)
 	local e_list={}
 	for _,te in ipairs(c28316345.effect_list) do
 		local tg=te:GetTarget()
-		if not tg or tg(te,tp,eg,ep,ev,re,r,rp,0) then table.insert(e_list,te) end--if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then table.remove(c28316345.effect_list,i) end
+		local check=true
+		for _,ce in ipairs(e_list) do--compare
+			if ce:GetDescription()==te:GetDescription() then check=false break end
+		end
+		if check and (not tg or tg(te,tp,eg,ep,ev,re,r,rp,0)) then table.insert(e_list,te) end--if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then table.remove(c28316345.effect_list,i) end
 	end
 	if #e_list==0 or not Duel.SelectYesNo(tp,aux.Stringid(28316345,3)) then return end
 	Duel.BreakEffect()
 	local te=e_list[1]
-	--[[if #e_list>1 then
+	if #e_list>1 then
 		local des_list={}
 		for _,te in ipairs(e_list) do table.insert(des_list,te:GetDescription()) end
 		local op=Duel.SelectOption(tp,table.unpack(des_list))
 		te=e_list[op+1]
-	end]]--
+	end
 	c28316345.effect_list={}
 	--copy
 	local tg,op=te:GetTarget(),te:GetOperation()

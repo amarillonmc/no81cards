@@ -64,9 +64,9 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		local b3=Duel.GetFlagEffect(tp,id+2*o)==0
 		if not (b1 or b2 or b3) then return end
 		local op=aux.SelectFromOptions(tp,
-				{b1,aux.Stringid(id,1),1},
-				{b2,aux.Stringid(id,2),2},
-				{b3,aux.Stringid(id,3),3})
+			{b1,aux.Stringid(id,1),1},
+			{b2,aux.Stringid(id,2),2},
+			{b3,aux.Stringid(id,3),3})
 		if op==1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)

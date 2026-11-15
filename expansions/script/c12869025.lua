@@ -44,7 +44,7 @@ function c12869025.initial_effect(c)
 	c:RegisterEffect(e0)
 end
 function c12869025.matfilter(c) 
-	return c:IsLinkSetCard(0x6a70) or c:IsCode(12869000)
+	return c:IsLinkRace(RACE_AQUA)
 end
 function c12869025.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)

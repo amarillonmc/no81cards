@@ -59,7 +59,7 @@ function s.op2(e,tp,eg,ep,ev,re,r,rp)
 	local b1=Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_MZONE,1,nil)
 	local b2=true
 	if b1 then
-		if not b2 or Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+	if not b2 or Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_MZONE,1,1,nil)
 			if g:GetCount()>0 then

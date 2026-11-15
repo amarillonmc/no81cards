@@ -1,3 +1,4 @@
+
 --恩赐印章 国王
 local s,id,o=GetID()
 function s.initial_effect(c)
@@ -27,7 +28,7 @@ function s.thfilter(c,check)
 	return c:IsAbleToHand() and ((check and aux.IsCodeListed(c,75643002)) or aux.IsCodeListed(c,75643000)) and not c:IsCode(id)
 end
 function s.checkfilter(c)
-	return c:IsCode(75643000,75643010) and c:IsFaceup()
+	return c:IsCode(75643000,75643002) and c:IsFaceup()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

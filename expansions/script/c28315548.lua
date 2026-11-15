@@ -46,9 +46,9 @@ end
 function c28315548.tdfilter(c)
 	return c:IsFaceupEx() and c:IsAbleToDeck()--c:IsType(TYPE_MONSTER+TYPE_SPELL) and 
 end
-function c28315548.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c28315548.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc,exc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and c28315548.tdfilter(chkc) end
-	if chk==0 then return Duel.GetMZoneCount(tp)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c28315548.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end
+	if chk==0 then return Duel.GetMZoneCount(tp)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c28315548.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,exc) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,c28315548.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,3,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
@@ -95,8 +95,8 @@ end
 function c28315548.thfilter(c)
 	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
-function c28315548.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28315548.thfilter,tp,LOCATION_DECK,0,1,nil) end
+function c28315548.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc,exc)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28315548.thfilter,tp,LOCATION_DECK,0,1,exc) end
 	local ct=e:GetHandler():IsSummonLocation(LOCATION_HAND) and 1 or 0
 	e:SetLabel(ct)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)

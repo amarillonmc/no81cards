@@ -25,9 +25,9 @@ function c28315544.initial_effect(c)
 	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	--e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,38315544)
+	e2:SetCountLimit(1,28315544+1)
 	e2:SetCondition(c28315544.reccon)
 	e2:SetCost(c28315544.cost)
 	e2:SetTarget(c28315544.rectg)
@@ -53,9 +53,9 @@ function c28315544.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.ShuffleHand(tp)
 end
 function c28315544.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function c28315544.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -79,8 +79,8 @@ end
 function c28315544.tgfilter(c)
 	return c:IsSetCard(0x283) and c:IsAbleToGrave()
 end
-function c28315544.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28315544.tgfilter,tp,LOCATION_DECK,0,1,nil) end
+function c28315544.rectg(e,tp,eg,ep,ev,re,r,rp,chk,chkc,exc)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28315544.tgfilter,tp,LOCATION_DECK,0,1,exc) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function c28315544.gcheck(sg,tp)
@@ -96,7 +96,7 @@ function c28315544.recop(e,tp,eg,ep,ev,re,r,rp)
 	if aux.GetAttributeCount(g)>=3 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28315544,2)) then
 		local tg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local sg=tg:SelectSubGroup(tp,c28315544.gcheck,false,1,2,tp)
+		local sg=tg:SelectSubGroup(tp,c28315544.gcheck,false,1,3,tp)
 		Duel.HintSelection(sg)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	end

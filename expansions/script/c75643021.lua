@@ -63,10 +63,10 @@ function s.filter2(c,e,tp,m,f,chkf)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function s.fcheck(tp,sg,fc)
-	return sg:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)<=1
+	return sg:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)<=2
 end
 function s.gcheck(sg)
-	return sg:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)<=1
+	return sg:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)<=2
 end
 function s.spftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

@@ -28,37 +28,36 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp
+	return rp==1-tp and Duel.IsChainNegatable(ev)
 end
-function s.cfilter(c,re)
-	local rc=re:GetHandler()
-	return c:IsSetCard(0x6a70) and (c:IsType(TYPE_SYNCHRO) or rc:IsAbleToRemove() and rc:IsRelateToEffect(re) and c:IsType(TYPE_LINK)) and c:IsAbleToExtraAsCost() and c:IsFaceupEx()
+function s.cfilter(c)
+	return c:IsSetCard(0x6a70) and c:IsType(TYPE_SYNCHRO+TYPE_LINK) and c:IsAbleToExtraAsCost() and c:IsFaceupEx()
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,re) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,2,nil,re)
-	g:KeepAlive()
-	e:SetLabelObject(g)
-	Duel.SendtoDeck(g,nil,2,REASON_COST)
+	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	if chk==0 then return #g>0 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local sg=g:Select(tp,1,3,nil)
+	if Duel.SendtoDeck(sg,nil,2,REASON_COST)>0 then
+		local og=sg:Filter(Card.IsLocation,nil,LOCATION_EXTRA)
+		if og:IsExists(Card.IsType,1,nil,TYPE_SYNCHRO) and og:IsExists(Card.IsType,1,nil,TYPE_LINK) then
+			e:SetLabel(1)
+		else
+			e:SetLabel(0)
+		end
+	end
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:IsCostChecked() end
-	local g=e:GetLabelObject()
-	if g:IsExists(Card.IsType,1,nil,TYPE_SYNCHRO) then
-		Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	end
-	if g:IsExists(Card.IsType,1,nil,TYPE_LINK) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
-	end
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetLabelObject()
-	if g:IsExists(Card.IsType,1,nil,TYPE_LINK) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.Remove(eg,POS_FACEDOWN,REASON_EFFECT)
-	end
-	if g:IsExists(Card.IsType,1,nil,TYPE_SYNCHRO) then
-		Duel.NegateActivation(ev)
+	local rc=re:GetHandler()
+	if Duel.NegateActivation(ev) then
+		if e:GetLabel()==1 and rc:IsRelateToEffect(re) and rc:IsAbleToRemove(tp,POS_FACEDOWN,REASON_EFFECT) 
+			and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+			Duel.Remove(rc,POS_FACEDOWN,REASON_EFFECT)
+		end
 	end
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)

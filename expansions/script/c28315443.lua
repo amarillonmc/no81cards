@@ -44,9 +44,9 @@ end
 function c28315443.tdfilter(c)
 	return c:IsFaceupEx() and c:IsAbleToDeck()--c:IsType(TYPE_MONSTER+TYPE_SPELL) and 
 end
-function c28315443.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c28315443.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc,exc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and c28315443.tdfilter(chkc) end
-	if chk==0 then return Duel.GetMZoneCount(tp)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c28315443.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end
+	if chk==0 then return Duel.GetMZoneCount(tp)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c28315443.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,exc) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,c28315443.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,3,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
@@ -75,18 +75,19 @@ function c28315443.spop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e0)
 	end
 end
-function c28315443.setfilter(c,e,tp)
-	return c:IsSetCard(0x283) and (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() or c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetMZoneCount(tp)>0)
+function c28315443.setfilter(c,e,tp,fc)
+	return c:IsSetCard(0x283) and (c:IsSSetable() and (fc or c:IsType(TYPE_FIELD)) or c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetMZoneCount(tp)>0)
 end
-function c28315443.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28315443.setfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+function c28315443.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc,exc)
+	local fc=e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsOnField() and Duel.GetSZoneCount(tp)>1 and true
+	if chk==0 then return Duel.IsExistingMatchingCard(c28315443.setfilter,tp,LOCATION_DECK,0,1,exc,e,tp,fc) end
 end
 function c28315443.cfilter(c)
 	return c:IsType(TYPE_TUNER) and c:IsFaceup()
 end
 function c28315443.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local tc=Duel.SelectMatchingCard(tp,c28315443.setfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c28315443.setfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,true):GetFirst()
 	if not tc then return end
 	if tc:IsType(TYPE_SPELL+TYPE_TRAP) then
 		Duel.SSet(tp,tc)
