@@ -26,7 +26,11 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.con1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 and re~=nil
+	return re~=nil
+end
+--the bullet of ① applies only when this effect is activated on its owner's turn with no monster on that field
+function s.optcon1(tp)
+	return Duel.GetTurnPlayer()==tp and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function s.costfilter(c)
 	return c:IsAbleToRemoveAsCost()
@@ -65,7 +69,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 		LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if not tc or Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)==0 or not tc:IsLocation(LOCATION_REMOVED) then return end
-	if Duel.GetTurnPlayer()==tp and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+	if s.optcon1(tp) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		Duel.BreakEffect()
 		s.regdisable(e,tp,tc)
 		s.regredirect(e,tp)
