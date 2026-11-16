@@ -19,6 +19,14 @@ function c28325122.initial_effect(c)
 	e2:SetTarget(c28325122.cptg)
 	e2:SetOperation(c28325122.cpop)
 	c:RegisterEffect(e2)
+	--illumination SetCode
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_ADD_SETCODE)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(0xff)
+	e3:SetValue(0x283)
+	c:RegisterEffect(e3)
 end
 function c28325122.ofilter(e)
 	local ct=#c28325122.effect_list
