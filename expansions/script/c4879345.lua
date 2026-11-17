@@ -7,7 +7,6 @@ function s.initial_effect(c)
     e1:SetCode(EVENT_FREE_CHAIN)
     e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
     e1:SetCountLimit(1,id)
-    e1:SetCost(s.cost)
     e1:SetTarget(s.target)
     e1:SetOperation(s.activate)
     c:RegisterEffect(e1)
@@ -82,22 +81,23 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
         if tc then
             Duel.SSet(tp,tc)
               if Duel.GetFlagEffect(tp,id)>0 then
-if tc:IsType(TYPE_TRAP) then
-local e1=Effect.CreateEffect(tc)
+        if tc:IsType(TYPE_TRAP) then
+            local e1=Effect.CreateEffect(tc)
             e1:SetType(EFFECT_TYPE_SINGLE)
             e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
             e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
             e1:SetReset(RESET_EVENT+RESETS_STANDARD)
             tc:RegisterEffect(e1)
-else
-local e2=Effect.CreateEffect(tc)
+               else
+            local e2=Effect.CreateEffect(tc)
             e2:SetType(EFFECT_TYPE_SINGLE)
             e2:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
             e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
             e2:SetReset(RESET_EVENT+RESETS_STANDARD)
             tc:RegisterEffect(e2)
-end
+            end
         end
+    end
     elseif e:GetLabel()==2 then
        local ch=Duel.GetCurrentChain()
         Duel.NegateEffect(ch-1)
@@ -128,50 +128,5 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
     if c:IsRelateToChain() and aux.NecroValleyFilter()(c) then
         Duel.SendtoHand(c,nil,REASON_EFFECT)
         Duel.ConfirmCards(1-tp,c)
-    end
-end
-function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chkc then return chkc~=e:GetHandler() and chkc:IsOnField() end
-    local b1=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-        and Duel.IsExistingMatchingCard(s.pfilter,tp,LOCATION_DECK,0,1,nil,tp)
-    local b2=Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler())
-    if chk==0 then return e:IsCostChecked() or b1 or b2 end
-    local op=0
-    if e:IsCostChecked() then
-        op=e:GetLabel()
-    else
-        op=aux.SelectFromOptions(tp,
-            {b1,aux.Stringid(id,2),1},
-            {b2,aux.Stringid(id,3),2})
-    end
-    e:SetLabel(op)
-    if op==1 then
-        if e:IsCostChecked() then
-            e:SetCategory(0)
-            e:SetProperty(0)
-        end
-    elseif op==2 then
-        if e:IsCostChecked() then
-            e:SetCategory(CATEGORY_DESTROY)
-            e:SetProperty(EFFECT_FLAG_CARD_TARGET)
-        end
-        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-        local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
-        Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-    end
-end
-function s.activate(e,tp,eg,ep,ev,re,r,rp)
-    if e:GetLabel()==1 then
-        if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-        local tc=Duel.SelectMatchingCard(tp,s.pfilter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
-        if tc then
-            Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-        end
-    elseif e:GetLabel()==2 then
-        local tc=Duel.GetFirstTarget()
-        if tc:IsRelateToChain() and tc:IsOnField() then
-            Duel.Destroy(tc,REASON_EFFECT)
-        end
     end
 end
