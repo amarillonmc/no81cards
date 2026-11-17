@@ -40,7 +40,8 @@ function s.ctfiler(c,e,tp,res)
 	local check3=Duel.GetLocationCount(tp,LOCATION_SZONE-LOCATION_FZONE)>1
 	local b2=c:IsLocation(LOCATION_SZONE) and not c:IsLocation(LOCATION_FZONE) and check1 and (check2 or check3)
 	local b3=c:IsLocation(LOCATION_FZONE)
-	return c:IsAbleToChangeControler() and (b1 or b2 or b3)
+	local b4=c:IsLocation(LOCATION_PZONE) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
+	return c:IsAbleToChangeControler() and (b1 or b2 or b3 or b4)
 end
 function s.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local res=e:GetHandler():IsHasEffect(EFFECT_TRAP_ACT_IN_SET_TURN,tp)
@@ -54,7 +55,9 @@ function s.ctop(e,tp,eg,ep,ev,re,r,rp)
 	if #sg>0 then
 		Duel.HintSelection(sg)
 		local tc=sg:GetFirst()
-		if tc:IsLocation(LOCATION_MZONE) then
+		if tc:IsLocation(LOCATION_PZONE) then
+			Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+		elseif tc:IsLocation(LOCATION_MZONE) then
 			Duel.GetControl(tc,tp)
 		elseif tc:IsLocation(LOCATION_FZONE) then
 			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
@@ -64,7 +67,7 @@ function s.ctop(e,tp,eg,ep,ev,re,r,rp)
 			end
 			local pos=tc:GetPosition()
 			Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,pos,true)
-		else
+		elseif tc:IsLocation(LOCATION_SZONE) and not tc:IsLocation(LOCATION_PZONE) then
 			if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
 				local pos=tc:GetPosition()
 				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,pos,true)
