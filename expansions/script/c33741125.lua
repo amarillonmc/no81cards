@@ -4,7 +4,7 @@ function c33741125.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetDescription(aux.Stringid(33741125,0))
-	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
@@ -34,10 +34,14 @@ function c33741125.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(1-tp,33741125)>=5 and Duel.IsMainPhase()
 end
 function c33741125.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.GetMZoneCount(1-tp,nil,tp)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c33741125.drop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToChain() or Duel.SpecialSummon(c,0,tp,1-tp,false,false,POS_FACEUP)==0 then return end
 	local b1=Duel.IsPlayerCanDraw(tp,6)
 	local b2=Duel.IsPlayerCanDraw(tp,1)
 	if not (b1 or b2) then return end
