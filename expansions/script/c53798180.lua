@@ -39,7 +39,7 @@ function s.filter(c,sc)
 	if not c:IsType(TYPE_MONSTER) then return false end
 	local att=c:GetOriginalAttribute()
 	local og=sc:GetOverlayGroup()
-	return not og:IsExists(s.matfilter,1,nil,att)
+	return not og:IsExists(s.matfilter,1,nil,att) and c:IsCanOverlay()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -58,8 +58,8 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,c)
 	local tc=g:GetFirst()
-	if tc and Duel.Overlay(c,tc) then
-		-- 那之后，那只怪兽以外的这张卡作为超量素材中的1只怪兽取除。
+	if tc then
+		Duel.Overlay(c,tc)
 		local mg=c:GetOverlayGroup()
 		mg:RemoveCard(tc) -- 排除刚才塞进去的卡
 		if mg:GetCount()>0 then
