@@ -15,14 +15,14 @@ function s.initial_effect(c)
 end
 function s.posfilter1(c,e,tp)
 	return c:IsFaceup() and c:IsCanTurnSet() and c:IsLevelBelow(4)
-		and Duel.IsExistingMatchingCard(s.thfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)
+		and Duel.IsExistingMatchingCard(s.spfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)
 end
 function s.spfilter1(c,e,tp)
 	return c:IsSetCard(0xed) and c:IsLevelAbove(5) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function s.posfilter2(c,e,tp)
 	return c:IsFaceup() and c:IsCanTurnSet() and c:IsLevelAbove(5)
-		and Duel.IsExistingMatchingCard(s.thfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)
+		and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)
 end
 function s.spfilter2(c,e,tp)
 	return c:IsSetCard(0xed) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
@@ -44,9 +44,9 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
 	local g=Group.CreateGroup()
 	if op==0 then
-		g=Duel.SelectTarget(tp,s.posfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+		g=Duel.SelectTarget(tp,s.posfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp)
 	else
-		g=Duel.SelectTarget(tp,s.posfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+		g=Duel.SelectTarget(tp,s.posfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
