@@ -1,4 +1,4 @@
---禁钉显迹受领机
+--禁钉显迹受领机（旧效果版本：②只把这张卡自身从墓地除外）
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--discard self, place 1 counter
@@ -55,6 +55,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
 	local g=Duel.SelectMatchingCard(tp,s.monfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	if g:GetCount()>0 then
+		Duel.HintSelection(g)
 		g:GetFirst():AddCounter(0x154a,1)
 	end
 end

@@ -62,28 +62,29 @@ end
 function s.ctfilter(c)
 	return c:IsFaceup() and c:GetCounter(0x154a)>0 and c:IsControlerCanBeChanged()
 end
-function s.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and s.ctfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(s.ctfilter,tp,0,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
-	local g=Duel.SelectTarget(tp,s.ctfilter,tp,0,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_CONTROL,g,1,0,0)
+function s.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.ctfilter,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_CONTROL,nil,1,1-tp,LOCATION_MZONE)
 end
 function s.ctop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
+	local g=Duel.SelectMatchingCard(tp,s.ctfilter,tp,0,LOCATION_MZONE,1,1,nil)
+	if g:GetCount()==0 then return end
+	Duel.HintSelection(g)
+	local tc=g:GetFirst()
+	if tc and tc:IsFaceup() and tc:IsControler(1-tp) and not tc:IsImmuneToEffect(e) then
 		Duel.GetControl(tc,tp,PHASE_END,1)
 	end
 end
-function s.costfilter(c,e)
-	return c:IsRace(RACE_FAIRY) and c:IsType(TYPE_MONSTER) and c~=e:GetHandler()
+function s.costfilter(c,hc)
+	return c:IsRace(RACE_FAIRY) and c:IsType(TYPE_MONSTER) and c~=hc
 		and c:IsAbleToDeckOrExtraAsCost()
 end
 function s.attcheck(g)
 	return g:GetClassCount(Card.GetAttribute)==g:GetCount()
 end
 function s.rvcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(s.costfilter,tp,LOCATION_GRAVE,0,nil,e)
+	local g=Duel.GetMatchingGroup(s.costfilter,tp,LOCATION_GRAVE,0,nil,e:GetHandler())
 	if chk==0 then return g:CheckSubGroup(s.attcheck,2,2) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local sg=g:SelectSubGroup(tp,s.attcheck,false,2,2)

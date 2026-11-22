@@ -52,6 +52,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
 	local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	if g:GetCount()>0 then
+		Duel.HintSelection(g)
 		g:GetFirst():AddCounter(0x154a,1)
 	end
 end

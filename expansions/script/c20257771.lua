@@ -67,6 +67,7 @@ function s.ctop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 		local tc=g:GetFirst()
 		if not tc then break end
+		Duel.HintSelection(g)
 		tc:AddCounter(0x154a,1)
 	end
 end

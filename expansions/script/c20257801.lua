@@ -82,6 +82,12 @@ function s.optg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.GetFlagEffect(tp,id)==0
 	local b2=Duel.IsPlayerCanDraw(tp,1) and Duel.GetFlagEffect(tp,id+1)==0
 	if chk==0 then return b1 or b2 end
+	if b1 then
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
+	end
+	if b2 then
+		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,1,tp,1)
+	end
 end
 function s.opop(e,tp,eg,ep,ev,re,r,rp)
 	local b1=Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
