@@ -143,10 +143,11 @@ function cm.pcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(x)
 end
 function cm.pfilter(c,res)
-	return c:IsPosition(POS_DEFENSE) and ((c:IsFacedown() and c:IsCanChangePosition()) or (res==2 and c:IsFaceup() and c:IsCanTurnSet()))
+	return ((c:IsFacedown() and c:IsCanChangePosition()) or (res==2 and c:IsFaceup() and c:IsCanTurnSet()))
 end
 function cm.ptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local res=e:GetLabel()
+	if e:GetHandler():IsFacedown() then res=2 end
 	local g=Duel.GetMatchingGroup(cm.pfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,res)
 	if chk==0 then return #g>0 end
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,nil,1,0,0)
