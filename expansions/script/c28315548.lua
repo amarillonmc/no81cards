@@ -87,9 +87,11 @@ function c28315548.costfilter(c)
 	return c:IsCode(28335405) and c:IsAbleToGraveAsCost()
 end
 function c28315548.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28315548.costfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c28315548.costfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c28315548.costfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c28315548.costfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
+	local ct=g:GetFirst():IsLocation(LOCATION_HAND) and 1 or 0
+	e:SetLabel(ct)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c28315548.thfilter(c)
@@ -97,24 +99,63 @@ function c28315548.thfilter(c)
 end
 function c28315548.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc,exc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28315548.thfilter,tp,LOCATION_DECK,0,1,exc) end
-	local ct=e:GetHandler():IsSummonLocation(LOCATION_HAND) and 1 or 0
-	e:SetLabel(ct)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function c28315548.tgfilter(c)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+function c28315548.ofilter(e)
+	local ct=#c28315548.effect_list
+	if (e:IsHasRange(LOCATION_ONFIELD) or (e:GetCode()==EVENT_SUMMON_SUCCESS or e:GetCode()==EVENT_SPSUMMON_SUCCESS or e:GetCode()==EVENT_FLIP) and (e:GetType()&EFFECT_TYPE_SINGLE)~=0) and e:IsActivated() then c28315548.effect_list[ct+1]=e end
+	return false--e:IsHasRange(LOCATION_ONFIELD) and e:IsActivated()
+end
+function c28315548.cpfilter(c,e,tp,eg,ep,ev,re,r,rp)
+	if not (c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER)) then return false end
+	c28315548.effect_list={}
+	c:IsOriginalEffectProperty(c28315548.ofilter)
+	for _,te in ipairs(c28315548.effect_list) do
+		local tg=te:GetTarget()
+		if not tg or tg(e,tp,eg,ep,ev,re,r,rp,0) then return true end
+	end
+	return false
 end
 function c28315548.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,c28315548.thfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-	if not tc then return end
-	Duel.SendtoHand(tc,nil,REASON_EFFECT)
-	Duel.ConfirmCards(1-tp,tc)
-	if e:GetLabel()==0 or not Duel.IsExistingMatchingCard(c28315548.tgfilter,tp,LOCATION_DECK,0,1,nil) or not Duel.SelectYesNo(tp,aux.Stringid(28315548,2)) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c28315548.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local tg=Duel.SelectMatchingCard(tp,c28315548.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if not tg or #tg==0 then return end
+	Duel.SendtoHand(tg,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,tg)
+	if not Duel.IsExistingMatchingCard(c28315548.cpfilter,tp,LOCATION_DECK,0,1,nil,e,tp,eg,ep,ev,re,r,rp) or e:GetLabel()==0 or not Duel.SelectYesNo(tp,aux.Stringid(28315548,2)) then e:SetLabel(0) return end
+	e:SetLabel(0)
+	--
 	Duel.BreakEffect()
-	Duel.SendtoGrave(g,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local tc=Duel.SelectMatchingCard(tp,c28315548.cpfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp):GetFirst()
+	Duel.ConfirmCards(1-tp,tc)
+	c28315548.effect_list={}
+	tc:IsOriginalEffectProperty(c28315548.ofilter)
+	local e_list={}
+	for _,te in ipairs(c28315548.effect_list) do
+		local tg=te:GetTarget()
+		local check=true
+		for _,ce in ipairs(e_list) do--compare
+			if ce:GetDescription()==te:GetDescription() then check=false break end
+		end
+		if check and (not tg or tg(e,tp,eg,ep,ev,re,r,rp,0)) then table.insert(e_list,te) end--if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then table.remove(c28315548.effect_list,i) end
+	end
+	if #e_list==0 then return end
+	local te=e_list[1]
+	if #e_list>1 then
+		local des_list={}
+		for _,te in ipairs(e_list) do table.insert(des_list,te:GetDescription()) end
+		local op=Duel.SelectOption(tp,table.unpack(des_list))
+		te=e_list[op+1]
+	end
+	c28315548.effect_list={}
+	--copy
+	e:SetProperty(te:GetProperty())
+	local tg=te:GetTarget()
+	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
+	local op=te:GetOperation()
+	if op then op(e,tp,eg,ep,ev,re,r,rp) end
+	e:SetProperty(EFFECT_FLAG_DELAY)--Original Property
 end
 function c28315548.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

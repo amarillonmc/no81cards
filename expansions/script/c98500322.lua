@@ -58,7 +58,7 @@ function c98500322.initial_effect(c)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCondition(c98500322.rmcon)
-	e5:SetCountLimit(1,98500322)
+	e5:SetCountLimit(1,98510322)
 	e5:SetTarget(c98500322.distg)
 	e5:SetOperation(c98500322.disop)
 	c:RegisterEffect(e5)
@@ -69,7 +69,7 @@ function c98500322.initial_effect(c)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e6:SetProperty(EFFECT_FLAG_DELAY)
 	e6:SetCode(EVENT_TO_GRAVE)
-	e6:SetCountLimit(1,98520307)
+	e6:SetCountLimit(1,98510323)
 	e6:SetCondition(c98500322.tkcon)
 	e6:SetTarget(c98500322.tdtg)
 	e6:SetOperation(c98500322.tdop)
@@ -129,24 +129,24 @@ function c98500322.actcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c98500322.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c98500322.cpfilter(c)
-	return ((c:GetType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and not c:IsType(TYPE_CONTINUOUS+TYPE_FIELD)) and (aux.IsCodeListed(c,10000000) or aux.IsCodeListed(c,10000010) or aux.IsCodeListed(c,10000020) or c:IsCode(5253985,7373632,59094601,39913299,79339613,42469671,85758066,85182315,79868386)) and c:IsAbleToGraveAsCost() and c:CheckActivateEffect(true,true,false)~=nil
+	return ((c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and not c:IsType(TYPE_CONTINUOUS+TYPE_FIELD)) and (aux.IsCodeListed(c,10000000) or aux.IsCodeListed(c,10000010) or aux.IsCodeListed(c,10000020) or c:IsCode(5253985,7373632,59094601,39913299,79339613,42469671,85758066,85182315,79868386)) and c:IsAbleToGraveAsCost() and c:CheckActivateEffect(true,true,false)~=nil
 end
 function c98500322.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98500322.cpfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
+	local c=e:GetHandler()
+	if chk==0 then
+		return (not c:IsLocation(LOCATION_HAND) or c:IsDiscardable())
+			and Duel.IsExistingMatchingCard(c98500322.cpfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil)
+	end
 end
 function c98500322.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c98500322.cpfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
-	g:KeepAlive()
-	e:SetLabelObject(g)
 	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(true,true,true)
 	if e:GetHandler():IsLocation(LOCATION_HAND) then
-		g:AddCard(e:GetHandler())
-		Duel.SendtoGrave(g,REASON_COST)
-	else
-		Duel.SendtoGrave(g,REASON_COST)
+		Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 	end
+	Duel.SendtoGrave(g,REASON_EFFECT)
 	e:SetProperty(te:GetProperty())
 	local tg=te:GetTarget()
 	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end

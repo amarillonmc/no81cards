@@ -40,11 +40,13 @@ function c98500300.initial_effect(c)
 	--cannot trigger
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_FIELD)
-	e7:SetCode(EFFECT_CANNOT_TRIGGER)
+	e7:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e7:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e7:SetTargetRange(1,0)
 	e7:SetRange(LOCATION_SZONE)
-	e7:SetTargetRange(LOCATION_MZONE,0)
-	e7:SetCondition(c98500300.actlimcon)
-	e7:SetTarget(c98500300.rmlimit)
+  --e7:SetCondition(c98500300.actlimcon)
+  --e7:SetTarget(c98500300.rmlimit)
+	e7:SetValue(c98500300.svl)
 	c:RegisterEffect(e7)
 	--change effect type
 	local e8=Effect.CreateEffect(c)
@@ -185,4 +187,10 @@ end
 function c98500300.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
 	Duel.SendtoGrave(g,REASON_EFFECT)
+end
+function c98500300.svl(e,re,rp) 
+   local rc=re:GetHandler()
+	return Duel.GetCurrentPhase()==PHASE_END and re:IsActiveType(TYPE_MONSTER)
+		and rc:GetOriginalRace()==RACE_DIVINE and rc:IsControler(tp) and rc:IsLocation(LOCATION_MZONE)
+		and re:IsHasCategory(CATEGORY_TOGRAVE)
 end

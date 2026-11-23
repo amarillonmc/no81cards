@@ -22,6 +22,7 @@ function c28333723.initial_effect(c)
 	c:RegisterEffect(e1)
 	--to grave
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(28333723,0))
 	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_DESTROYED)
@@ -55,7 +56,7 @@ function c28333723.efcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c28333723.efilter(e)
 	local ct=#c28333723.effect_list
-	if e:IsHasRange(LOCATION_ONFIELD) and e:IsActivated() then c28333723.effect_list[ct+1]=e end
+	if (e:IsHasRange(LOCATION_ONFIELD) or (e:GetCode()==EVENT_SUMMON_SUCCESS or e:GetCode()==EVENT_SPSUMMON_SUCCESS or e:GetCode()==EVENT_FLIP) and (e:GetType()&EFFECT_TYPE_SINGLE)~=0) and e:IsActivated() then c28333723.effect_list[ct+1]=e end
 	return false--e:IsHasRange(LOCATION_ONFIELD) and e:IsActivated()
 end
 function c28333723.cfilter(c,e,tp,eg,ep,ev,re,r,rp)
@@ -69,7 +70,7 @@ function c28333723.cfilter(c,e,tp,eg,ep,ev,re,r,rp)
 	return false
 end
 function c28333723.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28333723.cfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,eg,ep,ev,re,r,rp) end
+	if chk==0 then return e:IsCostChecked() and Duel.IsExistingMatchingCard(c28333723.cfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,eg,ep,ev,re,r,rp) end
 end
 function c28333723.efop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
@@ -81,7 +82,11 @@ function c28333723.efop(e,tp,eg,ep,ev,re,r,rp)
 	local e_list={}
 	for _,te in ipairs(c28333723.effect_list) do
 		local tg=te:GetTarget()
-		if not tg or tg(e,tp,eg,ep,ev,re,r,rp,0) then table.insert(e_list,te) end--if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then table.remove(c28333723.effect_list,i) end
+		local check=true
+		for _,ce in ipairs(e_list) do--compare
+			if ce:GetDescription()==te:GetDescription() then check=false break end
+		end
+		if check and (not tg or tg(e,tp,eg,ep,ev,re,r,rp,0)) then table.insert(e_list,te) end--if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then table.remove(c28325122.effect_list,i) end
 	end
 	local te=e_list[1]
 	if #e_list>1 then

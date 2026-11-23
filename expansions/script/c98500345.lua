@@ -120,7 +120,7 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetCategory(CATEGORY_RECOVER)
 	local lp = Duel.GetLP(tp)
 	local diff = lp - 100
-	Duel.SetOperationInfo(0, CATEGORY_LPCHANGE, nil, 0, tp, -diff)
+	Duel.SetOperationInfo(0, CATEGORY_RECOVER, nil, 0, tp, diff)
 	Duel.SetOperationInfo(0, CATEGORY_ATKCHANGE, nil, 0, 0, diff)
 	Duel.SetOperationInfo(0, CATEGORY_DEFCHANGE, nil, 0, 0, diff)
 	Duel.RegisterFlagEffect(tp,m+5,RESET_PHASE+PHASE_END,0,1)

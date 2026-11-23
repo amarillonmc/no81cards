@@ -133,8 +133,9 @@ end
 function c98500324.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(98500324,tp,ACTIVITY_SPSUMMON)==0 end
 	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(98500324,5))
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH+EFFECT_FLAG_CLIENT_HINT)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e1:SetTargetRange(1,0)
 	e1:SetTarget(c98500324.splimit)
@@ -204,7 +205,7 @@ function c98500324.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c98500324.stfil(c) 
-	return ((c:GetType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and not c:IsType(TYPE_CONTINUOUS+TYPE_FIELD)) and (aux.IsCodeListed(c,10000020) or c:IsCode(10000040,42469671,59094601,74875003,10000020)) and c:IsSSetable() 
+	return ((c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and not c:IsType(TYPE_CONTINUOUS+TYPE_FIELD)) and (aux.IsCodeListed(c,10000020) or c:IsCode(10000040,42469671,59094601,74875003,10000020)) and c:IsSSetable() 
 end 
 function c98500324.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c98500324.stfil,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end 

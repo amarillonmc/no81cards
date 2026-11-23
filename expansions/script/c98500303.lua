@@ -3,7 +3,7 @@ local m=98500303
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	aux.AddCodeList(c,10000010,10000020,10000000)
-	aux.EnableChangeCode(c,39913299,LOCATION_HAND+LOCATION_GRAVE)
+	aux.EnableChangeCode(c,39913299,LOCATION_HAND+LOCATION_SZONE+LOCATION_GRAVE)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -33,6 +33,7 @@ function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 	--splimit
 	local c=e:GetHandler()
 	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(m,1))
 	e0:SetType(EFFECT_TYPE_FIELD)
 	e0:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET)

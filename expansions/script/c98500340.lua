@@ -2,6 +2,7 @@
 function c98500340.initial_effect(c)
 	--Link Summon
 	c:EnableReviveLimit()
+	aux.AddCodeList(c,10000000,10000010,10000020)
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_DIVINE),1,1,nil)
 	--extra material
 	local e1=Effect.CreateEffect(c)
@@ -25,7 +26,8 @@ function c98500340.initial_effect(c)
 	e3:SetDescription(aux.Stringid(98500340,0))
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(c98500340.sumcon)
+  --e3:SetCondition(c98500340.sumcon)
+	e3:SetCountLimit(1,98500340+2)
 	e3:SetCost(c98500340.sumcost)
 	e3:SetTarget(c98500340.sumtg)
 	e3:SetOperation(c98500340.sumop)
@@ -83,6 +85,12 @@ end
 function c98500340.splimit(e,c)
 	return c:IsCode(98500340) and c:IsLocation(LOCATION_EXTRA)
 end
+function c98500340.splimit2(c)
+	return (c:IsCode(98500311) or c:IsCode(98500320)) and c:IsFaceup()
+end
+function c98500340.splimit3(c,e,tp)
+	return c:IsCode(10000000,10000010,10000020) and c:IsLevel(10) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+end
 function c98500340.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,98500340)==0
 end
@@ -91,9 +99,25 @@ function c98500340.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function c98500340.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanSummon(tp) and Duel.IsPlayerCanAdditionalSummon(tp) end
+	local b1=Duel.IsPlayerCanSummon(tp) and Duel.IsPlayerCanAdditionalSummon(tp) and Duel.GetFlagEffect(tp,98500340)==0
+	local b2=Duel.IsExistingMatchingCard(c98500340.splimit2,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(c98500340.splimit3,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return b1 or b2 end
+	local op=0
+	if b1 or b2 then
+		op=aux.SelectFromOptions(tp,
+			{b1,aux.Stringid(98500340,3),0},
+			{b2,aux.Stringid(98500340,4),1})
+	end
+	e:SetLabel(op)
+	if op==1 then
+	e:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+	end	
 end
 function c98500340.sumop(e,tp,eg,ep,ev,re,r,rp)
+	local op=e:GetLabel()
+	if op==0 then
+	if Duel.GetFlagEffect(tp,98500340)>=1 then return end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetDescription(aux.Stringid(98500340,1))
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -103,6 +127,14 @@ function c98500340.sumop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 	Duel.RegisterFlagEffect(tp,98500340,RESET_PHASE+PHASE_END,0,1)
+	elseif op==1 then
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	   local sg=Duel.SelectMatchingCard(tp,c98500340.splimit3,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+		if sg:GetCount()>0 then
+			Duel.SpecialSummon(sg,0,tp,tp,true,false,POS_FACEUP)
+		end
+	end
 end
 function c98500340.cfilter(c,lg)
 	return lg:IsContains(c) and c:IsRace(RACE_DIVINE)

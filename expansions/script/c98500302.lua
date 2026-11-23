@@ -3,7 +3,7 @@ function c98500302.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddCodeList(c,10000000,10000010,10000020)
 	aux.AddFusionProcFunFunRep(c,aux.FilterBoolFunction(Card.IsFusionCode,10000020,10000000,10000010),c98500302.ffilter,1,2,true)
-	aux.AddContactFusionProcedure(c,c98500302.cfilter,LOCATION_HAND+LOCATION_MZONE+LOCATION_REMOVED,0,c98500302.sprop(c))
+	aux.AddContactFusionProcedure(c,c98500302.cfilter,LOCATION_HAND+LOCATION_MZONE,0,c98500302.sprop(c))
 	--CANNOT_BE_FUSION_MATERIAL
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -68,15 +68,23 @@ end
 function c98500302.ffilter(c)
 	return c:IsRace(RACE_DIVINE) or c:IsAttribute(ATTRIBUTE_DIVINE)
 end
+function c98500302.cfilter(c)
+	return c:IsAbleToDeckOrExtraAsCost()
+end
 function c98500302.sprop(c)
 	return function(g)
+		local tp=c:GetControler()
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 		local cg=g:Filter(Card.IsPreviousLocation,nil,LOCATION_MZONE)
 		local tc=cg:GetFirst()
 		while tc do
 			local code=tc:GetOriginalCode()
 			c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,1)
+			Duel.Hint(HINT_CODE,tp,code)
+			Duel.Hint(HINT_CODE,1-tp,code)
 			tc=cg:GetNext()
+		end
+		if cg:GetCount()>0 then
 			c:RegisterFlagEffect(98500302,RESET_EVENT+0xff0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(98500302,3))
 		end
 	end

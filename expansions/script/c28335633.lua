@@ -161,7 +161,11 @@ function c28335633.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local e_list={}
 	for _,te in ipairs(c28335633.effect_list) do
 		local tg=te:GetTarget()
-		if not tg or tg(e,tp,eg,ep,ev,re,r,rp,0) then table.insert(e_list,te) end--if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then table.remove(c28335633.effect_list,i) end
+		local check=true
+		for _,ce in ipairs(e_list) do--compare
+			if ce:GetDescription()==te:GetDescription() then check=false break end
+		end
+		if check and (not tg or tg(te,tp,eg,ep,ev,re,r,rp,0)) then table.insert(e_list,te) end--if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0) then table.remove(c28335633.effect_list,i) end
 	end
 	local te=e_list[1]
 	if #e_list>1 then

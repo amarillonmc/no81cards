@@ -28,6 +28,7 @@ function c28315746.initial_effect(c)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	--e2:SetCountLimit(1,28315746+1)
+	e2:SetCost(c28315746.sptcost)
 	e2:SetTarget(c28315746.spttg)
 	e2:SetOperation(c28315746.sptop)
 	c:RegisterEffect(e2)
@@ -74,6 +75,10 @@ function c28315746.spop(e,tp,eg,ep,ev,re,r,rp)
 		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e0)
 	end
+end
+function c28315746.sptcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDiscardDeckAsCost(tp,1) end
+	Duel.DiscardDeck(tp,1,REASON_COST)
 end
 function c28315746.spfilter(c,e,tp,chk)
 	return c:IsSetCard(0x283) and c:IsType(TYPE_TUNER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (chk==0 or aux.NecroValleyFilter()(c))-- and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsType(TYPE_MONSTER)

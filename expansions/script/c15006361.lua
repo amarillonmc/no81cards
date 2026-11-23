@@ -64,6 +64,7 @@ end
 function cm.chainop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
+	if rc:IsType(TYPE_PENDULUM) and re:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
 	if c:GetCounter(0xf45)>=4 and re:IsActivated() and rc:IsSetCard(0x5f45) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		local ct=c:GetCounter(0xf45)
 		c:RemoveCounter(tp,0xf45,ct,REASON_EFFECT)

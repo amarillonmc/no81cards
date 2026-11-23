@@ -1,7 +1,7 @@
 --闪耀的中心
 function c28335405.initial_effect(c)
 	aux.AddCodeList(c,28335405)
-	--search
+	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -52,7 +52,7 @@ function c28335405.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoHand(g,nil,REASON_COST)
 end
 function c28335405.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return e:GetHandler():IsAbleToHand() end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,0,0,tp,1)
 end

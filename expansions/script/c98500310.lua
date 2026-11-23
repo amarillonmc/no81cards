@@ -1,27 +1,21 @@
 --神力释放-真祖姿态
 function c98500310.initial_effect(c)
 	aux.AddCodeList(c,10000000,10000010,10000020)
-	aux.EnableChangeCode(c,7373632,LOCATION_MZONE+LOCATION_GRAVE)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(98500310,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,98500310+EFFECT_COUNT_CODE_OATH)
-	e1:SetCost(c98500310.cost)
-   -- e1:SetCondition(c98500310.condition2)
-	e1:SetTarget(c98500310.target)
-	e1:SetOperation(c98500310.activate)
-	c:RegisterEffect(e1)
+  e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+  e1:SetType(EFFECT_TYPE_ACTIVATE)
+  e1:SetCode(EVENT_FREE_CHAIN)
+  e1:SetCountLimit(1,98500310+EFFECT_COUNT_CODE_OATH)
+  e1:SetOperation(c98500310.activate)
+  c:RegisterEffect(e1)
 	--SpecialSummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(98500310,1))
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1,98500311)
-   -- e2:SetCondition(c98500310.condition2)
 	e2:SetTarget(c98500310.sptg)
 	e2:SetOperation(c98500310.spop)
 	c:RegisterEffect(e2)
@@ -32,11 +26,17 @@ function c98500310.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1,98500311)
-   -- e3:SetCondition(c98500310.condition2)
 	e3:SetTarget(c98500310.fstg)
 	e3:SetOperation(c98500310.fsop)
 	c:RegisterEffect(e3)
-	Duel.AddCustomActivityCounter(98500310,ACTIVITY_SPSUMMON,c98500310.counterfilter)
+	--id
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_CHANGE_CODE)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetRange(LOCATION_SZONE+LOCATION_GRAVE)
+	e4:SetValue(7373632)
+	c:RegisterEffect(e4)
 end
 function c98500310.counterfilter(c)
 	return not (c:IsAttribute(ATTRIBUTE_DIVINE) and c:IsSummonLocation(LOCATION_HAND) and c:IsLevel(12))
@@ -53,8 +53,9 @@ end
 function c98500310.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(98500310,tp,ACTIVITY_SPSUMMON)==0 end
 	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(98500310,9))
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH+EFFECT_FLAG_CLIENT_HINT)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	e1:SetTargetRange(1,0)
@@ -68,53 +69,46 @@ function c98500310.thfilter(c)
 	return c:IsCode(10000000,10000010,10000020) and c:IsAbleToHand()
 end
 function c98500310.tgfilter(c)
-	return c:IsCode(10000000,10000010,10000020) and c:IsAbleToGrave()
-end
-function c98500310.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98500310.thfilter,tp,LOCATION_DECK,0,1,nil) or Duel.IsExistingMatchingCard(c98500310.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) end
-	local b1=Duel.IsExistingMatchingCard(c98500310.thfilter,tp,LOCATION_DECK,0,1,nil)
-	local b2=Duel.IsExistingMatchingCard(c98500310.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil)
-   local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(98500310,0)},
-		{b2,aux.Stringid(98500310,6)})
-	e:SetLabel(op)
-	if op==1 then
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	else
-		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
-	end
+	return (c:IsCode(10000000,10000010,10000020) or ((aux.IsCodeListed(c,10000000) or aux.IsCodeListed(c,10000010) or aux.IsCodeListed(c,10000020))) and c:IsType(TYPE_MONSTER)) and c:IsAbleToGrave()
 end
 function c98500310.activate(e,tp,eg,ep,ev,re,r,rp)
-	local op=e:GetLabel()
-	if op==1 then
-		local g=Duel.GetMatchingGroup(c98500310.thfilter,tp,LOCATION_DECK,0,nil)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(98500310,7)) then
+	local g1=Duel.GetMatchingGroup(c98500310.thfilter,tp,LOCATION_DECK,0,nil)
+	local g2=Duel.GetMatchingGroup(c98500310.tgfilter,tp,LOCATION_DECK+LOCATION_HAND,0,nil)
+	local b1=g1:GetCount()>0
+	local b2=g2:GetCount()>0
+	local applied=false
+	if b1 or b2 then
+		local op=aux.SelectFromOptions(tp,
+			{b1,aux.Stringid(98500310,0)},
+			{b2,aux.Stringid(98500310,6)})
+		if op==1 and Duel.SelectYesNo(tp,aux.Stringid(98500310,7)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg=g:Select(tp,1,1,nil)
+			local sg=g1:Select(tp,1,1,nil)
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,sg)
-		end
-	elseif op==2 then
-		local g=Duel.GetMatchingGroup(c98500310.thfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(98500310,8)) then
+			applied=true
+		elseif op==2 and Duel.SelectYesNo(tp,aux.Stringid(98500310,8)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local sg=g:Select(tp,1,1,nil)
+			local sg=g2:Select(tp,1,1,nil)
 			Duel.SendtoGrave(sg,nil,REASON_EFFECT)
+			applied=true
 		end
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c98500310.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+	if applied then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(98500310,10))
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+		e1:SetTargetRange(1,0)
+		e1:SetTarget(c98500310.splimit)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+	end
 end
 function c98500310.splimit(e,c)
-	return c:IsLevel(12) and c:IsAttribute(ATTRIBUTE_DIVINE) and c:IsLocation(LOCATION_HAND)
+	return c:IsLocation(LOCATION_HAND) and c:IsAttribute(ATTRIBUTE_DIVINE) and c:IsLevel(12)
 end
-
 function c98500310.spcostfilter1(c)
 	return c:IsAbleToDeck() and c:IsLocation(LOCATION_ONFIELD) and c:IsOriginalCodeRule(10000000)
 end

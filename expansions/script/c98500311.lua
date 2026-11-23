@@ -69,7 +69,7 @@ function s.lcheck(g,lc)
 	return g:IsExists(Card.IsLinkRace,1,nil,RACE_SPELLCASTER+RACE_DIVINE)
 end
 function s.sprfilter(c,fc,tp)
-	return c:IsCode(98500320) and c:IsAbleToGraveAsCost() and Duel.GetLocationCountFromEx(tp,tp,c,fc)>0 and c:IsCanBeLinkMaterial(fc) and Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)>0
+	return c:IsCode(98500320) and c:IsFaceup() and c:IsAbleToGraveAsCost() and Duel.GetLocationCountFromEx(tp,tp,c,fc)>0 and c:IsCanBeLinkMaterial(fc) and Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)>0
 end
 function s.tdcheck(c,fc)
 	return c:IsCode(39913299) and c:IsAbleToDeckAsCost()
@@ -82,10 +82,8 @@ end
 function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.SelectMatchingCard(tp,s.sprfilter,tp,LOCATION_ONFIELD,0,1,1,nil,c,tp)
 	c:SetMaterial(g)
-	Duel.SendtoGrave(g,REASON_LINK)   
+	Duel.SendtoGrave(g,REASON_LINK)
 	c:CopyEffect(98500320,RESET_EVENT+0xff0000,1)
-	local c=e:GetHandler()
-	c:RegisterFlagEffect(id,RESET_EVENT+0xff0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,6))
 end
 function s.filter1(c)
 	return c:IsCode(81332143,14731897,55948544) and c:IsAbleToHand()

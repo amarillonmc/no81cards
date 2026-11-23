@@ -1,4 +1,4 @@
---觉醒的三幻神
+--以王之名
 function c98500330.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_SPSUMMON_COUNT)
 	aux.AddCodeList(c,10000000,10000010,10000020)
