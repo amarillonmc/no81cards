@@ -1,4 +1,4 @@
---禁钉显迹受领机（旧效果版本：②只把这张卡自身从墓地除外）
+--禁钉显迹受领机
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--discard self, place 1 counter
@@ -59,19 +59,29 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 		g:GetFirst():AddCounter(0x154a,1)
 	end
 end
+function s.rmfilter(c,hc)
+	return c:IsSetCard(0x54a) and c:IsType(TYPE_MONSTER) and c~=hc and c:IsAbleToRemove()
+end
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsAbleToRemove() and c:GetFlagEffect(id)==0
-		and Duel.IsChainDisablable(ev) and re:IsActiveType(TYPE_MONSTER)
+	return c:IsAbleToRemove() and Duel.GetFlagEffect(tp,id)==0
+		and Duel.IsChainDisablable(ev) and not Duel.IsChainDisabled(ev)
+		and re:IsActiveType(TYPE_MONSTER)
 		and re:GetHandler():GetCounter(0x154a)>0
+		and Duel.IsExistingMatchingCard(s.rmfilter,tp,LOCATION_GRAVE,0,1,nil,c)
 end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if Duel.GetFlagEffect(tp,id)~=0 then return end
 	if not Duel.SelectEffectYesNo(tp,c,aux.Stringid(id,1)) then return end
-	if Duel.Remove(c,POS_FACEUP,REASON_EFFECT)>0 then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,s.rmfilter,tp,LOCATION_GRAVE,0,1,1,nil,c)
+	if g:GetCount()==0 then return end
+	g:AddCard(c)
+	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 then
+		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
 		Duel.Hint(HINT_CARD,0,id)
 		Duel.NegateEffect(ev)
-		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,1))
 	end
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
