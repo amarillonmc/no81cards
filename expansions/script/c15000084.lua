@@ -68,12 +68,6 @@ function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,cm.tdfilter,tp,LOCATION_REMOVED+LOCATION_GRAVE,LOCATION_REMOVED+LOCATION_GRAVE,1,3,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
-	local ag=g:Filter(Card.IsControler,nil,tp)
-	if ag:GetCount()~=0 and ag:FilterCount(cm.drfilter,nil)==ag:GetCount() then
-		Duel.SetTargetPlayer(tp)
-		Duel.SetTargetParam(1)
-		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	end
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
@@ -84,9 +78,10 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		local g=Duel.GetOperatedGroup()
 		local ag=g:Filter(Card.IsControler,nil,tp)
-		if ag:GetCount()~=0 and ag:FilterCount(cm.drfilter,nil)==ag:GetCount() then
-			local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-			Duel.Draw(p,d,REASON_EFFECT)
+		local bg=ag:Filter(Card.IsLocation,nil,LOCATION_DECK)
+		if bg:GetCount()~=0 and bg:FilterCount(cm.drfilter,nil)==bg:GetCount() then
+			Duel.BreakEffect()
+			Duel.Draw(tp,1,REASON_EFFECT)
 		end
 	end
 end
