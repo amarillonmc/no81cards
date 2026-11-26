@@ -30,7 +30,7 @@ end
 function s.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_HAND+LOCATION_DECK,0,1,c) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+	return Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_HAND+LOCATION_DECK,0,1,c) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function s.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(s.filter1,tp,LOCATION_HAND+LOCATION_DECK,0,c)
@@ -58,7 +58,7 @@ function s.mvcon2(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS)
 end
 function s.filter1(c)
-	return c:IsSetCard(0x667f) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0x667f) and c:IsType(TYPE_MONSTER) and not c:IsForbidden() and Duel.GetLocationCount(c:GetOwner(),LOCATION_SZONE)>0 
 end
 function s.mvtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

@@ -90,7 +90,7 @@ function c28315548.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28315548.costfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c28315548.costfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
-	local ct=g:GetFirst():IsLocation(LOCATION_HAND) and 1 or 0
+	local ct=g:GetFirst():IsLocation(LOCATION_HAND) and 283 or 0
 	e:SetLabel(ct)
 	Duel.SendtoGrave(g,REASON_COST)
 end
@@ -122,7 +122,7 @@ function c28315548.thop(e,tp,eg,ep,ev,re,r,rp)
 	if not tg or #tg==0 then return end
 	Duel.SendtoHand(tg,nil,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,tg)
-	if not Duel.IsExistingMatchingCard(c28315548.cpfilter,tp,LOCATION_DECK,0,1,nil,e,tp,eg,ep,ev,re,r,rp) or e:GetLabel()==0 or not Duel.SelectYesNo(tp,aux.Stringid(28315548,2)) then e:SetLabel(0) return end
+	if not Duel.IsExistingMatchingCard(c28315548.cpfilter,tp,LOCATION_DECK,0,1,nil,e,tp,eg,ep,ev,re,r,rp) or e:GetLabel()~=283 or not Duel.SelectYesNo(tp,aux.Stringid(28315548,2)) then e:SetLabel(0) return end
 	e:SetLabel(0)
 	--
 	Duel.BreakEffect()

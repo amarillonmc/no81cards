@@ -1,6 +1,6 @@
 --银白之都的酒保 尔阁
 local s,id,o=GetID()
-function c67201815.initial_effect(c)
+function s.initial_effect(c)
 	--spsummon rule
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -13,12 +13,11 @@ function c67201815.initial_effect(c)
 	e1:SetTarget(s.sprtg)
 	e1:SetOperation(s.sprop)
 	c:RegisterEffect(e1)
-
 	--atk & def
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e4:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetTargetRange(LOCATION_MZONE,0)
 	e4:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x667f))
@@ -27,12 +26,12 @@ function c67201815.initial_effect(c)
 end
 --
 function s.filter1(c)
-	return c:IsSetCard(0x667f) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0x667f) and c:IsType(TYPE_MONSTER) and not c:IsForbidden() and Duel.GetLocationCount(c:GetOwner(),LOCATION_SZONE)>0
 end
 function s.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,c) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+	return Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,c) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function s.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(s.filter1,tp,LOCATION_HAND+LOCATION_GRAVE,0,c)
@@ -54,4 +53,3 @@ function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 	tc:RegisterEffect(e1)
 end
---

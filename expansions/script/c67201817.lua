@@ -28,56 +28,49 @@ function c67201817.initial_effect(c)
 	c:RegisterEffect(e3)	
 end
 --
-function s.filter1(c)
-	return c:IsSetCard(0x667f) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+function s.filter1(c,tp)
+	return c:IsSetCard(0x667f) and c:IsType(TYPE_MONSTER) and not c:IsForbidden() and Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_DECK,0,1,c,c:GetOwner()) and Duel.GetLocationCount(c:GetOwner(),LOCATION_SZONE)>0
 end
 function s.filter2(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:GetOwner()==1-tp and not c:IsForbidden()
+	if tp==c:GetOwner() then
+		return c:IsSetCard(0x667f) and c:IsType(TYPE_MONSTER) and not c:IsForbidden() and Duel.GetLocationCount(c:GetOwner(),LOCATION_SZONE)>1
+	else
+		return c:IsSetCard(0x667f) and c:IsType(TYPE_MONSTER) and not c:IsForbidden() and Duel.GetLocationCount(1-c:GetOwner(),LOCATION_SZONE)>0
+	end
+end
+function s.filter3(c)
+	return c:IsSetCard(0x667f) and c:IsType(TYPE_MONSTER) and not c:IsForbidden() 
+end
+function s.check(g,tp)
+	return g:IsExists(s.filter1,1,nil,tp) and g:GetClassCount(Card.GetLocation)==#g
 end
 function s.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_HAND,0,1,c) and Duel.GetLocationCount(tp,LOCATION_SZONE)>1 and Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+	return Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_HAND,0,1,c,tp) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function s.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(s.filter1,tp,LOCATION_HAND,0,c)
-	local gg=Duel.GetMatchingGroup(s.filter1,tp,LOCATION_DECK,0,nil)
+	local g=Duel.GetMatchingGroup(s.filter3,tp,LOCATION_HAND+LOCATION_DECK,0,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local tcc=gg:SelectUnselect(nil,tp,false,true,1,1)
-	if tc and tcc then
-		local ggg=Group.CreateGroup()
-		Group.AddCard(ggg,tc)
-		Group.AddCard(ggg,tcc)
-		ggg:KeepAlive()
-		e:SetLabelObject(ggg)
+	local sg=g:SelectSubGroup(tp,s.check,true,2,2,tp)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
 		return true
 	else return false end
 end
 function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local ggg=e:GetLabelObject()
-	local tc1=ggg:GetFirst()
-	local tc2=ggg:GetNext()
-	if Duel.MoveToField(tc1,tp,tc1:GetOwner(),LOCATION_SZONE,POS_FACEUP,true) then
-		if Duel.MoveToField(tc2,tp,tc2:GetOwner(),LOCATION_SZONE,POS_FACEUP,true) then
+	local g=e:GetLabelObject()
+	for tc in aux.Next(g) do
+	if Duel.MoveToField(tc,tp,tc:GetOwner(),LOCATION_SZONE,POS_FACEUP,true) then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetCode(EFFECT_CHANGE_TYPE)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 			e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-			tc2:RegisterEffect(e1)
-			--tc2:SetStatus(STATUS_EFFECT_ENABLED,true)
+			tc:RegisterEffect(e1)
 		end
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetCode(EFFECT_CHANGE_TYPE)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e2:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-		tc1:RegisterEffect(e2)
-		--tc1:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
 end
 --
