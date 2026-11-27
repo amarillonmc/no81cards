@@ -141,7 +141,7 @@ function s.gycost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoHand(c,nil,REASON_COST)
 end
 function s.tdfilter(c)
-	return c:IsAbleToDeck()
+	return c:IsAbleToDeck() and (not c:IsLocation(LOCATION_EXTRA) or c:IsFaceup())
 end
 function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.tdfilter,tp,0,LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end

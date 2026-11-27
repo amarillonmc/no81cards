@@ -4,7 +4,7 @@ function s.initial_effect(c)
     aux.AddCodeList(c,65823000)
     --发动
     local e1=Effect.CreateEffect(c)
-    e1:SetCategory(CATEGORY_SSET+CATEGORY_DISABLE+CATEGORY_TOHAND)
+    e1:SetCategory(CATEGORY_SSET+CATEGORY_TOHAND)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
     e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)

@@ -2,22 +2,22 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,65823000)
-	--放置
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_CHAIN_SOLVING)
-	e3:SetRange(LOCATION_HAND)
-	e3:SetCondition(s.recon)
-	e3:SetOperation(s.reop)
-	c:RegisterEffect(e3)
-	--disable
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_CHAIN_SOLVING)
-	e3:SetRange(LOCATION_FZONE)
-	e3:SetCondition(s.discon)
-	e3:SetOperation(s.disop)
-	c:RegisterEffect(e3)
+	--放置（这张卡不能发动，所以在连锁处理开始时直接放置）
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCondition(s.recon)
+	e1:SetOperation(s.reop)
+	c:RegisterEffect(e1)
+	--场上的怪兽发动的效果变为不适用
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetRange(LOCATION_FZONE)
+	e2:SetCondition(s.discon)
+	e2:SetOperation(s.disop)
+	c:RegisterEffect(e2)
 	if not s.global_check then
       s.global_check=true
       local ge1=Effect.CreateEffect(c)
@@ -48,11 +48,6 @@ function s.checkop6(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.locfilter(c)
 	return c:IsOriginalCodeRule(id) and c:IsFaceup()
-end
-
-function s.tnop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.SendtoGrave(c,REASON_EFFECT)
 end
 
 function s.recon(e)
